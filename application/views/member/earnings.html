@@ -1,0 +1,76 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header text-center">Earnings</h1>
+        <form class="form-inline text-center" role="form" method="get" action="">
+            <div class="form-group">
+                <div class="input-group">
+                    <label class="sr-only">From</label>
+                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> From</span>
+                    <input type="date" style="width: 200px" name="startdate" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <label class="sr-only">To</label>
+                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> To</span>
+                    <input type="date" style="width: 200px" name="enddate" class="form-control" />
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Show</button>
+        </form>
+        <hr>
+        <p>You can request Payout after the total earning cross 1000 Rupee <a class="btn btn-success btn-xs">Request Payment</a> </p>
+        {if($earnings)}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Link</th>
+                        <th>Clicks</th>
+                        <th>Avg RPM</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {foreach $earn in $earnings}
+                    {script $link = Link::first(array("id = ?" => $earn->link_id), array("short"))}
+                    {script $stat = Stat::first(array("id = ?" => $earn->stat_id), array("verifiedClicks"))}
+                    <tr>
+                        <td>{$earn->id}</td>
+                        <td>{$link->short}</td>
+                        <td>{$stat->verifiedClicks}</td>
+                        <td>₹ {$earn->rpm}</td>
+                        <td>{echo \Framework\StringMethods::only_date($earn->created)}</td>
+                        <td>₹ {echo round($earn->amount, 2)}</td>
+                        <td>
+                            {if($earn->live)}
+                            <span class="label label-success">Paid</span>
+                            {/if}
+                            {else}
+                            <span class="label label-warning">UnPaid</span>
+                            {/else}
+                        </td>
+                    </tr>
+                    {/foreach}
+                </tbody>
+            </table>
+        </div>
+        {/if}
+        {else}
+            <p>Check Later</p>
+        {/else}
+        <div class="text-center">
+            <ul class="pager">
+                {if($page != 1)}
+                <li><a href="{echo Shared\Markup::pagination($page - 1)}">Previous</a></li>
+                {/if}
+                {if($page < $count/$limit)}
+                <li><a href="{echo Shared\Markup::pagination($page + 1)}">Next</a></li>
+                {/if}
+            </ul>
+        </div>
+    </div>
+</div>

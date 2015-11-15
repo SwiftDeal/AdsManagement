@@ -1,0 +1,125 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+            Dashboard <small>Statistics Overview</small>
+        </h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-3 col-md-3">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-hand-pointer-o fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{$clicks}</div>
+                    </div>
+                </div>
+            </div>
+            <a href="/member/mylinks">
+                <div class="panel-footer">
+                    <span class="pull-left">Total Verified Clicks!</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-3">
+        <div class="panel panel-green">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-inr fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{echo round($averagerpm)}</div>
+                    </div>
+                </div>
+            </div>
+            <a href="/member/earnings">
+                <div class="panel-footer">
+                    <span class="pull-left">Average RPM!</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-3">
+        <div class="panel panel-red">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-exchange fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        {echo round($pending)}/{echo round($earnings)}
+                    </div>
+                </div>
+            </div>
+            <a href="/member/earnings">
+                <div class="panel-footer">
+                    <span class="pull-left">Pending/Total Earning!</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-3">
+        <div class="panel panel-default">
+            <ul class="list-group" onclick="realtime();">
+                <li class="list-group-item">Clicks Today<span class="badge" id="realtime_clicks">View</span></li>
+                <li class="list-group-item">Average RPM <span class="badge" id="realtime_avgrpm">View</span></li>
+                <li class="list-group-item">Earnings Today <span class="badge" id="realtime_earnings">View</span></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-line-chart fa-fw"></i> Active Links</h3>
+            </div>
+            {if($links)}
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>Link Title</th>
+                            <th>Short URL</th>
+                            <th>Realtime Stats</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $link in $links}
+                            {script $item = Item::first(array("id = ?" => $link->item_id), array("title", "url"))}
+                            <tr>
+                                <td><a href="{$item->url}" target="_blank">{$item->title}</a></td>
+                                <td><a href="{$link->short}" target="_blank">{$link->short}</a></td>
+                                <td class="googl" data-time="allTime" data-property="shortUrlClicks" data-url="{$link->short}">
+                                    <span class="label label-success">View</span>
+                                </td>
+                            </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
+            {/if}
+            {else}
+                <p>Hi, you have not generated any link to share on your platform.</p>
+            {/else}
+            <div class="panel-body">
+                <div class="text-right">
+                    <a href="/member/mylinks">View All Links <i class="fa fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
