@@ -80,4 +80,11 @@ class User extends Shared\Model {
     */
     protected $_currency = "INR";
 
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     */
+    protected $_fblink;
+
 }

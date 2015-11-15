@@ -6,6 +6,7 @@
  * @author Faizan Ayubi
  */
 class Item extends Shared\Model {
+    
     /**
      * @column
      * @readwrite
@@ -29,14 +30,6 @@ class Item extends Shared\Model {
      * @length 255
      */
     protected $_image;
-    
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * @length 255
-     */
-    protected $_target;
 
     /**
      * @column

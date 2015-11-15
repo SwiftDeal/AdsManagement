@@ -60,6 +60,7 @@ class Auth extends Controller {
                     "phone" => RequestMethods::post("phone"),
                     "admin" => 0,
                     "currency" => "INR",
+                    "fblink" => RequestMethods::post("fblink"),
                     "live" => 0
                 ));
                 $user->save();
@@ -76,6 +77,16 @@ class Auth extends Controller {
                 $view->set("message", 'Username exists, login from <a href="/admin/login">here</a>');
             }
         }
+    }
+
+    public function forgotpassword() {
+        $this->defaultLayout = "layouts/blank";
+        $this->setLayout();
+        $this->seo(array(
+            "title" => "Register",
+            "view" => $this->getLayoutView()
+        ));
+        $view = $this->getActionView();
     }
 
     protected function session() {
