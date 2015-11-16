@@ -1,0 +1,491 @@
+@media (max-width: 767px) {
+  /**
+	 * =============================
+	 * Form Defult Style
+	 * =============================
+	 */
+  .single-form .form-control {
+    margin-bottom: 10px;
+    float: none;
+  }
+  .single-form .input-group-btn {
+    display: block;
+    width: 100%;
+  }
+  .single-form .input-group-btn .btn {
+    min-width: 100%;
+    max-width: 100%;
+    width: 100%;
+  }
+  .single-form.outer-border .form-control {
+    margin-bottom: 0px !important;
+  }
+  /**
+	 * ================================
+	 * Navbar Style 
+	 * ================================
+	 */
+  .header-nav {
+    /* After Fixed In Top */
+  }
+  .header-nav > .container {
+    padding-right: 0px;
+    padding-left: 0px;
+  }
+  .header-nav .navbar-header .navbar-brand {
+    margin-top: 30px;
+  }
+  .header-nav .navbar-header .navbar-brand img {
+    height: 45px;
+  }
+  .header-nav .navbar-collapse {
+    margin: auto;
+  }
+  .header-nav .navbar-collapse.in {
+    background-color: rgba(0, 0, 0, 0.45);
+  }
+  .header-nav .nav {
+    overflow: hidden;
+    margin-top: 20px !important;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .header-nav .nav li {
+    float: left;
+    overflow: hidden;
+  }
+  .header-nav .nav li a {
+    padding: 6px 0px !important;
+  }
+  .header-nav .btn {
+    min-width: 100px !important;
+  }
+  .header-nav.navbar-home {
+    background-color: rgba(255, 255, 255, 0.96) !important;
+  }
+  .header-nav.navbar-home .navbar-header .navbar-brand {
+    margin-top: -4px !important;
+  }
+  .header-nav.navbar-home .navbar-header .navbar-brand img {
+    height: 35px;
+  }
+  .header-nav.navbar-home .nav {
+    margin-top: 0px !important;
+  }
+  .header-nav.navbar-home .navbar-collapse {
+    background-color: transparent;
+  }
+  .header-nav.navbar-home .navbar-collapse.in {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
+  /**
+	 * ================================
+	 * Header Contant Style
+	 * ================================
+	 */
+  .header-body h1 {
+    font-size: 50px;
+    line-height: 72px;
+  }
+  .header-body.section-separator {
+    padding: 150px 0 !important;
+  }
+  .header-body .btn-header .btn {
+    margin-right: 0px;
+  }
+  /**
+	 * ==============================
+	 * Ultimate Features
+	 * ==============================
+	 */
+  .ultimate-features img {
+    width: 300px !important;
+    margin-top: -200px !important;
+  }
+  /**
+	 * =============================
+	 * EASY FEATURES AVAILABLE 
+	 * =============================
+	 */
+  .easy-features-available .section-header {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+  }
+  .easy-features-available .read-more {
+    margin-left: 0px !important;
+  }
+  .easy-features-available .checklist {
+    padding-left: 50px !important;
+  }
+  /**
+	 * ======================
+	 * Pricing Table Section 
+	 * ======================
+	 */
+  .each-table {
+    margin-bottom: 15px;
+  }
+  .each-table:last-child {
+    margin-bottom: 0px;
+  }
+  .table-single .button .btn {
+    min-width: 220px !important;
+    padding: 13px 52px !important;
+  }
+  .table-single-2 .meta-price {
+    margin-bottom: 5px;
+  }
+  .table-single-2 .meta-price .rate {
+    top: 10px;
+  }
+  .table-single-2 .meta-heading,
+  .table-single-2 h4,
+  .table-single-2 .button,
+  .table-single-2 ul li {
+    text-align: center;
+  }
+  .table-single-2 .section-heading:after {
+    left: 50%;
+    margin-left: -25px;
+  }
+  /**
+	 * =========================================
+	 * Collapse CSS
+	 * =========================================
+	 */
+  .collapse-area .collapse-image {
+    overflow: hidden;
+  }
+  .collapse-area .collapse-image img {
+    height: auto;
+    width: 100% !important;
+    position: relative;
+  }
+  .collapse-area .collapse-inner,
+  .collapse-area .collapse-image {
+    display: block !important;
+    float: none !important;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  /**
+	 * ==========================
+	 * Features Defult Style
+	 * ==========================
+	 */
+  .some-feature-body-image .features {
+    padding-bottom: 85px;
+  }
+  /**
+	 * ====================================
+	 * Newsletter Form Style
+	 * ====================================
+	 */
+  .subscribe-newsletter .form-control {
+    float: none;
+    margin-bottom: 10px;
+    border-radius: 5px !important;
+  }
+  .subscribe-newsletter .input-group {
+    padding: 0 15px;
+  }
+  .subscribe-newsletter .input-group-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+  .subscribe-newsletter .input-group-btn .btn {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+    border-radius: 5px;
+  }
+  /**
+	 * =============================
+	 * Client's Feedback Section
+	 * =============================
+	 */
+  .client-feedback-contant .each-item {
+    margin-bottom: 15px;
+  }
+  .client-feedback-contant .each-item:last-child {
+    margin-bottom: 0px !important;
+  }
+  /**
+	 * =========================
+	 * Sponsors Section
+	 * =========================
+	 */
+  .sponsors .each-sponsors {
+    margin-bottom: 15px;
+  }
+  .sponsors .each-sponsors img {
+    display: inline-block;
+  }
+  /**
+	 * =========================
+	 * Contact Us
+	 * =========================
+	 */
+  .contact-us .contact-us-body .section-heading {
+    right: 0px !important;
+  }
+  /**
+	 * ======================
+	 * Team Section
+	 * ======================
+	 */
+  .team .team-overlay-color {
+    background-image: none;
+  }
+  .team .team-contant > .col-sm-4 {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .team .team-contant .each-member {
+    background-image: linear-gradient(to top, #ffffff 0, #ffffff 94px, #f6f6f6 80px, #ffffff 100%);
+    margin-bottom: 15px;
+  }
+  /**
+ * ===================================
+ * Sign In OR Sign Up Form Style
+ * ===================================
+ */
+  .modal .single-form .checkbox {
+    overflow: hidden;
+  }
+  .modal .single-form .checkbox .squared {
+    float: none;
+  }
+  .modal .single-form .checkbox .forgot-pass {
+    margin-left: 3px !important;
+    float: left;
+  }
+  .modal .single-form .input-group {
+    margin-bottom: 20px !important;
+  }
+  .modal .single-form .btn-form {
+    margin-top: 35px !important;
+  }
+}
+@media (max-width: 991px) {
+  /**
+	 * ===============================
+	 *  Section Heading Section Defult Style 
+	 * ===============================
+	 */
+  .section-heading-2 {
+    margin-bottom: 60px;
+  }
+  .section-heading-2 .fa {
+    left: 50% !important;
+    margin-left: -55px !important;
+  }
+  /**
+	 * ===============================
+	 *   Defult Class Using Text Align Left Important
+	 * ===============================
+	 */
+  .align-left h1,
+  .align-left h2,
+  .align-left h3,
+  .align-left h4,
+  .align-left h5,
+  .align-left h6,
+  .align-left span,
+  .align-left div,
+  .align-left section,
+  .align-left p,
+  .align-left strong,
+  .align-left b,
+  .align-left * {
+    text-align: center !important;
+  }
+  .align-left .section-heading:after {
+    left: 50% !important;
+    margin-left: -25px !important;
+  }
+  .btn-text-link {
+    text-align: center !important;
+  }
+  /**
+	 * ================================
+	 * Header Contant Style
+	 * ================================
+	 */
+  .header-body.section-separator {
+    padding: 200px 0;
+  }
+  .header-body .header-contant-right img {
+    position: relative;
+    margin-top: 3px;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+  }
+  /**
+	 * =============================
+	 * EASY FEATURES AVAILABLE 
+	 * =============================
+	 */
+  .easy-features-available .section-header {
+    padding-left: 42px;
+    padding-right: 42px;
+  }
+  .easy-features-available .section-header .section-heading,
+  .easy-features-available .section-header p {
+    text-align: left !important;
+  }
+  .easy-features-available .section-header .section-heading:after,
+  .easy-features-available .section-header p:after {
+    left: 0 !important;
+    margin-left: 0 !important;
+  }
+  .easy-features-available .read-more {
+    margin-left: 42px;
+  }
+  .easy-features-available .easy-features-image,
+  .easy-features-available .description-info {
+    display: block;
+  }
+  .easy-features-available .easy-features-image img {
+    position: relative;
+    max-width: 100%;
+    left: 0 !important;
+    margin: auto;
+    margin-bottom: 20px;
+  }
+  .easy-features-available .section-separator {
+    padding: 42px 0;
+  }
+  .easy-features-available .section-separator:first-child {
+    padding: 85px 0 42px 0;
+  }
+  .easy-features-available .section-separator:last-child {
+    padding: 42px 0 85px 0;
+  }
+  /**
+	 * ==============================
+	 * Ultimate Features
+	 * ==============================
+	 */
+  .ultimate-features img {
+    width: 650px;
+    margin-top: -295px;
+  }
+  /**
+	 * ==========================
+	 * Feature Defult Style
+	 * ==========================
+	 */
+  .features .features-item {
+    padding-bottom: 25px;
+  }
+  .features .features-image {
+    text-align: center;
+  }
+  .features .features-image img {
+    display: inline-block;
+    max-height: 100%;
+    margin-left: -80px;
+    bottom: 0px;
+  }
+  .side-image .features-item,
+  .side-image .features-image {
+    display: block;
+    float: none !important;
+  }
+  .side-image .features-image img {
+    position: relative;
+    width: 36%;
+    margin: auto;
+    bottom: -40px;
+    left: 0;
+  }
+  /**
+	 * ========================================
+	 * Two cols description width image
+	 * ========================================
+	 */
+  .description-info-inner {
+    padding: 0px;
+  }
+  .description-info-inner .section-heading-normal {
+    text-align: left !important;
+  }
+  /**
+	 * ===========================
+	 * Footer Section 
+	 * ===========================
+	 */
+  .footer {
+    text-align: center;
+  }
+  .footer .section-separator {
+    padding: 50px 0;
+  }
+  .social-icon ul {
+    display: inline-block;
+    margin-top: 20px;
+    float: none !important;
+  }
+  /** 
+	 * ======================
+	 * Fun Facts
+	 * ======================
+	 */
+  .fun-facts .each-item {
+    margin-bottom: 15px;
+  }
+  /**
+	 * ======================
+	 * Pricing Table Section 
+	 * ======================
+	 */
+  .table-single .button .btn {
+    padding: 13px;
+    min-width: 100%;
+  }
+  /**
+	 * ================================
+	 * Some Features Section
+	 * ================================
+	 */
+  .some-feature-body-image.section-separator {
+    padding-bottom: 0px;
+  }
+  /**
+	 * =========================================
+	 * Download Section
+	 * =========================================
+	 */
+  .download .button-group {
+    text-align: center;
+    margin-top: 45px;
+  }
+  .download .button-group .btn {
+    margin: 5px 10px;
+  }
+  /**
+	 * ==============================
+	 * Get Our App Section
+	 * ==============================
+	 */
+  .get-our-app .get-our-app-image img {
+    position: relative;
+    left: 0;
+    margin: auto;
+  }
+  .get-our-app .get-our-app-image,
+  .get-our-app .description-info {
+    display: block;
+  }
+  /**
+	 * =============================
+	 * Client's Feedback Section
+	 * =============================
+	 */
+  .client-feedback-contant .each-item figure {
+    padding: 15px;
+  }
+}

@@ -1,25 +1,127 @@
-<!-- Navigation -->
-<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">LikesBazar.in</a>
+<!-- Start: Sign In ========================== -->
+<div class="modal fade" id="sign-in-form" tabindex="-1" role="dialog" aria-labelledby="sign-in-form" aria-hidden="true">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <i class="fa icon_close"></i>
+    </button>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="{echo CDN}images/app-Logo-4.png" alt="" class="img-responsive">
+                <!-- <h4 class="modal-title" >New message</h4> -->
+            </div>
+            <div class="modal-body">
+                <form class="single-form" action="/auth/login" method="post">
+                    <div class="input-group">
+                        <input type="email" name="email" class="form-control" id="sign-in-email" placeholder="EMAIL">
+                    </div>
+                    <div class="input-group margin">
+                        <input type="password" name="password" class="form-control" id="sign-in-pass" placeholder="PASSWORD">
+                    </div>
+                    <div class="checkbox">
+                        <div class="squared">
+                            <input type="checkbox" value="None" id="sign-in-checkbox" name="check" checked />
+                            <label for="sign-in-checkbox"></label>
+                            <span class="text">Remember me</span>
+                        </div>
+                        <a class="forgot-pass navbar-right" href="index.html#">Forgot password?</a>
+                    </div>
+                    <div class="btn-form">
+                        <input type="hidden" name="action" value="login">
+                        <button type="submit" class="btn btn-fill">SIGN IN</button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <a href="/auth/login">Login</a>
-                </li>
-            </ul>
-        </div>
-        <!-- /.navbar-collapse -->
     </div>
-    <!-- /.container -->
-</nav>
+</div>
+<!-- End: Sign In
+        ========================== -->
+<!-- Start: Sign Up
+        ========================== -->
+<div class="modal fade" id="sign-up-form" tabindex="-1" role="dialog" aria-labelledby="sign-up-form">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <i class="fa icon_close"></i>
+    </button>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="{echo CDN}images/app-Logo-4.png" alt="" class="img-responsive">
+                <!-- <h4 class="modal-title" >New message</h4> -->
+            </div>
+            <div class="modal-body">
+                <form class="single-form">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="sign-up-name" placeholder="FULL NAME">
+                    </div>
+                    <div class="input-group">
+                        <input type="email" class="form-control" id="sign-up-email" placeholder="EMAIL">
+                    </div>
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="sign-up-pass" placeholder="PASSWORD">
+                    </div>
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="sign-up-re-pass" placeholder="RE-ENTER PASSWORD">
+                    </div>
+                    <div class="btn-form">
+                        <button type="button" class="btn btn-fill">SIGN UP</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End: Sign Up
+        ========================== -->
+<!--Start: Header Area
+        ==============================-->
+<header class="header-background header header" id="header">
+    <div class="overlay-color">
+        <!-- Start: Navbar Area  -->
+        <div class="header-navbar" id="header-navbar">
+            <nav class="navbar navbar-fixed-top header-nav" id="myNavbar">
+                <div class="container">
+                    <div class="navbar-header">
+                        <!-- Menu Button show Mobile view -->
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <!-- TEMPLATE LOGO LIGHT -->
+                        <a class="navbar-brand light-logo" href="index.html#"><img src="{echo CDN}images/app-Logo-3.png" alt="" class="img-responsive"></a>
+                        <!-- TEMPLATE LOGO DARK -->
+                        <a class="navbar-brand dark-logo" href="index.html#"><img src="{echo CDN}images/app-Logo-4.png" alt="" class="img-responsive"></a>
+                    </div>
+                    <!-- Main Menu List -->
+                    <div class="collapse navbar-collapse" id="navbar-collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a class="navbar-nav-hover" href="index.html#" data-toggle="modal" data-target="#sign-in-form">SIGN IN</a></li>
+                            <li><a class="btn btn-fill " href="index.html#" data-toggle="modal" data-target="#sign-up-form">SIGN UP</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <!-- End: Navbar Area  -->
+        <!-- Start: Header Main Contant -->
+        <div class="container">
+            <div class="row header-body section-separator ">
+                <div class="header-contant-left align-center col-md-8 col-md-offset-2">
+                    <div class="row">
+                        <!-- Headline Goes HEre -->
+                        <h1 class=" wow fadeInUp">Present your awesome app with our beautiful template.</h1>
+                    </div>
+                    <!-- End: .row -->
+                </div>
+                <!-- End: .header-contant-left -->
+            </div>
+            <!-- End: .row .header-body .section-separator  -->
+        </div>
+        <!-- End: .container  -->
+        <!-- Start: Header Main Contant -->
+    </div>
+    <!-- End: .overlay-color -->
+</header>
+<!--End: Header Area
+        ==============================-->

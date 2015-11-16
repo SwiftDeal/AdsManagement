@@ -1,0 +1,520 @@
+/*
+|----------------------------------------------------------------------------
+| MIXINS
+|----------------------------------------------------------------------------
+*/
+/**
+ * ===============================
+ *  Defult CSS 
+ * ===============================
+ */
+body {
+  color: rgba(0, 0, 0, 0.4);
+}
+p {
+  color: rgba(0, 0, 0, 0.5);
+}
+.overlay-color {
+  background: -webkit-linear-gradient(57deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: -moz-linear-gradient(57deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: -ms-linear-gradient(57deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: -o-linear-gradient(57deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: linear-gradient(57deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+}
+/**
+ * ===============================
+ *  Section Heading Section Defult Style 
+ * ===============================
+ */
+.section-heading,
+.section-heading-2 {
+  color: rgba(0, 0, 0, 0.5);
+}
+.section-heading-2 .fa {
+  color: rgba(0, 0, 0, 0.07);
+}
+.section-header .section-heading-normal {
+  color: rgba(0, 0, 0, 0.4);
+}
+.section-header p {
+  color: rgba(0, 0, 0, 0.4);
+}
+/**
+ * ===============================
+ *   Defult Button Style
+ * ===============================
+ */
+.btn.btn-fill {
+  background-color: #1cb1ac;
+  border-color: #1cb1ac;
+}
+.btn.btn-fill:hover {
+  background-color: #126f6c !important;
+  border-color: #126f6c !important;
+}
+.btn.btn-border {
+  border-color: #1cb1ac;
+}
+.btn.btn-border:hover {
+  background-color: #1cb1ac;
+}
+.btn-text-link a {
+  color: #1cb1ac;
+}
+.btn-text-link a:hover {
+  color: #126f6c !important;
+}
+/**
+ * =============================
+ * Form Defult Style
+ * =============================
+ */
+.single-form .input-group .btn {
+  background-color: #ffffff;
+  color: #1cb1ac;
+}
+.single-form .input-group .btn:hover {
+  background-color: #ffffff !important;
+}
+.outer-border.single-form .input-group .btn {
+  background-color: #1cb1ac;
+}
+/**
+ * ================================
+ * Navbar Style 
+ * ================================
+ */
+.header-nav {
+  /* After Fixed In Top */
+}
+.header-nav li .btn {
+  border-color: #192138 !important;
+  background-color: #192138 !important;
+  color: #ffffff;
+}
+.header-nav li .btn:hover {
+  border-color: #192138 !important;
+  background-color: #192138 !important;
+  color: #1cb1ac !important;
+}
+.header-nav.navbar-home .nav li .btn {
+  border-color: #192138 !important;
+  background-color: #192138 !important;
+  color: #ffffff;
+}
+.header-nav.navbar-home .nav li .btn:hover {
+  border-color: #192138 !important;
+  background-color: #192138 !important;
+  color: #1cb1ac !important;
+}
+/**
+ * ================================
+ * Header Contant Style
+ * ================================
+ */
+/*  Header Contant Style  */
+/*  ====================  */
+.header-body .header-contant-left .single-form .input-group .form-control {
+  color: #1cb1ac;
+}
+.header-body .header-contant-left .single-form .input-group .form-control::-webkit-input-placeholder {
+  color: rgba(28, 177, 172, 0.7) !important;
+}
+.header-body .header-contant-left .single-form .input-group .form-control:-moz-placeholder {
+  color: rgba(28, 177, 172, 0.7) !important;
+}
+.header-body .header-contant-left .single-form .input-group .form-control::-moz-placeholder {
+  color: rgba(28, 177, 172, 0.7) !important;
+}
+.header-body .header-contant-left .single-form .input-group .form-control:-ms-input-placeholder {
+  color: rgba(28, 177, 172, 0.7) !important;
+}
+.header-body .header-contant-left .single-form .input-group .form-control:hover {
+  color: #1cb1ac !important;
+}
+/**
+ * =========================
+ * Sponsors Section
+ * =========================
+ */
+.sponsors {
+  background-color: #f3f4ef;
+}
+/**
+ * ==========================
+ * Features Defult Style
+ * ==========================
+ */
+/* Features Defult Style */
+.features .each-item .fa {
+  color: #1cb1ac;
+}
+.features-hover .each-item:hover .fa {
+  background-color: #1cb1ac;
+}
+/**
+ * =============================
+ * EASY FEATURES AVAILABLE 
+ * =============================
+ */
+.easy-features-available {
+  background: #ffffff;
+}
+.easy-features-available .read-more {
+  color: rgba(0, 0, 0, 0.5);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+.easy-features-available .read-more:hover {
+  background-color: #192138 !important;
+  border-color: #192138 !important;
+  color: #fff !important;
+}
+.easy-features-available .read-more:hover .fa {
+  color: #fff !important;
+}
+/**
+ * ==============================
+ * Get Our App Section
+ * ==============================
+ */
+.get-our-app-bg {
+  background-color: #ffffff;
+}
+.get-our-app .single-form .btn {
+  background-color: #1cb1ac;
+}
+/**
+ * ========================================
+ * description Info Inner
+ * ========================================
+ */
+.description-info-inner ul li {
+  color: rgba(0, 0, 0, 0.4);
+}
+.description-info-inner ul li:after {
+  background-color: #1cb1ac;
+}
+.description-info-inner ul li:before {
+  border-color: #1cb1ac;
+}
+/**
+ * ==============================
+ * Ultimate Features
+ * ==============================
+ */
+.ultimate-features .ultimate-fretures-description ul li {
+  color: rgba(0, 0, 0, 0.55);
+}
+.ultimate-features .ultimate-fretures-description ul li .fa {
+  color: #1cb1ac;
+}
+/** 
+ * ======================
+ * Fun Facts
+ * ======================
+ */
+.fun-facts {
+  background-color: #f3f4ef;
+}
+/**
+ * ======================
+ * Pricing Table Section 
+ * ======================
+ */
+.pricing-table {
+  background-color: #f3f4ef;
+}
+.table-single {
+  border-color: rgba(0, 0, 0, 0.08);
+}
+.table-single .important {
+  background-color: #1cb1ac;
+}
+.table-single .important:after {
+  border-top: 38px solid #1cb1ac;
+}
+.table-single .meta-price {
+  color: #000000;
+}
+.table-single .meta-price .rate:after {
+  border-color: rgba(0, 0, 0, 0.08);
+}
+.table-single .button .btn {
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #000000;
+}
+.table-single:hover .meta-price .rate {
+  background-color: #1cb1ac;
+}
+.table-single:hover .button .btn {
+  border-color: #1cb1ac;
+  background-color: #1cb1ac;
+}
+/**
+ * ====================================
+ * Newsletter Form Style
+ * ====================================
+ */
+.subscribe-newsletter {
+  background: -webkit-linear-gradient(57deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: -moz-linear-gradient(57deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: -ms-linear-gradient(57deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: -o-linear-gradient(57deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: linear-gradient(57deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+}
+.subscribe-newsletter .input-group .form-control:hover,
+.subscribe-newsletter .input-group .btn:hover {
+  color: #1cb1ac;
+}
+.subscribe-newsletter .input-group .btn:hover {
+  background-color: #192138 !important;
+}
+.subscribe-newsletter .section-heading-2 {
+  color: #ffffff !important;
+}
+.subscribe-newsletter .section-heading-2 .fa {
+  color: rgba(255, 255, 255, 0.2);
+}
+.subscribe-newsletter .single-form .form-control {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.8);
+}
+.subscribe-newsletter .single-form .form-control::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+.subscribe-newsletter .single-form .form-control:-moz-placeholder {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+.subscribe-newsletter .single-form .form-control::-moz-placeholder {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+.subscribe-newsletter .single-form .form-control:-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+.subscribe-newsletter .single-form .form-control:hover {
+  color: #ffffff !important;
+}
+/**
+ * ===============================
+ * Subscription and contact  "MESSAGE"
+ * ===============================
+ */
+.subscription-success,
+.subscription-failed {
+  color: rgba(0, 0, 0, 0.8) !important;
+}
+/**
+ * ======================
+ * Team Section
+ * ======================
+ */
+.team {
+  background-color: #ffffff;
+}
+.team .team-contant .each-member .member-detail .name {
+  color: rgba(0, 0, 0, 0.8);
+}
+.team .team-contant .each-member .member-detail .detail {
+  color: rgba(0, 0, 0, 0.7);
+}
+/**
+ * =========================================
+ * Image Gallery Section
+ * =========================================
+ */
+.image-gallery {
+  background-color: #ffffff;
+}
+.image-gallery #slider .owl-page span {
+  border: 1px solid #1cb1ac !important;
+}
+.image-gallery #slider .owl-page.active span {
+  background-color: #1cb1ac !important;
+}
+/**
+ * =========================================
+ * Download Section
+ * =========================================
+ */
+.download {
+  background-color: #ffffff;
+}
+.download .button-group .btn {
+  background-color: #1cb1ac;
+}
+/**
+ * ===========================
+ * Footer Section 
+ * ===========================
+ */
+.footer {
+  background: -webkit-linear-gradient(17deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: -moz-linear-gradient(17deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: -ms-linear-gradient(17deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: -o-linear-gradient(17deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: linear-gradient(17deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+}
+.footer .copyright p {
+  color: rgba(255, 255, 255, 0.7);
+}
+.footer .copyright p a {
+  color: #192138;
+}
+.footer .copyright p a:hover {
+  color: #192138 !important;
+}
+.social-icon ul li a {
+  background-color: #ffffff;
+  color: #1cb1ac;
+}
+/**
+ * ================================
+ * Some Features Section
+ * ================================
+ */
+.some-feature-background {
+  background-color: #ffffff;
+}
+.some-feature .section-header .section-heading {
+  color: rgba(255, 255, 255, 0.9);
+}
+.some-feature .section-header p {
+  color: rgba(255, 255, 255, 0.7);
+}
+.some-feature .features .detail h4 {
+  color: #1cb1ac;
+}
+.some-feature .features .detail p {
+  color: rgba(255, 255, 255, 0.7);
+}
+/**
+ * =============================
+ * Client's Feedback Section
+ * =============================
+ */
+.client-feedback {
+  background-color: #f3f4ef;
+}
+.client-feedback-contant .each-item figure {
+  border-color: rgba(0, 0, 0, 0.08);
+  background-color: #ffffff;
+}
+.client-feedback-contant .each-item .quote-sym .fa {
+  color: rgba(0, 0, 0, 0.15);
+}
+.client-feedback-contant .each-item blockquote {
+  color: rgba(0, 0, 0, 0.4);
+}
+.client-feedback-contant .each-item .rating li .fa {
+  color: #1cb1ac;
+}
+.client-feedback-contant .each-item figcaption img {
+  border-color: rgba(0, 0, 0, 0.08);
+}
+.client-feedback-contant .each-item figcaption .name {
+  color: rgba(0, 0, 0, 0.5);
+}
+.client-feedback-contant .each-item figcaption cite {
+  color: #1cb1ac;
+}
+/**
+ * =========================
+ * Free Trial Section
+ * =========================
+ */
+.free-trial-bg {
+  background-color: #ffffff;
+}
+.free-trial .section-header .section-heading {
+  color: rgba(255, 255, 255, 0.9);
+}
+.free-trial .section-header p {
+  color: rgba(255, 255, 255, 0.7);
+}
+/**
+ * =========================
+ * Contact Us
+ * =========================
+ */
+.contact-us {
+  background: -webkit-linear-gradient(27deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: -moz-linear-gradient(27deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: -ms-linear-gradient(27deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: -o-linear-gradient(27deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: linear-gradient(27deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+}
+.contact-us .contact-us-body h3 {
+  color: #fff;
+  font-size: 22;
+}
+.contact-us .contact-us-body .btn {
+  color: #fff;
+}
+.contact-us .contact-us-body .btn.btn-fill {
+  background-color: #192138;
+}
+.contact-us .contact-us-body .btn.btn-fill:hover {
+  background-color: #192138 !important;
+  color: #1cb1ac;
+}
+.contact-us .contact-us-body .btn.btn-border {
+  border-color: #ffffff;
+}
+.contact-us .contact-us-body .btn.btn-border:hover {
+  background-color: #192138 !important;
+  border-color: #192138 !important;
+}
+/**
+ * =========================================
+ * Collapse CSS
+ * =========================================
+ */
+.collapse-area {
+  background-color: #ffffff;
+}
+.collapse-area .collapse-body-contant .collapse-panel-title {
+  color: rgba(0, 0, 0, 0.6);
+}
+/**
+ * ===================================
+ * Sign In OR Sign Up Form Style
+ * ===================================
+ */
+.modal {
+  background: -webkit-linear-gradient(57deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: -moz-linear-gradient(57deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: -ms-linear-gradient(57deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: -o-linear-gradient(57deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+  background: linear-gradient(57deg, rgba(4, 139, 173, 0.95) 0%, rgba(28, 177, 172, 0.95) 100%);
+}
+.modal .single-form .input-group {
+  margin-bottom: 35px;
+}
+.modal .single-form .input-group .form-control {
+  border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+.modal .single-form .checkbox .forgot-pass {
+  color: #1cb1ac;
+}
+/* .squared */
+.squared label {
+  border-color: rgba(0, 0, 0, 0.3);
+}
+.squared label:after {
+  border-color: rgba(255, 255, 255, 0.9);
+}
+.squared input[type=checkbox]:checked + label {
+  border-color: #1cb1ac;
+  background-color: #1cb1ac;
+}
+/* end .squared */
+@media (max-width: 767px) {
+  /**
+     * ================================
+     * Navbar Style 
+     * ================================
+     */
+  .header-nav .navbar-collapse.in {
+    border-top-color: rgba(28, 177, 172, 0.9);
+  }
+}
