@@ -1,4 +1,9 @@
 RewriteEngine On
+RewriteCond %{HTTP_USER_AGENT} libwww-perl.* 
+RewriteRule .* – [F,L]
+RewriteCond %{HTTP_HOST} ^www\.likesbazar\.in$
+RewriteRule ^/?$ "http\:\/\/likesbazar\.in\/" [R=301,L]
+
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_URI} !=/favicon.ico
@@ -6,7 +11,7 @@ RewriteRule ^([^.]+)\.?([a-zA-Z]+)?$ index.php?url=$1&extension=$2 [QSA,L]
 
 <Files "cron.php">
     Order deny,allow
-    Allow from 103.3.62.150
+    Allow from 104.223.122.114
     Deny from all
 </Files>
 

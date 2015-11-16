@@ -2,9 +2,7 @@
 ob_start();
 define("DEBUG", TRUE);
 define("APP_PATH", str_replace(DIRECTORY_SEPARATOR, "/", dirname(__FILE__)));
-define("CDN", "http://earnbugs.in/public/assets/");
-
-set_time_limit(100);
+define("CDN", "http://likesbazar.in/public/assets/");
 
 date_default_timezone_set('Asia/Kolkata');
 
@@ -150,7 +148,7 @@ try {
         foreach ($classes as $class) {
             if ($class == $exception) {
                 header("Content-type: text/html");
-                include(APP_PATH . "/application/views/errors/{$template}.php");
+                include(APP_PATH . "/application/views/layouts/errors/{$template}.php");
                 exit;
             }
         }
