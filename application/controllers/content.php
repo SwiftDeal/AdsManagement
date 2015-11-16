@@ -53,7 +53,6 @@ class Content extends Member {
                 "url" =>  RequestMethods::post("url"),
                 "title" => RequestMethods::post("title"),
                 "image" => $this->_upload("image", "images"),
-                "target" => RequestMethods::post("target", $this->target()),
                 "commission" => RequestMethods::post("commission", "4.99"),
                 "category" => implode(",", RequestMethods::post("category", "")),
                 "description" => RequestMethods::post("description"),
@@ -91,7 +90,7 @@ class Content extends Member {
     /**
      * @before _secure, changeLayout
      */
-    public function manage() {
+    public function all() {
         $this->seo(array("title" => "Manage Content", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         $page = RequestMethods::get("page", 1);
@@ -148,7 +147,6 @@ class Content extends Member {
         if (RequestMethods::post("action") == "update") {
             $item->title = RequestMethods::post("title");
             $item->url = RequestMethods::post("url");
-            $item->target = RequestMethods::post("target");
             $item->commission = RequestMethods::post("commission");
             $item->category = implode(",", RequestMethods::post("category"));
             $item->description = RequestMethods::post("description");

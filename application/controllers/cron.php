@@ -70,7 +70,7 @@ class CRON extends Auth {
 
         $referrers = $object->analytics->day->referrers;
         foreach ($referrers as $referer) {
-            if ($referer->id == 'earnbugs.in') {
+            if ($referer->id == 'likesbazar.in') {
                 $nonverified_count += $referer->count;
             }
         }

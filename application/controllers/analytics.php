@@ -59,7 +59,7 @@ class Analytics extends Admin {
         $this->seo(array("title" => "URL Debugger", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
-        $url = RequestMethods::get("urld", "http://earnbugs.in/");
+        $url = RequestMethods::get("urld", "http://likesbazar.in/");
         $metas = get_meta_tags($url);
 
         $facebook = new Curl();
@@ -101,7 +101,7 @@ class Analytics extends Admin {
             if ($stat->analytics->day->shortUrlClicks) {
                 $referrers = $stat->analytics->day->referrers;
                 foreach ($referrers as $referer) {
-                    if ($referer->id == 'earnbugs.in') {
+                    if ($referer->id == 'likesbazar.in') {
                         $nonverified_count += $referer->count;
                     }
                 }

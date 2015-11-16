@@ -188,6 +188,24 @@ class Admin extends Auth {
     }
 
     /**
+     * Updates any data provide with model and id
+     * 
+     * @before _secure, changeLayout
+     * @param type $model the model object to be updated
+     * @param type $id the id of object
+     */
+    public function delete($model = NULL, $id = NULL) {
+        $view = $this->getActionView();
+        $this->JSONview();
+        
+        $object = $model::first(array("id = ?" => $id));
+        $object->delete();
+        $view->set("deleted", true);
+        
+        self::redirect($_SERVER['HTTP_REFERER']);
+    }
+
+    /**
      * @before _secure, changeLayout
      */
     public function dataAnalysis() {
@@ -206,29 +224,6 @@ class Admin extends Auth {
             }
             $view->set("data", \Framework\ArrayMethods::toObject($obj));
         }
-    }
-
-    /**
-     * @before _secure, changeLayout
-     */
-    public function fileEditor() {
-        $this->seo(array("title" => "File Editor", "keywords" => "admin", "description" => "admin", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
-        $file = APP_PATH . "/public/assets/js/admin-1.0.js";
-        if (isset($_POST['text'])) {
-            // save the text contents
-            file_put_contents($file, $_POST['text']);
-
-            // redirect to form again
-            header(sprintf('Location: %s', URL));
-            printf('<a href="%s">Moved</a>.', htmlspecialchars(URL));
-            exit();
-        }
-
-        $text = file_get_contents($file);
-
-        $view->set("text", $text);
     }
 
     public function sync($model) {
