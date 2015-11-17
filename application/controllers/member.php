@@ -188,7 +188,7 @@ class Member extends Admin {
             "live = ?" => true,
         );
         
-        $items = Item::all($where, array("id", "title", "image", "target", "url", "description"), "created", "desc", $limit, $page);
+        $items = Item::all($where, array("id", "title", "image", "url", "description"), "created", "desc", $limit, $page);
         $count = Item::count($where);
 
         $session = Registry::get("session");
