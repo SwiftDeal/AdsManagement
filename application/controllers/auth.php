@@ -21,21 +21,39 @@ class Auth extends Controller {
             "view" => $this->getLayoutView()
         ));
         $view = $this->getActionView();
+
+        if (RequestMethods::get("action") == "reset") {
+            $exist = User::first(array("email = ?" => RequestMethods::get("email")), array("id", "email", "name"));
+            if ($exist) {
+                $this->notify(array(
+                    "template" => "forgotPassword",
+                    "subject" => "New Password Requested",
+                    "user" => $exist
+                ));
+
+                $view->set("message", "Password Reset Email Sent Check Your Email. Check in Spam too.");
+            }
+        }
         
         if (RequestMethods::post("action") == "login") {
-            $exist = User::first(array("email = ?" => RequestMethods::post("email")), array("id"));
+            $email = RequestMethods::post("email");
+            $exist = User::first(array("email = ?" => $email), array("id", "email"));
             if($exist) {
                 $user = User::first(array(
                     "email = ?" => RequestMethods::post("email"),
-                    "password = ?" => sha1(RequestMethods::post("password")),
-                    "live" => TRUE
+                    "password = ?" => sha1(RequestMethods::post("password"))
                 ));
-                if ($user) {
-                    $this->setUser($user);
-                    $this->session();
-                } else {
-                    $view->set("message", "User account not verified");
+                if($user) {
+                    if ($user->live) {
+                        $this->setUser($user);
+                        $this->session();
+                    } else {
+                        $view->set("message", "User account not verified");
+                    }
+                } else{
+                    $view->set("message", 'Wrong Password, Try again or <a href="/auth/login?action=reset&email='.$email.'">Reset Password</a>');
                 }
+                
             } else {
                 $view->set("message", 'User doesnot exist. Please signup <a href="/auth/register">here</a>');
             }
@@ -88,10 +106,35 @@ class Auth extends Controller {
         $this->defaultLayout = "layouts/blank";
         $this->setLayout();
         $this->seo(array(
-            "title" => "Register",
+            "title" => "Forgot Password",
             "view" => $this->getLayoutView()
         ));
         $view = $this->getActionView();
+
+        if (RequestMethods::get("reset")) {
+            $token = RequestMethods::get("id");
+            $id = base64_decode($token);
+            $exist = User::first(array("id = ?" => $id), array("id"));
+            if($exist) {
+                $view->set("token", $token);
+            } else{
+                $view->set("message", 'Something Went Wrong please contact admin');
+            }
+        }
+
+        if (RequestMethods::post("action") == "change") {
+            $token = RequestMethods::post("token");
+            $id = base64_decode($token);
+            $user = User::first(array("id = ?" => $id), array("id"));
+            if(RequestMethods::post("password") == RequestMethods::post("cpassword")) {
+                $user->password = sha1(RequestMethods::post("password"));
+                $user->save();
+                $this->setUser($user);
+                $this->session();
+            } else{
+                $view->set("message", 'Password Does not match');
+            }
+        }
     }
 
     protected function session() {
@@ -142,8 +185,8 @@ class Auth extends Controller {
                 $sendgrid = $this->sendgrid();
                 $email = new \SendGrid\Email();
                 $email->setSmtpapiTos($emails)
-                        ->setFrom('info@swiftintern.com')
-                        ->setFromName("Swiftintern Team")
+                        ->setFrom('info@likesbazar.in')
+                        ->setFromName("Likesbazar Team")
                         ->setSubject($options["subject"])
                         ->setHtml($body);
                 $sendgrid->send($email);
