@@ -40,14 +40,16 @@ $(document).ready(function() {
     $(".shortenURL").click(function(e) {
         e.preventDefault();
         var btn = $(this),
-            longURL = btn.data('longurl'),
+            hash = btn.data('hash'),
             description = btn.data('description'),
             title = btn.data('title'),
+            target = btn.closest('div').find('.target').val(),
             item = btn.data('item');
+
         request.read({
             action: "member/shortenURL",
             data: {
-                longURL: longURL,
+                longURL: target+ '?item=' + hash,
                 item: item
             },
             callback: function(data) {
@@ -64,31 +66,6 @@ $(document).ready(function() {
 
     $('#link_data').mouseup(function() {
         $(this)[0].select();
-    });
-
-    $('button[name=message]').click(function(e) {
-        var self = this;
-        window.opts.subject = $(this).data("subject");
-        window.opts.email = $(this).data("from");
-        $('#message_modal').modal('show');
-    });
-
-    $('#messageform').submit(function(e) {
-        e.preventDefault();
-        var body = $('#body').val();
-        request.create({
-            action: "employer/messages",
-            data: {
-                action: 'support',
-                subject: window.opts.subject,
-                email: window.opts.email,
-                body: body
-            },
-            callback: function(data) {
-                $('#status').html('Message Sent Successfully!!!');
-                $('#message_modal').modal('hide');
-            }
-        });
     });
 
     // find all the selectors 
@@ -114,7 +91,7 @@ $(document).ready(function() {
             property = item.data('property');
         item.html('<i class="fa fa-spinner fa-pulse"></i>');
         request.read({
-            action: "content/rpm",
+            action: "analytics/link",
             data: {shortURL: shortURL},
             callback: function(data) {
                 item.html('RPM : ₹ '+ data.rpm +', Click : '+ data.click +', Earning : ₹ '+ data.earning);
@@ -157,27 +134,6 @@ function copy() {
     document.execCommand("Copy", false, null);
 }
 
-function clickToday () {
-    var track = getCookie('clickToday');
-    if (track != "") {
-        //cookie exists
-        $('#clickToday').html(getCookie('clickToday'));
-        $('#unverifiedEarning').html(getCookie('unverifiedEarning'));
-    } else {
-        request.read({
-            action: "member/clicksToday",
-            data: {},
-            callback: function(data) {
-                $('#clickToday').html(data.click);
-                setCookie('clickToday', data.click, 1/24);
-
-                $('#unverifiedEarning').html(data.earning);
-                setCookie('unverifiedEarning', data.earning, 1/24);
-            }
-        });
-    }
-}
-
 function realtime () {
     $('#realtime_avgrpm').html('<i class="fa fa-spinner fa-pulse"></i>');
     $('#realtime_earnings').html('<i class="fa fa-spinner fa-pulse"></i>');
@@ -192,22 +148,4 @@ function realtime () {
             $('#realtime_clicks').html(data.clicks);
         }
     });
-}
-
-function getRPM (item_id) {
-    var track = getCookie('rpm_'+item_id);
-    if (track != "") {
-        //cookie exists
-        return JSON.parse(track);
-    } else {
-        request.read({
-            action: "content/rpm",
-            data: {item_id: item_id},
-            callback: function(data) {
-                var json_str = JSON.stringify(arr);
-                setCookie('rpm_'+item_id, json_str, 1);
-                return data;
-            }
-        });
-    }
 }
