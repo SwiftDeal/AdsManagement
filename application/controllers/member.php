@@ -257,6 +257,20 @@ class Member extends Admin {
     }
 
     /**
+     * @before _secure, memberLayout
+     */
+    public function platforms() {
+        $this->seo(array(
+            "title" => "Platforms",
+            "view" => $this->getLayoutView()
+        ));
+        $view = $this->getActionView();
+
+        $platforms = Platform::all(array("user_id = ?" => $this->user->id));
+        $view->set("platforms", $platforms);
+    }    
+
+    /**
      * @before _secure, _admin
      */
     public function delete($user_id) {
