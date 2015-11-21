@@ -266,6 +266,17 @@ class Member extends Admin {
         ));
         $view = $this->getActionView();
 
+        if (RequestMethods::post("action") == "addPlatform") {
+            $platform = new Platform(array(
+                "user_id" => $this->user->id,
+                "name" => "FACEBOOK_PAGE",
+                "link" =>  RequestMethods::post("link"),
+                "image" => $this->_upload("fbadmin", "images")
+            ));
+            $platform->save();
+            $view->set("message", "Your Platform has been added successfully");
+        }
+
         $platforms = Platform::all(array("user_id = ?" => $this->user->id));
         $view->set("platforms", $platforms);
     }    

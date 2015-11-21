@@ -95,6 +95,11 @@ class Auth extends Controller {
                     "image" => $this->_upload("fbadmin", "images")
                 ));
                 $platform->save();
+                $this->notify(array(
+                    "template" => "publisherRegister",
+                    "subject" => "Welcome to ChocoGhar.com",
+                    "user" => $user
+                ));
                 $view->set("message", "Your account has been created and will be activate within 3 hours after verification.");
             } else {
                 $view->set("message", 'Username exists, login from <a href="/admin/login">here</a>');

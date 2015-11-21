@@ -2,7 +2,7 @@
 ob_start();
 define("DEBUG", TRUE);
 define("APP_PATH", str_replace(DIRECTORY_SEPARATOR, "/", dirname(__FILE__)));
-define("CDN", "http://likesbazar.in/public/assets/");
+define("CDN", "http://chocoghar.com/public/assets/");
 
 date_default_timezone_set('Asia/Kolkata');
 
