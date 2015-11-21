@@ -36,42 +36,6 @@
 </div>
 <!-- End: Sign In
         ========================== -->
-<!-- Start: Sign Up
-        ========================== -->
-<div class="modal fade" id="sign-up-form" tabindex="-1" role="dialog" aria-labelledby="sign-up-form">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <i class="fa icon_close"></i>
-    </button>
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <img src="{echo CDN}images/app-Logo-4.png" alt="" class="img-responsive">
-                <!-- <h4 class="modal-title" >New message</h4> -->
-            </div>
-            <div class="modal-body">
-                <form class="single-form">
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="sign-up-name" placeholder="FULL NAME">
-                    </div>
-                    <div class="input-group">
-                        <input type="email" class="form-control" id="sign-up-email" placeholder="EMAIL">
-                    </div>
-                    <div class="input-group">
-                        <input type="password" class="form-control" id="sign-up-pass" placeholder="PASSWORD">
-                    </div>
-                    <div class="input-group">
-                        <input type="password" class="form-control" id="sign-up-re-pass" placeholder="RE-ENTER PASSWORD">
-                    </div>
-                    <div class="btn-form">
-                        <button type="button" class="btn btn-fill">SIGN UP</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- End: Sign Up
-        ========================== -->
 <!--Start: Header Area
         ==============================-->
 <header class="header-background header header" id="header">
@@ -89,9 +53,9 @@
                             <span class="icon-bar"></span>
                         </button>
                         <!-- TEMPLATE LOGO LIGHT -->
-                        <a class="navbar-brand light-logo" href="index.html#"><img src="{echo CDN}images/app-Logo-3.png" alt="" class="img-responsive"></a>
+                        <h1 class="navbar-brand light-logo" style="color: white;">ChocoGhar</h1>
                         <!-- TEMPLATE LOGO DARK -->
-                        <a class="navbar-brand dark-logo" href="index.html#"><img src="{echo CDN}images/app-Logo-4.png" alt="" class="img-responsive"></a>
+                        <h1 class="navbar-brand dark-logo">ChocoGhar</h1>
                     </div>
                     <!-- Main Menu List -->
                     <div class="collapse navbar-collapse" id="navbar-collapse">
@@ -101,7 +65,7 @@
                         {/if}
                         {else}
                             <li><a class="navbar-nav-hover" href="index.html#" data-toggle="modal" data-target="#sign-in-form">SIGN IN</a></li>
-                            <li><a class="btn btn-fill " href="index.html#" data-toggle="modal" data-target="#sign-up-form">SIGN UP</a></li>
+                            <li><a class="btn btn-fill " href="/auth/register">SIGN UP</a></li>
                         {/else}
                         </ul>
                     </div>
