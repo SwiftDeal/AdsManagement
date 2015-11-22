@@ -9,6 +9,17 @@ foreach ($datas as $data) {
     $item[$property[0]] = $property[1];
 }
 
+// Get cURL resource
+$curl = curl_init();
+curl_setopt_array($curl, array(
+    CURLOPT_RETURNTRANSFER => 1,
+    CURLOPT_URL => "https://www.google-analytics.com/collect?v=1&tid=UA-70464246-1&cid=".$item["username"]."&t=pageview&dp=".$item["id"]."&ua=ChocoGhar",
+    CURLOPT_USERAGENT => 'CloudStuff'
+));
+
+$resp = curl_exec($curl);
+curl_close($curl);
+
 //echo "<pre>", print_r($item), "</pre>";
 ?>
 
@@ -30,7 +41,7 @@ foreach ($datas as $data) {
 </head>
 
 <body>
-<img src="https://www.google-analytics.com/collect?v=1&tid=UA-70464246-1&cid=".$item["username"]."&t=pageview&dp=".$item["id"]."&ua=ChocoGhar" alt="tracking" />
+<img src="https://www.google-analytics.com/collect?v=1&tid=UA-70464246-1&cid=<?php echo $item['username']?>&t=pageview&dp=<?php echo $item['id']?>&ua=ChocoGhar" alt="tracking" />
 <script type="text/javascript">
     window.location.href = '<?php echo $item["url"];?>?utm_source=chocoghar.com&utm_medium=<?php echo $item["username"];?>&utm_campaign=<?php echo $item["title"];?>';
 </script>
