@@ -42,9 +42,15 @@
                             <td>{echo $content->id}</td>
                             <td><a href="/analytics/content/{$content->id}" target="_blank">{echo $content->title}</a></td>
                             <td>
+                                {if($content->live)}
+                                    <a href="/admin/edit/item/{$content->id}/live/1" class="btn btn-primary btn-xs"><i class="fa fa-check"></i></a>&nbsp;
+                                {/if}
+                                {else}
+                                    <a href="/admin/edit/item/{$content->id}/live/0" class="btn btn-danger btn-xs"><i class="fa fa-ban"></i></a>&nbsp;
+                                {/else}
                                 <a href="/finance/content/{$content->id}" class="btn btn-info btn-xs"><i class="fa fa-inr"></i></a>&nbsp;
-                                <a href="/content/edit/{$content->id}" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>&nbsp;
-                                <button class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button>&nbsp;
+                                <a href="/content/edit/{$content->id}" class="btn btn-warning btn-xs"><i class="fa fa-edit"></i></a>&nbsp;
+                                <a href="/content/delete/{$content->id}" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>&nbsp;
                             </td>
                         </tr>
                         {/foreach}

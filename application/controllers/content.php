@@ -245,14 +245,13 @@ class Content extends Member {
      * @before _secure, changeLayout
      */
     public function delete($id = NULL) {
-        $this->seo(array("title" => "Delete Content", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
+        $this->noview();
         $item = Item::first(array("id = ?" => $id));
-        $item->delete();
 
-        $earning = Earning::first(array("item_id = ?" => $item->id));
-        $earning->delete();
+        $earnings = Earning::all(array("item_id = ?" => $item->id));
+        foreach ($earnings as $earning) {
+            $earning->delete();
+        }
 
         $links = Link::all(array("item_id = ?" => $item->id));
         foreach ($links as $link) {
@@ -266,7 +265,8 @@ class Content extends Member {
             $rpm->delete();
         }
 
-        $view->set("success", "true");
+        $item->delete();
+        self::redirect($_SERVER["HTTP_REFERER"]);        
     }
 
     public function resize($image, $width = 470, $height = 246) {
