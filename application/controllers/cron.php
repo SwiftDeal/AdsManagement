@@ -41,8 +41,8 @@ class CRON extends Auth {
 
 
                 //sleep the script
-                if ($counter == 10) {
-                    //sleep(5);
+                if ($counter == 100) {
+                    sleep(5);
                     $counter = 0;
                 }
                 ++$counter;
@@ -75,7 +75,7 @@ class CRON extends Auth {
             }
         }
         $verified_count = $count - $nonverified_count;
-        $correct = 0.95;
+        $correct = 1;
 
         $countries = $object->analytics->day->countries;
 

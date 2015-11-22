@@ -1,8 +1,6 @@
 RewriteEngine On
-RewriteCond %{HTTP_USER_AGENT} libwww-perl.* 
-RewriteRule .* – [F,L]
-RewriteCond %{HTTP_HOST} ^www\.likesbazar\.in$
-RewriteRule ^/?$ "http\:\/\/likesbazar\.in\/" [R=301,L]
+RewriteCond %{HTTP_HOST} ^www\.chocoghar\.com$
+RewriteRule ^/?$ "http\:\/\/chocoghar\.com\/" [R=301,L]
 
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f

@@ -305,16 +305,16 @@ class Member extends Admin {
             $platform->delete();
         }
 
-        $social = Social::first(array("user_id = ?" => $user_id));
-        if ($social) {
-            $social->delete();
-        }
-
         $account = Account::first(array("user_id = ?" => $user_id));
         if ($account) {
             $account->delete();
         }
 
+        $user = User::first(array("id = ?" => $user_id));
+        if ($user) {
+            $user->delete();
+        }
+        
         self::redirect($_SERVER["HTTP_REFERER"]);
     }
     

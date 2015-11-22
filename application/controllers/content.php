@@ -105,7 +105,7 @@ class Content extends Member {
             "created <= ?" => $this->changeDate($enddate, "1")
         );
         
-        $contents = Item::all($where, array("id", "title", "created", "url"), "created", "desc", $limit, $page);
+        $contents = Item::all($where, array("id", "title", "created", "url", "live"), "created", "desc", $limit, $page);
         $count = Item::count($where);
 
         $view->set("contents", $contents);
@@ -157,12 +157,12 @@ class Content extends Member {
             $rpm_in->save();
             $rpm_us->value = RequestMethods::post("rpm_us");
             $rpm_us->save();
-            $rpm_pk->value = RequestMethods::post("rpm_pk");
-            $rpm_pk->save();
+            $rpm_ca->value = RequestMethods::post("rpm_ca");
+            $rpm_ca->save();
             $rpm_au->value = RequestMethods::post("rpm_au");
             $rpm_au->save();
-            $rpm_nw->value = RequestMethods::post("rpm_nw");
-            $rpm_nw->save();
+            $rpm_uk->value = RequestMethods::post("rpm_uk");
+            $rpm_uk->save();
             $rpm_none->value = RequestMethods::post("rpm_none");
             $rpm_none->save();
 
