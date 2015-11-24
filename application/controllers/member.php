@@ -21,8 +21,10 @@ class Member extends Admin {
         
         $links = Link::all(array("user_id = ?" => $this->user->id), array("id", "item_id", "short"), "created", "desc", 5, 1);
         $stat = $this->quickStats();
+        $news = Meta::first(array("property = ?" => "news", "live = ?" => 1));
         
         $view->set("links", $links);
+        $view->set("news", $news);
         $view->set("averagerpm", ($stat["earning_total"]*1000)/($stat["clicks"]));
         $view->set("clicks", $stat["clicks"]);
         $view->set("earnings", $stat["earning_total"]);
@@ -279,7 +281,28 @@ class Member extends Admin {
 
         $platforms = Platform::all(array("user_id = ?" => $this->user->id));
         $view->set("platforms", $platforms);
-    }    
+    }
+
+    /**
+     * @before _secure, changeLayout
+     */
+    public function news() {
+        $this->seo(array("title" => "Member News", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+        if (RequestMethods::post("news")) {
+            $news = new Meta(array(
+                "user_id" => $this->user->id,
+                "property" => "news",
+                "value" => RequestMethods::post("news")
+            ));
+            $news->save();
+            $view->set("message", "News Saved Successfully");
+        }
+        
+        $allnews = Meta::all(array("property = ?" => "news"));
+            
+        $view->set("allnews", $allnews);
+    }
 
     /**
      * @before _secure, _admin
