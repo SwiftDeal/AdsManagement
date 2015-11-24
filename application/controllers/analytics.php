@@ -22,9 +22,20 @@ class Analytics extends Admin {
             $shortURL = RequestMethods::get("shortURL");
             $googl = Registry::get("googl");
             $object = $googl->analyticsFull($shortURL);
-            
+
+            $longUrl = explode("?item=", $object->longUrl);
+            if($longUrl) {
+                $str = base64_decode($longUrl[1]);
+                $datas = explode("&", $str);
+                foreach ($datas as $data) {
+                    $property = explode("=", $data);
+                    $item[$property[0]] = $property[1];
+                }
+            }
+
             $view->set("shortURL", $shortURL);
             $view->set("googl", $object);
+            $view->set("item", $item);
         }
     }
 
