@@ -232,7 +232,7 @@ class Member extends Admin {
             $view->set("user", $user);
         }
         
-        if (RequestMethods::get("action") == "saveAccount") {
+        if (RequestMethods::post("action") == "saveAccount") {
             $account->user_id = $this->user->id;
             $account->name = RequestMethods::post("name");
             $account->bank = RequestMethods::post("bank");
