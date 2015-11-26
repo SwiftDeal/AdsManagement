@@ -35,7 +35,7 @@ class CRON extends Auth {
             $object = $googl->analyticsFull($link->short);
             $count = $object->analytics->day->shortUrlClicks;
             //minimum count for earning
-            if ($count > 50) {
+            if ($count > 30) {
                 $stat = $this->saveStats($object, $link, $count);
                 $this->saveEarnings($link, $count, $stat, $object);
 
