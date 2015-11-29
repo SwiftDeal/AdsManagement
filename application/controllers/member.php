@@ -226,9 +226,6 @@ class Member extends Admin {
         ));
         $view = $this->getActionView();
         $account = Account::first(array("user_id = ?" => $this->user->id));
-        if(!$account) {
-            $account = new Account();
-        }
         
         if (RequestMethods::post('action') == 'saveUser') {
             $user = User::first(array("id = ?" => $this->user->id));
@@ -241,6 +238,7 @@ class Member extends Admin {
         }
         
         if (RequestMethods::post("action") == "saveAccount") {
+            $account = new Account();
             $account->user_id = $this->user->id;
             $account->name = RequestMethods::post("name");
             $account->bank = RequestMethods::post("bank");

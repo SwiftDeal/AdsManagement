@@ -152,6 +152,16 @@ class Auth extends Controller {
         $session->set("domains", $domains);
         self::redirect("/member");
     }
+
+    /**
+     * @before _secure, _admin
+     */
+    public function loginas($user_id) {
+        $this->setUser(false);
+        $user = User::first(array("id = ?" => $user_id));
+        $this->setUser($user);
+        $this->session();
+    }
     
     /**
      * The Main Method to return SendGrid Instance

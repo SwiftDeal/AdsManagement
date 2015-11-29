@@ -29,8 +29,8 @@
             <span>Yesterday Stats</span>
             <ul class="list-group">
                 <li class="list-group-item">Clicks <span class="badge">{$yesterdayClicks}</span></li>
-                <li class="list-group-item">Average RPM <span class="badge">{echo $yesterdayEarning*1000/$yesterdayClicks}</span></li>
-                <li class="list-group-item">Earnings <span class="badge">{$yesterdayEarning}</span></li>
+                <li class="list-group-item">Average RPM <span class="badge"><i class="fa fa-inr"></i> {echo round($yesterdayEarning*1000/$yesterdayClicks, 2)}</span></li>
+                <li class="list-group-item">Earnings <span class="badge"><i class="fa fa-inr"></i> {$yesterdayEarning}</span></li>
             </ul>
         </div>
     </div>
@@ -40,8 +40,8 @@
             <span>Overall Verified Stats</span>
             <ul class="list-group">
                 <li class="list-group-item">Clicks <span class="badge">{$totalClicks}</span></li>
-                <li class="list-group-item">Average RPM <span class="badge">{echo $totalEarning*1000/$totalClicks}</span></li>
-                <li class="list-group-item">Earnings <span class="badge">{$totalEarning}</span></li>
+                <li class="list-group-item">Average RPM <span class="badge"><i class="fa fa-inr"></i> {echo round($totalEarning*1000/$totalClicks, 2)}</span></li>
+                <li class="list-group-item">Earnings <span class="badge"><i class="fa fa-inr"></i> {$totalEarning}</span></li>
             </ul>
         </div>
     </div>
@@ -50,9 +50,9 @@
         <div class="panel panel-default">
             <span>Total Payments</span>
             <ul class="list-group">
-                <li class="list-group-item">Earned <span class="badge">{$totalEarning}</span></li>
-                <li class="list-group-item">Paid <span class="badge">0</span></li>
-                <li class="list-group-item">Pending <span class="badge">{$totalEarning}</span></li>
+                <li class="list-group-item">Earned <span class="badge"><i class="fa fa-inr"></i> {$totalEarning}</span></li>
+                <li class="list-group-item">Paid <span class="badge"><i class="fa fa-inr"></i> 0</span></li>
+                <li class="list-group-item">Pending <span class="badge"><i class="fa fa-inr"></i> {$totalEarning}</span></li>
             </ul>
         </div>
     </div>

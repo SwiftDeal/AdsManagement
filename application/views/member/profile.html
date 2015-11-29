@@ -38,11 +38,36 @@
         </form>
         
         <h3>Bank Account Details</h3>
+        {if($account)}
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <tbody>
+                        <tr>
+                            <td>Bank Name</td>
+                            <td>{$account->bank}</td>
+                        </tr>
+                        <tr>
+                            <td>Account Holder</td>
+                            <td>{$account->name}</td>
+                        </tr>
+                        <tr>
+                            <td>Account Number</td>
+                            <td>{$account->number}</td>
+                        </tr>
+                        <tr>
+                            <td>IFSC Code</td>
+                            <td>{$account->ifsc}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        {/if}
+        {else}
         <form class="form-horizontal" method="post" action="">
             <div class="form-group">
                 <label class="col-sm-3 control-label">Bank Name</label>
                 <div class="col-sm-9">
-                    <input type="text" name="bank" class="form-control" value="{$account->bank}" required="">
+                    <input type="text" name="bank" class="form-control" required="">
                 </div>
             </div>
             <div class="form-group">
@@ -66,5 +91,6 @@
             <input type="hidden" name="action" value="saveAccount">
             <button type="submit" class="btn btn-success pull-right">Save <i class="fa fa-check-circle fa-fw"></i></button>
         </form>
+        {/else}
     </div>
 </div>
