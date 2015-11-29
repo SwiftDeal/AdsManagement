@@ -35,14 +35,13 @@ class CRON extends Auth {
             $object = $googl->analyticsFull($link->short);
             $count = $object->analytics->day->shortUrlClicks;
             //minimum count for earning
-            if ($count > 30) {
+            if ($count > 15) {
                 $stat = $this->saveStats($object, $link, $count);
                 $this->saveEarnings($link, $count, $stat, $object);
 
-
                 //sleep the script
                 if ($counter == 100) {
-                    sleep(5);
+                    sleep(3);
                     $counter = 0;
                 }
                 ++$counter;
@@ -52,6 +51,7 @@ class CRON extends Auth {
 
     protected function saveStats($object, $link, $count) {
         $stat = new Stat(array(
+            "user_id" => $link->user_id,
             "link_id" => $link->id,
             "verifiedClicks" => $count,
             "shortUrlClicks" => $object->analytics->day->shortUrlClicks,
@@ -109,5 +109,4 @@ class CRON extends Auth {
         ));
         $earning->save();
     }
-
 }

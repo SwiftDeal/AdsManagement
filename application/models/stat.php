@@ -12,6 +12,14 @@ class Stat extends Shared\Model {
      * @type integer
      * @index
      */
+    protected $_user_id;
+
+    /**
+     * @column
+     * @readwrite
+     * @type integer
+     * @index
+     */
     protected $_link_id;
 
     /**
