@@ -20,15 +20,23 @@ class Member extends Admin {
         $view = $this->getActionView();
         
         $links = Link::all(array("user_id = ?" => $this->user->id), array("id", "item_id", "short"), "created", "desc", 5, 1);
-        $stat = $this->quickStats();
         $news = Meta::first(array("property = ?" => "news", "live = ?" => 1));
+
+        $yesterday = strftime("%Y-%m-%d", strtotime('-1 day'));
+        $database = Registry::get("database");
+        $totalEarning = $database->query()->from("earnings", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->all();
+        $totalClicks = $database->query()->from("stats", array("SUM(verifiedClicks)" => "clicks"))->where("user_id=?", $this->user->id)->all();
+        $yesterdayEarning = $database->query()->from("earnings", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("created LIKE ?", "%{$yesterday}%")->all();
+        $yesterdayClicks = $database->query()->from("stats", array("SUM(verifiedClicks)" => "clicks"))->where("user_id=?", $this->user->id)->where("created LIKE ?", "%{$yesterday}%")->all();
         
+        
+        //$view->set("averagerpm", ($stat["earning_total"]*1000)/($stat["clicks"]));
+        $view->set("totalEarning", round($totalEarning[0]["earn"], 2));
+        $view->set("totalClicks", round($totalClicks[0]["clicks"], 2));
+        $view->set("yesterdayEarning", round($yesterdayEarning[0]["earn"], 2));
+        $view->set("yesterdayClicks", round($yesterdayClicks[0]["clicks"], 2));
         $view->set("links", $links);
         $view->set("news", $news);
-        $view->set("averagerpm", ($stat["earning_total"]*1000)/($stat["clicks"]));
-        $view->set("clicks", $stat["clicks"]);
-        $view->set("earnings", $stat["earning_total"]);
-        $view->set("pending", $stat["earning_pending"]);
     }
 
     protected function quickStats() {
@@ -340,7 +348,7 @@ class Member extends Admin {
         
         self::redirect($_SERVER["HTTP_REFERER"]);
     }
-    
+
     public function memberLayout() {
         $this->defaultLayout = "layouts/member";
         $this->setLayout();
