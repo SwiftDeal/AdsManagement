@@ -70,7 +70,7 @@ class Finance extends Admin {
 
         $startdate = RequestMethods::get("startdate", date('Y-m-d', strtotime("-7 day")));
         $enddate = RequestMethods::get("enddate", date('Y-m-d', strtotime("now")));
-        $website = RequestMethods::get("website", "http://kapilsharmafc.com");
+        $website = RequestMethods::get("website", "http://www.khattimithi.com");
 
         $amount = 0;
         $where = array(
