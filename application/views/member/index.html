@@ -15,8 +15,8 @@
 
     <div class="col-lg-3 col-md-3">
         <div class="panel panel-default">
-            <span>Realtime Stats</span>
             <ul class="list-group" onclick="realtime();">
+                <li class="list-group-item active text-center"><i class="fa fa-globe"></i> Realtime Stats</li>
                 <li class="list-group-item">Clicks<span class="badge" id="realtime_clicks">View</span></li>
                 <li class="list-group-item">Average RPM <span class="badge" id="realtime_avgrpm">View</span></li>
                 <li class="list-group-item">Earnings <span class="badge" id="realtime_earnings">View</span></li>
@@ -26,8 +26,8 @@
 
     <div class="col-lg-3 col-md-3">
         <div class="panel panel-default">
-            <span>Yesterday Stats</span>
             <ul class="list-group">
+                <li class="list-group-item active text-center"><i class="fa fa-line-chart"></i> Yesterday Stats</li>
                 <li class="list-group-item">Clicks <span class="badge">{$yesterdayClicks}</span></li>
                 <li class="list-group-item">Average RPM <span class="badge"><i class="fa fa-inr"></i> {echo round($yesterdayEarning*1000/$yesterdayClicks, 2)}</span></li>
                 <li class="list-group-item">Earnings <span class="badge"><i class="fa fa-inr"></i> {$yesterdayEarning}</span></li>
@@ -37,8 +37,8 @@
 
     <div class="col-lg-3 col-md-3">
         <div class="panel panel-default">
-            <span>Overall Verified Stats</span>
             <ul class="list-group">
+                <li class="list-group-item active text-center"><i class="fa fa-check-circle"></i> Overall Verified Stats</li>
                 <li class="list-group-item">Clicks <span class="badge">{$totalClicks}</span></li>
                 <li class="list-group-item">Average RPM <span class="badge"><i class="fa fa-inr"></i> {echo round($totalEarning*1000/$totalClicks, 2)}</span></li>
                 <li class="list-group-item">Earnings <span class="badge"><i class="fa fa-inr"></i> {$totalEarning}</span></li>
@@ -48,8 +48,8 @@
 
     <div class="col-lg-3 col-md-3">
         <div class="panel panel-default">
-            <span>Total Payments</span>
             <ul class="list-group">
+                <li class="list-group-item active text-center"><i class="fa fa-money"></i> Total Payments</li>
                 <li class="list-group-item">Earned <span class="badge"><i class="fa fa-inr"></i> {$totalEarning}</span></li>
                 <li class="list-group-item">Paid <span class="badge"><i class="fa fa-inr"></i> 0</span></li>
                 <li class="list-group-item">Pending <span class="badge"><i class="fa fa-inr"></i> {$totalEarning}</span></li>

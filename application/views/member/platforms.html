@@ -27,7 +27,7 @@
                         <th>Id</th>
                         <th>Link</th>
                         <th>Image</th>
-                        <th>Status</th>
+                        <!--<th>Status</th>-->
                     </tr>
                 </thead>
                 <tbody>
@@ -36,14 +36,14 @@
                         <td>{$platform->id}</td>
                         <td><a href="{$platform->link}" target="_blank">{$platform->link}</a></td>
                         <td><a href="/public/assets/uploads/images/{$platform->image}" target="_blank"><img src="/content/resize/{echo base64_encode($platform->image)}/50/50"></a></td>
-                        <td>
+                        <!--<td>
                             {if($platform->live)}
                                 <span class="label label-success">Verified</span>
                             {/if}
                             {else}
                                 <span class="label label-warning">Unverified</span>
                             {/else}
-                        </td>
+                        </td>-->
                     </tr>
                     {/foreach}
                 </tbody>
