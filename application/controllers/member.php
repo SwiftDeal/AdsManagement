@@ -290,7 +290,7 @@ class Member extends Admin {
     }
 
     /**
-     * @before _secure, changeLayout
+     * @before _secure, changeLayout, _admin
      */
     public function news() {
         $this->seo(array("title" => "Member News", "view" => $this->getLayoutView()));
