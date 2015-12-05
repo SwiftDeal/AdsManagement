@@ -37,6 +37,7 @@ curl_close($curl);
     <meta property="og:image" content="http://www.chocoghar.com/public/assets/uploads/images/<?php echo $item['image'];?>">
     <meta name="og:image-new" content="http://www.chocoghar.com/public/assets/uploads/images/resize/<?php echo $item['image'];?>">
     <meta property="og:site_name" content="The EarnBugs Media Group">
+    <meta property="og:url" content='<?php echo $item["url"];?>'>
     <meta name="generator" content="SwiftMVC 1.1.1">
 </head>
 
