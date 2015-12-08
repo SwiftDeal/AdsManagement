@@ -35,7 +35,7 @@ class Finance extends Admin {
             "created <= ?" => $this->changeDate($enddate, "1")
         );
         $earnings = Earning::all($where, array("DISTINCT user_id"), "created", "asc", $limit, $page);
-        $count = count($earnings);
+        $count = count(Earning::all($where, array("DISTINCT user_id")));
 
         foreach ($earnings as $earning) {
             $amount = $database->query()

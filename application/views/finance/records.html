@@ -62,15 +62,17 @@
                 </tbody>
             </table>
         </div>
-        <nav class="text-center">
+        
+        <div class="text-center">
             <ul class="pager">
                 {if($page != 1)}
-                <li><a href="?page={echo $page - 1}">Previous</a></li>
+                <li><a href="{echo Shared\Markup::pagination($page - 1)}">Previous</a></li>
                 {/if}
                 {if($page < $count/$limit)}
-                <li><a href="?page={echo $page + 1}">Next</a></li>
+                <li><a href="{echo Shared\Markup::pagination($page + 1)}">Next</a></li>
                 {/if}
             </ul>
-        </nav>
+        </div>
+
     </div>
 </div>
