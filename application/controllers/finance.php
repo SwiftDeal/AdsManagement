@@ -121,7 +121,6 @@ class Finance extends Admin {
                 "amount" => round($amount[0]["earn"], 2),
                 "mode" => RequestMethods::post("mode"),
                 "ref_id" => RequestMethods::post("ref_id"),
-                "requested" => null,
                 "live" => 1
             ));
 
