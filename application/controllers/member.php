@@ -39,37 +39,6 @@ class Member extends Admin {
         $view->set("news", $news);
     }
 
-    protected function quickStats() {
-        $total_earnings = 0;$total_clicks = 0;$pending = 0;
-
-        $earnings = Earning::all(array("user_id = ?" => $this->user->id), array("amount", "live", "stat_id"));
-        foreach ($earnings as $earning) {
-            $stat = Stat::first(array("id = ?" => $earning->stat_id), array("shortUrlClicks"));
-            $total_clicks += $stat->shortUrlClicks;
-
-            $total_earnings += $earning->amount;
-            if($earning->live == "0") {
-                $pending += $earning->amount;
-            }
-        }
-        $earning = array(
-            "earning_total" => $total_earnings,
-            "earning_pending" => $pending,
-            "clicks" => $total_clicks
-        );
-        return $earning;
-    }
-
-    protected function totalClicks() {
-        $total_clicks = 0;
-        $links = Link::all(array("user_id = ?" => $this->user->id), array("id"));
-        foreach ($links as $link) {
-            $stat = Stat::first(array("link_id = ?" => $link->id), array("shortUrlClicks"));
-            $total_clicks += $stat->shortUrlClicks;
-        }
-        return $total_clicks;
-    }
-
     /**
      * @before _secure, memberLayout
      */
@@ -203,17 +172,6 @@ class Member extends Admin {
         $view->set("page", $page);
         $view->set("count", $count);
         $view->set("total", Earning::count(array("user_id = ?" => $this->user->id)));
-    }
-    
-    /**
-     * @before _secure, memberLayout
-     */
-    public function faqs() {
-        $this->seo(array(
-            "title" => "FAQs",
-            "view" => $this->getLayoutView()
-        ));
-        $view = $this->getActionView();
     }
     
     /**
