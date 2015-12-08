@@ -17,6 +17,7 @@ class Admin extends Auth {
         $this->seo(array("title" => "Dashboard", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         $now = strftime("%Y-%m-%d", strtotime('now'));
+        $yesterday = strftime("%Y-%m-%d", strtotime('-1 day'));
 
         $users = User::count();
         $items = Item::count();
