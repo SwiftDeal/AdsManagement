@@ -138,6 +138,16 @@ class Member extends Admin {
         ));
         $view = $this->getActionView();
 
+        $database = Registry::get("database");
+        $result = $database->execute("SELECT user_id, SUM(amount) as earn FROM earnings GROUP BY user_id ORDER BY earn DESC LIMIT 10");
+
+        $centres = array();
+        for ($i = 0; $i < $result->num_rows; $i++) {
+            $data = $result->fetch_array(MYSQLI_ASSOC);
+            $centres[] = $data;
+        }
+        echo "<pre>", print_r($centres), "</pre>";
+
         $where = array(
             "live = ?" => 0,
             "created >= ?" => date('Y-m-d', strtotime($startdate . "-1 day"))
@@ -218,8 +228,11 @@ class Member extends Admin {
             "title" => "Payments",
             "view" => $this->getLayoutView()
         ));
+
+        $payments = Payment::all(array("user_id = ?" => $this->user->id));
+
         $view = $this->getActionView();
-        $view->set("paymens", array());
+        $view->set("payments", $payments);
     }
 
     /**
