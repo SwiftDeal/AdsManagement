@@ -105,34 +105,6 @@ class Content extends Member {
     /**
      * @before _secure, changeLayout, _admin
      */
-    public function platforms() {
-        $this->seo(array("title" => "New User Platforms", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-        $page = RequestMethods::get("page", 1);
-        $limit = RequestMethods::get("limit", 10);
-        
-        $startdate = RequestMethods::get("startdate", date('Y-m-d', strtotime("-7 day")));
-        $enddate = RequestMethods::get("enddate", date('Y-m-d', strtotime("now")));
-        $username = RequestMethods::get("username", "");
-        $where = array(
-            "username LIKE ?" => "%{$username}%",
-            "created >= ?" => $this->changeDate($startdate, "-1"),
-            "created <= ?" => $this->changeDate($enddate, "1")
-        );
-        $users = User::all($where, array("id","name", "created", "live"), "live", "asc", $limit, $page);
-        $count = User::count($where);
-
-        $view->set("users", $users);
-        $view->set("startdate", $startdate);
-        $view->set("enddate", $enddate);
-        $view->set("page", $page);
-        $view->set("count", $count);
-        $view->set("limit", $limit);
-    }
-    
-    /**
-     * @before _secure, changeLayout, _admin
-     */
     public function edit($id = NULL) {
         $this->seo(array("title" => "Edit Content", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
