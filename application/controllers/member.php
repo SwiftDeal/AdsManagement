@@ -108,8 +108,8 @@ class Member extends Admin {
         $this->seo(array("title" => "Shorten URL", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         
-        if (RequestMethods::get("longURL")) {
-            $longURL = RequestMethods::get("longURL");
+        if (RequestMethods::get("hash") && !empty($this->user->domain)) {
+            $longURL = $this->user->domain . '?item=' . RequestMethods::get("hash");
             $googl = Registry::get("googl");
             $object = $googl->shortenURL($longURL);
             $link = Link::first(array("short = ?" => $object->id));
@@ -197,11 +197,22 @@ class Member extends Admin {
         
         if (RequestMethods::post('action') == 'saveUser') {
             $user = User::first(array("id = ?" => $this->user->id));
+            $view->set("message", "Saved <strong>Successfully!</strong>");
+
             $user->phone = RequestMethods::post('phone');
             $user->name = RequestMethods::post('name');
             $user->username = RequestMethods::post('username');
+            if(empty($user->domain)) {
+                $domain = "http://".RequestMethods::post('domain').RequestMethods::post("target");
+                $exist = User::first(array("domain = ?" => $domain), array("id"));
+                if($exist) {
+                    $view->set("message", "Domain Name Exists, try another");
+                } else{
+                    $user->domain = $domain;
+                }
+            }
+
             $user->save();
-            $view->set("success", true);
             $view->set("user", $user);
         }
         
@@ -214,10 +225,11 @@ class Member extends Admin {
             $account->ifsc = RequestMethods::post("ifsc");
             
             $account->save();
-            $view->set("success", true);
+            $view->set("message", "Saved <strong>Successfully!</strong>");
         }
         
         $view->set("account", $account);
+        $view->set("domains", $this->target());
     }
     
     /**
@@ -316,6 +328,18 @@ class Member extends Admin {
         }
         
         self::redirect($_SERVER["HTTP_REFERER"]);
+    }
+
+    protected function target() {
+        $session = Registry::get("session");
+        $domains = $session->get("domains");
+
+        $alias = array();
+        foreach ($domains as $domain) {
+            array_push($alias, $domain->value);
+        }
+        
+        return $alias;
     }
 
     public function memberLayout() {

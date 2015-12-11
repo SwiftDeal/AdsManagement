@@ -74,18 +74,6 @@ class Content extends Member {
         }
     }
     
-    protected function target() {
-        $session = Registry::get("session");
-        $domains = $session->get("domains");
-
-        $alias = array();
-        foreach ($domains as $domain) {
-            array_push($alias, $domain->value);
-        }
-        
-        return $alias;
-    }
-    
     /**
      * @before _secure, changeLayout, _admin
      */

@@ -43,13 +43,12 @@ $(document).ready(function() {
             hash = btn.data('hash'),
             description = btn.data('description'),
             title = btn.data('title'),
-            target = btn.closest('div').find('.target').val(),
             item = btn.data('item');
 
         request.read({
             action: "member/shortenURL",
             data: {
-                longURL: target+ '?item=' + hash,
+                hash: hash,
                 item: item
             },
             callback: function(data) {

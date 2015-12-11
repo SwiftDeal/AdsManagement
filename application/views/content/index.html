@@ -9,28 +9,27 @@
                     <input type="text" style="width: 300px" name="title" class="form-control" placeholder="Search here..." value="{$title}" />
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Show</button>
+            <button type="submit" class="btn btn-primary">Search</button>
         </form>
         <hr>
+        {if($user->domain)}
+            <p class="text-center"><i>Your Custom domain is <strong>{$user->domain}</strong></i></p>
+        {/if}
+        {else}
+            <p class="text-center"><strong>You have not created your custom domain create one <a href="/member/profile">here</a></strong></p>
+        {/else}
     </div>
     <div class="row">
         {foreach $item in $items}
         <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12">
             <div class="panel panel-default">
-                <div class="panel-heading">{echo $item->title}</div>
+                <div class="panel-heading">{echo substr($item->title, 0, 70)}</div>
                 <div class="panel-body">
                     <a href="{echo $item->url}" target="_blank"><img src="/content/resize/{echo base64_encode($item->image)}" alt="{echo $item->title}"></a>
                 </div>
                 <table class="table">
                     <tbody>
                         <tr>
-                            <td>
-                                <select class="form-control target">
-                                {foreach $domain in $domains}
-                                    <option value="{$domain}">{echo substr($domain, 7)}</option>
-                                {/foreach}
-                                </select>
-                            </td>
                             <td>
                                 <input type="text" class="form-control shorturl">
                             </td>

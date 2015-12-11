@@ -68,13 +68,6 @@ class Auth extends Controller {
             }
         }
     }
-
-    public function fakelogin() {
-        $user = User::first(array("id = ?" => 1));
-        $this->setUser($user);
-        $this->session();
-        self::redirect("/member");
-    }
     
     /**
      * @before _session
