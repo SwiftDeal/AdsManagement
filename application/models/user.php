@@ -76,9 +76,9 @@ class User extends Shared\Model {
     * @column
     * @readwrite
     * @type text
-    * @length 3
+    * @length 255
     */
-    protected $_currency = "INR";
+    protected $_domain;
 
     /**
      * @column

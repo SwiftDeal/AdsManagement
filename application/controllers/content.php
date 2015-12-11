@@ -18,7 +18,7 @@ class Content extends Member {
         $view = $this->getActionView();
         
         $title = RequestMethods::get("title", "");
-        $category = implode(",", RequestMethods::get("category"));
+        $category = implode(",", RequestMethods::get("category", ""));
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
 
@@ -105,7 +105,7 @@ class Content extends Member {
             "created <= ?" => $this->changeDate($enddate, "1")
         );
         
-        $contents = Item::all($where, array("id", "title", "created", "url", "live"), "created", "desc", $limit, $page);
+        $contents = Item::all($where, array("id", "title", "created", "image", "url", "live"), "created", "desc", $limit, $page);
         $count = Item::count($where);
 
         $view->set("contents", $contents);

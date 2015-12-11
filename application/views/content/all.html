@@ -31,7 +31,7 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Id</th>
+                            <th>Image</th>
                             <th>Title</th>
                             <th>Action</th>
                         </tr>
@@ -39,7 +39,7 @@
                     <tbody>
                         {foreach $content in $contents}
                         <tr>
-                            <td>{echo $content->id}</td>
+                            <td><a href="/public/assets/uploads/images/{$content->image}" target="_blank"><img src="/content/resize/{echo base64_encode($content->image)}/50/50"></a></td>
                             <td><a href="/analytics/content/{$content->id}" target="_blank">{echo $content->title}</a></td>
                             <td>
                                 {if($content->live)}

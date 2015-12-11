@@ -26,34 +26,21 @@ class Finance extends Admin {
         $live = RequestMethods::get("live", 1);
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
+        $offset = ($page - 1) * $limit;
 
         $database = Registry::get("database");
-        
-        $where = array(
-            "live = ?" => $live,
-            "created >= ?" => $this->changeDate($startdate, "-1"),
-            "created <= ?" => $this->changeDate($enddate, "1")
-        );
-        $earnings = Earning::all($where, array("DISTINCT user_id"), "created", "asc", $limit, $page);
-        $count = count(Earning::all($where, array("DISTINCT user_id")));
+        $result = $database->execute("SELECT user_id, SUM(amount) as earn FROM earnings WHERE live = {$live} GROUP BY user_id ORDER BY earn DESC LIMIT {$offset},{$limit}");
 
-        foreach ($earnings as $earning) {
-            $amount = $database->query()
-            ->from("earnings", array("SUM(amount)" => "earn"))
-            ->where("user_id=?",$earning->user_id)
-            ->where("created >= ?",$this->changeDate($startdate, "-1"))
-            ->where("created <= ?",$this->changeDate($enddate, "1"))
-            ->where("live=?",$live)
-            ->all();
+        $accounts = array();
+        for ($i = 0; $i < $result->num_rows; $i++) {
+            $data = $result->fetch_array(MYSQLI_ASSOC);
             array_push($accounts, \Framework\ArrayMethods::toObject(array(
-                "user_id" => $earning->user_id,
-                "amount" => $amount[0]["earn"]
+                "user_id" => $data["user_id"],
+                "amount" => $data["earn"]
             )));
         }
-        
+
         $view->set("accounts", $accounts);
-        $view->set("startdate", $startdate);
-        $view->set("enddate", $enddate);
         $view->set("count", $count);
         $view->set("page", $page);
         $view->set("limit", $limit);
