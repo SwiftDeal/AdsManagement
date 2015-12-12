@@ -8,7 +8,7 @@ namespace ClusterPoint;
 class DB {
 	
 	const ACCOUNT_ID = '4219';
-    const DATABASE = 'Clicks';
+    const DATABASE = 'stats';
     const AUTH = 'savanramani255@gmail.com:Swift123';
 
 	public function url() {

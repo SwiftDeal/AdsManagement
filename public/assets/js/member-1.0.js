@@ -93,7 +93,7 @@ $(document).ready(function() {
             action: "analytics/link",
             data: {shortURL: shortURL},
             callback: function(data) {
-                item.html('RPM : <i class="fa fa-inr"></i> '+ data.rpm +', Click : '+ data.click +', Earning : <i class="fa fa-inr"></i> '+ data.earning);
+                item.html('RPM : <i class="fa fa-inr"></i> '+ data.rpm +', Click : '+ data.click +', Earning : <i class="fa fa-inr"></i> '+ data.earning+', Verified : <i class="fa fa-check"></i> '+ data.verified);
             }
         });
 

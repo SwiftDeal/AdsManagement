@@ -95,110 +95,102 @@ class Analytics extends Admin {
         $view->set("twitter", $twitter->response);
     }
 
-    protected function stat($link) {
-        $stat = Link::findStats($link->short);
+    protected function stat($link, $duration = "allTime") {
+        $domain_click = 0;
+        $country_click = 0;
+        $earning = 0;
+        $verified = 0;
+        $code = "";
+        $country_code = array("IN", "US", "CA", "AU","GB");
+
+        $time = ($duration == "day") ? time() - 24*60*60 : 0;
+        $clusterpoint = Link::clusterpoint($link->item_id, $link->user_id, $time);
+        if ($clusterpoint) {
+            $verified = $clusterpoint->click;
+        }
+        
+        $stat = Link::googl($link->short);
+        $googl = $stat->analytics->$duration;
+        $total_click = $googl->shortUrlClicks;
+
+        if ($total_click) {
+
+            $referrers = $googl->referrers;
+            foreach ($referrers as $referer) {
+                if ($referer->id == 'chocoghar.com') {
+                    $domain_click = $referer->count;
+                }
+            }
+            $total_click -= $domain_click;
+
+            $countries = $googl->countries;
+            $rpms = RPM::first(array("item_id = ?" => $link->item_id), array("value"));
+            $rpm = json_decode($rpms->value);
+            foreach ($countries as $country) {
+                if (in_array($country->id, $country_code)) {
+                    $code = $country->id;
+                    $earning += ($rpm->$code)*($country->count)/1000;
+                    $country_click += $country->count;
+                }
+            }
+            if($total_click > $country_click) {
+                $earning += ($rpm->NONE)*($total_click - $country_click)/1000;
+            }
+
+            $return = array(
+                "click" => $total_click,
+                "rpm" => round(($earning*1000)/($total_click), 2),
+                "earning" => round($earning, 2),
+                "verified" => $verified
+            );
+
+        }
+
+        return $return;
     }
 
     /**
-     * Total Stats today from Google Server realtime
      * @before _secure
      */
-    public function realtime() {
+    public function link($duration = "allTime") {
         $this->JSONview();
         $view = $this->getActionView();
 
         $shortURL = RequestMethods::get("shortURL");
-        $earning = 0;$count = 0;
-        $links = Link::all(array("user_id = ?" => $this->user->id, "created >= ?" => date('Y-m-d', strtotime("-3 day"))), array("short", "item_id"));
-        foreach ($links as $link) {
-            $country_count = 0;$nonverified_count = 0;$verified_count = 0;
-            $stat = Link::findStats($link->short);
-            $total_count = $stat->analytics->day->shortUrlClicks;
-            if ($stat->analytics->day->shortUrlClicks) {
-                $referrers = $stat->analytics->day->referrers;
-                foreach ($referrers as $referer) {
-                    if ($referer->id == 'likesbazar.in') {
-                        $nonverified_count += $referer->count;
-                    }
-                }
-                $verified_count = $total_count - $nonverified_count;
-                $correct = 0.95;
-
-                $countries = $stat->analytics->day->countries;
-
-                $rpms = RPM::all(array("item_id = ?" => $link->item_id), array("value", "country"));
-                $rpms_country = array();
-                $rpms_value = array();
-
-                foreach ($rpms as $rpm) {
-                    $rpms_country[] = strtoupper($rpm->country);
-                    $rpms_value[strtoupper($rpm->country)] = $rpm->value;
-                }
-                foreach ($countries as $country) {
-                    if (in_array($country->id, $rpms_country)) {
-                        $earning += $correct*($rpms_value[$country->id])*($country->count)/1000;
-                        $country_count += $country->count;
-                    }
-                }
-                if ($verified_count > $country_count) {
-                    $earning += ($verified_count - $country_count)*$correct*($rpms_value["NONE"])/1000;
-                }
-            }
-
-            $count += $verified_count;
-        }
-
-        $view->set("avgrpm", round(($earning*1000)/($count), 2));
-        $view->set("earnings", round($earning, 2));
-        $view->set("clicks", $count);
+        $link = Link::first(array("short = ?" => $shortURL), array("item_id", "short", "user_id"));
+        $result = $this->stat($link, $duration);
+        
+        $view->set("earning", $result["earning"]);
+        $view->set("click", $result["click"]);
+        $view->set("rpm", $result["rpm"]);
+        $view->set("verified", $result["verified"]);
     }
 
-    public function link() {
+    /**
+     * @before _secure
+     */
+    public function realtime($duration = "allTime") {
         $this->JSONview();
         $view = $this->getActionView();
 
-        $shortURL = RequestMethods::get("shortURL");
-        $earning = 0;$count = 0;$verified_count = 0;$country_count = 0;
-        $link = Link::first(array("short = ?" => $shortURL), array("item_id", "short"));
-        if ($link) {
-            $stat = Link::findStats($link->short);
-            $total_count = $stat->analytics->allTime->shortUrlClicks;
-            if ($stat->analytics->allTime->shortUrlClicks) {
-                $referrers = $stat->analytics->allTime->referrers;
-                foreach ($referrers as $referer) {
-                    if (strpos($referer->id,'facebook.com') !== false) {
-                        $verified_count += $referer->count;
-                    }
-                }
-                //$correct = $verified_count/$total_count;
-                $correct = 1;
-
-                $countries = $stat->analytics->allTime->countries;
-
-                $rpms = RPM::all(array("item_id = ?" => $link->item_id), array("value", "country"));
-                foreach ($rpms as $rpm) {
-                    foreach ($countries as $country) {
-                        if(strtoupper($rpm->country) == $country->id) {
-                            $earning += $correct*($rpm->value)*($country->count)/1000;
-                            $country_count += $country->count;
-                        }
-                    }
-                    if ($rpm->country == "NONE") {
-                        //$earning += ($verified_count - $country_count)*$correct*($rpm->value)/1000;
-                        $earning += ($total_count - $country_count)*$correct*($rpm->value)/1000;
-                    }
-                }
-                //$view->set("rpm", round(($earning*1000)/($verified_count), 2));
-                $view->set("rpm", round(($earning*1000)/($total_count), 2));
-                $view->set("rpms", $rpms);
+        $earnings = 0;
+        $clicks = 0;
+        $verified = 0;
+        $links = Link::all(array("user_id = ?" => $this->user->id, "created >= ?" => date('Y-m-d', strtotime("-3 day"))), array("short", "item_id", "user_id"));
+        foreach ($links as $link) {
+            $result = $this->stat($link, $duration);
+            if ($result) {
+                $clicks += $result["click"];
+                $earnings += $result["earning"];
+                $verified += $result["verified"];
             }
-            $view->set("stat", $stat);
+            $result = 0;
         }
-        
-        $view->set("earning", round($earning, 2));
-        //$view->set("click", round($verified_count,2));
-        $view->set("click", round($total_count,2));
-        $view->set("link", $link);
+
+        $view->set("avgrpm", round(($earnings*1000)/($clicks), 2));
+        $view->set("earnings", $earnings);
+        $view->set("clicks", $clicks);
+        $view->set("verified", $verified);
     }
     
 }

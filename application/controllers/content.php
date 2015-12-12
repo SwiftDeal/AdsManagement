@@ -7,6 +7,7 @@
  */
 use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
+use ClusterPoint\DB as DB;
 
 class Content extends Member {
 
@@ -157,17 +158,13 @@ class Content extends Member {
      * @before _secure, changeLayout, _admin
      */
     public function fraudLinks() {
+        $this->noview();
         $this->seo(array("title" => "Fraud Links", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         
-        if (RequestMethods::get("longURL")) {
-            $longURL = RequestMethods::get("longURL");
-            $googl = Registry::get("googl");
-            $object = $googl->shortenURL($longURL);
-            
-            $view->set("shortURL", $object->id);
-            $view->set("googl", $object);
-        }
+        $clusterpoint = new DB();
+
+        echo "<pre>", print_r($clusterpoint->index("SELECT * FROM stats WHERE item_id == '151' && user_id == '1' LIMIT 1")), "</pre>";
     }
 
     /**
