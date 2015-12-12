@@ -6,6 +6,7 @@
  */
 use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
+use ClusterPoint\DB as DB;
 
 class Member extends Admin {
     
@@ -137,21 +138,19 @@ class Member extends Admin {
         $view = $this->getActionView();
 
         $database = Registry::get("database");
-        $result = $database->execute("SELECT user_id, SUM(amount) as earn FROM earnings GROUP BY user_id ORDER BY earn DESC LIMIT 10");
-
-        $centres = array();
+        $result = $database->execute("SELECT user_id, SUM(shortUrlClicks) as click FROM stats GROUP BY user_id ORDER BY click DESC LIMIT 10");
+        $earners = array();
         for ($i = 0; $i < $result->num_rows; $i++) {
             $data = $result->fetch_array(MYSQLI_ASSOC);
-            $centres[] = $data;
+            $earners[] = $data;
         }
-        echo "<pre>", print_r($centres), "</pre>";
 
-        $where = array(
-            "live = ?" => 0,
-            "created >= ?" => date('Y-m-d', strtotime($startdate . "-1 day"))
-        );
-        $stats = Stat::all($where, array("verifiedClicks", "link_id"), "verifiedClicks", "desc", 10, 1);
-        $view->set("stats", $stats);
+        $time = time() - 24*60*60;
+        $clusterpoint = new DB();
+        $query = "SELECT user_id, SUM(click) FROM stats WHERE timestamp > $time GROUP BY user_id ORDER BY click DESC LIMIT 10";
+        //$result = $clusterpoint->index($query);
+
+        $view->set("earners", $earners);
     }
     
     /**
