@@ -10,6 +10,15 @@ use Framework\Registry as Registry;
 
 class Content extends Member {
 
+    protected $rpm = array(
+        "IN" => 135,
+        "US" => 220,
+        "CA" => 220,
+        "AU" => 220,
+        "GB" => 220,
+        "NONE" => 100
+    );
+
     /**
      * @before _secure, memberLayout
      */
@@ -61,15 +70,12 @@ class Content extends Member {
             ));
             $item->save();
             
-            $rpms = RequestMethods::post("rpm");
-            foreach ($rpms as $key => $value) {
-                $rpm = new RPM(array(
-                    "item_id" => $item->id,
-                    "value" => $value,
-                    "country" => $key
-                ));
-                $rpm->save();
-            }
+            $rpm = new RPM(array(
+                "item_id" => $item->id,
+                "value" => json_encode(RequestMethods::post("rpm")),
+            ));
+            $rpm->save();
+
             $view->set("success", true);
         }
     }
@@ -109,12 +115,7 @@ class Content extends Member {
         $this->seo(array("title" => "Edit Content", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         $item = Item::first(array("id = ?" => $id));
-        $rpm_in = RPM::first(array("item_id = ?" => $item->id, "country = ?" => "IN"));
-        $rpm_us = RPM::first(array("item_id = ?" => $item->id, "country = ?" => "US"));
-        $rpm_pk = RPM::first(array("item_id = ?" => $item->id, "country = ?" => "PK"));
-        $rpm_au = RPM::first(array("item_id = ?" => $item->id, "country = ?" => "AU"));
-        $rpm_nw = RPM::first(array("item_id = ?" => $item->id, "country = ?" => "NW"));
-        $rpm_none = RPM::first(array("item_id = ?" => $item->id, "country = ?" => "NONE"));
+        $rpm = RPM::first(array("item_id = ?" => $item->id));
         
         if (RequestMethods::post("action") == "update") {
             $item->title = RequestMethods::post("title");
@@ -123,33 +124,15 @@ class Content extends Member {
             $item->category = implode(",", RequestMethods::post("category"));
             $item->description = RequestMethods::post("description");
             $item->live = RequestMethods::post("live", "0");
-            
             $item->save();
 
-            $rpm_in->value = RequestMethods::post("rpm_in");
-            $rpm_in->save();
-            $rpm_us->value = RequestMethods::post("rpm_us");
-            $rpm_us->save();
-            $rpm_ca->value = RequestMethods::post("rpm_ca");
-            $rpm_ca->save();
-            $rpm_au->value = RequestMethods::post("rpm_au");
-            $rpm_au->save();
-            $rpm_uk->value = RequestMethods::post("rpm_uk");
-            $rpm_uk->save();
-            $rpm_none->value = RequestMethods::post("rpm_none");
-            $rpm_none->save();
+            $rpm->value = json_encode(RequestMethods::post("rpm"));
+            $rpm->save();
 
             $view->set("success", true);
-
             $view->set("errors", $item->getErrors());
         }
         $view->set("item", $item);
-        $view->set("rpm_in", $rpm_in);
-        $view->set("rpm_us", $rpm_us);
-        $view->set("rpm_pk", $rpm_pk);
-        $view->set("rpm_au", $rpm_au);
-        $view->set("rpm_nw", $rpm_nw);
-        $view->set("rpm_none", $rpm_none);
         $view->set("categories", explode(",", $item->category));
     }
     
@@ -233,10 +216,8 @@ class Content extends Member {
             $link->delete();
         }
 
-        $rpms = RPM::all(array("item_id = ?" => $item->id));
-        foreach ($rpms as $rpm) {
-            $rpm->delete();
-        }
+        $rpm = RPM::first(array("item_id = ?" => $item->id));
+        $rpm->delete();
 
         $item->delete();
         self::redirect($_SERVER["HTTP_REFERER"]);        
@@ -266,20 +247,6 @@ class Content extends Member {
             header("Location: {$cdn}img/logo.png");
             exit();
         }
-    }
-
-    public function resetRPM() {
-        $this->noview();
-        $array = array(
-            "IN" => 135,
-            "US" => 220,
-            "CA" => 220,
-            "AU" => 220,
-            "UK" => 220,
-            "NONE" => 100
-        );
-
-        echo json_encode($array);
     }
 
 }
