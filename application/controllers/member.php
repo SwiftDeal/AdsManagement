@@ -105,7 +105,7 @@ class Member extends Admin {
      * @before _secure, memberLayout
      */
     public function shortenURL() {
-        $this->seo(array("title" => "Shorten URL", "view" => $this->getLayoutView()));
+        $this->JSONview();
         $view = $this->getActionView();
         
         if (RequestMethods::get("hash") && !empty($this->user->domain)) {

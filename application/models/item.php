@@ -63,6 +63,6 @@ class Item extends Shared\Model {
     protected $_user_id;
 
     public function encode($username) {
-        return base64_encode("id={$this->id}&title={$this->title}&description={$this->description}&image={$this->image}&url={$this->url}&username={$username}&time=".time());
+        return base64_encode("id={$this->id}&title={$this->title}&description={$this->description}&image={$this->image}&url={$this->url}&username={$username}");
     }
 }
