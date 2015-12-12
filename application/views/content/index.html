@@ -34,7 +34,7 @@
                                 <input type="text" class="form-control shorturl">
                             </td>
                             <td>
-                                <button class="btn btn-success shortenURL" data-item="{echo $item->id}" data-hash="{echo $item->encode($user->username)}" data-title="{echo $item->title}" data-description="{echo $item->description}">Generate Link</button>
+                                <button class="btn btn-success shortenURL" data-item="{echo $item->id}" data-hash="{echo $item->encode($user->username, $user->id)}" data-title="{echo $item->title}" data-description="{echo $item->description}">Generate Link</button>
                             </td>
                         </tr>
                     </tbody>

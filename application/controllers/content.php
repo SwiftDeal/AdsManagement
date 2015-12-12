@@ -268,4 +268,18 @@ class Content extends Member {
         }
     }
 
+    public function resetRPM() {
+        $this->noview();
+        $array = array(
+            "IN" => 135,
+            "US" => 220,
+            "CA" => 220,
+            "AU" => 220,
+            "UK" => 220,
+            "NONE" => 100
+        );
+
+        echo json_encode($array);
+    }
+
 }

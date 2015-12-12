@@ -8,6 +8,7 @@
 use Framework\Registry as Registry;
 use Framework\RequestMethods as RequestMethods;
 use \Curl\Curl;
+use ClusterPoint\DB as DB;
 
 class Analytics extends Admin {
     
@@ -92,6 +93,10 @@ class Analytics extends Admin {
         $view->set("metas", $metas);
         $view->set("facebook", array_values($facebook->response)[0]);
         $view->set("twitter", $twitter->response);
+    }
+
+    protected function stat($link) {
+        $stat = Link::findStats($link->short);
     }
 
     /**
