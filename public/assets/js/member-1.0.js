@@ -41,7 +41,6 @@ $(document).ready(function() {
         e.preventDefault();
         var btn = $(this),
             hash = btn.data('hash'),
-            description = btn.data('description'),
             title = btn.data('title'),
             item = btn.data('item');
 
@@ -54,7 +53,7 @@ $(document).ready(function() {
             callback: function(data) {
                 btn.closest('div').find('.shorturl').val(data.shortURL);
                 btn.closest('div').find('.shorturl').focus();
-                $('#link_data').val(title+"\n"+description+"\n"+data.shortURL);
+                $('#link_data').val(title+"\n"+data.shortURL);
                 $('#link_modal').modal('show');
                 document.execCommand('SelectAll');
                 document.execCommand("Copy", false, null);

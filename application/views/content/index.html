@@ -21,11 +21,11 @@
     </div>
     <div class="row">
         {foreach $item in $items}
-        <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12">
+        <div class="col-md-4 col-lg-4 col-sm-6 col-xs-6">
             <div class="panel panel-default">
-                <div class="panel-heading">{echo substr($item->title, 0, 70)}</div>
+                <div class="panel-heading">{echo substr($item->title, 0, 30)}</div>
                 <div class="panel-body">
-                    <a href="{echo $item->url}" target="_blank"><img src="/content/resize/{echo base64_encode($item->image)}" alt="{echo $item->title}"></a>
+                    <a href="{echo $item->url}" target="_blank"><img src="/content/resize/{echo base64_encode($item->image)}" alt="{echo $item->title}" width="290"></a>
                 </div>
                 <table class="table">
                     <tbody>
@@ -34,7 +34,7 @@
                                 <input type="text" class="form-control shorturl">
                             </td>
                             <td>
-                                <button class="btn btn-success shortenURL" data-item="{echo $item->id}" data-hash="{echo $item->encode($user->username, $user->id)}" data-title="{echo $item->title}" data-description="{echo $item->description}">Generate Link</button>
+                                <button class="btn btn-success shortenURL" data-item="{echo $item->id}" data-hash="{echo $item->encode($user->username, $user->id)}" data-title="{echo $item->title}">Generate Link</button>
                             </td>
                         </tr>
                     </tbody>

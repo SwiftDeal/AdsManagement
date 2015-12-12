@@ -30,7 +30,7 @@ class Content extends Member {
         $title = RequestMethods::get("title", "");
         $category = implode(",", RequestMethods::get("category", ""));
         $page = RequestMethods::get("page", 1);
-        $limit = RequestMethods::get("limit", 10);
+        $limit = RequestMethods::get("limit", 12);
 
         $where = array(
             "title LIKE ?" => "%{$title}%",
