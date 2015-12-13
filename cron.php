@@ -5,6 +5,7 @@ define("APP_PATH", str_replace(DIRECTORY_SEPARATOR, "/", dirname(__FILE__)));
 define("CDN", "http://chocoghar.com/public/assets/");
 
 date_default_timezone_set('Asia/Kolkata');
+ini_set ('max_execution_time', 30*60);
 
 try {
     
