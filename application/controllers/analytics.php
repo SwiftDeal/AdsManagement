@@ -134,6 +134,7 @@ class Analytics extends Admin {
                 }
             }
             if($total_click > $country_click) {
+                echo ($country_click);
                 $earning += ($rpm->NONE)*($total_click - $country_click)/1000;
             }
 

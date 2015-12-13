@@ -36,39 +36,4 @@ class Stat extends Shared\Model {
      */
     protected $_shortUrlClicks;
     
-    /**
-     * @column
-     * @readwrite
-     * @type integer
-     */
-    protected $_longUrlClicks;
-    
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * @length 255
-     */
-    protected $_referrers;
-    
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     */
-    protected $_countries;
-    
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     */
-    protected $_browsers;
-    
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     */
-    protected $_platforms;
 }

@@ -51,8 +51,8 @@
             <ul class="list-group">
                 <li class="list-group-item active text-center"><i class="fa fa-money"></i> Total Payments</li>
                 <li class="list-group-item">Earned <span class="badge"><i class="fa fa-inr"></i> {$totalEarning}</span></li>
-                <li class="list-group-item">Paid <span class="badge"><i class="fa fa-inr"></i> 0</span></li>
-                <li class="list-group-item">Pending <span class="badge"><i class="fa fa-inr"></i> {$totalEarning}</span></li>
+                <li class="list-group-item">Paid <span class="badge"><i class="fa fa-inr"></i> {$paid}</span></li>
+                <li class="list-group-item">Pending <span class="badge"><i class="fa fa-inr"></i> {echo $totalEarning-$paid}</span></li>
             </ul>
         </div>
     </div>

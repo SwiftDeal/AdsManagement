@@ -32,9 +32,7 @@ class Admin extends Auth {
         $yesterdayClicks = $database->query()->from("stats", array("SUM(verifiedClicks)" => "clicks"))->where("created LIKE ?", "%{$yesterday}%")->all();
 
         $login = Meta::first(array("property = ?" => "login"), array("id", "value"));
-        // $clusterpoint = new DB();
-        // var_dump($clusterpoint->read());
-
+        
         $view->set("now", $now);
         $view->set("users", $users);
         $view->set("items", $items);

@@ -29,12 +29,14 @@ class Member extends Admin {
         $totalClicks = $database->query()->from("stats", array("SUM(verifiedClicks)" => "clicks"))->where("user_id=?", $this->user->id)->all();
         $yesterdayEarning = $database->query()->from("earnings", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("created LIKE ?", "%{$yesterday}%")->all();
         $yesterdayClicks = $database->query()->from("stats", array("SUM(verifiedClicks)" => "clicks"))->where("user_id=?", $this->user->id)->where("created LIKE ?", "%{$yesterday}%")->all();
+        $paid = $database->query()->from("payments", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->all();
         
         
         //$view->set("averagerpm", ($stat["earning_total"]*1000)/($stat["clicks"]));
         $view->set("totalEarning", round($totalEarning[0]["earn"], 2));
         $view->set("totalClicks", round($totalClicks[0]["clicks"], 2));
         $view->set("yesterdayEarning", round($yesterdayEarning[0]["earn"], 2));
+        $view->set("paid", round($paid[0]["earn"], 2));
         $view->set("yesterdayClicks", round($yesterdayClicks[0]["clicks"], 2));
         $view->set("links", $links);
         $view->set("news", $news);
@@ -109,20 +111,21 @@ class Member extends Admin {
         $this->JSONview();
         $view = $this->getActionView();
         
-        $longURL = $this->user->domain . '?item=' . RequestMethods::get("hash");
-        $googl = Registry::get("googl");
-        $object = $googl->shortenURL($longURL);
-        $link = Link::first(array("short = ?" => $object->id));
-        if (!$link) {
-            $link = new Link(array(
-                "user_id" => $this->user->id,
-                "short" => $object->id,
-                "item_id" => RequestMethods::get("item"),
-                "live" => 1
-            ));
-            $link->save();
+        if($this->user->domain) {
+            $longURL = $this->user->domain . '?item=' . RequestMethods::get("hash");
+            $googl = Registry::get("googl");
+            $object = $googl->shortenURL($longURL);
+            $link = Link::first(array("short = ?" => $object->id));
+            if (!$link) {
+                $link = new Link(array(
+                    "user_id" => $this->user->id,
+                    "short" => $object->id,
+                    "item_id" => RequestMethods::get("item"),
+                    "live" => 1
+                ));
+                $link->save();
+            }
         }
-        
         $view->set("shortURL", $object->id);
         $view->set("googl", $object);
     }
@@ -350,24 +353,23 @@ class Member extends Admin {
         
         $startdate = RequestMethods::get("startdate", date('Y-m-d', strtotime("-7 day")));
         $enddate = RequestMethods::get("enddate", date('Y-m-d', strtotime("now")));
-        $username = RequestMethods::get("username", "");
+        $id = RequestMethods::get("id", "");
 
-        if (empty($username)) {
+        if (empty($id)) {
             $where = array(
-                "username LIKE ?" => "%{$username}%",
                 "created >= ?" => $this->changeDate($startdate, "-1"),
                 "created <= ?" => $this->changeDate($enddate, "1")
             );
         } else {
             $where = array(
-                "username LIKE ?" => "%{$username}%"
+                "id = ?" => $id
             );
         }
         $users = User::all($where, array("id","name", "created", "live"), "live", "asc", $limit, $page);
         $count = User::count($where);
 
         $view->set("users", $users);
-        $view->set("username", $username);
+        $view->set("id", $id);
         $view->set("startdate", $startdate);
         $view->set("enddate", $enddate);
         $view->set("page", $page);
