@@ -148,5 +148,33 @@ class Finance extends Admin {
         $view->set("links", $links);
         $view->set("rpm", $rpm);
     }
+
+    /**
+     * @before _secure, changeLayout, _admin
+     */
+    public function payments() {
+        $this->seo(array("title" => "Payments", "view" => $this->getLayoutView()));
+
+        $page = RequestMethods::get("page", 1);
+        $limit = RequestMethods::get("limit", 10);
+        $id = RequestMethods::get("id");
+        if (!empty($id)) {
+            $where = array(
+                "user_id = ?" => $id
+            );
+        } else{
+            $where = array();
+        }
+
+        $view = $this->getActionView();
+        $payments = Payment::all($where, array("*"), "created", "desc", $limit, $page);
+        $count = Payment::count($where);
+
+        $view->set("payments", $payments);
+        $view->set("limit", $limit);
+        $view->set("page", $page);
+        $view->set("count", $count);
+        $view->set("id", $id);
+    }
     
 }
