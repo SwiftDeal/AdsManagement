@@ -1,8 +1,5 @@
 <div class="row">
-    <div class="col-lg-12">
-        <h1 class="page-header">
-            Dashboard <small>Statistics Overview</small>
-        </h1>
+    <div class="col-lg-12"><br>
         {if isset($news)}
             <div class="alert alert-success alert-dismissible fade in" role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
@@ -58,10 +55,29 @@
     </div>
 
 </div>
-<!-- /.row -->
+
+{if($user->domain == "")}
+<div class="row text-center">
+    <form class="form-horizontal" method="post" action="/member/profile">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">Custom Domain</label>
+            <div class="col-sm-6">
+                <div class="input-group">
+                    <span class="input-group-addon">http://</span>
+                    <input type="text" name="domain" class="form-control" placeholder="Enter Custom Domain name">
+                    <span class="input-group-addon">.{$domain}</span>
+                    <input type="hidden" name="target" value=".{$domain}">
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="action" value="saveUser">
+    </form>
+    <strong>Note : </strong><i>You can only set custom domain once</i>
+</div>
+{/if}
+
 <div class="row">
     <div class="col-lg-12">
-        <p>Your Verified Earnings and click is calculated daily, see in <a href="/member/earnings">Earnings</a></p>
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title"><i class="fa fa-line-chart fa-fw"></i> Active Links</h3>

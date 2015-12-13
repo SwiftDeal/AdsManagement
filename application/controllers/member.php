@@ -40,6 +40,7 @@ class Member extends Admin {
         $view->set("yesterdayClicks", round($yesterdayClicks[0]["clicks"], 2));
         $view->set("links", $links);
         $view->set("news", $news);
+        $view->set("domain", substr($this->target()[array_rand($this->target())], 7));
     }
 
     /**
@@ -199,9 +200,9 @@ class Member extends Admin {
             $user = User::first(array("id = ?" => $this->user->id));
             $view->set("message", "Saved <strong>Successfully!</strong>");
 
-            $user->phone = RequestMethods::post('phone');
-            $user->name = RequestMethods::post('name');
-            $user->username = RequestMethods::post('username');
+            $user->phone = RequestMethods::post('phone', $user->phone);
+            $user->name = RequestMethods::post('name', $user->name);
+            $user->username = RequestMethods::post('username', $user->username);
             if(empty($user->domain)) {
                 $domain = "http://".RequestMethods::post('domain').RequestMethods::post("target");
                 $exist = User::first(array("domain = ?" => $domain), array("id"));
@@ -217,12 +218,14 @@ class Member extends Admin {
         }
         
         if (RequestMethods::post("action") == "saveAccount") {
-            $account = new Account();
-            $account->user_id = $this->user->id;
-            $account->name = RequestMethods::post("name");
-            $account->bank = RequestMethods::post("bank");
-            $account->number = RequestMethods::post("number");
-            $account->ifsc = RequestMethods::post("ifsc");
+            $account = new Account(array(
+                "user_id" => $this->user->id,
+                "name" => RequestMethods::post("name"),
+                "bank" => RequestMethods::post("bank"),
+                "number" => RequestMethods::post("number"),
+                "ifsc" => RequestMethods::post("ifsc"),
+                "paypal" => RequestMethods::post("paypal", "")
+            ));
             
             $account->save();
             $view->set("message", "Saved <strong>Successfully!</strong>");

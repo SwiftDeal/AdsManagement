@@ -64,7 +64,7 @@ class Content extends Member {
                 "url" =>  RequestMethods::post("url"),
                 "title" => RequestMethods::post("title"),
                 "image" => $this->_upload("image", "images"),
-                "commission" => RequestMethods::post("commission", "4.99"),
+                "commission" => 0,
                 "category" => implode(",", RequestMethods::post("category", "")),
                 "description" => RequestMethods::post("description"),
                 "user_id" => $this->user->id

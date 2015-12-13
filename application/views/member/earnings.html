@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header text-center">Earnings</h1>
+        <h3 class="page-header text-center">Earnings</h3>
         <form class="form-inline text-center" role="form" method="get" action="">
             <div class="form-group">
                 <div class="input-group">
@@ -46,10 +46,10 @@
                         <td>₹ {echo round($earn->amount, 2)}</td>
                         <td>
                             {if($earn->live)}
-                            <span class="label label-success">Paid</span>
+                            <span class="label label-warning">UnPaid</span>
                             {/if}
                             {else}
-                            <span class="label label-warning">UnPaid</span>
+                            <span class="label label-success">Paid</span>
                             {/else}
                         </td>
                     </tr>
