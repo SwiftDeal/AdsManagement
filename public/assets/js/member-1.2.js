@@ -136,14 +136,16 @@ function realtime () {
     $('#realtime_avgrpm').html('<i class="fa fa-spinner fa-pulse"></i>');
     $('#realtime_earnings').html('<i class="fa fa-spinner fa-pulse"></i>');
     $('#realtime_clicks').html('<i class="fa fa-spinner fa-pulse"></i>');
+    $('#realtime_verified').html('<i class="fa fa-spinner fa-pulse"></i>');
     
     request.read({
         action: "analytics/realtime",
         data: {},
         callback: function(data) {
-            $('#realtime_avgrpm').html(data.avgrpm);
-            $('#realtime_earnings').html(data.earnings);
+            $('#realtime_avgrpm').html('<i class="fa fa-inr"></i>' + data.avgrpm);
+            $('#realtime_earnings').html('<i class="fa fa-inr"></i>' + data.earnings);
             $('#realtime_clicks').html(data.clicks);
+            $('#realtime_verified').html(data.verified);
         }
     });
 }

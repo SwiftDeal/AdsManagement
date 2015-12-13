@@ -15,6 +15,7 @@
             <ul class="list-group" onclick="realtime();">
                 <li class="list-group-item active text-center"><i class="fa fa-globe"></i> Realtime Stats</li>
                 <li class="list-group-item">Clicks<span class="badge" id="realtime_clicks">View</span></li>
+                <li class="list-group-item">Verified<span class="badge" id="realtime_verified">View</span></li>
                 <li class="list-group-item">Average RPM <span class="badge" id="realtime_avgrpm">View</span></li>
                 <li class="list-group-item">Earnings <span class="badge" id="realtime_earnings">View</span></li>
             </ul>
@@ -26,6 +27,7 @@
             <ul class="list-group">
                 <li class="list-group-item active text-center"><i class="fa fa-line-chart"></i> Yesterday Stats</li>
                 <li class="list-group-item">Clicks <span class="badge">{$yesterdayClicks}</span></li>
+                <li class="list-group-item">Verified <span class="badge">{$yesterdayVerifiedClicks}</span></li>
                 <li class="list-group-item">Average RPM <span class="badge"><i class="fa fa-inr"></i> {echo round($yesterdayEarning*1000/$yesterdayClicks, 2)}</span></li>
                 <li class="list-group-item">Earnings <span class="badge"><i class="fa fa-inr"></i> {$yesterdayEarning}</span></li>
             </ul>
@@ -37,6 +39,7 @@
             <ul class="list-group">
                 <li class="list-group-item active text-center"><i class="fa fa-check-circle"></i> Overall Verified Stats</li>
                 <li class="list-group-item">Clicks <span class="badge">{$totalClicks}</span></li>
+                <li class="list-group-item">Verified <span class="badge">{$totalVerifiedClicks}</span></li>
                 <li class="list-group-item">Average RPM <span class="badge"><i class="fa fa-inr"></i> {echo round($totalEarning*1000/$totalClicks, 2)}</span></li>
                 <li class="list-group-item">Earnings <span class="badge"><i class="fa fa-inr"></i> {$totalEarning}</span></li>
             </ul>
@@ -50,6 +53,7 @@
                 <li class="list-group-item">Earned <span class="badge"><i class="fa fa-inr"></i> {$totalEarning}</span></li>
                 <li class="list-group-item">Paid <span class="badge"><i class="fa fa-inr"></i> {$paid}</span></li>
                 <li class="list-group-item">Pending <span class="badge"><i class="fa fa-inr"></i> {echo $totalEarning-$paid}</span></li>
+                <li class="list-group-item">Last Updated <span class="badge"><i class="fa fa-calendar"></i> {$latest}</span></li>
             </ul>
         </div>
     </div>

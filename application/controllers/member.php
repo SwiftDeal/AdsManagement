@@ -22,24 +22,33 @@ class Member extends Admin {
         
         $links = Link::all(array("user_id = ?" => $this->user->id), array("id", "item_id", "short"), "created", "desc", 5, 1);
         $news = Meta::first(array("property = ?" => "news", "live = ?" => 1));
-
+        $record = Earning::first(array("user_id = ?" => $this->user->id), array("created"), "created", "desc");
+        if(!$record) {
+            $latest = date('Y-m-d', strtotime("now"));
+        } else{
+            $date = DateTime::createFromFormat('Y-m-d H:i:s', $record->created);
+            $latest = $date->format('Y-m-d');
+        }
         $yesterday = strftime("%Y-%m-%d", strtotime('-1 day'));
         $database = Registry::get("database");
-        $totalEarning = $database->query()->from("earnings", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->all();
-        $totalClicks = $database->query()->from("stats", array("SUM(verifiedClicks)" => "clicks"))->where("user_id=?", $this->user->id)->all();
+        $totalEarning = $database->query()->from("earnings", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("created>?", $latest)->all();
+        $totalClicks = $database->query()->from("stats", array("SUM(shortUrlClicks)" => "clicks"))->where("user_id=?", $this->user->id)->where("created>?", $latest)->all();
+        $totalVerifiedClicks = $database->query()->from("stats", array("SUM(verifiedClicks)" => "clicks"))->where("user_id=?", $this->user->id)->where("created>?", $latest)->all();
         $yesterdayEarning = $database->query()->from("earnings", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("created LIKE ?", "%{$yesterday}%")->all();
-        $yesterdayClicks = $database->query()->from("stats", array("SUM(verifiedClicks)" => "clicks"))->where("user_id=?", $this->user->id)->where("created LIKE ?", "%{$yesterday}%")->all();
+        $yesterdayClicks = $database->query()->from("stats", array("SUM(shortUrlClicks)" => "clicks"))->where("user_id=?", $this->user->id)->where("created LIKE ?", "%{$yesterday}%")->all();
+        $yesterdayVerifiedClicks = $database->query()->from("stats", array("SUM(verifiedClicks)" => "clicks"))->where("user_id=?", $this->user->id)->where("created LIKE ?", "%{$yesterday}%")->all();
         $paid = $database->query()->from("payments", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->all();
         
-        
-        //$view->set("averagerpm", ($stat["earning_total"]*1000)/($stat["clicks"]));
         $view->set("totalEarning", round($totalEarning[0]["earn"], 2));
         $view->set("totalClicks", round($totalClicks[0]["clicks"], 2));
+        $view->set("totalVerifiedClicks", round($totalVerifiedClicks[0]["clicks"], 2));
         $view->set("yesterdayEarning", round($yesterdayEarning[0]["earn"], 2));
         $view->set("paid", round($paid[0]["earn"], 2));
         $view->set("yesterdayClicks", round($yesterdayClicks[0]["clicks"], 2));
+        $view->set("yesterdayVerifiedClicks", round($yesterdayVerifiedClicks[0]["clicks"], 2));
         $view->set("links", $links);
         $view->set("news", $news);
+        $view->set("latest", $latest);
         $view->set("domain", substr($this->target()[array_rand($this->target())], 7));
     }
 
