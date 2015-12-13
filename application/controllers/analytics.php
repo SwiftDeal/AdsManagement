@@ -95,61 +95,6 @@ class Analytics extends Admin {
         $view->set("twitter", $twitter->response);
     }
 
-    protected function stat($link, $duration = "allTime") {
-        $domain_click = 0;
-        $country_click = 0;
-        $earning = 0;
-        $verified = 0;
-        $code = "";
-        $country_code = array("IN", "US", "CA", "AU","GB");
-
-        $time = ($duration == "day") ? time() - 24*60*60 : 0;
-        $clusterpoint = Link::clusterpoint($link->item_id, $link->user_id, $time);
-        if ($clusterpoint) {
-            $verified = $clusterpoint->click;
-        }
-        
-        $stat = Link::googl($link->short);
-        $googl = $stat->analytics->$duration;
-        $total_click = $googl->shortUrlClicks;
-
-        if ($total_click) {
-
-            $referrers = $googl->referrers;
-            foreach ($referrers as $referer) {
-                if ($referer->id == 'chocoghar.com') {
-                    $domain_click = $referer->count;
-                }
-            }
-            $total_click -= $domain_click;
-
-            $countries = $googl->countries;
-            $rpms = RPM::first(array("item_id = ?" => $link->item_id), array("value"));
-            $rpm = json_decode($rpms->value);
-            foreach ($countries as $country) {
-                if (in_array($country->id, $country_code)) {
-                    $code = $country->id;
-                    $earning += ($rpm->$code)*($country->count)/1000;
-                    $country_click += $country->count;
-                }
-            }
-            if($total_click > $country_click) {
-                echo ($country_click);
-                $earning += ($rpm->NONE)*($total_click - $country_click)/1000;
-            }
-
-            $return = array(
-                "click" => $total_click,
-                "rpm" => round(($earning*1000)/($total_click), 2),
-                "earning" => round($earning, 2),
-                "verified" => $verified
-            );
-
-        }
-
-        return $return;
-    }
-
     /**
      * @before _secure
      */
@@ -159,7 +104,7 @@ class Analytics extends Admin {
 
         $shortURL = RequestMethods::get("shortURL");
         $link = Link::first(array("short = ?" => $shortURL), array("item_id", "short", "user_id"));
-        $result = $this->stat($link, $duration);
+        $result = $link->stat($duration);
         
         $view->set("earning", $result["earning"]);
         $view->set("click", $result["click"]);
@@ -179,7 +124,7 @@ class Analytics extends Admin {
         $verified = 0;
         $links = Link::all(array("user_id = ?" => $this->user->id, "created >= ?" => date('Y-m-d', strtotime("-3 day"))), array("short", "item_id", "user_id"));
         foreach ($links as $link) {
-            $result = $this->stat($link, $duration);
+            $result = $link->stat($duration);
             if ($result) {
                 $clicks += $result["click"];
                 $earnings += $result["earning"];
