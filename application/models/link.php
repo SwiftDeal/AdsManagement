@@ -77,13 +77,16 @@ class Link extends Shared\Model {
             $countries = $googl->countries;
             $rpms = RPM::first(array("item_id = ?" => $this->item_id), array("value"));
             $rpm = json_decode($rpms->value);
-            foreach ($countries as $country) {
-                if (in_array($country->id, $country_code)) {
-                    $code = $country->id;
-                    $earning += ($rpm->$code)*($country->count)/1000;
-                    $country_click += $country->count;
+            if ($countries) {
+                foreach ($countries as $country) {
+                    if (in_array($country->id, $country_code)) {
+                        $code = $country->id;
+                        $earning += ($rpm->$code)*($country->count)/1000;
+                        $country_click += $country->count;
+                    }
                 }
             }
+
             if($total_click > $country_click) {
                 $earning += ($rpm->NONE)*($total_click - $country_click)/1000;
             }
