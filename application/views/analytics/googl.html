@@ -91,6 +91,10 @@
                         <td>{$googl->analytics->allTime->longUrlClicks}</td>
                     </tr>
                     <tr>
+                        <td>Verified Clicks</td>
+                        <td>{$verified->click}</td>
+                    </tr>
+                    <tr>
                         <th colspan="2">Referrers</th>
                     </tr>
                     {foreach $refer in $googl->analytics->allTime->referrers}

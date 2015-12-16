@@ -23,6 +23,10 @@ class Analytics extends Admin {
             $shortURL = RequestMethods::get("shortURL");
             $googl = Registry::get("googl");
             $object = $googl->analyticsFull($shortURL);
+            $link = Link::first(array("short = ?" => $shortURL), array("item_id", "user_id"));
+            if ($link) {
+                $view->set("verified", $link->clusterpoint());
+            }
 
             $longUrl = explode("?item=", $object->longUrl);
             if($longUrl) {

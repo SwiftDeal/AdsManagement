@@ -38,9 +38,9 @@ class Link extends Shared\Model {
         return $object;
     }
 
-    public function clusterpoint($item_id, $user_id, $time = 0) {
+    public function clusterpoint($time = 0) {
         $clusterpoint = new DB();
-        $query = "SELECT * FROM stats WHERE item_id == '{$item_id}' && user_id == '{$user_id}'";
+        $query = "SELECT * FROM stats WHERE item_id == '{$this->item_id}' && user_id == '{$this->user_id}'";
         $result = $clusterpoint->index($query);
         return isset($result) ? $result[0] : "";
     }
@@ -55,7 +55,7 @@ class Link extends Shared\Model {
         $return = array("click" => 0, "rpm" => 0, "earning" => 0, "verified" => 0);
 
         $time = ($duration == "day") ? time() - 24*60*60 : 0;
-        $clusterpoint = $this->clusterpoint($this->item_id, $this->user_id, $time);
+        $clusterpoint = $this->clusterpoint($time);
         if ($clusterpoint) {
             $verified = $clusterpoint->click;
         }
