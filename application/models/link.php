@@ -40,7 +40,7 @@ class Link extends Shared\Model {
 
     public function clusterpoint($item_id, $user_id, $time = 0) {
         $clusterpoint = new DB();
-        $query = "SELECT * FROM stats WHERE item_id == '{$item_id}' && user_id == '{$user_id}' && timestamp > $time";
+        $query = "SELECT * FROM stats WHERE item_id == '{$item_id}' && user_id == '{$user_id}'";
         $result = $clusterpoint->index($query);
         return isset($result) ? $result[0] : "";
     }
@@ -61,42 +61,44 @@ class Link extends Shared\Model {
         }
         
         $stat = $this->googl($this->short);
-        $googl = $stat->analytics->$duration;
-        $total_click = $googl->shortUrlClicks;
+        if($stat) {
+            $googl = $stat->analytics->$duration;
+            $total_click = $googl->shortUrlClicks;
 
-        if ($total_click) {
+            if ($total_click) {
 
-            $referrers = $googl->referrers;
-            foreach ($referrers as $referer) {
-                if ($referer->id == 'chocoghar.com') {
-                    $domain_click = $referer->count;
-                }
-            }
-            $total_click -= $domain_click;
-
-            $countries = $googl->countries;
-            $rpms = RPM::first(array("item_id = ?" => $this->item_id), array("value"));
-            $rpm = json_decode($rpms->value);
-            if ($countries) {
-                foreach ($countries as $country) {
-                    if (in_array($country->id, $country_code)) {
-                        $code = $country->id;
-                        $earning += ($rpm->$code)*($country->count)*($verified)/(1000*$total_click);
-                        $country_click += $country->count;
+                $referrers = $googl->referrers;
+                foreach ($referrers as $referer) {
+                    if ($referer->id == 'chocoghar.com') {
+                        $domain_click = $referer->count;
                     }
                 }
-            }
+                $total_click -= $domain_click;
 
-            if($total_click > $country_click) {
-                $earning += ($rpm->NONE)*($total_click - $country_click)*($verified)/(1000*$total_click);
-            }
+                $countries = $googl->countries;
+                $rpms = RPM::first(array("item_id = ?" => $this->item_id), array("value"));
+                $rpm = json_decode($rpms->value);
+                if ($countries) {
+                    foreach ($countries as $country) {
+                        if (in_array($country->id, $country_code)) {
+                            $code = $country->id;
+                            $earning += ($rpm->$code)*($country->count)*($verified)/(1000*$total_click);
+                            $country_click += $country->count;
+                        }
+                    }
+                }
 
-            $return = array(
-                "click" => $total_click,
-                "rpm" => round(($earning*1000)/($total_click), 2),
-                "earning" => round($earning, 2),
-                "verified" => $verified
-            );
+                if($total_click > $country_click) {
+                    $earning += ($rpm->NONE)*($total_click - $country_click)*($verified)/(1000*$total_click);
+                }
+
+                $return = array(
+                    "click" => $total_click,
+                    "rpm" => round(($earning*1000)/($total_click), 2),
+                    "earning" => round($earning, 2),
+                    "verified" => $verified
+                );
+            }
         }
         return $return;
     }

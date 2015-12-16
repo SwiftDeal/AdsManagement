@@ -99,7 +99,7 @@ class DB {
 		}
 		curl_close($ch);
 
-		return $response->results;
+		return isset($response->results) ? $response->results : NULL;
 	}
 
 	public function index($query='') {
@@ -119,7 +119,7 @@ class DB {
 		}
 		curl_close($ch);
 
-		return $response->results;
+		return isset($response->results) ? $response->results : NULL;
 	}
 
 }
