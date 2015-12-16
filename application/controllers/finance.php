@@ -22,14 +22,30 @@ class Finance extends Admin {
 
         $live = RequestMethods::get("live", 1);
         $page = RequestMethods::get("page", 1);
-        $limit = RequestMethods::get("limit", 10);
+        $limit = RequestMethods::get("limit", 50);
         
         $earnings = Earning::all(array("live = ?" => $live), array("DISTINCT user_id"), "amount", "desc", $limit, $page);
-        $database = Registry::get("database");
-        $result = $database->execute("SELECT COUNT(DISTINCT user_id) AS count FROM earnings WHERE live = {$live}");
-        $count = $result->fetch_array(MYSQLI_ASSOC);
+        $accounts = array();
+        foreach ($earnings as $earning) {
+            $amount = 0;
+            $es = Earning::all(array("user_id = ?" => $earning->user_id), array("DISTINCT item_id"), "created", "desc");
+            foreach ($es as $e) {
+                $e = Earning::first(array("user_id = ?" => $earning->user_id, "item_id = ?" => $e->item_id), array("amount"), "created", "desc");
+                $amount += $e->amount; 
+            }
+            array_push($accounts, array(
+                "user_id" => $earning->user_id,
+                "amount" => $amount
+            ));
+        }
 
-        $view->set("earnings", $earnings);
+        //echo "<pre>", print_r($accounts), "</pre>";
+        
+        $database = Registry::get("database");
+        $result = $database->execute("SELECT COUNT(DISTINCT user_id) AS count FROM earnings WHERE live = {$live}")->fetch_array(MYSQLI_ASSOC);
+        $count = $result;
+
+        $view->set("accounts", $accounts);
         $view->set("count", $count["count"]);
         $view->set("page", $page);
         $view->set("limit", $limit);

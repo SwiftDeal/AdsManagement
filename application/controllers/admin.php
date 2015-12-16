@@ -258,4 +258,23 @@ class Admin extends Auth {
         $this->setLayout();
     }
 
+    public function shell($action) {
+        $this->noview();
+        $command = '/usr/bin/php -q longThing.php &';
+        switch ($action) {
+            case 'run':
+                print shell_exec($command);
+                break;
+            case 'pid':
+                exec("ps aux | grep 'screen .* $command' | grep -v grep | awk '{ print $2 }' | head -1", $out);
+                print "The PID is: " . $out[0];
+                break;
+            default:
+                if (file_exists( "/proc/$pid" )){
+                    echo "process running";
+                }
+                break;
+        }
+    }
+
 }

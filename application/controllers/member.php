@@ -31,6 +31,7 @@ class Member extends Admin {
         }
         $yesterday = strftime("%Y-%m-%d", strtotime('-1 day'));
         $database = Registry::get("database");
+        $result = $database->execute("SELECT DISTINCT link_id, SUM(amount) AS earn FROM earnings WHERE user_id = {$this->user_id} ORDER BY created DESC")->fetch_array(MYSQLI_ASSOC);
         $totalEarning = $database->query()->from("earnings", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("created>?", $latest)->all();
         $totalClicks = $database->query()->from("stats", array("SUM(shortUrlClicks)" => "clicks"))->where("user_id=?", $this->user->id)->where("created>?", $latest)->all();
         $totalVerifiedClicks = $database->query()->from("stats", array("SUM(verifiedClicks)" => "clicks"))->where("user_id=?", $this->user->id)->where("created>?", $latest)->all();
