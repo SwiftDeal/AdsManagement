@@ -47,7 +47,7 @@ class CRON extends Auth {
             $stat = new Stat(array(
                 "user_id" => $link->user_id,
                 "link_id" => $link->id,
-                "verifiedClicks" => $data["click"],
+                "verifiedClicks" => $data["verified"],
                 "shortUrlClicks" => $data["click"]
             ));
             $stat->save();

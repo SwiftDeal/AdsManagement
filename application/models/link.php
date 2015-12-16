@@ -81,14 +81,14 @@ class Link extends Shared\Model {
                 foreach ($countries as $country) {
                     if (in_array($country->id, $country_code)) {
                         $code = $country->id;
-                        $earning += ($rpm->$code)*($country->count)/1000;
+                        $earning += ($rpm->$code)*($country->count)*($verified)/(1000*$total_click);
                         $country_click += $country->count;
                     }
                 }
             }
 
             if($total_click > $country_click) {
-                $earning += ($rpm->NONE)*($total_click - $country_click)/1000;
+                $earning += ($rpm->NONE)*($total_click - $country_click)*($verified)/(1000*$total_click);
             }
 
             $return = array(
