@@ -38,11 +38,15 @@ class Link extends Shared\Model {
         return $object;
     }
 
-    public function clusterpoint($time = 0) {
+    public function clusterpoint() {
+        $count = 0;
         $clusterpoint = new DB();
-        $query = "SELECT * FROM stats WHERE item_id == '{$this->item_id}' && user_id == '{$this->user_id}'";
-        $result = $clusterpoint->index($query);
-        return isset($result) ? $result[0] : "";
+        $query = "SELECT * FROM stats WHERE item_id == '{$this->item_id}' && user_id == '{$this->user_id}' LIMIT 0, 100";
+        $results = $clusterpoint->index($query);
+        foreach ($results as $result) {
+            $count += $result->click;
+        }
+        return $count;
     }
 
     public function stat($duration = "allTime") {
@@ -54,11 +58,7 @@ class Link extends Shared\Model {
         $country_code = array("IN", "US", "CA", "AU","GB");
         $return = array("click" => 0, "rpm" => 0, "earning" => 0, "verified" => 0);
 
-        $time = ($duration == "day") ? time() - 24*60*60 : 0;
-        $clusterpoint = $this->clusterpoint($time);
-        if ($clusterpoint) {
-            $verified = $clusterpoint->click;
-        }
+        $verified = $this->clusterpoint();
         
         $stat = $this->googl($this->short);
         if($stat) {
