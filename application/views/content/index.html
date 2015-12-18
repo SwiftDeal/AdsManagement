@@ -13,7 +13,7 @@
         </form>
         <hr>
         {if($user->domain)}
-            <p class="text-center"><i>Your Custom domain is <strong>{$user->domain}</strong></i></p>
+            <p class="text-center"><i>Your Custom domain is <strong id="domain">{$user->domain}</strong></i></p>
         {/if}
         {else}
             <p class="text-center"><strong>You have not created your custom domain create one <a href="/member/profile">here</a></strong></p>

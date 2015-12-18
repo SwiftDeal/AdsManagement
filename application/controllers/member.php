@@ -34,22 +34,18 @@ class Member extends Admin {
         $result = $database->execute("SELECT DISTINCT link_id, SUM(amount) AS earn FROM earnings WHERE user_id = '{$this->user->id}' ORDER BY created DESC")->fetch_array(MYSQLI_ASSOC);
         $totalEarning = $database->query()->from("earnings", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("created>?", $latest)->all();
         $totalClicks = $database->query()->from("stats", array("SUM(shortUrlClicks)" => "clicks"))->where("user_id=?", $this->user->id)->where("created>?", $latest)->all();
-        $totalVerifiedClicks = $database->query()->from("stats", array("SUM(verifiedClicks)" => "clicks"))->where("user_id=?", $this->user->id)->where("created>?", $latest)->all();
         $yesterdayEarning = $database->query()->from("earnings", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("created LIKE ?", "%{$yesterday}%")->all();
         $yesterdayClicks = $database->query()->from("stats", array("SUM(shortUrlClicks)" => "clicks"))->where("user_id=?", $this->user->id)->where("created LIKE ?", "%{$yesterday}%")->all();
-        $yesterdayVerifiedClicks = $database->query()->from("stats", array("SUM(verifiedClicks)" => "clicks"))->where("user_id=?", $this->user->id)->where("created LIKE ?", "%{$yesterday}%")->all();
+
         $paid = $database->query()->from("payments", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->all();
         
         $view->set("totalEarning", round($totalEarning[0]["earn"], 2));
         $view->set("totalClicks", round($totalClicks[0]["clicks"], 2));
-        $view->set("totalVerifiedClicks", round($totalVerifiedClicks[0]["clicks"], 2));
         $view->set("yesterdayEarning", round($yesterdayEarning[0]["earn"], 2));
         $view->set("paid", round($paid[0]["earn"], 2));
         $view->set("yesterdayClicks", round($yesterdayClicks[0]["clicks"], 2));
-        $view->set("yesterdayVerifiedClicks", round($yesterdayVerifiedClicks[0]["clicks"], 2));
         $view->set("links", $links);
         $view->set("news", $news);
-        $view->set("latest", $latest);
         $view->set("domain", substr($this->target()[array_rand($this->target())], 7));
     }
 

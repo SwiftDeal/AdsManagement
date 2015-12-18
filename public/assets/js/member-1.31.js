@@ -44,21 +44,26 @@ $(document).ready(function() {
             title = btn.data('title'),
             item = btn.data('item');
 
-        request.read({
-            action: "member/shortenURL",
-            data: {
-                hash: hash,
-                item: item
-            },
-            callback: function(data) {
-                btn.closest('div').find('.shorturl').val(data.shortURL);
-                btn.closest('div').find('.shorturl').focus();
-                $('#link_data').val(title+"\n"+data.shortURL);
-                $('#link_modal').modal('show');
-                document.execCommand('SelectAll');
-                document.execCommand("Copy", false, null);
-            }
-        });
+        if ($('#domain').length) {
+            request.read({
+                action: "member/shortenURL",
+                data: {
+                    hash: hash,
+                    item: item
+                },
+                callback: function(data) {
+                    btn.closest('div').find('.shorturl').val(data.shortURL);
+                    btn.closest('div').find('.shorturl').focus();
+                    $('#link_data').val(title+"\n"+data.shortURL);
+                    $('#link_modal').modal('show');
+                    document.execCommand('SelectAll');
+                    document.execCommand("Copy", false, null);
+                }
+            });
+        } else {
+            alert("Select your domain first");
+            window.location.href = "/member/profile";
+        };
 
     });
 
@@ -92,7 +97,7 @@ $(document).ready(function() {
             action: "analytics/link",
             data: {shortURL: shortURL},
             callback: function(data) {
-                item.html('RPM : <i class="fa fa-inr"></i> '+ data.rpm +', Click : '+ data.click +', Earning : <i class="fa fa-inr"></i> '+ data.earning+', Verified : <i class="fa fa-check"></i> '+ data.verified);
+                item.html('RPM : <i class="fa fa-inr"></i> '+ data.rpm +', Click : '+ data.click +', Earning : <i class="fa fa-inr"></i> '+ data.earning);
             }
         });
 
@@ -136,7 +141,6 @@ function realtime () {
     $('#realtime_avgrpm').html('<i class="fa fa-spinner fa-pulse"></i>');
     $('#realtime_earnings').html('<i class="fa fa-spinner fa-pulse"></i>');
     $('#realtime_clicks').html('<i class="fa fa-spinner fa-pulse"></i>');
-    $('#realtime_verified').html('<i class="fa fa-spinner fa-pulse"></i>');
     
     request.read({
         action: "analytics/realtime",
@@ -145,7 +149,6 @@ function realtime () {
             $('#realtime_avgrpm').html('<i class="fa fa-inr"></i>' + data.avgrpm);
             $('#realtime_earnings').html('<i class="fa fa-inr"></i>' + data.earnings);
             $('#realtime_clicks').html(data.clicks);
-            $('#realtime_verified').html(data.verified);
         }
     });
 }
