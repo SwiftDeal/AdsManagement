@@ -157,19 +157,6 @@ class Content extends Member {
     /**
      * @before _secure, changeLayout, _admin
      */
-    public function fraudLinks() {
-        $this->noview();
-        $this->seo(array("title" => "Fraud Links", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-        
-        $clusterpoint = new DB();
-
-        echo "<pre>", print_r($clusterpoint->index("SELECT * FROM stats WHERE item_id == '151' && user_id == '1' LIMIT 1")), "</pre>";
-    }
-
-    /**
-     * @before _secure, changeLayout, _admin
-     */
     public function domains() {
         $this->seo(array("title" => "All Domains", "view" => $this->getLayoutView()));
         $view = $this->getActionView();

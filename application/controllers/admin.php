@@ -30,8 +30,6 @@ class Admin extends Auth {
         $payments = $database->query()->from("payments", array("SUM(amount)" => "payment"))->all();
         $yesterdayEarning = $database->query()->from("earnings", array("SUM(amount)" => "earn"))->where("created LIKE ?", "%{$yesterday}%")->all();
         $yesterdayClicks = $database->query()->from("stats", array("SUM(verifiedClicks)" => "clicks"))->where("created LIKE ?", "%{$yesterday}%")->all();
-
-        $login = Meta::first(array("property = ?" => "login"), array("id", "value"));
         
         $view->set("now", $now);
         $view->set("users", $users);
@@ -42,7 +40,6 @@ class Admin extends Auth {
         $view->set("payment", round($payments[0]["payment"], 2));
         $view->set("yesterdayEarning", round($yesterdayEarning[0]["earn"], 2));
         $view->set("yesterdayClicks", round($yesterdayClicks[0]["clicks"], 2));
-        $view->set("login", $login);
     }
 
     /**

@@ -66,7 +66,6 @@ class Link extends Shared\Model {
             $total_click = $googl->shortUrlClicks;
 
             if ($total_click) {
-
                 $referrers = $googl->referrers;
                 foreach ($referrers as $referer) {
                     if ($referer->id == 'chocoghar.com') {
@@ -75,6 +74,10 @@ class Link extends Shared\Model {
                 }
                 $total_click -= $domain_click;
 
+                //commision
+                $meta = Meta::first(array("property = ?" => "commision"), array("value"));
+                $commision = 1 - ($meta->value)/100;
+
                 $countries = $googl->countries;
                 $rpms = RPM::first(array("item_id = ?" => $this->item_id), array("value"));
                 $rpm = json_decode($rpms->value);
@@ -82,18 +85,18 @@ class Link extends Shared\Model {
                     foreach ($countries as $country) {
                         if (in_array($country->id, $country_code)) {
                             $code = $country->id;
-                            $earning += ($rpm->$code)*($country->count)/1000;
+                            $earning += ($rpm->$code)*($country->count)*($commision)/1000;
                             $country_click += $country->count;
                         }
                     }
                 }
 
                 if($total_click > $country_click) {
-                    $earning += ($rpm->NONE)*($total_click - $country_click)/1000;
+                    $earning += ($rpm->NONE)*($total_click - $country_click)*($commision)/1000;
                 }
 
                 $return = array(
-                    "click" => $total_click,
+                    "click" => $total_click*$commision,
                     "rpm" => round(($earning*1000)/($total_click), 2),
                     "earning" => round($earning, 2),
                     "verified" => $verified

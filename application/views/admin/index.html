@@ -40,30 +40,6 @@
 
                 </div>
 
-                <div class="row">
-
-                    <div class="col-lg-4 col-md-4">
-                        <div class="panel panel-warning">
-                            <div class="panel-heading">Settings</div>
-                            <table class="table">
-                                <tr>
-                                    <th>
-                                        Allow User Login
-                                    </th>
-                                    <td>
-                                        {if($login->value == "yes")}
-                                            <a href="/admin/edit/meta/{$login->id}/value/no" class="btn btn-warning btn-xs"><i class="fa fa-ban"></i></a>&nbsp;
-                                        {/if}
-                                        {else}
-                                            <a href="/admin/edit/meta/{$login->id}/value/yes" class="btn btn-primary btn-xs"><i class="fa fa-check"></i></a>&nbsp;
-                                        {/else}
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-
-                </div>
             </div>
         </div>
     </div>
