@@ -35,7 +35,7 @@ class Link extends Shared\Model {
     public function googl() {
         $googl = Framework\Registry::get("googl");
         $object = $googl->analyticsFull($this->short);
-        return $object;
+        return isset($object) ? $object : NULL;
     }
 
     public function clusterpoint() {
@@ -43,8 +43,10 @@ class Link extends Shared\Model {
         $clusterpoint = new DB();
         $query = "SELECT * FROM stats WHERE item_id == '{$this->item_id}' && user_id == '{$this->user_id}' LIMIT 0, 100";
         $results = $clusterpoint->index($query);
-        foreach ($results as $result) {
-            $count += $result->click;
+        if ($results) {
+            foreach ($results as $result) {
+                $count += $result->click;
+            }
         }
         return $count;
     }
@@ -78,7 +80,7 @@ class Link extends Shared\Model {
                 $meta = Meta::first(array("property = ?" => "commision"), array("value"));
                 $commision = 1 - ($meta->value)/100;
 
-                $countries = $googl->countries;
+                $countries = isset($googl->countries) ? $googl->countries : NULL;
                 $rpms = RPM::first(array("item_id = ?" => $this->item_id), array("value"));
                 $rpm = json_decode($rpms->value);
                 if ($countries) {

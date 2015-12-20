@@ -10,7 +10,9 @@ class CRON extends Auth {
 
     public function index() {
         $this->noview();
+        $this->log("CRON Started");
         $this->verify();
+        $this->log("CRON Ended");
     }
     
     protected function verify() {

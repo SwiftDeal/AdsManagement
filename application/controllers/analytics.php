@@ -142,5 +142,31 @@ class Analytics extends Admin {
         $view->set("clicks", $clicks);
         $view->set("verified", $verified);
     }
+
+    /**
+     * @before _secure, changeLayout
+     */
+    public function logs($action = "", $name = "") {
+        $this->seo(array("title" => "Activity Logs", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+
+        if ($action == "unlink") {
+            $file = APP_PATH ."/logs/". $name . ".txt";
+            @unlink($file);
+            self::redirect("/analytics/logs");
+        }
+
+        $logs = array();
+        $path = APP_PATH . "/logs";
+        $iterator = new DirectoryIterator($path);
+
+        foreach ($iterator as $item) {
+            if (!$item->isDot()) {
+                array_push($logs, $item->getFilename());
+            }
+        }
+
+        $view->set("logs", $logs);
+    }
     
 }
