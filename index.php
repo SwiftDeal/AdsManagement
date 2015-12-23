@@ -7,6 +7,8 @@ define("URL", "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
 define("CDN", "http://chocoghar.com/public/assets/");
 
 date_default_timezone_set('Asia/Kolkata');
+ini_set('max_execution_time', 9000);
+ini_set('memory_limit','256M');
 
 try {
     

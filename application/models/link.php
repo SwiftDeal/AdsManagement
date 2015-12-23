@@ -98,7 +98,7 @@ class Link extends Shared\Model {
                 }
 
                 $return = array(
-                    "click" => $total_click*$commision,
+                    "click" => round($total_click*$commision),
                     "rpm" => round(($earning*1000)/($total_click), 2),
                     "earning" => round($earning, 2),
                     "verified" => $verified

@@ -138,17 +138,20 @@ function copy() {
 }
 
 function realtime () {
-    $('#realtime_avgrpm').html('<i class="fa fa-spinner fa-pulse"></i>');
     $('#realtime_earnings').html('<i class="fa fa-spinner fa-pulse"></i>');
     $('#realtime_clicks').html('<i class="fa fa-spinner fa-pulse"></i>');
+    $('#realtime_avgrpm').html('<i class="fa fa-spinner fa-pulse"></i>');
+
+    var overall_earnings = $('#overall_earnings').html(),
+        overall_clicks = $('#overall_clicks').html();
     
     request.read({
         action: "analytics/realtime",
         data: {},
         callback: function(data) {
             $('#realtime_avgrpm').html('<i class="fa fa-inr"></i>' + data.avgrpm);
-            $('#realtime_earnings').html('<i class="fa fa-inr"></i>' + data.earnings);
-            $('#realtime_clicks').html(data.clicks);
+            $('#realtime_earnings').html('<i class="fa fa-inr"></i>' + (data.earnings-overall_earnings));
+            $('#realtime_clicks').html(data.clicks - overall_clicks);
         }
     });
 }

@@ -36,9 +36,9 @@
         <div class="panel panel-default">
             <ul class="list-group">
                 <li class="list-group-item active text-center"><i class="fa fa-check-circle"></i> Overall Verified Stats</li>
-                <li class="list-group-item">Clicks <span class="badge">{$totalClicks}</span></li>
+                <li class="list-group-item">Clicks <span class="badge" id="overall_clicks">{$totalClicks}</span></li>
                 <li class="list-group-item">Average RPM <span class="badge"><i class="fa fa-inr"></i> {echo round($totalEarning*1000/$totalClicks, 2)}</span></li>
-                <li class="list-group-item">Earnings <span class="badge"><i class="fa fa-inr"></i> {$totalEarning}</span></li>
+                <li class="list-group-item">Earnings <span class="badge" id="overall_earnings"><i class="fa fa-inr"></i> {$totalEarning}</span></li>
             </ul>
         </div>
     </div>
