@@ -64,11 +64,15 @@
                     </tr>
                     <tr>
                         <td>Image</td>
-                        <td>{echo $item["image"]}</td>
+                        <td><img src="/public/assets/uploads/images/{echo $item['image']}"></td>
                     </tr>
                     <tr>
-                        <td>Created</td>
-                        <td>{echo $item["time"]}</td>
+                        <td>UserId</td>
+                        <td>{echo $item["user_id"]}</td>
+                    </tr>
+                    <tr>
+                        <td>Item Id</td>
+                        <td>{echo $item["id"]}</td>
                     </tr>
                 </tbody>
             </table>
