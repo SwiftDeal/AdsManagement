@@ -29,8 +29,7 @@ class CRON extends Auth {
         foreach ($links as $link) {
             $data = $link->stat();
             if ($data["click"] > 20) {
-                $stat = $this->saveStats($data, $link);
-                $this->saveEarnings($link, $stat, $data);
+                $this->saveStats($data, $link);
 
                 //sleep the script
                 if ($counter == 10) {
@@ -50,30 +49,14 @@ class CRON extends Auth {
                 "user_id" => $link->user_id,
                 "link_id" => $link->id,
                 "verifiedClicks" => $data["verified"],
-                "shortUrlClicks" => $data["click"]
+                "shortUrlClicks" => $data["click"],
+                "item_id" => $link->item_id,
+                "amount" => $data["earning"],
+                "rpm" => $data["rpm"]
             ));
             $stat->save();
             return $stat;
-        } else{
-            return $exist;
         }
     }
     
-    protected function saveEarnings($link, $stat, $data) {
-        $now = date('Y-m-d', strtotime("now"));
-        $exist = Earning::first(array("link_id = ?" => $link->id, "created > ?" => $now));
-        if(!$exist) {
-            $earning = new Earning(array(
-                "item_id" => $link->item_id,
-                "link_id" => $link->id,
-                "amount" => $data["earning"],
-                "user_id" => $link->user_id,
-                "stat_id" => $stat->id,
-                "rpm" => $data["rpm"],
-                "live" => 1
-            ));
-            $earning->save();
-        }
-    }
-
 }

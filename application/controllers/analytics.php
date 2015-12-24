@@ -54,9 +54,9 @@ class Analytics extends Admin {
         $item = Item::first(array("id = ?" => $id));
 
         $earn = 0;
-        $earnings = Earning::all(array("item_id = ?" => $item->id), array("amount"));
-        foreach ($earnings as $earning) {
-            $earn += $earning->amount;
+        $stats = Stat::all(array("item_id = ?" => $item->id), array("amount"));
+        foreach ($stats as $stat) {
+            $earn += $stat->amount;
         }
 
         $links = Link::count(array("item_id = ?" => $item->id));

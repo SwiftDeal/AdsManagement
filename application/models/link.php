@@ -55,6 +55,7 @@ class Link extends Shared\Model {
         $domain_click = 0;
         $country_click = 0;
         $earning = 0;
+        $avgrpm = array();
         $verified = 0;
         $code = "";
         $country_code = array("IN", "US", "CA", "AU","GB");
@@ -63,7 +64,7 @@ class Link extends Shared\Model {
         $verified = $this->clusterpoint();
         
         $stat = $this->googl($this->short);
-        if($stat) {
+        if(isset($stat)) {
             $googl = $stat->analytics->$duration;
             $total_click = $googl->shortUrlClicks;
 
@@ -87,8 +88,11 @@ class Link extends Shared\Model {
                     foreach ($countries as $country) {
                         if (in_array($country->id, $country_code)) {
                             $code = $country->id;
-                            $earning += ($rpm->$code)*($country->count)*($commision)/1000;
-                            $country_click += $country->count;
+                            $e = ($rpm->$code)*($country->count)*($commision)/1000;
+                            $earning += $e;
+                            $c = $country->count;
+                            $country_click += $c;
+                            array_push($avgrpm, ($e*1000/$c));
                         }
                     }
                 }
@@ -97,9 +101,15 @@ class Link extends Shared\Model {
                     $earning += ($rpm->NONE)*($total_click - $country_click)*($commision)/1000;
                 }
 
+                if (count($avgrpm) > 0) {
+                    $frpm = array_sum($avgrpm) / count($avgrpm);
+                } else {
+                    $frpm = $earning*1000/$total_click;
+                }
+
                 $return = array(
                     "click" => round($total_click*$commision),
-                    "rpm" => round(($earning*1000)/($total_click), 2),
+                    "rpm" => round($frpm, 2),
                     "earning" => round($earning, 2),
                     "verified" => $verified
                 );

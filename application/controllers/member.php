@@ -19,31 +19,37 @@ class Member extends Admin {
             "view" => $this->getLayoutView()
         ));
         $view = $this->getActionView();
-        
-        $links = Link::all(array("user_id = ?" => $this->user->id), array("id", "item_id", "short"), "created", "desc", 5, 1);
         $news = Meta::first(array("property = ?" => "news", "live = ?" => 1));
-        $record = Earning::first(array("user_id = ?" => $this->user->id), array("created"), "created", "desc");
-        if(!$record) {
-            $latest = date('Y-m-d', strtotime("now"));
-        } else{
-            $date = DateTime::createFromFormat('Y-m-d H:i:s', $record->created);
-            $latest = $date->format('Y-m-d');
-        }
         $yesterday = strftime("%Y-%m-%d", strtotime('-1 day'));
-        $database = Registry::get("database");
-        $result = $database->execute("SELECT DISTINCT link_id, SUM(amount) AS earn FROM earnings WHERE user_id = '{$this->user->id}' ORDER BY created DESC")->fetch_array(MYSQLI_ASSOC);
-        $totalEarning = $database->query()->from("earnings", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("created>?", $latest)->all();
-        $totalClicks = $database->query()->from("stats", array("SUM(shortUrlClicks)" => "clicks"))->where("user_id=?", $this->user->id)->where("created>?", $latest)->all();
-        $yesterdayEarning = $database->query()->from("earnings", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("created LIKE ?", "%{$yesterday}%")->all();
-        $yesterdayClicks = $database->query()->from("stats", array("SUM(shortUrlClicks)" => "clicks"))->where("user_id=?", $this->user->id)->where("created LIKE ?", "%{$yesterday}%")->all();
-
-        $paid = $database->query()->from("payments", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->all();
+        $yrpm = array();
+        $trpm = array();
         
-        $view->set("totalEarning", round($totalEarning[0]["earn"], 2));
-        $view->set("totalClicks", round($totalClicks[0]["clicks"], 2));
-        $view->set("yesterdayEarning", round($yesterdayEarning[0]["earn"], 2));
+        $database = Registry::get("database");
+        $paid = $database->query()->from("payments", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->all();
+
+        $links = Link::all(array("user_id = ?" => $this->user->id), array("id", "item_id", "short"), "created", "desc", 5, 1);
+        $totalEarning = 0; $totalClicks = 0; $yesterdayEarning = 0; $yesterdayClicks = 0;
+        $stats = Stat::all(array("user_id = ?" => $this->user->id), array("DISTINCT link_id"), "created", "desc");
+        foreach ($stats as $stat) {
+            $stat = Stat::first(array("link_id = ?" => $stat->link_id), array("amount", "shortUrlClicks", "created", "rpm"), "created", "desc");
+            $created = Framework\StringMethods::only_date($stat->created);
+            if ($created == $yesterday) {
+                $yesterdayEarning += $stat->amount;
+                $yesterdayClicks += $stat->shortUrlClicks;
+                array_push($yrpm, $stat->rpm);
+            }
+            $totalEarning += $stat->amount;
+            $totalClicks += $stat->shortUrlClicks;
+            array_push($trpm, $stat->rpm);
+        }
+        
+        $view->set("totalEarning", round($totalEarning, 2));
+        $view->set("totalClicks", round($totalClicks, 2));
+        $view->set("totalRPM", round((array_sum($trpm) / count($trpm)), 2));
+        $view->set("yesterdayEarning", round($yesterdayEarning, 2));
+        $view->set("yesterdayClicks", round($yesterdayClicks, 2));
+        $view->set("yesterdayRPM", round((array_sum($yrpm) / count($yrpm)), 2));
         $view->set("paid", round($paid[0]["earn"], 2));
-        $view->set("yesterdayClicks", round($yesterdayClicks[0]["clicks"], 2));
         $view->set("links", $links);
         $view->set("news", $news);
         $view->set("domain", substr($this->target()[array_rand($this->target())], 7));
@@ -174,21 +180,14 @@ class Member extends Admin {
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
         
-        $where = array(
-            "user_id = ?" => $this->user->id,
-            "created >= ?" => $this->changeDate($startdate, "-1"),
-            "created <= ?" => $this->changeDate($enddate, "1")
-        );
-
         $view = $this->getActionView();
-        $earnings = Earning::all($where, array("link_id", "stat_id", "rpm", "amount", "live", "created", "id"), "created", "desc", $limit, $page);
-        $count = Earning::count($where);
+        $stats = Stat::all(array("user_id = ?" => $this->user->id), array("DISTINCT link_id"), "created", "desc", $limit, $page);
+        $count = count($stats);
 
-        $view->set("earnings", $earnings);
+        $view->set("stats", $stats);
         $view->set("limit", $limit);
         $view->set("page", $page);
         $view->set("count", $count);
-        $view->set("total", Earning::count(array("user_id = ?" => $this->user->id)));
     }
     
     /**
@@ -307,9 +306,9 @@ class Member extends Admin {
      */
     public function delete($user_id) {
         $this->noview();
-        $earnings = Earning::first(array("user_id = ?" => $user_id));
-        foreach ($earnings as $earning) {
-            $earning->delete();
+        $stats = Stat::first(array("user_id = ?" => $user_id));
+        foreach ($stats as $stat) {
+            $stat->delete();
         }
 
         $links = Link::all(array("user_id = ?" => $user_id));

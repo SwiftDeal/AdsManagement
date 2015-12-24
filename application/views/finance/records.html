@@ -31,7 +31,7 @@
                     <tr>
                         <td>{$user->id}</td>
                         <td><a href="/admin/info/user/{$user->id}">{echo $user->name}</a></td>
-                        <td>₹ {echo round($account['amount'], 2)}</td>
+                        <td><i class="fa fa-inr"></i> {echo round($account['amount'], 2)}</td>
                         <td>
                         {if($live)}
                             <a href="/finance/makepayment/{$user->id}" class="btn btn-primary btn-xs"><i class="fa fa-bank"></i> Make Payment </a>&nbsp;

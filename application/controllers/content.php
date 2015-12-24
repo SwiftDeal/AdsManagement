@@ -188,7 +188,7 @@ class Content extends Member {
         $this->noview();
         $item = Item::first(array("id = ?" => $id));
 
-        $earnings = Earning::all(array("item_id = ?" => $item->id));
+        $stats = Stat::all(array("item_id = ?" => $item->id));
         foreach ($earnings as $earning) {
             $earning->delete();
         }
