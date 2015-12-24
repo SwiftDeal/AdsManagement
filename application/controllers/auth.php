@@ -125,21 +125,10 @@ class Auth extends Controller {
         ));
         $view = $this->getActionView();
 
-        if (RequestMethods::get("reset")) {
-            $token = RequestMethods::get("id");
-            $id = base64_decode($token);
-            $exist = User::first(array("id = ?" => $id), array("id"));
-            if($exist) {
-                $view->set("token", $token);
-            } else{
-                $view->set("message", 'Something Went Wrong please contact admin');
-            }
-        }
-
         if (RequestMethods::post("action") == "change") {
             $token = RequestMethods::post("token");
             $id = base64_decode($token);
-            $user = User::first(array("id = ?" => $id), array("id"));
+            $user = User::first(array("id = ?" => $id));
             if(RequestMethods::post("password") == RequestMethods::post("cpassword")) {
                 $user->password = sha1(RequestMethods::post("password"));
                 $user->save();
@@ -147,6 +136,17 @@ class Auth extends Controller {
                 $this->session();
             } else{
                 $view->set("message", 'Password Does not match');
+            }
+        }
+
+        if (RequestMethods::get("action") == "reset") {
+            $token = RequestMethods::get("token");
+            $id = base64_decode($token);
+            $exist = User::first(array("id = ?" => $id), array("id"));
+            if($exist) {
+                $view->set("token", $token);
+            } else{
+                $view->set("message", 'Something Went Wrong please contact admin');
             }
         }
     }

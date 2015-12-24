@@ -19,27 +19,18 @@ class Admin extends Auth {
         $view = $this->getActionView();
         $now = strftime("%Y-%m-%d", strtotime('now'));
         $yesterday = strftime("%Y-%m-%d", strtotime('-1 day'));
-
-        $users = User::count();
-        $items = Item::count();
-        $links = Link::count();
+        $record = Stat::first(array(), array("created"), "created", "desc");
+        $latest = strftime("%Y-%m-%d", strtotime($record->created));
 
         $database = Registry::get("database");
-        $earnings = $database->query()->from("earnings", array("SUM(amount)" => "earn"))->all();
-        $stats = $database->query()->from("stats", array("SUM(verifiedClicks)" => "clicks"))->all();
+        $total = $database->query()->from("stats", array("SUM(amount)" => "earn", "SUM(shortUrlClicks)" => "clicks", "SUM(verifiedClicks)" => "vclicks"))->where("created LIKE ?", "%{$latest}%")->all();
         $payments = $database->query()->from("payments", array("SUM(amount)" => "payment"))->all();
-        $yesterdayEarning = $database->query()->from("earnings", array("SUM(amount)" => "earn"))->where("created LIKE ?", "%{$yesterday}%")->all();
-        $yesterdayClicks = $database->query()->from("stats", array("SUM(verifiedClicks)" => "clicks"))->where("created LIKE ?", "%{$yesterday}%")->all();
+        $yesterday = $database->query()->from("stats", array("SUM(amount)" => "earn", "SUM(shortUrlClicks)" => "clicks", "SUM(verifiedClicks)" => "vclicks"))->where("created LIKE ?", "%{$yesterday}%")->all();
         
         $view->set("now", $now);
-        $view->set("users", $users);
-        $view->set("items", $items);
-        $view->set("links", $links);
-        $view->set("earn", round($earnings[0]["earn"], 2));
-        $view->set("clicks", round($stats[0]["clicks"], 2));
+        $view->set("total", $total);
         $view->set("payment", round($payments[0]["payment"], 2));
-        $view->set("yesterdayEarning", round($yesterdayEarning[0]["earn"], 2));
-        $view->set("yesterdayClicks", round($yesterdayClicks[0]["clicks"], 2));
+        $view->set("yesterday", $yesterday);
     }
 
     /**

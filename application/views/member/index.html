@@ -6,6 +6,20 @@
                 {$news->value}
             </div>
         {/if}
+        {if($today)}
+        <div class="panel panel-success">
+            <div class="panel-heading text-center">
+                <strong>Today Clicks</strong>
+            </div>
+            <table class="table">
+                <tr>
+                    {foreach $t in $today}
+                    <td>{echo $t['country']}: {echo $t['count']}</td>
+                    {/foreach}
+                </tr>
+            </table>
+        </div>
+        {/if}
     </div>
 </div>
 <div class="row">

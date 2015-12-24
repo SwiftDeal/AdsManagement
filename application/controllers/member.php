@@ -8,7 +8,7 @@ use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
 use ClusterPoint\DB as DB;
 
-class Member extends Admin {
+class Member extends Analytics {
     
     /**
      * @before _secure, memberLayout
@@ -52,6 +52,7 @@ class Member extends Admin {
         $view->set("paid", round($paid[0]["earn"], 2));
         $view->set("links", $links);
         $view->set("news", $news);
+        $view->set("today", $this->today());
         $view->set("domain", substr($this->target()[array_rand($this->target())], 7));
     }
 
@@ -152,7 +153,7 @@ class Member extends Admin {
             "view" => $this->getLayoutView()
         ));
         $view = $this->getActionView();
-
+        $today = strftime("%Y-%m-%d", strtotime('now'));
         $database = Registry::get("database");
         $result = $database->execute("SELECT user_id, SUM(shortUrlClicks) as click FROM stats GROUP BY user_id ORDER BY click DESC LIMIT 10");
         $earners = array();
@@ -161,10 +162,32 @@ class Member extends Admin {
             $earners[] = $data;
         }
 
-        $time = time() - 24*60*60;
-        $clusterpoint = new DB();
-        $query = "SELECT user_id, SUM(click) FROM stats WHERE timestamp > $time GROUP BY user_id ORDER BY click DESC LIMIT 10";
-        //$result = $clusterpoint->index($query);
+        $m = new MongoClient();
+        $db = $m->stats;
+        $collection = $db->hits;
+        $stats = array();$stat = array();
+
+        $records = $collection->find(array('created' => $today));
+        $records->sort(array("click" => -1));
+        $records->limit(10);
+        if (isset($records)) {
+            foreach ($records as $record) {
+                if (isset($stats[$record['user_id']])) {
+                    $stats[$record['user_id']] += $record['click'];
+                } else {
+                    $stats[$record['user_id']] = $record['click'];
+                }
+            }
+
+            foreach ($stats as $key => $value) {
+                array_push($stat, array(
+                    "user_id" => $key,
+                    "count" => $value
+                ));
+            }
+            
+            $view->set("today", $stat);
+        }
 
         $view->set("earners", $earners);
     }

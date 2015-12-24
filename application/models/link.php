@@ -51,7 +51,36 @@ class Link extends Shared\Model {
         return $count;
     }
 
-    public function stat($duration = "allTime") {
+    public function mongodb($doc) {
+        $m = new MongoClient();
+        $db = $m->stats;
+        $collection = $db->hits;
+        $stats = array();$stat = array();
+    
+        $records = $collection->find($doc);
+        if (isset($records)) {
+            foreach ($records as $record) {
+                if (isset($stats[$record['country']])) {
+                    $stats[$record['country']] += $record['click'];
+                } else {
+                    $stats[$record['country']] = $record['click'];
+                }
+            }
+
+            foreach ($stats as $key => $value) {
+                array_push($stat, array(
+                    "country" => $key,
+                    "count" => $value
+                ));
+            }
+            
+            return $stat;
+        } else{
+            return 0;
+        }
+    }
+
+    public function stat($duration = "allTime", $mongodb = false, $clusterpoint = false) {
         $domain_click = 0;
         $country_click = 0;
         $earning = 0;
@@ -61,10 +90,10 @@ class Link extends Shared\Model {
         $country_code = array("IN", "US", "CA", "AU","GB");
         $return = array("click" => 0, "rpm" => 0, "earning" => 0, "verified" => 0);
 
-        $verified = $this->clusterpoint();
+        $clusterpoint ? $verified = $this->clusterpoint() : NULL;
         
         $stat = $this->googl($this->short);
-        if(isset($stat)) {
+        if(is_object($stat)) {
             $googl = $stat->analytics->$duration;
             $total_click = $googl->shortUrlClicks;
 

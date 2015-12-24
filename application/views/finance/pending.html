@@ -1,20 +1,6 @@
 <div id="page-wrapper">
     <div class="row col-lg-12">
         <h1 class="page-header text-center">Finance Records</h1>
-        <form class="form-inline text-center" role="form" method="get" action="">
-            <div class="form-group">
-                <div class="input-group">
-                    <label class="sr-only">Status</label>
-                    <select name="live" class="form-control" value="{$live}">
-                        <option>Payment Status</option>
-                        <option value="null">Paid</option>
-                        <option value="1">Unpaid</option>
-                    </select>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Show</button>
-        </form>
-        <hr>
         <div class="panel panel-default">
             <table class="table">
                 <thead>
@@ -31,15 +17,15 @@
                     <tr>
                         <td>{$user->id}</td>
                         <td><a href="/admin/info/user/{$user->id}">{echo $user->name}</a></td>
-                        <td><i class="fa fa-inr"></i> {echo round($account['amount'], 2)}</td>
+                        <td><i class="fa fa-inr"></i> {echo round($account['pending'], 2)}</td>
                         <td>
-                        {if($live)}
-                            <a href="/finance/makepayment/{$user->id}" class="btn btn-primary btn-xs"><i class="fa fa-bank"></i> Make Payment </a>&nbsp;
+                        {if($account['paid'])}
+                            <a href="/finance/payments?user_id={$user->id}" class="btn btn-primary btn-xs"><i class="fa fa-bank"></i> Payment History </a>
                         {/if}
                         {else}
-                            <a href="/finance/payhistory/{$user->id}" class="btn btn-primary btn-xs"><i class="fa fa-bank"></i> Payment History </a>
+                            <a href="/finance/makepayment/{$user->id}" class="btn btn-primary btn-xs"><i class="fa fa-bank"></i> Make Payment </a>&nbsp;
                         {/else}
-                        <a href="/admin/search?model=earning&key=user_id&sign=equal&value={$user->id}" class="btn btn-info btn-xs"><i class="fa fa-inr"></i> Earnings Details</a>&nbsp;
+                        <a href="/admin/search?model=stat&key=user_id&sign=equal&value={$user->id}" class="btn btn-info btn-xs"><i class="fa fa-inr"></i> Earnings Details</a>&nbsp;
                         <a href="/auth/loginas/{$user->id}" class="btn btn-warning btn-xs"><i class="fa fa-sign-in"></i> Login As</a>
                         </td>
                     </tr>
@@ -53,7 +39,7 @@
                 {if($page != 1)}
                 <li><a href="{echo Shared\Markup::pagination($page - 1)}">Previous</a></li>
                 {/if}
-                {if($page < $count/$limit)}
+                {if($count == 10)}
                 <li><a href="{echo Shared\Markup::pagination($page + 1)}">Next</a></li>
                 {/if}
             </ul>

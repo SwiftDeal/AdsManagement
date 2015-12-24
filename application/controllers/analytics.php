@@ -168,5 +168,35 @@ class Analytics extends Admin {
 
         $view->set("logs", $logs);
     }
+
+    protected function today() {
+        $today = strftime("%Y-%m-%d", strtotime('now'));
+        $m = new MongoClient();
+        $db = $m->stats;
+        $collection = $db->hits;
+        $stats = array();$stat = array();
+
+        $records = $collection->find(array('user_id' => $this->user->id, 'created' => $today));
+        if (isset($records)) {
+            foreach ($records as $record) {
+                if (isset($stats[$record['country']])) {
+                    $stats[$record['country']] += $record['click'];
+                } else {
+                    $stats[$record['country']] = $record['click'];
+                }
+            }
+
+            foreach ($stats as $key => $value) {
+                array_push($stat, array(
+                    "country" => $key,
+                    "count" => $value
+                ));
+            }
+            
+            return $stat;
+        } else{
+            return 0;
+        }
+    }
     
 }
