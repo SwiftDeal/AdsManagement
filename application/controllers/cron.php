@@ -24,7 +24,7 @@ class CRON extends Auth {
             "created >= ?" => $startdate,
             "created <= ?" => $enddate
         );
-        $links = Link::all($where, array("id", "short", "item_id", "user_id"));
+        $links = Link::all(array(), array("id", "short", "item_id", "user_id"));
 
         foreach ($links as $link) {
             $data = $link->stat();
