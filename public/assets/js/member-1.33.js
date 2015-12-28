@@ -137,22 +137,6 @@ function copy() {
     document.execCommand("Copy", false, null);
 }
 
-function realtime () {
-    $('#realtime_earnings').html('<i class="fa fa-spinner fa-pulse"></i>');
-    $('#realtime_clicks').html('<i class="fa fa-spinner fa-pulse"></i>');
-    $('#realtime_avgrpm').html('<i class="fa fa-spinner fa-pulse"></i>');
-
-    request.read({
-        action: "analytics/realtime",
-        data: {},
-        callback: function(data) {
-            $('#realtime_avgrpm').html('<i class="fa fa-inr"></i>' + data.avgrpm);
-            $('#realtime_earnings').html('<i class="fa fa-inr"></i>' + data.earnings);
-            $('#realtime_clicks').html(data.clicks);
-        }
-    });
-}
-
 //zopim chat
 window.$zopim||(function(d,s){var z=$zopim=function(c){z._.push(c)},$=z.s=
 d.createElement(s),e=d.getElementsByTagName(s)[0];z.set=function(o){z.set.

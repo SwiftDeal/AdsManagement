@@ -27,23 +27,16 @@ class Stat extends Shared\Model {
      * @column
      * @readwrite
      * @type integer
+     * @index
      */
-    protected $_verifiedClicks;
+    protected $_item_id;
     
     /**
      * @column
      * @readwrite
      * @type integer
      */
-    protected $_shortUrlClicks;
-
-    /**
-     * @column
-     * @readwrite
-     * @type integer
-     * @index
-     */
-    protected $_item_id;
+    protected $_click;
 
     /**
      * @column

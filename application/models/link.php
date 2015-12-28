@@ -38,24 +38,19 @@ class Link extends Shared\Model {
         return isset($object) ? $object : NULL;
     }
 
-    public function clusterpoint() {
-        $count = 0;
-        $clusterpoint = new DB();
-        $query = "SELECT * FROM stats WHERE item_id == '{$this->item_id}' && user_id == '{$this->user_id}' LIMIT 0, 100";
-        $results = $clusterpoint->index($query);
-        if ($results) {
-            foreach ($results as $result) {
-                $count += $result->click;
-            }
-        }
-        return $count;
-    }
-
-    public function mongodb($doc) {
+    public function mongodb($date = NULL) {
         $m = new MongoClient();
         $db = $m->stats;
         $collection = $db->hits;
         $stats = array();$stat = array();
+        $doc = array(
+            "item_id" => $this->item_id,
+            "user_id" => $this->user_id
+        );
+
+        if ($date) {
+            $doc["created"] = $date;
+        }
     
         $records = $collection->find($doc);
         if (isset($records)) {
@@ -80,60 +75,45 @@ class Link extends Shared\Model {
         }
     }
 
-    public function stat($duration = "allTime", $mongodb = false, $clusterpoint = false) {
-        $domain_click = 0;
-        $country_click = 0;
+    public function stat($date = NULL) {
+        $total_click = 0;
         $earning = 0;
-        $verified = 0;
-        $code = "";
-        $country_code = array("IN", "US", "CA", "AU","GB");
-        $return = array("click" => 0, "rpm" => 0, "earning" => 0, "verified" => 0);
+        $analytics = array();
+        $countries = array("IN", "US", "CA", "AU","GB");
+        $return = array("click" => 0, "rpm" => 0, "earning" => 0, "analytics" => 0);
 
-        $clusterpoint ? $verified = $this->clusterpoint() : NULL;
         
-        $stat = $this->googl($this->short);
-        if(is_object($stat)) {
-            $googl = $stat->analytics->$duration;
-            $total_click = $googl->shortUrlClicks;
+        $results = $this->mongodb($date);
+        if (is_array($results)) {
 
-            if ($total_click) {
-                $referrers = $googl->referrers;
-                foreach ($referrers as $referer) {
-                    if ($referer->id == 'chocoghar.com') {
-                        $domain_click = $referer->count;
-                    }
+            //commision
+            $meta = Meta::first(array("property = ?" => "commision"), array("value"));
+            $commision = 1 - ($meta->value)/100;
+
+            //rpm
+            $rpms = RPM::first(array("item_id = ?" => $this->item_id), array("value"));
+            $rpm = json_decode($rpms->value);
+
+            foreach ($results as $result) {
+                $code = $result["country"];
+                $total_click += $result["count"];
+                if (in_array($code, $countries)) {
+                    $earning += ($rpm->$code)*($result["count"])*($commision)/1000;
+                    $analytics[$code] += $result["count"];
+                } else {
+                    $earning += ($rpm->NONE)*($result["count"])*($commision)/1000;
+                    $analytics["NONE"] += $result["count"];
                 }
-                $total_click -= $domain_click;
-
-                //commision
-                $meta = Meta::first(array("property = ?" => "commision"), array("value"));
-                $commision = 1 - ($meta->value)/100;
-
-                $countries = isset($googl->countries) ? $googl->countries : NULL;
-                $rpms = RPM::first(array("item_id = ?" => $this->item_id), array("value"));
-                $rpm = json_decode($rpms->value);
-                if ($countries) {
-                    foreach ($countries as $country) {
-                        if (in_array($country->id, $country_code)) {
-                            $code = $country->id;
-                            $earning += ($rpm->$code)*($country->count)*($commision)/1000;
-                            $country_click += $country->count;
-                        }
-                    }
-                }
-
-                if($total_click > $country_click) {
-                    $earning += ($rpm->NONE)*($total_click - $country_click)*($commision)/1000;
-                }
-
-                $return = array(
-                    "click" => round($total_click*$commision),
-                    "rpm" => round($earning*1000/$total_click, 2),
-                    "earning" => round($earning, 2),
-                    "verified" => $verified
-                );
             }
+
+            $return = array(
+                "click" => round($total_click*$commision),
+                "rpm" => round($earning*1000/$total_click, 2),
+                "earning" => round($earning, 2),
+                "analytics" => $analytics
+            );
         }
+        
         return $return;
     }
 }

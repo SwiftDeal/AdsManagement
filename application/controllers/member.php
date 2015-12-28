@@ -14,41 +14,19 @@ class Member extends Analytics {
      * @before _secure, memberLayout
      */
     public function index() {
-        $this->seo(array(
-            "title" => "Dashboard",
-            "view" => $this->getLayoutView()
-        ));
+        $this->seo(array("title" => "Dashboard","view" => $this->getLayoutView()));
         $view = $this->getActionView();
         $news = Meta::first(array("property = ?" => "news", "live = ?" => 1));
         $yesterday = strftime("%Y-%m-%d", strtotime('-1 day'));
-        $yrpm = array();
-        $trpm = array();
         
         $database = Registry::get("database");
         $paid = $database->query()->from("payments", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->all();
-
         $links = Link::all(array("user_id = ?" => $this->user->id), array("id", "item_id", "short"), "created", "desc", 5, 1);
-        $totalEarning = 0; $totalClicks = 0; $yesterdayEarning = 0; $yesterdayClicks = 0;
-        $stats = Stat::all(array("user_id = ?" => $this->user->id), array("DISTINCT link_id"), "created", "desc");
-        foreach ($stats as $stat) {
-            $stat = Stat::first(array("link_id = ?" => $stat->link_id), array("amount", "shortUrlClicks", "created", "rpm"), "created", "desc");
-            $created = Framework\StringMethods::only_date($stat->created);
-            if ($created == $yesterday) {
-                $yesterdayEarning += $stat->amount;
-                $yesterdayClicks += $stat->shortUrlClicks;
-                array_push($yrpm, $stat->rpm);
-            }
-            $totalEarning += $stat->amount;
-            $totalClicks += $stat->shortUrlClicks;
-            array_push($trpm, $stat->rpm);
-        }
         
-        $view->set("totalEarning", round($totalEarning, 2));
-        $view->set("totalClicks", round($totalClicks, 2));
-        $view->set("totalRPM", round((array_sum($trpm) / count($trpm)), 2));
-        $view->set("yesterdayEarning", round($yesterdayEarning, 2));
-        $view->set("yesterdayClicks", round($yesterdayClicks, 2));
-        $view->set("yesterdayRPM", round((array_sum($yrpm) / count($yrpm)), 2));
+        $totalEarning = 0; $totalClicks = 0; $yesterdayEarning = 0; $yesterdayClicks = 0;
+        $total = $database->query()->from("stats", array("SUM(amount)" => "earn", "SUM(click)" => "clicks"))->where("user_id=?", $this->user->id)->all();
+    
+        $view->set("total", 0);
         $view->set("paid", round($paid[0]["earn"], 2));
         $view->set("links", $links);
         $view->set("news", $news);
@@ -169,7 +147,6 @@ class Member extends Analytics {
 
         $records = $collection->find(array('created' => $today));
         $records->sort(array("click" => -1));
-        $records->limit(10);
         if (isset($records)) {
             foreach ($records as $record) {
                 if (isset($stats[$record['user_id']])) {

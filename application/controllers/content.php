@@ -207,7 +207,7 @@ class Content extends Member {
         self::redirect($_SERVER["HTTP_REFERER"]);        
     }
 
-    public function resize($image, $width = 470, $height = 246) {
+    public function resize($image, $width = 560, $height = 292) {
         $path = APP_PATH . "/public/assets/uploads/images";
         $cdn = CDN;$image = base64_decode($image);
         if ($image) {

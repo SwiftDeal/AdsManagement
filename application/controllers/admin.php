@@ -23,9 +23,8 @@ class Admin extends Auth {
         $latest = strftime("%Y-%m-%d", strtotime($record->created));
 
         $database = Registry::get("database");
-        $total = $database->query()->from("stats", array("SUM(amount)" => "earn", "SUM(shortUrlClicks)" => "clicks", "SUM(verifiedClicks)" => "vclicks"))->where("created LIKE ?", "%{$latest}%")->all();
+        $total = $database->query()->from("stats", array("SUM(amount)" => "earn", "SUM(click)" => "clicks"))->all();
         $payments = $database->query()->from("payments", array("SUM(amount)" => "payment"))->all();
-        $yesterday = $database->query()->from("stats", array("SUM(amount)" => "earn", "SUM(shortUrlClicks)" => "clicks", "SUM(verifiedClicks)" => "vclicks"))->where("created LIKE ?", "%{$yesterday}%")->all();
         
         $view->set("now", $now);
         $view->set("total", $total);
