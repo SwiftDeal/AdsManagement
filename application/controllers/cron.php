@@ -16,7 +16,6 @@ class CRON extends Auth {
     }
     
     protected function verify() {
-        $counter = 0;
         $now = strftime("%Y-%m-%d", strtotime('now'));
         $startdate = date('Y-m-d', strtotime("-15 day"));
         $enddate = date('Y-m-d', strtotime("now"));
@@ -29,11 +28,11 @@ class CRON extends Auth {
 
         foreach ($links as $link) {
             $data = $link->stat($now);
-            if ($data["click"] > 10) {
+            if ($data["click"] > 20) {
                 $this->saveStats($data, $link);
 
                 //sleep the script
-                sleep(1);
+                //sleep(1);
             }
         }
     }

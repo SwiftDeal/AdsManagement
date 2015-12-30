@@ -39,7 +39,7 @@ class Link extends Shared\Model {
     }
 
     public function mongodb($date = NULL) {
-        $m = new MongoClient();
+        $m = new Mongo();
         $db = $m->stats;
         $collection = $db->hits;
         $stats = array();$stat = array();
