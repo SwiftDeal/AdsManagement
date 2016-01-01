@@ -106,12 +106,14 @@ class Link extends Shared\Model {
                 }
             }
 
-            $return = array(
-                "click" => round($total_click*$commision),
-                "rpm" => round($earning*1000/$total_click, 2),
-                "earning" => round($earning, 2),
-                "analytics" => $analytics
-            );
+            if ($total_click) {
+                $return = array(
+                    "click" => round($total_click*$commision),
+                    "rpm" => round($earning*1000/$total_click, 2),
+                    "earning" => round($earning, 2),
+                    "analytics" => $analytics
+                );
+            }
         }
         
         return $return;

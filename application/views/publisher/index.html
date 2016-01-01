@@ -1,27 +1,14 @@
+<link rel="stylesheet" href="{echo CDN}css/jquery-jvectormap-2.0.3.css" type="text/css" media="screen"/>
+<div class="row text-center">
+    <div class="col-lg-12" id="world-map" style="max-width: 1100px; height: 400px"></div>
+</div>
 <div class="row">
     <div class="col-lg-12"><br>
         {if isset($news)}
-            <div class="alert alert-success alert-dismissible fade in" role="alert">
+            <div class="alert alert-info alert-dismissible fade in" role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
                 {$news->value}
             </div>
-        {/if}
-        {if($today['click'])}
-        <div class="panel panel-success">
-            <div class="panel-heading text-center">
-                <strong>Today Clicks</strong>
-            </div>
-            <table class="table">
-                <tr>
-                    <td>IN: {echo $today['analytics']['IN']}</td>
-                    <td>US: {echo $today['analytics']['US']}</td>
-                    <td>CA: {echo $today['analytics']['CA']}</td>
-                    <td>AU: {echo $today['analytics']['AU']}</td>
-                    <td>GB: {echo $today['analytics']['GB']}</td>
-                    <td>Others: {echo $today['analytics']['NONE']}</td>
-                </tr>
-            </table>
-        </div>
         {/if}
     </div>
 </div>
@@ -31,9 +18,9 @@
         <div class="panel panel-default">
             <ul class="list-group">
                 <li class="list-group-item active text-center"><i class="fa fa-globe"></i> Realtime Today</li>
-                <li class="list-group-item">Clicks<span class="badge">{echo $today['click']}</span></li>
-                <li class="list-group-item">Average RPM <span class="badge"><i class="fa fa-inr"></i> {echo $today['rpm']}</span></li>
-                <li class="list-group-item">Earnings <span class="badge"><i class="fa fa-inr"></i> {echo $today['earning']}</span></li>
+                <li class="list-group-item">Clicks<span class="badge" id="today_click"><i class="fa fa-spinner fa-pulse"></i></span></li>
+                <li class="list-group-item">Average RPM <span class="badge" id="today_rpm"><i class="fa fa-spinner fa-pulse"></i></span></li>
+                <li class="list-group-item">Earnings <span class="badge" id="today_earning"><i class="fa fa-spinner fa-pulse"></i></span></li>
             </ul>
         </div>
     </div>
@@ -64,7 +51,7 @@
 
 {if($user->domain == "")}
 <div class="row text-center">
-    <form class="form-horizontal" method="post" action="/member/profile">
+    <form class="form-horizontal" method="post" action="/publisher/profile">
         <div class="form-group">
             <label class="col-sm-3 control-label">Custom Domain</label>
             <div class="col-sm-6">
@@ -118,10 +105,17 @@
             {/else}
             <div class="panel-body">
                 <div class="text-right">
-                    <a href="/member/mylinks">View All Links <i class="fa fa-arrow-circle-right"></i></a>
+                    <a href="/publisher/mylinks">View All Links <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             
         </div>
     </div>
 </div>
+<script src="{echo CDN}js/jquery-jvectormap-2.0.3.min.js"></script>
+<script src="{echo CDN}js/jquery-jvectormap-world-mill-en.js"></script>
+<script type="text/javascript">
+    $(function(){
+        stats();
+    });
+</script>

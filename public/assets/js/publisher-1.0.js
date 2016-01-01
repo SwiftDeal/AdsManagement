@@ -20,7 +20,7 @@ $(document).ready(function() {
         e.preventDefault();
         var data = $(this).serializeArray();
         request.read({
-            action: "member/stats",
+            action: "publisher/stats",
             data: data,
             callback: function(data) {
                 $('#stats').html('');
@@ -46,7 +46,7 @@ $(document).ready(function() {
 
         if ($('#domain').length) {
             request.read({
-                action: "member/shortenURL",
+                action: "publisher/shortenURL",
                 data: {
                     hash: hash,
                     item: item
@@ -62,7 +62,7 @@ $(document).ready(function() {
             });
         } else {
             alert("Select your domain first");
-            window.location.href = "/member/profile";
+            window.location.href = "/publisher/profile";
         };
 
     });
@@ -104,6 +104,55 @@ $(document).ready(function() {
     });
 
 });
+
+function today () {
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1; //January is 0!
+    var yyyy = today.getFullYear();
+
+    if(dd<10) {
+        dd='0'+dd
+    } 
+
+    if(mm<10) {
+        mm='0'+mm
+    } 
+
+    today = yyyy+'-'+mm+'-'+dd;
+    return today;
+}
+
+function stats() {
+    request.read({
+        action: "analytics/stats/" + today(),
+        callback: function(data) {
+            $('#today_click').html(data.stats.click);
+            $('#today_rpm').html('<i class="fa fa-inr"></i> '+ data.stats.rpm);
+            $('#today_earning').html('<i class="fa fa-inr"></i> '+ data.stats.earning);
+
+            var gdpData = data.stats.analytics;
+            $('#world-map').vectorMap({
+                map: 'world_mill_en',
+                series: {
+                    regions: [{
+                        values: gdpData,
+                        scale: ['#C8EEFF', '#0071A4'],
+                        normalizeFunction: 'polynomial'
+                    }]
+                },
+                onRegionTipShow: function(e, el, code) {
+                    if (gdpData.hasOwnProperty(code)) {
+                        el.html(el.html() + ' (Clicks - ' + gdpData[code] + ')');
+                    } else{
+                        el.html(el.html() + ' (Clicks - 0)');
+                    };
+                }
+            });
+        }
+    });
+}
+
 
 function toArray(object) {
     var array = $.map(object, function(value, index) {

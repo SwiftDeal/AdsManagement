@@ -141,41 +141,48 @@ class Analytics extends Admin {
         $view->set("logs", $logs);
     }
 
-    protected function today() {
-        $now = strftime("%Y-%m-%d", strtotime('now'));
-        $total_click = 0;
-        $earning = 0;
-        $analytics = array();
-        $countries = array("IN", "US", "CA", "AU","GB");
+    /**
+     * Today Stats of user
+     * @return array earnings, clicks, rpm, analytics
+     * @before _secure
+     */
+    public function stats($created = NULL, $item_id = NULL, $user_id = NULL) {
+        $this->JSONview();$view = $this->getActionView();
+        $total_click = 0;$earning = 0;$analytics = array();$query = array();
         $rpm = array("IN" => 135, "US" => 220, "CA" => 220, "AU" => 220, "GB" => 220, "NONE" => 100);
         $return = array("click" => 0, "rpm" => 0, "earning" => 0, "analytics" => array());
+
+        is_null($created) ? NULL : $query['created'] = $created;
+        is_null($item_id) ? NULL : $query['item_id'] = $item_id;
+        $query['user_id'] = (is_null($user_id) ? $this->user->id : $user_id);
 
         $connection = new Mongo();
         $db = $connection->stats;
         $collection = $db->hits;
 
-        $cursor = $collection->find(array('user_id' => $this->user->id, 'created' => $now));
+        $cursor = $collection->find($query);
         foreach ($cursor as $id => $result) {
             $code = $result["country"];
             $total_click += $result["click"];
-            if (in_array($code, $countries)) {
+            if (array_key_exists($code, $rpm)) {
                 $earning += ($rpm[$code])*($result["click"])/1000;
-                $analytics[$code] += $result["click"];
             } else {
                 $earning += ($rpm["NONE"])*($result["click"])/1000;
-                $analytics["NONE"] += $result["click"];
             }
+            $analytics[$code] += $result["click"];
             
         }
 
-        $return = array(
-            "click" => round($total_click),
-            "rpm" => round($earning*1000/$total_click, 2),
-            "earning" => round($earning, 2),
-            "analytics" => $analytics
-        );
+        if ($total_click > 0) {
+            $return = array(
+                "click" => round($total_click),
+                "rpm" => round($earning*1000/$total_click, 2),
+                "earning" => round($earning, 2),
+                "analytics" => $analytics
+            );
+        }
 
-        return $return;
+        $view->set("stats", $return);
     }
 
     protected function array_sort($array, $on, $order=SORT_ASC) {
