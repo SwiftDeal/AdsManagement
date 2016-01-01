@@ -7,7 +7,6 @@
  */
 use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
-use ClusterPoint\DB as DB;
 
 class Content extends Publisher {
 

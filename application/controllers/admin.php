@@ -7,7 +7,6 @@
  */
 use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
-use ClusterPoint\DB as DB;
 
 class Admin extends Auth {
 
@@ -52,6 +51,7 @@ class Admin extends Auth {
         $view->set("items", array());
         $view->set("values", array());
         $view->set("model", $model);
+        $view->set("models", Shared\Markup::models());
         $view->set("page", $page);
         $view->set("limit", $limit);
         $view->set("property", $property);
@@ -218,6 +218,7 @@ class Admin extends Auth {
             }
             $view->set("data", \Framework\ArrayMethods::toObject($obj));
         }
+        $view->set("models", Shared\Markup::models());
     }
 
     /**
@@ -244,24 +245,4 @@ class Admin extends Auth {
         $this->defaultLayout = "layouts/admin";
         $this->setLayout();
     }
-
-    public function shell($action) {
-        $this->noview();
-        $command = '/usr/bin/php -q longThing.php &';
-        switch ($action) {
-            case 'run':
-                print shell_exec($command);
-                break;
-            case 'pid':
-                exec("ps aux | grep 'screen .* $command' | grep -v grep | awk '{ print $2 }' | head -1", $out);
-                print "The PID is: " . $out[0];
-                break;
-            default:
-                if (file_exists( "/proc/$pid" )){
-                    echo "process running";
-                }
-                break;
-        }
-    }
-
 }

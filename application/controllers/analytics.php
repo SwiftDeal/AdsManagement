@@ -142,19 +142,33 @@ class Analytics extends Admin {
     }
 
     /**
+     * @before _secure, changeLayout
+     */
+    public function clicks() {
+        $this->seo(array("title" => "Clicks Stats", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+
+        $now = strftime("%Y-%m-%d", strtotime('now'));
+        $view->set("date", $now);
+    }
+
+    /**
      * Today Stats of user
      * @return array earnings, clicks, rpm, analytics
      * @before _secure
      */
-    public function stats($created = NULL, $item_id = NULL, $user_id = NULL) {
-        $this->JSONview();$view = $this->getActionView();
+    public function stats($created = NULL, $auth = 1, $user_id = NULL, $item_id = NULL) {
+        $this->seo(array("title" => "Stats", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
         $total_click = 0;$earning = 0;$analytics = array();$query = array();
         $rpm = array("IN" => 135, "US" => 220, "CA" => 220, "AU" => 220, "GB" => 220, "NONE" => 100);
         $return = array("click" => 0, "rpm" => 0, "earning" => 0, "analytics" => array());
 
         is_null($created) ? NULL : $query['created'] = $created;
         is_null($item_id) ? NULL : $query['item_id'] = $item_id;
-        $query['user_id'] = (is_null($user_id) ? $this->user->id : $user_id);
+        if ($auth) {
+            $query['user_id'] = (is_null($user_id) ? $this->user->id : $user_id);
+        }
 
         $connection = new Mongo();
         $db = $connection->stats;
