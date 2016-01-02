@@ -35,7 +35,6 @@
                 </thead>
                 <tbody>
                     {foreach $stat in $stats}
-                    {script $stat = Stat::first(array("link_id = ?" => $stat->link_id), array("link_id", "rpm", "amount", "live", "created", "id", "click"), "created", "desc")}
                     {script $link = Link::first(array("id = ?" => $stat->link_id), array("short"))}
                     <tr>
                         <td>{$stat->id}</td>

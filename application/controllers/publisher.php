@@ -131,8 +131,8 @@ class Publisher extends Analytics {
         $limit = RequestMethods::get("limit", 10);
         
         $view = $this->getActionView();
-        $stats = Stat::all(array("user_id = ?" => $this->user->id), array("link_id"), "created", "desc", $limit, $page);
-        $count = count($stats);
+        $stats = Stat::all(array("user_id = ?" => $this->user->id), array("link_id", "rpm", "amount", "live", "created", "id", "click"), "created", "desc", $limit, $page);
+        $count = Stat::count(array("user_id = ?" => $this->user->id));
 
         $view->set("stats", $stats);
         $view->set("limit", $limit);

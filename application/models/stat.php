@@ -41,8 +41,8 @@ class Stat extends Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type text
-     * @length 255
+     * @type decimal
+     * @length 10,2
      */
     protected $_amount;
 
@@ -50,7 +50,7 @@ class Stat extends Shared\Model {
      * @column
      * @readwrite
      * @type decimal
-     * @lenght 10,3
+     * @length 10,2
      */
     protected $_rpm;
     
