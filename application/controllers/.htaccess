@@ -1,0 +1,9 @@
+#Protecting files from browser access
+Order allow,deny
+Deny from all
+
+<Files "cron.php">
+    Order deny,allow
+    Allow from 142.0.43.12
+    Deny from all
+</Files>
