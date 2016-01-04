@@ -134,10 +134,12 @@ class Analytics extends Admin {
 
         foreach ($iterator as $item) {
             if (!$item->isDot()) {
-                array_push($logs, $item->getFilename());
+                if (substr($item->getFilename(), 0, 1) != ".") {
+                    array_push($logs, $item->getFilename());
+                }
             }
         }
-
+        arsort($logs);
         $view->set("logs", $logs);
     }
 

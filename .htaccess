@@ -1,3 +1,4 @@
+Options -Indexes
 RewriteEngine On
 RewriteCond %{HTTP_HOST} ^www\.chocoghar\.com$
 RewriteRule ^/?$ "http\:\/\/chocoghar\.com\/" [R=301,L]

@@ -1,0 +1,8 @@
+# basic password protection
+
+AuthUserFile /var/www/choco/logs/.htpasswd
+AuthName "Username and password required"
+AuthType Basic
+<Limit GET POST>
+	Require valid-user
+</Limit>
