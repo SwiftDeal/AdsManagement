@@ -116,6 +116,14 @@ class Content extends Publisher {
         $view = $this->getActionView();
         $item = Item::first(array("id = ?" => $id));
         $rpm = RPM::first(array("item_id = ?" => $item->id));
+
+        $rpms = array();
+        foreach (json_decode($rpm->value, true) as $key => $value) {
+            array_push($rpms, array(
+                "country" => $key,
+                "value" => $value
+            ));
+        }
         
         if (RequestMethods::post("action") == "update") {
             $item->title = RequestMethods::post("title");
@@ -133,6 +141,7 @@ class Content extends Publisher {
             $view->set("errors", $item->getErrors());
         }
         $view->set("item", $item);
+        $view->set("rpms", $rpms);
         $view->set("categories", explode(",", $item->category));
     }
     

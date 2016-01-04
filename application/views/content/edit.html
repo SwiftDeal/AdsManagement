@@ -7,7 +7,6 @@
                 Content Updated <strong>Successfully!</strong>
             </div>
             {/if}
-            <p>Note : Do not Include <b>"&", "=" or any special character</b> in any field below(these are reserved for tracking)</p>
             <form class="panel panel-default text-center" method="post" action="">
                 <table class="table">
                     <tbody>
@@ -49,22 +48,18 @@
                             <td>
                                 <select name="category[]" class="form-control" multiple="">
                                     <option {if(in_array("bollywood", $categories))}selected{/if} value="bollywood">Bollywood</option>
-                                    <option {if(in_array("fashion", $categories))}selected{/if} value="fashion">Fashion</option>
-                                    <option {if(in_array("funny", $categories))}selected{/if} value="funny">Funny</option>
-                                    <option {if(in_array("hollywood", $categories))}selected{/if} value="hollywood">Hollywood</option>
-                                    <option {if(in_array("life", $categories))}selected{/if} value="life">Life</option>
-                                    <option {if(in_array("news", $categories))}selected{/if} value="news">News</option>
-                                    <option {if(in_array("omg", $categories))}selected{/if} value="omg">OMG</option>
                                     <option {if(in_array("sports", $categories))}selected{/if} value="sports">Sports</option>
-                                    <option {if(in_array("trending", $categories))}selected{/if} value="trending">Trending</option>
-                                    <option {if(in_array("videos", $categories))}selected{/if} value="videos">Viral Videos</option>
                                     <option {if(in_array("entertainment", $categories))}selected{/if} value="entertainment">Entertainment</option>
-                                    <option {if(in_array("gadgets", $categories))}selected{/if} value="gadgets">Gadgets</option>
-                                    <option {if(in_array("religion", $categories))}selected{/if} value="religion">Religion</option>
-                                    <option {if(in_array("interesting", $categories))}selected{/if} value="interesting">Interesting</option>
-                                    <option {if(in_array("health", $categories))}selected{/if} value="health">Health</option>
+                                    <option {if(in_array("vehicle", $categories))}selected{/if} value="vehicle">Bike / Cars</option>
+                                    <option {if(in_array("tollywood", $categories))}selected{/if} value="tollywood">Tollywood</option>
+                                    <option {if(in_array("tv", $categories))}selected{/if} value="tv">TV Soap</option>
+                                    <option {if(in_array("videos", $categories))}selected{/if} value="videos">Videos</option>
+                                    <option {if(in_array("hollywood", $categories))}selected{/if} value="hollywood">Hollywood</option>
+                                    <option {if(in_array("wwe", $categories))}selected{/if} value="wwe">WWE</option>
+                                    <option {if(in_array("fashion", $categories))}selected{/if} value="fashion">Fashion</option>
+                                    <option {if(in_array("news", $categories))}selected{/if} value="news">Breaking News</option>
                                     <option {if(in_array("celebrities", $categories))}selected{/if} value="celebrities">Celebrities</option>
-                                    <option {if(in_array("amazing", $categories))}selected{/if} value="amazing">Amazing</option>
+                                    <option {if(in_array("politics", $categories))}selected{/if} value="politics">Politics</option>
                                 </select>
                             </td>
                         </tr>
@@ -77,47 +72,14 @@
                         <tr>
                             <td><b>RPM</b></td>
                             <td class="form-inline">
+                                {foreach $rpm in $rpms}
                                 <div class="form-group">
                                     <div class="input-group">
-                                        <div class="input-group-addon">IN</div>
-                                        <input type="number" class="form-control" placeholder="India" name="rpm_in" value="{echo $rpm_in->value}" required="">
+                                        <div class="input-group-addon">{echo $rpm['country']}</div>
+                                        <input type="number" class="form-control" style="width: 70px;" name="rpm[{echo $rpm['country']}]" required="" value="{echo $rpm['value']}">
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <div class="input-group-addon">US</div>
-                                        <input type="number" class="form-control" placeholder="United States" name="rpm_us" value="{echo $rpm_us->value}" required="">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <div class="input-group-addon">CA</div>
-                                        <input type="number" class="form-control" placeholder="Canada" name="rpm_ca" value="{echo $rpm_ca->value}" required="">
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><b>RPM</b></td>
-                            <td class="form-inline">
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <div class="input-group-addon">AU</div>
-                                        <input type="number" class="form-control" placeholder="Australia" name="rpm_au" value="{echo $rpm_au->value}" required="">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <div class="input-group-addon">UK</div>
-                                        <input type="number" class="form-control" placeholder="New Zealand" name="rpm_uk" value="{echo $rpm_uk->value}" required="">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <div class="input-group-addon">Other</div>
-                                        <input type="number" class="form-control" placeholder="None" name="rpm_none" value="{echo $rpm_none->value}" required="">
-                                    </div>
-                                </div>
+                                {/foreach}
                             </td>
                         </tr>
                         <tr>

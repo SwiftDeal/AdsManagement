@@ -77,8 +77,6 @@ class Finance extends Admin {
     public function makepayment($user_id) {
         $this->seo(array("title" => "Make Payment", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-        $record = Stat::first(array("user_id = ?" => $user_id), array("created"), "created", "desc");
-        $latest = strftime("%Y-%m-%d", strtotime($record->created));
         $payee = User::first(array("id = ?" => $user_id), array("id", "name", "email", "phone"));
         $account = Account::first(array("user_id = ?" => $user_id));
 
@@ -86,7 +84,6 @@ class Finance extends Admin {
         $amount = $database->query()
             ->from("stats", array("SUM(amount)" => "earn"))
             ->where("user_id=?",$user_id)
-            ->where("created LIKE ?", "%{$latest}%")
             ->where("live=?",0)
             ->all();
 
@@ -119,7 +116,7 @@ class Finance extends Admin {
 
         $view->set("payee", $payee);
         $view->set("account", $account);
-        $view->set("amount", $amount[0]["earn"]);
+        $view->set("amount", $amount[0]["earn"] - $paid[0]["earn"]);
     }
 
     /**

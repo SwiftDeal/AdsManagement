@@ -36,7 +36,7 @@ class Auth extends Controller {
             }
         }
         
-        if (RequestMethods::post("action") == "login" && $this->reCaptcha()) {
+        if (RequestMethods::post("action") == "login") {
             $email = RequestMethods::post("email");
             $exist = User::first(array("email = ?" => $email), array("id", "email"));
             if($exist) {
