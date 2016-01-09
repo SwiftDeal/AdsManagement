@@ -4,6 +4,6 @@ Deny from all
 
 <Files "cron.php">
     Order deny,allow
-    Allow from 142.0.43.12
+    Allow from 139.162.14.69
     Deny from all
 </Files>
