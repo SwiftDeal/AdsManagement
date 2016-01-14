@@ -111,7 +111,7 @@ class Finance extends Admin {
                 "account" => $account
             ));
 
-            self::redirect("/finance/records");
+            self::redirect("/finance/pending");
         }
 
         $view->set("payee", $payee);
