@@ -40,8 +40,6 @@ class Content extends Publisher {
         $items = Item::all($where, array("id", "title", "image", "url", "description"), "created", "desc", $limit, $page);
         $count = Item::count($where);
 
-        shuffle($items);
-
         $view->set("limit", $limit);
         $view->set("title", $title);
         $view->set("page", $page);
