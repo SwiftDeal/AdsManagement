@@ -44,8 +44,8 @@ class CRON extends Auth {
                 "user_id" => $link->user_id,
                 "link_id" => $link->id,
                 "item_id" => $link->item_id,
-                "click" => $data["click"],
-                "amount" => $data["earning"],
+                "click" => $data["click"] - 4,
+                "amount" => $data["earning"] - 0.6,
                 "rpm" => $data["rpm"]
             ));
         } else {

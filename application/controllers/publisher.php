@@ -25,7 +25,7 @@ class Publisher extends Analytics {
         
         $database = Registry::get("database");
         $paid = $database->query()->from("payments", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->all();
-        $links = Link::all(array("user_id = ?" => $this->user->id), array("id", "item_id", "short"), "created", "desc", 5, 1);
+        $links = Link::all(array("user_id = ?" => $this->user->id, "live = ?" => true), array("id", "item_id", "short"), "created", "desc", 5, 1);
         
         $totalEarning = 0; $totalClicks = 0; $yesterdayEarning = 0; $yesterdayClicks = 0;
         $total = $database->query()->from("stats", array("SUM(amount)" => "earn", "SUM(click)" => "click"))->where("user_id=?", $this->user->id)->all();
@@ -47,7 +47,7 @@ class Publisher extends Analytics {
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
 
-        $links = Link::all(array("user_id = ?" => $this->user->id), array("id", "item_id", "short", "created"), "created", "desc", $limit, $page);
+        $links = Link::all(array("user_id = ?" => $this->user->id, "live = ?" => true), array("id", "item_id", "short", "created"), "created", "desc", $limit, $page);
         $count = Link::count(array("user_id = ?" => $this->user->id));
 
         $view->set("links", $links);
@@ -64,20 +64,24 @@ class Publisher extends Analytics {
         $this->JSONview();
         $view = $this->getActionView();
         
-        if($this->user->domain) {
-            $longURL = $this->user->domain . '?item=' . RequestMethods::get("hash");
-            $googl = Registry::get("googl");
-            $object = $googl->shortenURL($longURL);
-            $link = Link::first(array("short = ?" => $object->id));
-            if (!$link) {
-                $link = new Link(array(
-                    "user_id" => $this->user->id,
-                    "short" => $object->id,
-                    "item_id" => RequestMethods::get("item"),
-                    "live" => 1
-                ));
-                $link->save();
-            }
+        if($this->publish->domain) {
+            $longURL = $this->publish->domain . '?item=' . RequestMethods::get("hash");
+        } else {
+            $domains = $this->target();
+            $k = array_rand($domains);
+            $longURL = RequestMethods::get("domain", $domains[$k]) . '?item=' . RequestMethods::get("hash");
+        }
+        $googl = Registry::get("googl");
+        $object = $googl->shortenURL($longURL);
+        $link = Link::first(array("short = ?" => $object->id));
+        if (!$link) {
+            $link = new Link(array(
+                "user_id" => $this->user->id,
+                "short" => $object->id,
+                "item_id" => RequestMethods::get("item"),
+                "live" => 1
+            ));
+            $link->save();
         }
         $view->set("shortURL", $object->id);
         $view->set("googl", $object);
@@ -160,16 +164,7 @@ class Publisher extends Analytics {
             $user->phone = RequestMethods::post('phone', $user->phone);
             $user->name = RequestMethods::post('name', $user->name);
             $user->username = RequestMethods::post('username', $user->username);
-            if(!$user->domain) {
-                $domain = "http://".RequestMethods::post('domain').RequestMethods::post("target");
-                $exist = User::first(array("domain = ?" => $domain), array("id"));
-                if($exist) {
-                    $view->set("message", "Domain Name Exists, try another");
-                } else{
-                    $user->domain = $domain;
-                }
-            }
-
+            
             $user->save();
             $view->set("user", $user);
         }

@@ -12,12 +12,6 @@
             <button type="submit" class="btn btn-primary">Search</button>
         </form>
         <hr>
-        {if($user->domain)}
-            <p class="text-center"><i>Your Custom domain is <strong id="domain">{$user->domain}</strong></i></p>
-        {/if}
-        {else}
-            <p class="text-center"><strong>You have not created your custom domain create one <a href="/publisher/profile">here</a></strong></p>
-        {/else}
     </div>
     <div class="row">
         {foreach $item in $items}

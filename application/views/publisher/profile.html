@@ -12,26 +12,6 @@
         </p>
         <form class="form-horizontal" method="post" action="">
             <div class="form-group">
-                <label class="col-sm-3 control-label">Custom Domain</label>
-                {if($user->domain)}
-                    <div class="col-sm-9">
-                        <input type="text" name="domain" class="form-control" placeholder="Enter Domain name only" value="{$user->domain}" disabled="">
-                    </div>
-                {/if}
-                {else}
-                    <div class="col-sm-3">
-                        <input type="text" name="domain" class="form-control" placeholder="Enter Domain name only" value="{$user->domain}" required="">
-                    </div>
-                    <div class="col-sm-6">
-                        <select class="form-control" name="target">
-                        {foreach $domain in $domains}
-                            <option value=".{echo substr($domain, 7)}">.{echo substr($domain, 7)}</option>
-                        {/foreach}
-                        </select>
-                    </div>
-                {/else}
-            </div>
-            <div class="form-group">
                 <label class="col-sm-3 control-label">Username</label>
                 <div class="col-sm-9">
                     <input type="text" name="username" class="form-control" placeholder="Enter Username" value="{$user->username}">

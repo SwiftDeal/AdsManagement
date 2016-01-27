@@ -39,15 +39,13 @@ class Auth extends Controller {
                 $login = Meta::first(array("property = ?" => "login"));
                 if($login->value == "yes") {
                     if ($user->live) {
-                        $this->setUser($user);
-                        $this->session();
+                        $this->session($user);
                     } else {
                         $view->set("message", "User account not verified");
                     }
                 } else {
                     if ($user->admin) {
-                        $this->setUser($user);
-                        $this->session();
+                        $this->session($user);
                     }
                     $view->set("message", "We are Updating our System, try later");
                 }
@@ -98,8 +96,6 @@ class Auth extends Controller {
                 "password" => sha1(RequestMethods::post("password")),
                 "phone" => RequestMethods::post("phone"),
                 "admin" => 0,
-                "domain" => "",
-                "fblink" => RequestMethods::post("fblink"),
                 "live" => 0
             ));
             $user->save();
@@ -111,6 +107,14 @@ class Auth extends Controller {
                 "image" => $this->_upload("fbadmin", "images")
             ));
             $platform->save();
+
+            $publish = new Publish(array(
+                "user_id" => $user->id,
+                "domain" => "",
+                "fblink" => RequestMethods::post("fblink")
+            ));
+            $publish->save();
+
             $this->notify(array(
                 "template" => "publisherRegister",
                 "subject" => "Welcome to ChocoGhar.com",
@@ -136,8 +140,7 @@ class Auth extends Controller {
             if(RequestMethods::post("password") == RequestMethods::post("cpassword")) {
                 $user->password = sha1(RequestMethods::post("password"));
                 $user->save();
-                $this->setUser($user);
-                $this->session();
+                $this->session($user);
             } else{
                 $view->set("message", 'Password Does not match');
             }
@@ -155,15 +158,19 @@ class Auth extends Controller {
         }
     }
 
-    protected function session() {
+    protected function session($user) {
+        $this->setUser($user);
         $session = Registry::get("session");
-        $where = array(
-            "property = ?" => "domain",
-            "live = ?" => true
-        );
-        $domains = Meta::all($where);
+        //setting domains
+        $domains = Meta::all(array("property = ?" => "domain", "live = ?" => true));
         $session->set("domains", $domains);
-        self::redirect("/publisher");
+
+        //setting publisher
+        $publish = Publish::first(array("user_id = ?" => $user->id));
+        if ($publish) {
+            $session->set("publish", $publish);
+            self::redirect("/publisher");
+        }
     }
 
     protected function reCaptcha() {
@@ -182,55 +189,7 @@ class Auth extends Controller {
     public function loginas($user_id) {
         $this->setUser(false);
         $user = User::first(array("id = ?" => $user_id));
-        $this->setUser($user);
-        $this->session();
-    }
-    
-    /**
-     * The Main Method to return SendGrid Instance
-     * 
-     * @return \SendGrid\SendGrid Instance of Sendgrid
-     */
-    protected function sendgrid() {
-        $configuration = Registry::get("configuration");
-        $parsed = $configuration->parse("configuration/mail");
-
-        if (!empty($parsed->mail->sendgrid) && !empty($parsed->mail->sendgrid->username)) {
-            $sendgrid = new \SendGrid\SendGrid($parsed->mail->sendgrid->username, $parsed->mail->sendgrid->password);
-            return $sendgrid;
-        }
-    }
-    
-    protected function getBody($options) {
-        $template = $options["template"];
-        $view = new Framework\View(array(
-            "file" => APP_PATH . "/application/views/layouts/email/{$template}.html"
-        ));
-        foreach ($options as $key => $value) {
-            $view->set($key, $value);
-            $$key = $value;
-        }
-
-        return $view->render();
-    }
-    
-    protected function notify($options) {
-        $body = $this->getBody($options);
-        $emails = isset($options["emails"]) ? $options["emails"] : array($options["user"]->email);
-
-        switch ($options["delivery"]) {
-            default:
-                $sendgrid = $this->sendgrid();
-                $email = new \SendGrid\Email();
-                $email->setSmtpapiTos($emails)
-                        ->setFrom('info@likesbazar.in')
-                        ->setFromName("Likesbazar Team")
-                        ->setSubject($options["subject"])
-                        ->setHtml($body);
-                $sendgrid->send($email);
-                break;
-        }
-        $this->log(implode(",", $emails));
+        $this->session($user);
     }
     
     /**
