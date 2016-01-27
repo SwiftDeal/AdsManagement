@@ -12,70 +12,71 @@ use \Curl\Curl;
 class Auth extends Controller {
     
     /**
-     * @before _session
+     * @before _session, _blank
      */
     public function login() {
-        $this->defaultLayout = "layouts/blank";
-        $this->setLayout();
-        $this->seo(array(
-            "title" => "Login",
-            "view" => $this->getLayoutView()
-        ));
+        $this->seo(array("title" => "Login", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
         if (RequestMethods::get("action") == "reset") {
-            $exist = User::first(array("email = ?" => RequestMethods::get("email")), array("id", "email", "name"));
-            if ($exist) {
-                $this->notify(array(
-                    "template" => "forgotPassword",
-                    "subject" => "New Password Requested",
-                    "user" => $exist
-                ));
-
-                $view->set("message", "Password Reset Email Sent Check Your Email. Check in Spam too.");
-            }
+            $this->_resetPassword();
         }
         
         if (RequestMethods::post("action") == "login") {
-            $email = RequestMethods::post("email");
-            $exist = User::first(array("email = ?" => $email), array("id", "email"));
-            if($exist) {
-                $user = User::first(array(
-                    "email = ?" => RequestMethods::post("email"),
-                    "password = ?" => sha1(RequestMethods::post("password"))
-                ));
-                if($user) {
-                    $login = Meta::first(array("property = ?" => "login"));
-                    if($login->value == "yes") {
-                        if ($user->live) {
-                            $this->setUser($user);
-                            $this->session();
-                        } else {
-                            $view->set("message", "User account not verified");
-                        }
+            $this->_login();
+        }
+    }
+
+    protected function _login() {
+        $email = RequestMethods::post("email");
+        $exist = User::first(array("email = ?" => $email), array("id", "email"));
+        if($exist) {
+            $user = User::first(array(
+                "email = ?" => RequestMethods::post("email"),
+                "password = ?" => sha1(RequestMethods::post("password"))
+            ));
+            if($user) {
+                $login = Meta::first(array("property = ?" => "login"));
+                if($login->value == "yes") {
+                    if ($user->live) {
+                        $this->setUser($user);
+                        $this->session();
                     } else {
-                        if ($user->admin) {
-                            $this->setUser($user);
-                            $this->session();
-                        }
-                        $view->set("message", "We are Updating Login on Saturday, Tomorrow");
+                        $view->set("message", "User account not verified");
                     }
-                } else{
-                    $view->set("message", 'Wrong Password, Try again or <a href="/auth/login?action=reset&email='.$email.'">Reset Password</a>');
+                } else {
+                    if ($user->admin) {
+                        $this->setUser($user);
+                        $this->session();
+                    }
+                    $view->set("message", "We are Updating our System, try later");
                 }
-                
-            } else {
-                $view->set("message", 'User doesnot exist. Please signup <a href="/auth/register">here</a>');
+            } else{
+                $view->set("message", 'Wrong Password, Try again or <a href="/auth/login?action=reset&email='.$email.'">Reset Password</a>');
             }
+            
+        } else {
+            $view->set("message", 'User doesnot exist. Please signup <a href="/auth/register">here</a>');
+        }
+    }
+
+    protected function _resetPassword() {
+        $exist = User::first(array("email = ?" => RequestMethods::get("email")), array("id", "email", "name"));
+        if ($exist) {
+            $this->notify(array(
+                "template" => "forgotPassword",
+                "subject" => "New Password Requested",
+                "user" => $exist
+            ));
+
+            $view->set("message", "Password Reset Email Sent Check Your Email. Check in Spam too.");
         }
     }
     
     /**
-     * @before _session
+     * @before _session, _blank
      */
     public function register() {
-        $this->defaultLayout = "layouts/blank";
-        $this->setLayout();
         $this->seo(array(
             "title" => "Register",
             "view" => $this->getLayoutView()
@@ -83,47 +84,49 @@ class Auth extends Controller {
         $view = $this->getActionView();
         
         if (RequestMethods::post("action") == "register" && $this->reCaptcha()) {
-            $exist = User::first(array("email = ?" => RequestMethods::post("email")));
-            if (!$exist) {
-                $user = new User(array(
-                    "username" => RequestMethods::post("username"),
-                    "name" => RequestMethods::post("name"),
-                    "email" => RequestMethods::post("email"),
-                    "password" => sha1(RequestMethods::post("password")),
-                    "phone" => RequestMethods::post("phone"),
-                    "admin" => 0,
-                    "domain" => "",
-                    "fblink" => RequestMethods::post("fblink"),
-                    "live" => 0
-                ));
-                $user->save();
-                
-                $platform = new Platform(array(
-                    "user_id" => $user->id,
-                    "name" => "FACEBOOK_PAGE",
-                    "link" =>  RequestMethods::post("link"),
-                    "image" => $this->_upload("fbadmin", "images")
-                ));
-                $platform->save();
-                $this->notify(array(
-                    "template" => "publisherRegister",
-                    "subject" => "Welcome to ChocoGhar.com",
-                    "user" => $user
-                ));
-                $view->set("message", "Your account has been created and will be activate within 3 hours after verification.");
-            } else {
-                $view->set("message", 'Username exists, login from <a href="/admin/login">here</a>');
-            }
+            $this->_register();
         }
     }
 
+    protected function _register() {
+        $exist = User::first(array("email = ?" => RequestMethods::post("email")));
+        if (!$exist) {
+            $user = new User(array(
+                "username" => RequestMethods::post("username"),
+                "name" => RequestMethods::post("name"),
+                "email" => RequestMethods::post("email"),
+                "password" => sha1(RequestMethods::post("password")),
+                "phone" => RequestMethods::post("phone"),
+                "admin" => 0,
+                "domain" => "",
+                "fblink" => RequestMethods::post("fblink"),
+                "live" => 0
+            ));
+            $user->save();
+            
+            $platform = new Platform(array(
+                "user_id" => $user->id,
+                "name" => "FACEBOOK_PAGE",
+                "link" =>  RequestMethods::post("link"),
+                "image" => $this->_upload("fbadmin", "images")
+            ));
+            $platform->save();
+            $this->notify(array(
+                "template" => "publisherRegister",
+                "subject" => "Welcome to ChocoGhar.com",
+                "user" => $user
+            ));
+            $view->set("message", "Your account has been created and will be activate within 3 hours after verification.");
+        } else {
+            $view->set("message", 'Username exists, login from <a href="/admin/login">here</a>');
+        }
+    }
+
+    /**
+     * @before _session, _blank
+     */
     public function forgotpassword() {
-        $this->defaultLayout = "layouts/blank";
-        $this->setLayout();
-        $this->seo(array(
-            "title" => "Forgot Password",
-            "view" => $this->getLayoutView()
-        ));
+        $this->seo(array("title" => "Forgot Password", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
         if (RequestMethods::post("action") == "change") {
@@ -230,66 +233,11 @@ class Auth extends Controller {
         $this->log(implode(",", $emails));
     }
     
-    protected function log($message = "") {
-        $logfile = APP_PATH . "/logs/" . date("Y-m-d") . ".txt";
-        $new = file_exists($logfile) ? false : true;
-        if ($handle = fopen($logfile, 'a')) {
-            $timestamp = strftime("%Y-%m-%d %H:%M:%S", time() + 1800);
-            $content = "[{$timestamp}]{$message}\n";
-            fwrite($handle, $content);
-            fclose($handle);
-            if ($new) {
-                chmod($logfile, 0755);
-            }
-        } else {
-            echo "Could not open log file for writing";
-        }
-    }
-
-    protected function changeDate($date, $day) {
-        return date_format(date_add(date_create($date),date_interval_create_from_date_string("{$day} day")), 'Y-m-d');;
-    }
-    
-    public function logout() {
-        $this->setUser(false);
-        self::redirect("/home");
-    }
-    
-    public function noview() {
-        $this->willRenderLayoutView = false;
-        $this->willRenderActionView = false;
-    }
-
-    public function JSONview() {
-        $this->willRenderLayoutView = false;
-        $this->defaultExtension = "json";
-    }
-    
     /**
-     * The method checks whether a file has been uploaded. If it has, the method attempts to move the file to a permanent location.
-     * @param string $name
-     * @param string $type files or images
+     * @protected
      */
-    protected function _upload($name, $type = "images") {
-        $img_type = array(
-            'jpg' => 'image/jpeg',
-            'png' => 'image/png',
-            'gif' => 'image/gif',
-        );
-        if (isset($_FILES[$name])) {
-            $file = $_FILES[$name];
-            $path = APP_PATH . "/public/assets/uploads/{$type}/";
-            $extension = pathinfo($file["name"], PATHINFO_EXTENSION);
-            $filename = uniqid() . ".{$extension}";
-
-            $finfo = new finfo(FILEINFO_MIME_TYPE);
-            $ext = array_search($finfo->file($file['tmp_name']), $img_type, true);
-            if ($ext !== false) {
-                if (move_uploaded_file($file["tmp_name"], $path . $filename)) {
-                    return $filename;
-                }
-            }
-        }
-        return FALSE;
+    public function _blank() {
+        $this->defaultLayout = "layouts/blank";
+        $this->setLayout();
     }
 }

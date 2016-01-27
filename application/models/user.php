@@ -71,20 +71,4 @@ class User extends Shared\Model {
     * @type boolean
     */
     protected $_admin = false;
-
-    /**
-    * @column
-    * @readwrite
-    * @type text
-    * @length 255
-    */
-    protected $_domain;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     */
-    protected $_fblink;
-
 }

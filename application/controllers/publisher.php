@@ -10,6 +10,11 @@ use Framework\Registry as Registry;
 class Publisher extends Analytics {
 
     /**
+     * @readwrite
+     */
+    protected $_publish;
+
+    /**
      * @before _secure, publisherLayout
      */
     public function index() {
@@ -324,11 +329,6 @@ class Publisher extends Analytics {
         $view->set("count", $count);
         $view->set("limit", $limit);
     }
-
-    public function publisherLayout() {
-        $this->defaultLayout = "layouts/publisher";
-        $this->setLayout();
-    }
 	
 	/**
      * @before _secure, changeLayout, _admin
@@ -355,5 +355,28 @@ class Publisher extends Analytics {
     public function fraud() {
         $this->seo(array("title" => "Fraud Links", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
+    }
+
+    public function publisherLayout() {
+        $session = Registry::get("session");
+        
+        $publish = $session->get("publish");
+        $this->_publish = $publish;
+
+        $this->defaultLayout = "layouts/publisher";
+        $this->setLayout();
+    }
+
+    public function render() {
+        if ($this->publish) {
+            if ($this->actionView) {
+                $this->actionView->set("publish", $this->publish);
+            }
+
+            if ($this->layoutView) {
+                $this->layoutView->set("publish", $this->publish);
+            }
+        }    
+        parent::render();
     }
 }
