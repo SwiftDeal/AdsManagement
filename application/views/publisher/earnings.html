@@ -18,57 +18,54 @@
             </div>
             <button type="submit" class="btn btn-primary">Show</button>
         </form>
-        <hr>
-        {if($stats)}
+        <hr> {if($stats)}
         <div class="table-responsive">
             <table class="table table-bordered table-hover">
                 <thead>
                     <tr>
-                        <th>Id</th>
                         <th>Link</th>
                         <th>Clicks</th>
                         <th>Avg RPM</th>
-                        <th>Date</th>
-                        <th>Amount</th>
-                        <th>Status</th>
+                        <th>Earning</th>
+                        <th>Created</th>
+                        <th>Tracking</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {script $tc = 0}{script $tr = 0} {script $te = 0}
                     {foreach $stat in $stats}
-                    {script $link = Link::first(array("id = ?" => $stat->link_id), array("short"))}
+                    {script $link = Link::first(array("id = ?" => $stat->link_id), array("short", "created"))}
+                    {script $tc += $stat->click}
+                    {script $tr += $stat->rpm}
+                    {script $te += $stat->amount}
                     <tr>
-                        <td>{$stat->id}</td>
-                        <td>{$link->short}</td>
+                        <td>{$link->short} (<small>{echo \Framework\StringMethods::only_date($link->created)}</small>)</td>
                         <td>{$stat->click}</td>
                         <td><i class="fa fa-inr"></i> {$stat->rpm}</td>
-                        <td>{echo \Framework\StringMethods::only_date($stat->created)}</td>
                         <td><i class="fa fa-inr"></i> {echo $stat->amount}</td>
+                        <td><small>{echo \Framework\StringMethods::only_date($stat->created)}</small></td>
                         <td>
                             {if($stat->live)}
-                                <span class="label label-success">Paid</span>
-                            {/if}
-                            {else}
-                                <span class="label label-warning">UnPaid</span>
+                            <i class="fa fa-chech-circle"></i>
+                            {/if} {else}
+                            <i class="fa fa-ban"></i>
                             {/else}
                         </td>
                     </tr>
                     {/foreach}
+                    <tr>
+                        <th>Total</th>
+                        <th>{echo $tc}</th>
+                        <th><i class="fa fa-inr"></i> {echo $tr/$count}</th>
+                        <th><i class="fa fa-inr"></i> {echo $te}</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
                 </tbody>
             </table>
         </div>
-        {/if}
-        {else}
-            <p>Check Later</p>
+        {/if} {else}
+        <p>Check Later</p>
         {/else}
-        <div class="text-center">
-            <ul class="pager">
-                {if($page != 1)}
-                <li><a href="{echo Shared\Markup::pagination($page - 1)}">Previous</a></li>
-                {/if}
-                {if($page < $count/$limit)}
-                <li><a href="{echo Shared\Markup::pagination($page + 1)}">Next</a></li>
-                {/if}
-            </ul>
-        </div>
     </div>
 </div>

@@ -134,19 +134,14 @@ class Publisher extends Analytics {
     public function earnings() {
         $this->seo(array("title" => "Earnings", "view" => $this->getLayoutView()));
 
-        $startdate = RequestMethods::get("startdate", date('Y-m-d', strtotime("-7 day")));
+        $startdate = RequestMethods::get("startdate", date('Y-m-d', strtotime("-6 Day")));
         $enddate = RequestMethods::get("enddate", date('Y-m-d', strtotime("now")));
-        $page = RequestMethods::get("page", 1);
-        $limit = RequestMethods::get("limit", 10);
         
         $view = $this->getActionView();
-        $stats = Stat::all(array("user_id = ?" => $this->user->id), array("link_id", "rpm", "amount", "live", "created", "id", "click"), "created", "desc", $limit, $page);
-        $count = Stat::count(array("user_id = ?" => $this->user->id));
+        $stats = Stat::all(array("user_id = ?" => $this->user->id, "created >= ?" => $startdate, "created <= ?" => $enddate), array("link_id", "rpm", "amount", "created", "live", "click"), "created", "desc");
 
         $view->set("stats", $stats);
-        $view->set("limit", $limit);
-        $view->set("page", $page);
-        $view->set("count", $count);
+        $view->set("count", count($stats));
     }
     
     /**

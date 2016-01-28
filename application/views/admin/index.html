@@ -10,7 +10,8 @@
                             <a class="list-group-item active text-center">
                                 <i class="fa fa-line-chart"></i> Data
                             </a>
-                            <a href="admin/search?model=user&key=live&sign=equal&value=1" class="list-group-item"><i class="fa fa-users fa-2x"></i>  Publishers <span class="badge">{echo User::count(array("admin = ?" => 0))}</span></a>
+                            <a href="admin/search?model=user&key=live&sign=equal&value=1" class="list-group-item"><i class="fa fa-users fa-2x"></i>  Publishers <span class="badge">{echo Shared\Markup::nice_number(Publish::count())}</span></a>
+                            <a href="admin/search?model=user&key=live&sign=equal&value=1" class="list-group-item"><i class="fa fa-bullhorn fa-2x"></i>  Advertisers <span class="badge">0</span></a>
                             <a href="/content/all" class="list-group-item"><i class="fa fa-file fa-2x"></i> Campaigns <span class="badge">{echo Shared\Markup::nice_number(Item::count())}</span></a>
                             <a href="admin/search?model=link&key=live&sign=equal&value=1" class="list-group-item"><i class="fa fa-link fa-2x"></i>  Links <span class="badge">{echo Shared\Markup::nice_number(Link::count())}</span></a>
                         </div>
@@ -32,7 +33,8 @@
                             <a class="list-group-item active text-center">
                                 <i class="fa fa-pie-chart"></i> Monitor
                             </a>
-                            <a href="admin/search?model=stat&key=created&sign=like&value={echo $now}" class="list-group-item"><i class="fa fa-database fa-2x"></i>  Links Tracking <span class="badge">{echo Shared\Markup::nice_number(Stat::count())}</span></a>
+                            <a href="admin/search?model=link&key=created&sign=live&value=1" class="list-group-item"><i class="fa fa-location-arrow fa-2x"></i>  Links Tracking <span class="badge">{echo Shared\Markup::nice_number(Link::count(array("live = ?" => true)))}</span></a>
+                            <a href="admin/search?model=stat&key=created&sign=like&value={echo $now}" class="list-group-item"><i class="fa fa-database fa-2x"></i>  Stats <span class="badge">{echo Shared\Markup::nice_number(Stat::count())}</span></a>
                             <a href="admin/search?model=account&key=live&sign=equal&value=1" class="list-group-item"><i class="fa fa-bank fa-2x"></i>  Bank <span class="badge">{echo Account::count()}</span></a>
                             <a href="admin/search?model=user&key=admin&sign=equal&value=1" class="list-group-item"><i class="fa fa-user-secret fa-2x"></i>  Admins <span class="badge">{echo User::count(array("admin = ?" => 1))}</span></a>
                         </div>

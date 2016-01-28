@@ -1,7 +1,7 @@
 {include publisher/modal_link.html}
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header text-center">{$category}</h1>
+        <h1 class="page-header text-center">{echo ucfirst($category)}</h1>
         <form class="form-inline text-center" role="form" method="get" action="">
             <div class="form-group">
                 <div class="input-group">
@@ -15,11 +15,11 @@
     </div>
     <div class="row">
         {foreach $item in $items}
-        <div class="col-md-4 col-lg-4 col-sm-6 col-xs-6">
+        <div class="col-md-6 col-lg-6 col-sm-6 col-xs-12">
             <div class="panel panel-default">
                 <div class="panel-heading">{echo substr($item->title, 0, 30)}</div>
                 <div class="panel-body">
-                    <a href="{echo $item->url}" target="_blank"><img src="/content/resize/{echo base64_encode($item->image)}" alt="{echo $item->title}" width="290"></a>
+                    <a href="{echo $item->url}" target="_blank"><img src="/content/resize/{echo base64_encode($item->image)}" class="img-rounded center-block" alt="{echo $item->title}" height="240"></a>
                 </div>
                 <table class="table">
                     <tbody>
@@ -28,7 +28,7 @@
                                 <input type="text" class="form-control shorturl">
                             </td>
                             <td>
-                                <button class="btn btn-success shortenURL" data-item="{echo $item->id}" data-hash="{echo $item->encode($user->username, $user->id)}" data-title="{echo $item->title}">Generate Link</button>
+                                <button class="btn btn-success shortenURL" data-item="{echo $item->id}" data-hash="{echo $item->encode($user->username, $user->id)}" data-title="{echo $item->title}"><i class="fa fa-link"></i> Generate Link</button>
                             </td>
                         </tr>
                     </tbody>

@@ -114,7 +114,7 @@ namespace Shared {
             $logfile = APP_PATH . "/logs/" . date("Y-m-d") . ".txt";
             $new = file_exists($logfile) ? false : true;
             if ($handle = fopen($logfile, 'a')) {
-                $timestamp = strftime("%Y-%m-%d %H:%M:%S", time() + 1800);
+                $timestamp = strftime("%Y-%m-%d %H:%M:%S", time());
                 $content = "[{$timestamp}]{$message}\n";
                 fwrite($handle, $content);
                 fclose($handle);
@@ -162,7 +162,7 @@ namespace Shared {
                 $extension = pathinfo($file["name"], PATHINFO_EXTENSION);
                 $filename = uniqid() . ".{$extension}";
 
-                $finfo = new finfo(FILEINFO_MIME_TYPE);
+                $finfo = new \finfo(FILEINFO_MIME_TYPE);
                 $ext = array_search($finfo->file($file['tmp_name']), $img_type, true);
                 if ($ext !== false) {
                     if (move_uploaded_file($file["tmp_name"], $path . $filename)) {
@@ -190,7 +190,7 @@ namespace Shared {
         
         protected function getBody($options) {
             $template = $options["template"];
-            $view = new Framework\View(array(
+            $view = new \Framework\View(array(
                 "file" => APP_PATH . "/application/views/layouts/email/{$template}.html"
             ));
             foreach ($options as $key => $value) {

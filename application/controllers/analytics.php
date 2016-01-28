@@ -200,13 +200,4 @@ class Analytics extends Admin {
 
         $view->set("stats", $return);
     }
-
-    public function test() {
-        $this->noview();
-        $publish = Publish::all(array(), array("id"));
-        foreach ($publish as $p) {
-            echo "<pre>", print_r($p->id), "</pre>";
-        }
-    }
-    
 }
