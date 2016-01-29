@@ -78,6 +78,9 @@ class Admin extends Auth {
                     }
                     $i++;
                 }
+                if (RequestMethods::get("csv") == true) {
+                    $this->downloadCSV($items);
+                }
                 $view->set("items", $items);
                 $view->set("values", $values[0]);
                 $view->set("count", $count);
@@ -86,6 +89,25 @@ class Admin extends Auth {
             } else {
                 $view->set("success", "No Results Found");
             }
+        }
+    }
+
+    protected function downloadCSV($items) {
+        $this->noview();$count = 1;
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=data.csv');
+
+        $output = fopen('php://output', 'w');
+
+        foreach ($items as $item) {
+            if ($count == 1) {
+                $array_keys = array_keys($item);
+                fputcsv($output, $array_keys);
+                $count++;
+            }
+
+            $array_values = array_values($item);
+            fputcsv($output, $array_values);            
         }
     }
 

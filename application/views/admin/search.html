@@ -41,6 +41,9 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <i class="fa fa-list fa-fw"></i> Results
+                <div class="pull-right">
+                    <div class="btn-group"><a href="{echo URL.'&csv=true';}" target="_blank" class="btn btn-success btn-xs"><i class="fa fa-file-excel-o"></i> Export</a></div>
+                </div>
             </div>
             <div class="panel panel-body text-center" id="result_status">
                 {if(isset($success))}
@@ -50,7 +53,7 @@
                     Select field to search and enter keyword and then click on search button to see results.
                 {/else}
             </div>
-            <table class="table table-striped text-center table-hover table-bordered">
+            <table class="table table-striped text-center table-hover table-bordered table-responsive">
                 <thead>
                     <tr>
                         {foreach $value in $values}
