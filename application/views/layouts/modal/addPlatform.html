@@ -1,0 +1,33 @@
+<div class="modal fade" id="addPlatform" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <form class="modal-content" method="post" action="" enctype="multipart/form-data">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Add Website</h4>
+            </div>
+            <div class="modal-body">
+            	<div class="form-group">
+                    <label>Type</label>
+                    <select class="form-control" name="name">
+                    	<option value="FACEBOOK_PAGE">Facebook Page</option>
+                    	<option value="WEBSITE">Website</option>
+                    	<option value="TWITTER">Twitter</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Website Link/URL</label>
+                    <input type="url" name="link" class="form-control" placeholder="Your Website URL">
+                </div>
+                <div class="form-group">
+                    <label>Admin Image (Optional)</label>
+                    <input type="file" name="admin" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+            	<input type="hidden" name="action" value="addPlatform">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>

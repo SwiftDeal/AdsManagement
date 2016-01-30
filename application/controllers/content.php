@@ -231,7 +231,7 @@ class Content extends Publisher {
                 header("Location: {$cdn}uploads/images/resize/{$thumbnail}");
                 exit();
             }
-            header("Location: /images/{$image}");
+            header("Location: {CDN}images/{$image}");
             exit();
         } else {
             header("Location: {$cdn}img/logo.png");

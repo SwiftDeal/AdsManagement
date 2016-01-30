@@ -203,9 +203,10 @@ class Publisher extends Analytics {
         if (RequestMethods::post("action") == "addPlatform") {
             $platform = new Platform(array(
                 "user_id" => $this->user->id,
-                "name" => "FACEBOOK_PAGE",
+                "name" => RequestMethods::post("name"),
                 "link" =>  RequestMethods::post("link"),
-                "image" => $this->_upload("fbadmin", "images")
+                "image" => $this->_upload("admin", "images"),
+                "live" => 0
             ));
             $platform->save();
             $view->set("message", "Your Platform has been added successfully");
