@@ -200,4 +200,49 @@ class Analytics extends Admin {
 
         $view->set("stats", $return);
     }
+
+    /**
+     * @before _secure, changeLayout, _admin
+     */
+    public function verify($user_id) {
+        $this->seo(array("title" => "Verify Stats", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+
+        $page = RequestMethods::get("page", 1);
+        $limit = RequestMethods::get("limit", 10);
+        $offset = ($page - 1) * $limit;
+
+        $database = Registry::get("database");
+        $result = $database->execute("SELECT user_id, item_id, count(*) AS tot FROM stats WHERE user_id={$user_id} GROUP BY user_id, item_id HAVING tot > 1 ORDER BY created DESC LIMIT {$offset},{$limit}");
+        
+        $stats = array();
+        for ($i = 0; $i < $result->num_rows; $i++) {
+            $data = $result->fetch_array(MYSQLI_ASSOC);
+            array_push($stats, \Framework\ArrayMethods::toObject(array(
+                "user_id" => $data["user_id"],
+                "item_id" => $data["item_id"],
+                "total" => $data["tot"]
+            )));
+        }
+
+        $view->set("stats", $stats);
+        $view->set("limit", $limit);
+        $view->set("page", $page);
+        $view->set("count", count($stats));
+    }
+
+    /**
+     * @before _secure, changeLayout, _admin
+     */
+    public function delduplicate($stat_id) {
+        $this->noview();
+        
+        $stat = Stat::first(array("id = ?" => $stat_id));
+        $link = Link::first(array("id = ?" => $stat->link_id));
+        if ($link->delete()) {
+            $stat->delete();
+        }
+        
+        self::redirect($_SERVER['HTTP_REFERER']);
+    }
 }
