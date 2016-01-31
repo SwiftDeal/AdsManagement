@@ -47,6 +47,8 @@ class Admin extends Auth {
         $page = RequestMethods::get("page", $page);
         $limit = RequestMethods::get("limit", $limit);
         $sign = RequestMethods::get("sign", "equal");
+        $order = RequestMethods::get("desc", $order);
+        $direction = RequestMethods::get("created", $direction);
 
         $view->set("items", array());
         $view->set("values", array());
@@ -57,6 +59,8 @@ class Admin extends Auth {
         $view->set("property", $property);
         $view->set("val", $val);
         $view->set("sign", $sign);
+        $view->set("order", $order);
+        $view->set("direction", $direction);
 
         if ($model) {
             if ($sign == "like") {

@@ -71,10 +71,11 @@ class Publisher extends Analytics {
             $k = array_rand($domains);
             $longURL = RequestMethods::get("domain", $domains[$k]) . '?item=' . RequestMethods::get("hash");
         }
-        $googl = Registry::get("googl");
-        $object = $googl->shortenURL($longURL);
-        $link = Link::first(array("short = ?" => $object->id));
+
+        $link = Link::first(array("user_id = ?" => $this->user->id, "item_id = ?" => RequestMethods::get("item")));
         if (!$link) {
+            $googl = Registry::get("googl");
+            $object = $googl->shortenURL($longURL);
             $link = new Link(array(
                 "user_id" => $this->user->id,
                 "short" => $object->id,
@@ -83,7 +84,7 @@ class Publisher extends Analytics {
             ));
             $link->save();
         }
-        $view->set("shortURL", $object->id);
+        $view->set("shortURL", $link->short);
         $view->set("googl", $object);
     }
     
