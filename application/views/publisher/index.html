@@ -14,7 +14,7 @@
     <div class="col-lg-3 col-md-3">
         <div class="panel panel-default">
             <ul class="list-group">
-                <li class="list-group-item active text-center"><i class="fa fa-globe"></i> Realtime Today</li>
+                <li class="list-group-item list-group-item-danger text-center"><b><i class="fa fa-globe"></i> Realtime Today</b></li>
                 <li class="list-group-item">Clicks<span class="badge" id="today_click"><i class="fa fa-spinner fa-pulse"></i></span></li>
                 <li class="list-group-item">Average RPM <span class="badge" id="today_rpm"><i class="fa fa-spinner fa-pulse"></i></span></li>
                 <li class="list-group-item">Earnings <span class="badge" id="today_earning"><i class="fa fa-spinner fa-pulse"></i></span></li>
@@ -25,7 +25,7 @@
     <div class="col-lg-3 col-md-3">
         <div class="panel panel-default">
             <ul class="list-group">
-                <li class="list-group-item active text-center"><i class="fa fa-check-circle"></i> Overall Stats</li>
+                <li class="list-group-item list-group-item-warning text-center"><b><i class="fa fa-check-circle"></i> Overall Stats</b></li>
                 <li class="list-group-item">Clicks <span class="badge">{echo Shared\Markup::nice_number(round($total[0]["click"], 2))}</span></li>
                 <li class="list-group-item">Average RPM <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number(round($total[0]["earn"]*1000/$total[0]["click"], 2))}</span></li>
                 <li class="list-group-item">Earnings <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number(round($total[0]["earn"], 2))}</span></li>
@@ -36,7 +36,7 @@
     <div class="col-lg-3 col-md-3">
         <div class="panel panel-default">
             <ul class="list-group">
-                <li class="list-group-item active text-center"><i class="fa fa-money"></i> Total Payments</li>
+                <li class="list-group-item list-group-item-info text-center"><b><i class="fa fa-money"></i> Total Payments</b></li>
                 <li class="list-group-item">Earned <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number(round($total[0]["earn"], 2))}</span></li>
                 <li class="list-group-item">Paid <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number($paid)}</span></li>
                 <li class="list-group-item">Pending <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number(round($total[0]["earn"], 2)-$paid)}</span></li>
@@ -44,19 +44,15 @@
         </div>
     </div>
 
-    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-        <a href="/publisher/mylinks.html">
-            <div class="card blue summary-inline">
-                <div class="card-body">
-                    <i class="icon fa fa-share-alt fa-4x"></i>
-                    <div class="content">
-                        <div class="title">{echo Link::count(array("user_id = ?" => $user->id))}</div>
-                        <div class="sub-title">Links</div>
-                    </div>
-                    <div class="clear-both"></div>
-                </div>
-            </div>
-        </a>
+    <div class="col-lg-3 col-md-3">
+        <div class="panel panel-success">
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-success text-center"><b><i class="fa fa-support"></i> Account</b></li>
+                <li class="list-group-item">Total Links <span class="badge">{echo Shared\Markup::nice_number(Link::count(array("user_id = ?" => $user->id)))}</span></li>
+                <li class="list-group-item">Links Tracked <span class="badge">{echo Shared\Markup::nice_number(Stat::count(array("user_id = ?" => $user->id)))}</span></li>
+                <li class="list-group-item">Platforms Added <span class="badge">{echo Shared\Markup::nice_number(Platform::count(array("user_id = ?" => $user->id)))}</span></li>
+            </ul>
+        </div>
     </div>
 
 </div>
@@ -84,7 +80,7 @@
                             {script $item = Item::first(array("id = ?" => $link->item_id), array("title", "url"))}
                             <tr>
                                 <td><a href="{$item->url}" target="_blank">{$item->title}</a></td>
-                                <td><a href="{$link->short}" target="_blank">{$link->short}</a></td>
+                                <td><a href="{$link->short}+" target="_blank">{$link->short}</a></td>
                                 <td class="googl" data-time="allTime" data-property="shortUrlClicks" data-url="{$link->short}">
                                     <span class="label label-success">View</span>
                                 </td>
