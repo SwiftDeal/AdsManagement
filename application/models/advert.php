@@ -29,5 +29,5 @@ class Advert extends Shared\Model {
     * @type text
     * @length 32
     */
-    protected $_account;
+    protected $_account = "basic";
 }

@@ -11,30 +11,29 @@
             </div>
             <button type="submit" class="btn btn-primary">Search</button>
         </form>
-        <hr>
     </div>
     <div class="row">
         {foreach $item in $items}
-        <div class="col-md-6 col-lg-6 col-sm-6 col-xs-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">{echo substr($item->title, 0, 30)}</div>
-                <div class="panel-body">
-                    <a href="{echo $item->url}" target="_blank"><img src="/content/resize/{echo base64_encode($item->image)}" class="img-rounded center-block" alt="{echo $item->title}" height="240"></a>
+        <div class="col-md-4 col-sm-12">
+            <div class="thumbnail no-margin-bottom">
+                <img src="/content/resize/{echo base64_encode($item->image)}" class="img-responsive" alt="{echo $item->title}" height="240">
+                <div class="caption">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input type="text" class="form-control shorturl">
+                                </td>
+                                <td>
+                                    <button class="btn btn-success shortenURL" data-item="{echo $item->id}" data-hash="{echo $item->encode($user->username, $user->id)}" data-title="{echo $item->title}"><i class="fa fa-link"></i> Generate Link</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <table class="table">
-                    <tbody>
-                        <tr>
-                            <td>
-                                <input type="text" class="form-control shorturl">
-                            </td>
-                            <td>
-                                <button class="btn btn-success shortenURL" data-item="{echo $item->id}" data-hash="{echo $item->encode($user->username, $user->id)}" data-title="{echo $item->title}"><i class="fa fa-link"></i> Generate Link</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
+        
         {/foreach}
     </div>
     <div class="text-center">

@@ -1,56 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="likesbazar Publisher Control Panel">
+    <meta name="description" content="chocoghar Publisher Control Panel">
     <meta name="author" content="CloudStuff.Tech">
-
+    
     <title>{echo $seo->getTitle()}</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-
-    <!-- Custom CSS -->
-    <link href="{echo CDN}css/sb-publisher.css" rel="stylesheet">
-
-    <!-- Morris Charts CSS -->
+    <!-- Fonts -->
+    <link href="http://fonts.googleapis.com/css?family=Roboto+Condensed:300,400" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,900" rel="stylesheet" type="text/css">
+    
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/public/assets/css/animate.css">
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
     
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" href="/public/assets/css/theme.css">
+    <link rel="stylesheet" type="text/css" href="/public/assets/css/themes/flat-blue.css">
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
 </head>
 
-<body>
+<body class="flat-blue">
 
-    <div id="wrapper">
-        {include layouts/navigation/publisher.html}
-        
-        <div id="page-wrapper">
+    <div class="app-container">
+        <div class="row content-container">
+            {include layouts/navigation/publisher.html}
+            <!-- Main Content -->
             <div class="container-fluid">
-                {ayield action}
-            </div>
-
-            <footer class="footer">
-                <div class="container text-center">
-                    <small class="text-muted">@Developed By <a href="http://cloudstuff.tech" target="_blank">CloudStuff.Tech</a></small>
+                <div class="side-body">
+                    {ayield action}
                 </div>
-            </footer>
+            </div>
         </div>
-    </div>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="{echo CDN}js/model-1.0.js"></script>
-    <script src="{echo CDN}js/publisher-1.1.js"></script>
-
-    <!-- Morris Charts JavaScript -->
+        <footer class="app-footer">
+            <div class="wrapper">
+                <span class="pull-right">@Developed By <a href="http://cloudstuff.tech" target="_blank">CloudStuff.Tech</a></span> &copy; 2015 Copyright.
+            </div>
+        </footer>
+    <div>
+    <!-- Javascript Libs -->
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.0/jquery.matchHeight-min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-
+    
+    <!-- Javascript -->
+    <script type="text/javascript" src="/public/assets/js/publisher-1.1.js"></script>
 </body>
 
 </html>

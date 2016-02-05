@@ -161,15 +161,22 @@ class Auth extends Controller {
     protected function session($user) {
         $this->setUser($user);
         $session = Registry::get("session");
-        //setting domains
-        $domains = Meta::all(array("property = ?" => "domain", "live = ?" => true));
-        $session->set("domains", $domains);
 
         //setting publisher
         $publish = Publish::first(array("user_id = ?" => $user->id));
         if ($publish) {
+            //setting domains
+            $domains = Meta::all(array("property = ?" => "domain", "live = ?" => true));
+            $session->set("domains", $domains);
             $session->set("publish", $publish);
             self::redirect("/publisher");
+        }
+
+        //setting publisher
+        $advert = Advert::first(array("user_id = ?" => $user->id));
+        if ($advert) {
+            $session->set("advert", $advert);
+            self::redirect("/advertiser");
         }
     }
 
