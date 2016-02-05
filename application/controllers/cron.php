@@ -48,12 +48,19 @@ class CRON extends Auth {
                 "amount" => $data["earning"] - 0.6,
                 "rpm" => $data["rpm"]
             ));
+            $stat->save();
         } else {
-            $stat->click += $data["click"];
-            $stat->amount += $data["earning"];
-            $stat->rpm = $data["rpm"];
+            $today =strtotime(date('Y-m-d', strtotime("now")));
+            $modified = strtotime($stat->modified);
+
+            if($modified < $today) {
+                $stat->click += $data["click"];
+                $stat->amount += $data["earning"];
+                $stat->rpm = $data["rpm"];
+                $stat->save();
+            }
         }
-        $stat->save();
+        
         $stat->removeProperty();
         $output = '<pre>'. print_r($stat, true). '</pre>';
         $this->log($output);
