@@ -371,4 +371,12 @@ class Publisher extends Analytics {
         }    
         parent::render();
     }
+
+    public function mongotest() {
+        $this->noview();
+        $urls = Registry::get("MongoDB")->urls;
+        $record = $urls->findOne();
+
+        var_dump($record);
+    }
 }

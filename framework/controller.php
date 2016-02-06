@@ -154,7 +154,7 @@ namespace Framework {
                                     case 'object':
                                         if (get_class($values) == "stdClass") {
                                             $obj[$keys] = $values;
-                                        } else {
+                                        } elseif (is_a($values, 'Framework\Model')) {
                                             $obj[$keys] = $values->getJsonData();
                                         }
                                         break;
@@ -163,7 +163,7 @@ namespace Framework {
                                             if (gettype($value) == "object") {
                                                 if (get_class($value) == "stdClass") {
                                                     $obj[$keys][] = $value;
-                                                } else {
+                                                } elseif (is_a($value, 'Framework\Model')) {
                                                     $obj[$keys][] = $value->getJsonData();
                                                 }
                                             } else{

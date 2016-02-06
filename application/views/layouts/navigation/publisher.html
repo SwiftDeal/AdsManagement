@@ -15,6 +15,9 @@
             <button type="button" class="navbar-right-expand-toggle pull-right visible-xs">
                 <i class="fa fa-times icon"></i>
             </button>
+            {if($user->admin)}
+            <li><a href="/admin/index.html"><i class="fa fa-user-secret"></i> Admin</a></li>
+            {/if}
             <li class="primary"><a href="/content"><i class="fa fa-link"></i> Get Link</a></li>
             <li><a href="https://www.facebook.com/groups/197037957298460/" target="_blank"><i class="fa fa-facebook-square"></i> Join Group</a></li>
             <li class="dropdown info">
