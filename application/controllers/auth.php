@@ -81,7 +81,7 @@ class Auth extends Controller {
         ));
         $view = $this->getActionView();
         
-        if (RequestMethods::post("action") == "register" && $this->reCaptcha()) {
+        if (RequestMethods::post("action") == "register") {
             $this->_register();
         }
     }
@@ -115,11 +115,11 @@ class Auth extends Controller {
             ));
             $publish->save();
 
-            $this->notify(array(
+            /*$this->notify(array(
                 "template" => "publisherRegister",
                 "subject" => "Welcome to ChocoGhar.com",
                 "user" => $user
-            ));
+            ));*/
             $view->set("message", "Your account has been created and will be activate within 3 hours after verification.");
         } else {
             $view->set("message", 'Username exists, login from <a href="/admin/login">here</a>');
