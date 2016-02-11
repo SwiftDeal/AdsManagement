@@ -17,14 +17,15 @@ class Auth extends Controller {
     public function login() {
         $this->seo(array("title" => "Login", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-        $view->set("message", "");
 
         if (RequestMethods::get("action") == "reset") {
-            $this->_resetPassword();
+            $message = $this->_resetPassword();
+            $view->set("message", $message);
         }
         
         if (RequestMethods::post("action") == "login") {
-            $this->_login();
+            $message =  $this->_login();
+            $view->set("message", $message);
         }
     }
 
@@ -37,25 +38,17 @@ class Auth extends Controller {
                 "password = ?" => sha1(RequestMethods::post("password"))
             ));
             if($user) {
-                $login = Meta::first(array("property = ?" => "login"));
-                if($login->value == "yes") {
-                    if ($user->live) {
-                        $this->session($user);
-                    } else {
-                        $view->set("message", "User account not verified");
-                    }
+                if ($user->live) {
+                    return $this->session($user);
                 } else {
-                    if ($user->admin) {
-                        $this->session($user);
-                    }
-                    $view->set("message", "We are Updating our System, try later");
+                    return "User account not verified";
                 }
             } else{
-                $view->set("message", 'Wrong Password, Try again or <a href="/auth/login?action=reset&email='.$email.'">Reset Password</a>');
+                return 'Wrong Password, Try again or <a href="/auth/login?action=reset&email='.$email.'">Reset Password</a>';
             }
             
         } else {
-            $view->set("message", 'User doesnot exist. Please signup <a href="/auth/register">here</a>');
+            return 'User doesnot exist. Please signup <a href="/auth/register">here</a>';
         }
     }
 
@@ -71,21 +64,6 @@ class Auth extends Controller {
             $view->set("message", "Password Reset Email Sent Check Your Email. Check in Spam too.");
         }
     }
-    
-    /**
-     * @before _session
-     */
-    public function register() {
-        $this->seo(array(
-            "title" => "Register",
-            "view" => $this->getLayoutView()
-        ));
-        $view = $this->getActionView();
-        
-        if (RequestMethods::post("action") == "register") {
-            $this->_register();
-        }
-    }
 
     protected function _register() {
         $exist = User::first(array("email = ?" => RequestMethods::post("email")));
@@ -97,33 +75,39 @@ class Auth extends Controller {
                 "password" => sha1(RequestMethods::post("password")),
                 "phone" => RequestMethods::post("phone"),
                 "admin" => 0,
+                "currency" => "INR",
                 "live" => 0
             ));
             $user->save();
             
             $platform = new Platform(array(
                 "user_id" => $user->id,
-                "name" => "FACEBOOK_PAGE",
-                "link" =>  RequestMethods::post("link"),
-                "image" => $this->_upload("fbadmin", "images")
+                "type" => "FACEBOOK_PAGE",
+                "url" =>  RequestMethods::post("url")
             ));
             $platform->save();
 
             $publish = new Publish(array(
                 "user_id" => $user->id,
-                "domain" => "",
-                "fblink" => RequestMethods::post("fblink")
+                "country" => RequestMethods::post("country"),
+                "live" => 1
             ));
             $publish->save();
 
-            /*$this->notify(array(
-                "template" => "publisherRegister",
-                "subject" => "Welcome to ChocoGhar.com",
-                "user" => $user
-            ));*/
-            $view->set("message", "Your account has been created and will be activate within 3 hours after verification.");
+            $account = new Account(array(
+                "user_id" => $user->id,
+                "name" => $user->name,
+                "bank" => RequestMethods::post("bank"),
+                "number" => RequestMethods::post("number"),
+                "ifsc" => RequestMethods::post("ifsc"),
+                "pan" => RequestMethods::post("pan"),
+                "paypal" => "",
+                "balance" => 0
+            ));
+            $account->save();
+            return "Your account has been created, we will notify you once approved.";
         } else {
-            $view->set("message", 'Username exists, login from <a href="/admin/login">here</a>');
+            return 'User exists, <a href="/auth/login.html">login</a>';
         }
     }
 
@@ -160,12 +144,14 @@ class Auth extends Controller {
     }
 
     protected function session($user) {
-        $this->setUser($user);
         $session = Registry::get("session");
-
         //setting publisher
         $publish = Publish::first(array("user_id = ?" => $user->id));
         if ($publish) {
+            if ($publish->live == 0) {
+                return "Account Suspended";
+            }
+            $this->setUser($user);
             //setting domains
             $domains = Meta::all(array("property = ?" => "domain", "live = ?" => true));
             $session->set("domains", $domains);
@@ -176,6 +162,10 @@ class Auth extends Controller {
         //setting publisher
         $advert = Advert::first(array("user_id = ?" => $user->id));
         if ($advert) {
+            if ($advert->live == 0) {
+                return "Account Suspended";
+            }
+            $this->setUser($user);
             $session->set("advert", $advert);
             self::redirect("/advertiser");
         }

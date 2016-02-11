@@ -14,19 +14,12 @@ class Publish extends Shared\Model {
      * @index
      */
     protected $_user_id;
-    
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     */
-    protected $_fblink;
-    
+
     /**
     * @column
     * @readwrite
     * @type text
-    * @length 255
+    * @length 3
     */
-    protected $_domain;
+    protected $_country;
 }

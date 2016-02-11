@@ -21,6 +21,10 @@ body {
     margin-bottom: 10px;
 }
 
+.padding-top {
+    padding-top: 84px;
+}
+
 .row.no-gap {
     margin-left: 0;
     margin-right: 0;

@@ -23,23 +23,12 @@ class Platform extends Shared\Model{
      * @validate required, min(3), max(32)
      * @label name
      */
-    protected $_name;
+    protected $_type;
     
     /**
      * @column
      * @readwrite
      * @type text
-     * 
-     * @validate required, alpha, min(3), max(32)
-     * @label link
      */
-    protected $_link;
-    
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * @length 255
-     */
-    protected $_image;
+    protected $_url;
 }

@@ -105,7 +105,7 @@ class Finance extends Admin {
 
             $this->notify(array(
                 "template" => "makePayment",
-                "subject" => "Payments From ChocoGhar Team",
+                "subject" => "Payments From Clicks99 Team",
                 "user" => $payee,
                 "payment" => $payment,
                 "account" => $account

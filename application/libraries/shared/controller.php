@@ -132,7 +132,7 @@ namespace Shared {
         
         public function logout() {
             $this->setUser(false);
-            self::redirect("/home");
+            self::redirect("/index.html");
         }
         
         public function noview() {
