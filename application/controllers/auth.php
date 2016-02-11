@@ -12,11 +12,12 @@ use \Curl\Curl;
 class Auth extends Controller {
     
     /**
-     * @before _session, _blank
+     * @before _session
      */
     public function login() {
         $this->seo(array("title" => "Login", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
+        $view->set("message", "");
 
         if (RequestMethods::get("action") == "reset") {
             $this->_resetPassword();
@@ -72,7 +73,7 @@ class Auth extends Controller {
     }
     
     /**
-     * @before _session, _blank
+     * @before _session
      */
     public function register() {
         $this->seo(array(
@@ -127,7 +128,7 @@ class Auth extends Controller {
     }
 
     /**
-     * @before _session, _blank
+     * @before _session
      */
     public function forgotpassword() {
         $this->seo(array("title" => "Forgot Password", "view" => $this->getLayoutView()));
@@ -197,13 +198,5 @@ class Auth extends Controller {
         $this->setUser(false);
         $user = User::first(array("id = ?" => $user_id));
         $this->session($user);
-    }
-    
-    /**
-     * @protected
-     */
-    public function _blank() {
-        $this->defaultLayout = "layouts/blank";
-        $this->setLayout();
     }
 }

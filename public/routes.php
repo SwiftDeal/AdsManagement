@@ -14,9 +14,9 @@ $routes = array(
         "action" => "login"
     ),
     array(
-        "pattern" => "register",
-        "controller" => "auth",
-        "action" => "register"
+        "pattern" => "index",
+        "controller" => "home",
+        "action" => "index"
     ),
     array(
         "pattern" => "privacy",

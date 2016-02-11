@@ -4,12 +4,12 @@
 include("seo.php");
 
 $seo = new SEO(array(
-    "title" => "LikesBazar Affiliate Network",
+    "title" => "Clicks99 AdNetwork",
     "keywords" => "earn money, facebook page monetization",
     "description" => "Welcome to Our Affiliate Network, we let you Monetize your platform through us, get paid with high rpm value in india.",
-    "author" => "LikesBazar Team",
+    "author" => "Clicks99 Team",
     "robots" => "INDEX,FOLLOW",
-    "photo" => CDN . "img/logo.png"
+    "photo" => CDN . "images/logo.png"
 ));
 
 Framework\Registry::set("seo", $seo);

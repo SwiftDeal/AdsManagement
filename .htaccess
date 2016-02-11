@@ -1,7 +1,7 @@
 Options -Indexes
 RewriteEngine On
-RewriteCond %{HTTP_HOST} ^www\.chocoghar\.com$
-RewriteRule ^/?$ "http\:\/\/chocoghar\.com\/" [R=301,L]
+RewriteCond %{HTTP_HOST} ^www\.clicks99\.com$
+RewriteRule ^/?$ "http\:\/\/clicks99\.com\/" [R=301,L]
 
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
@@ -10,7 +10,7 @@ RewriteRule ^([^.]+)\.?([a-zA-Z]+)?$ index.php?url=$1&extension=$2 [QSA,L]
 
 <Files "cron.php">
     Order deny,allow
-    Allow from 192.151.147.163
+    Allow from 192.151.147.166
     Deny from all
 </Files>
 
