@@ -92,19 +92,15 @@ $(document).ready(function() {
     $(".shortenURL").click(function(e) {
         e.preventDefault();
         var btn = $(this),
-            hash = btn.data('hash'),
             title = btn.data('title'),
-            domain = btn.data('domain'),
             item = btn.data('item');
 
+        btn.addClass('disabled');
         request.read({
             action: "publisher/shortenURL",
-            data: {
-                hash: hash,
-                item: item,
-                domain: domain
-            },
+            data: {item: item},
             callback: function(data) {
+                btn.removeClass('disabled');
                 btn.closest('div').find('.shorturl').val(data.shortURL);
                 btn.closest('div').find('.shorturl').focus();
                 $('#link_data').val(title+"\n"+data.shortURL);

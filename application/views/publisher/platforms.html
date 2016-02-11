@@ -4,7 +4,7 @@
         Platforms
         <span class="pull-right"><button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addPlatform"><i class="fa fa-globe"></i> Add Platform</button></span>
     </span>
-    <div class="description">All Social media platforms you own</div>
+    <div class="description">All Different Platforms you own</div>
 </div>
 <div class="row">
     <div class="col-lg-12">{if isset($message)}
@@ -26,17 +26,13 @@
                     {foreach $platform in $platforms}
                     <tr>
                         <td>{$platform->id}</td>
-                        <td><a href="{$platform->link}" target="_blank">{$platform->link}</a></td>
+                        <td><a href="{$platform->url}" target="_blank">{$platform->url}</a></td>
                         <td>
-                            {if($platform->image)}
-                            <a href="{echo CDN}uploads/images/{$platform->image}" target="_blank"><img src="/content/resize/{echo base64_encode($platform->image)}/50/50"></a>
-                            {/if} {else}
-                                {if($platform->live)}
-                                    <span class="label label-success">Verified</span>
-                                {/if}
-                                {else}
-                                    <span class="label label-warning">Unverified</span>
-                                {/else}
+                            {if($platform->live)}
+                                <span class="label label-success">Verified</span>
+                            {/if}
+                            {else}
+                                <span class="label label-warning">Unverified</span>
                             {/else}
                         </td>
                     </tr>

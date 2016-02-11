@@ -27,7 +27,7 @@ class Content extends Publisher {
         $view = $this->getActionView();
         
         $title = RequestMethods::get("title", "");
-        $category = implode(",", RequestMethods::get("category", ""));
+        $category = RequestMethods::get("category", "");
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 12);
 
@@ -37,7 +37,7 @@ class Content extends Publisher {
             "live = ?" => true
         );
         
-        $items = Item::all($where, array("id", "title", "image", "url", "description"), "created", "desc", $limit, $page);
+        $items = Item::all(array(), array("id", "title", "image", "url", "description"), "created", "desc", $limit, $page);
         $count = Item::count($where);
 
         $view->set("limit", $limit);
@@ -141,23 +141,6 @@ class Content extends Publisher {
         $view->set("item", $item);
         $view->set("rpms", $rpms);
         $view->set("categories", explode(",", $item->category));
-    }
-    
-    /**
-     * @before _secure, changeLayout, _admin
-     */
-    public function shortenURL() {
-        $this->seo(array("title" => "Shorten URL", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-        
-        if (RequestMethods::get("longURL")) {
-            $longURL = RequestMethods::get("longURL");
-            $googl = Registry::get("googl");
-            $object = $googl->shortenURL($longURL);
-            
-            $view->set("shortURL", $object->id);
-            $view->set("googl", $object);
-        }
     }
 
     /**

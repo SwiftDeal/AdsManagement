@@ -5,6 +5,31 @@
         <form class="form-inline text-center" role="form" method="get" action="">
             <div class="form-group">
                 <div class="input-group">
+                    <label class="sr-only">Category</label>
+                    <select name="category" class="form-control">
+                        <option value="" selected="">All</option>
+                        <option value="bollywood">Bollywood</option>
+                        <option value="fashion">Fashion</option>
+                        <option value="funny">Funny</option>
+                        <option value="hollywood">Hollywood</option>
+                        <option value="life">Life</option>
+                        <option value="news">News</option>
+                        <option value="omg">OMG</option>
+                        <option value="sports">Sports</option>
+                        <option value="trending">Trending</option>
+                        <option value="videos">Viral Videos</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="gadgets">Gadgets</option>
+                        <option value="religion">Religion</option>
+                        <option value="interesting">Interesting</option>
+                        <option value="health">Health</option>
+                        <option value="celebrities">Celebrities</option>
+                        <option value="amazing">Amazing</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
                     <label class="sr-only">Title</label>
                     <input type="text" style="width: 300px" name="title" class="form-control" placeholder="Search here..." value="{$title}" />
                 </div>
@@ -25,7 +50,7 @@
                                     <input type="text" class="form-control shorturl">
                                 </td>
                                 <td>
-                                    <button class="btn btn-success shortenURL" data-item="{echo $item->id}" data-hash="{echo $item->encode($user->username, $user->id)}" data-title="{echo $item->title}"><i class="fa fa-link"></i> Generate Link</button>
+                                    <button class="btn btn-success shortenURL" data-item="{echo $item->id}" data-title="{echo $item->title}"><i class="fa fa-link"></i> Generate Link</button>
                                 </td>
                             </tr>
                         </tbody>

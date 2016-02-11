@@ -63,29 +63,43 @@ class Publisher extends Analytics {
     public function shortenURL() {
         $this->JSONview();
         $view = $this->getActionView();
+        $link = new Link(array(
+            "user_id" => $this->user->id,
+            "short" => "",
+            "item_id" => RequestMethods::get("item"),
+            "live" => 1
+        ));
+        $link->save();
         
-        if($this->publish->domain) {
-            $longURL = $this->publish->domain . '?item=' . RequestMethods::get("hash");
+        $item = Item::first(array("id = ?" => RequestMethods::get("item")), array("url", "title", "image", "description"));
+        $m = Registry::get("MongoDB")->urls;
+        $doc = array(
+            "link_id" => $link->id,
+            "item_id" => RequestMethods::get("item"),
+            "user_id" => $this->user->id,
+            "url" => $item->url,
+            "title" => $item->title,
+            "image" => $item->image,
+            "description" => $item->description,
+            "created" => date('Y-m-d', strtotime("now"))
+        );
+        $m->insert($doc);
+
+        $d = Meta::first(array("user_id = ?" => $this->user->id, "property = ?" => "domain"), array("value"));
+        if($d) {
+            $longURL = $d->value . '/' . base64_encode($link->id);
         } else {
             $domains = $this->target();
             $k = array_rand($domains);
-            $longURL = RequestMethods::get("domain", $domains[$k]) . '?item=' . RequestMethods::get("hash");
+            $longURL = RequestMethods::get("domain", $domains[$k]) . '/' . base64_encode($link->id);
         }
+        $googl = Registry::get("googl");
+        $object = $googl->shortenURL($longURL);
 
-        $link = Link::first(array("user_id = ?" => $this->user->id, "item_id = ?" => RequestMethods::get("item")));
-        if (!$link) {
-            $googl = Registry::get("googl");
-            $object = $googl->shortenURL($longURL);
-            $link = new Link(array(
-                "user_id" => $this->user->id,
-                "short" => $object->id,
-                "item_id" => RequestMethods::get("item"),
-                "live" => 1
-            ));
-            $link->save();
-        }
-        $view->set("shortURL", $link->short);
-        $view->set("googl", $object);
+        $link->short = $object->id;
+        $link->save();
+
+        $view->set("shortURL", $object->id);
     }
     
     /**
@@ -204,9 +218,8 @@ class Publisher extends Analytics {
         if (RequestMethods::post("action") == "addPlatform") {
             $platform = new Platform(array(
                 "user_id" => $this->user->id,
-                "name" => RequestMethods::post("name"),
-                "link" =>  RequestMethods::post("link"),
-                "image" => $this->_upload("admin", "images"),
+                "type" => RequestMethods::post("type"),
+                "url" =>  RequestMethods::post("url"),
                 "live" => 0
             ));
             $platform->save();

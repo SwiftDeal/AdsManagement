@@ -4,7 +4,7 @@ define("DEBUG", TRUE);
 
 define("APP_PATH", str_replace(DIRECTORY_SEPARATOR, "/", dirname(__FILE__)));
 define("URL", "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
-define("CDN", "http://cdn.chocoimage.in/public/assets/");
+define("CDN", "http://$_SERVER[HTTP_HOST]/public/assets/");
 
 date_default_timezone_set('Asia/Kolkata');
 ini_set('max_execution_time', 9000);
