@@ -106,6 +106,13 @@ class Auth extends Controller {
                 "balance" => 0
             ));
             $account->save();
+
+            $this->notify(array(
+                "template" => "publisherRegister",
+                "subject" => "Welcome to Clicks99",
+                "user" => $user,
+                "pass" => $pass
+            ));
             return "Your account has been created, we will notify you once approved.";
         } else {
             return 'User exists, <a href="/auth/login.html">login</a>';

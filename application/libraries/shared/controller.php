@@ -184,7 +184,7 @@ namespace Shared {
 
             if (!empty($parsed->mail->mailgun) && !empty($parsed->mail->mailgun->key)) {
                 $mg = new \Mailgun\Mailgun($parsed->mail->mailgun->key);
-                return $mailgun;
+                return $mg;
             }
         }
         
@@ -208,7 +208,7 @@ namespace Shared {
             switch ($options["delivery"]) {
                 default:
                     $mailgun = $this->mailgun();
-                    $mg->sendMessage("clicks99.com",array(
+                    $mailgun->sendMessage("clicks99.com",array(
                         'from'    => 'info@clicks99.com',
                         'to'      => $emails,
                         'subject' => $options["subject"],

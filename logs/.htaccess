@@ -1,6 +1,6 @@
 # basic password protection
 
-AuthUserFile /home/admin/web/chocoghar.com/public_html/logs/.htpasswd
+AuthUserFile /var/www/html/logs/.htpasswd
 AuthName "Username and password required"
 AuthType Basic
 <Limit GET POST>
