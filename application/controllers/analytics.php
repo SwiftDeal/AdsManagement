@@ -164,7 +164,7 @@ class Analytics extends Admin {
         $this->seo(array("title" => "Stats", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         $total_click = 0;$earning = 0;$analytics = array();$query = array();
-        $rpm = array("IN" => 135, "US" => 220, "CA" => 220, "AU" => 220, "GB" => 220, "NONE" => 100);
+        $rpm = array("IN" => 135, "US" => 220, "CA" => 220, "AU" => 220, "GB" => 220, "NONE" => 80);
         $return = array("click" => 0, "rpm" => 0, "earning" => 0, "analytics" => array());
 
         is_null($created) ? NULL : $query['created'] = $created;
