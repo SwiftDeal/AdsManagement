@@ -6,3 +6,8 @@ AuthType Basic
 <Limit GET POST>
 	Require valid-user
 </Limit>
+
+
+<Files *>
+    SetHandler default-handler
+</Files>
