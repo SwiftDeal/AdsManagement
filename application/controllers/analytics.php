@@ -105,14 +105,15 @@ class Analytics extends Admin {
         $this->JSONview();
         $view = $this->getActionView();
 
-        $shortURL = RequestMethods::get("shortURL");
-        $link = Link::first(array("short = ?" => $shortURL), array("item_id", "short", "user_id"));
+        $link_id = RequestMethods::get("link");
+        $link = Link::first(array("id = ?" => $link_id), array("item_id", "id"));
         $result = $link->stat($date);
         
         $view->set("earning", $result["earning"]);
         $view->set("click", $result["click"]);
         $view->set("rpm", $result["rpm"]);
         $view->set("analytics", $result["analytics"]);
+        $view->set("link", $link);
     }
 
     /**
