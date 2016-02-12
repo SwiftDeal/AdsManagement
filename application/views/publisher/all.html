@@ -38,13 +38,12 @@
                 </thead>
                 <tbody>
                     {foreach $user in $users}
-                    {script $platform = Platform::first(array("user_id = ?" => $user->id), array("image", "link", "created"));}
+                    {script $platform = Platform::first(array("user_id = ?" => $user->id), array("url", "created"));}
                     <tr>
                         <td>{echo $user->id}</td>
                         <td><a href="/admin/info/user/{$user->id}">{echo $user->name}</a></td>
                         <td>
-                            <a href="{echo CDN}uploads/images/{$platform->image}" class="btn btn-primary btn-xs" target="_blank"><i class="fa fa-picture-o"></i> Image </a>&nbsp;
-                            <a href="{$platform->link}" class="btn btn-primary btn-xs" target="_blank"><i class="fa fa-external-link"></i> Link </a>&nbsp;
+                            <a href="{$platform->url}" class="btn btn-primary btn-xs" target="_blank"><i class="fa fa-external-link"></i> Link </a>&nbsp;
                         </td>
                         <td>
                             {if($user->live)}

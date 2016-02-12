@@ -209,7 +209,7 @@ namespace Shared {
                 default:
                     $mailgun = $this->mailgun();
                     $mailgun->sendMessage("clicks99.com",array(
-                        'from'    => 'info@clicks99.com',
+                        'from'    => 'Milan Patel <info@clicks99.com>',
                         'to'      => $emails,
                         'subject' => $options["subject"],
                         'text'    => $body

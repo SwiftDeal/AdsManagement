@@ -90,22 +90,10 @@ class Auth extends Controller {
 
             $publish = new Publish(array(
                 "user_id" => $user->id,
-                "country" => RequestMethods::post("country", "IN"),
+                "country" => $this->country(),
                 "live" => 1
             ));
             $publish->save();
-
-            $account = new Account(array(
-                "user_id" => $user->id,
-                "name" => $user->name,
-                "bank" => RequestMethods::post("bank"),
-                "number" => RequestMethods::post("number"),
-                "ifsc" => RequestMethods::post("ifsc"),
-                "pan" => RequestMethods::post("pan"),
-                "paypal" => "",
-                "balance" => 0
-            ));
-            $account->save();
 
             $this->notify(array(
                 "template" => "publisherRegister",
