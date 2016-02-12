@@ -174,17 +174,17 @@ namespace Shared {
         }
 
         /**
-         * The Main Method to return SendGrid Instance
+         * The Main Method to return Mailgun Instance
          * 
-         * @return \SendGrid\SendGrid Instance of Sendgrid
+         * @return \Mailgun\Mailgun Instance of Mailgun
          */
-        protected function sendgrid() {
+        protected function mailgun() {
             $configuration = Registry::get("configuration");
             $parsed = $configuration->parse("configuration/mail");
 
-            if (!empty($parsed->mail->sendgrid) && !empty($parsed->mail->sendgrid->username)) {
-                $sendgrid = new \SendGrid\SendGrid($parsed->mail->sendgrid->username, $parsed->mail->sendgrid->password);
-                return $sendgrid;
+            if (!empty($parsed->mail->mailgun) && !empty($parsed->mail->mailgun->key)) {
+                $mg = new \Mailgun\Mailgun($parsed->mail->mailgun->key);
+                return $mailgun;
             }
         }
         
@@ -207,14 +207,13 @@ namespace Shared {
 
             switch ($options["delivery"]) {
                 default:
-                    $sendgrid = $this->sendgrid();
-                    $email = new \SendGrid\Email();
-                    $email->setSmtpapiTos($emails)
-                            ->setFrom('info@likesbazar.in')
-                            ->setFromName("Likesbazar Team")
-                            ->setSubject($options["subject"])
-                            ->setHtml($body);
-                    $sendgrid->send($email);
+                    $mailgun = $this->mailgun();
+                    $mg->sendMessage("clicks99.com",array(
+                        'from'    => 'info@clicks99.com',
+                        'to'      => $emails,
+                        'subject' => $options["subject"],
+                        'text'    => $body
+                    ));
                     break;
             }
             $this->log(implode(",", $emails));

@@ -65,14 +65,15 @@ class Auth extends Controller {
         }
     }
 
-    protected function _register() {
+    protected function _publisherRegister() {
         $exist = User::first(array("email = ?" => RequestMethods::post("email")));
         if (!$exist) {
+            $pass = $this->randomPassword();
             $user = new User(array(
-                "username" => RequestMethods::post("username"),
+                "username" => RequestMethods::post("name"),
                 "name" => RequestMethods::post("name"),
                 "email" => RequestMethods::post("email"),
-                "password" => sha1(RequestMethods::post("password")),
+                "password" => sha1($pass),
                 "phone" => RequestMethods::post("phone"),
                 "admin" => 0,
                 "currency" => "INR",
@@ -89,7 +90,7 @@ class Auth extends Controller {
 
             $publish = new Publish(array(
                 "user_id" => $user->id,
-                "country" => RequestMethods::post("country"),
+                "country" => RequestMethods::post("country", "IN"),
                 "live" => 1
             ));
             $publish->save();
@@ -109,6 +110,53 @@ class Auth extends Controller {
         } else {
             return 'User exists, <a href="/auth/login.html">login</a>';
         }
+    }
+
+    protected function _advertiserRegister() {
+        $exist = User::first(array("email = ?" => RequestMethods::post("email")));
+        if (!$exist) {
+            $pass = $this->randomPassword();
+            $user = new User(array(
+                "username" => RequestMethods::post("username"),
+                "name" => RequestMethods::post("name"),
+                "email" => RequestMethods::post("email"),
+                "password" => sha1($pass),
+                "phone" => RequestMethods::post("phone"),
+                "admin" => 0,
+                "currency" => "INR",
+                "live" => 0
+            ));
+            $user->save();
+            
+            $platform = new Platform(array(
+                "user_id" => $user->id,
+                "type" => "WEBSITE",
+                "url" =>  RequestMethods::post("url")
+            ));
+            $platform->save();
+
+            $advert = new Advert(array(
+                "user_id" => $user->id,
+                "country" => $this->country(),
+                "live" => 1
+            ));
+            $publish->save();
+
+            return "Your account has been created, we will notify you once approved.";
+        } else {
+            return 'User exists, <a href="/auth/login.html">login</a>';
+        }
+    }
+
+    protected function randomPassword() { 
+        $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+        $pass = array(); //remember to declare $pass as an array
+        $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+        for ($i = 0; $i < 8; $i++) {
+            $n = rand(0, $alphaLength);
+            $pass[] = $alphabet[$n];
+        }
+        return implode($pass); //turn the array into a string
     }
 
     /**
@@ -188,5 +236,12 @@ class Auth extends Controller {
         $this->setUser(false);
         $user = User::first(array("id = ?" => $user_id));
         $this->session($user);
+    }
+
+    protected function country() {
+        require '/var/www/powerfeeds/includes/vendor/autoload.php';
+        $reader = new GeoIp2\Database\Reader('/var/www/powerfeeds/includes/GeoLite2-Country.mmdb');
+        $record = $reader->country(Shared\Markup::get_client_ip());
+        return $record->country->isoCode;
     }
 }

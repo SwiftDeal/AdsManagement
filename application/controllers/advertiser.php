@@ -47,4 +47,17 @@ class Advertiser extends Analytics {
         }    
         parent::render();
     }
+
+    /**
+     * @before _session
+     */
+    public function register() {
+        $this->seo(array("title" => "Register as Advertiser", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+        
+        if (RequestMethods::post("action") == "register") {
+            $message = $this->_advertiserRegister();
+            $view->set("message", $message);
+        }
+    }
 }

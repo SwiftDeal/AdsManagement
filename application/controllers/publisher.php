@@ -393,7 +393,7 @@ class Publisher extends Analytics {
         $view = $this->getActionView();
         
         if (RequestMethods::post("action") == "register") {
-            $message = $this->_register();
+            $message = $this->_publisherRegister();
             $view->set("message", $message);
         }
     }
