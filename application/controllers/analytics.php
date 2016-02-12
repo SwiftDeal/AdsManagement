@@ -174,7 +174,7 @@ class Analytics extends Admin {
 
         $connection = new Mongo();
         $db = $connection->stats;
-        $collection = $db->hits;
+        $collection = $db->clicks;
 
         $cursor = $collection->find($query);
         foreach ($cursor as $id => $result) {

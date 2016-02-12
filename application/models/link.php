@@ -40,10 +40,10 @@ class Link extends Shared\Model {
     public function mongodb($date = NULL) {
         $m = new Mongo();
         $db = $m->stats;
-        $collection = $db->hits;
+        $collection = $db->clicks;
         $stats = array();$stat = array();
         $doc = array(
-            "item_id" => $this->item_id,
+            "id" => $this->id,
             "user_id" => $this->user_id
         );
 
