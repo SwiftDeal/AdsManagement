@@ -119,10 +119,8 @@ namespace Shared {
                 fwrite($handle, $content);
                 fclose($handle);
                 if ($new) {
-                    chmod($logfile, 0755);
+                    chmod($logfile, 0777);
                 }
-            } else {
-                echo "Could not open log file for writing";
             }
         }
 

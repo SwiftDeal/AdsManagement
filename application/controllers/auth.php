@@ -31,7 +31,7 @@ class Auth extends Controller {
         $this->seo(array("title" => "Forgot Password", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
-        if (RequestMethods::get("action") == "reset" && $this->reCaptcha()) {
+        if (RequestMethods::post("action") == "reset" && $this->reCaptcha()) {
             $message = $this->_resetPassword();
             $view->set("message", $message);
         }
@@ -46,10 +46,10 @@ class Auth extends Controller {
 
         $meta = Meta::first(array("value = ?" => $token, "property = ?" => "resetpass"));
         if (!isset($meta)) {
-            slef::redirect("/index.html");
+            self::redirect("/index.html");
         }
 
-        if (RequestMethods::post("action") == "change") {
+        if (RequestMethods::post("action") == "change" && $this->reCaptcha()) {
             $user = User::first(array("id = ?" => $meta->user_id));
             if(RequestMethods::post("password") == RequestMethods::post("cpassword")) {
                 $user->password = sha1(RequestMethods::post("password"));
@@ -93,6 +93,7 @@ class Auth extends Controller {
                 "property" => "resetpass",
                 "value" => uniqid()
             ));
+            $meta->save();
             $this->notify(array(
                 "template" => "forgotPassword",
                 "subject" => "New Password Requested",
@@ -100,7 +101,9 @@ class Auth extends Controller {
                 "meta" => $meta
             ));
 
-            $view->set("message", "Password Reset Email Sent Check Your Email. Check in Spam too.");
+            return "Password Reset Email Sent Check Your Email. Check in Spam too.";
+        } else {
+            return "User doesnot exist.";
         }
     }
 
@@ -222,7 +225,7 @@ class Auth extends Controller {
     }
 
     protected function reCaptcha() {
-        $g_recaptcha_response = RequestMethods::post("g-recaptcha-response", '03AHJ_Vut4zQ1SeLzhjSRqza49bNphfWsmpzejAkFADRA5hUN9hcBZdDq6fr8iA8aUhmJPlWxrG_7ImqQ3mheofTBVoT8MhUJRWNLTGpUofNVeVPREHmVqBPOQC80S70Gpt5UzT4E390NOhrOxc93gR5-h998bllqaWF180_yyMX2JqsfsgBx8R1gED5sJ8Zu8M7aRVRrAMBvfx8BBmUOG5QPnvPhcdIaq9pkCYiNC2Smr_JDLoL9jeB2uFGFsNaZaNuAIqffi9d_aF0HypLlo3TOCyhrPSeIz8lLmMpamOGjJqq_62SufW4vJ4ZYBSG4dBW0J_g7saqWljmULRJqW9veba-3AIErK7cDoDmgZCP9HtKDgx2ZOQXkvS_8Rnqwj-iAXFmHsLmOJ8CBMQ4j0dYwEHelkwlL6q5hUOqswrWrCab8eZ8xXEhme-qsjoHeTSlbwGSXHW5i-gPV_-qKOkWwxGDKkFzk6QkaJ6vRXRoGygaTcYQXO4ClDaUZOgKPJEhK0LbS-Hs4excNlCk-Ff23wiwGcyuqOOZ1oRH-L9X1eNwqHd-MFFZoPG99s45gURcHA4UMEPkAy60WT8BHGD1Z3_HbsVTX7Ana9d0vyuhr0ou7E0kWfwdHCrEQ5jOpp2J4z4Kn6aeMnpExO028-4VhAL-pGy_gcErEohBaQO7BZPtR4jB7iC4iytQrl6u5KDaSkWHO9KunFgO3UCHzoA3C08z6PjkU4Eq5fYSy5bwTMH_R6WHsH3RON0VQwJCuJu8XlwnDwKqC5siYVJ5EVE50r0xNEAGQgPUjwZIHFzoZO0g7NejN_1p3hgzpoAYFaW6mSzXxK08aaLD0nbxRWxWO9fbIIPQfRVLnkSMHikTZyqwPBJyVQJlEe65CFV1KdDzYUsAOZH3wUKFRC1L4EgkRLlvFnq1wlRA');
+        $g_recaptcha_response = RequestMethods::post("g-recaptcha-response");
         $curl = new Curl();
         $curl->post('https://www.google.com/recaptcha/api/siteverify', array(
             'secret' => '6LfRZRQTAAAAABxnjW_9e6x_BgzVc_b2ghnxmE8D',
