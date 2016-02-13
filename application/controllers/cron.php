@@ -13,6 +13,7 @@ class CRON extends Auth {
         $this->log("CRON Started");
         $this->verify();
         $this->log("CRON Ended");
+        $this->passwordmeta();
     }
     
     protected function verify() {
@@ -84,6 +85,14 @@ class CRON extends Auth {
                     sleep(1);
                 }
             }
+        }
+    }
+
+    protected function passwordmeta() {
+        $now = date('Y-m-d', strtotime("now"));
+        $meta = Meta::all(array("property = ?" => "resetpass", "created < ?" => $now));
+        foreach ($meta as $m) {
+            $m->delete();
         }
     }
     

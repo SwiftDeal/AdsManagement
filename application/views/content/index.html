@@ -41,8 +41,9 @@
         {foreach $item in $items}
         <div class="col-md-4 col-sm-12">
             <div class="thumbnail no-margin-bottom">
-                <img src="/content/resize/{echo base64_encode($item->image)}" class="img-responsive" alt="{echo $item->title}" height="240">
+                <a href="{echo $item->url}" target="_blank"><img src="/content/resize/{echo base64_encode($item->image)}" class="img-responsive" alt="{echo $item->title}" height="240"></a>
                 <div class="caption">
+                    <p><a href="{echo $item->url}" target="_blank">{echo $item->title}</a></p>
                     <table class="table">
                         <tbody>
                             <tr>

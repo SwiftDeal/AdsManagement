@@ -17,15 +17,48 @@ class Auth extends Controller {
     public function login() {
         $this->seo(array("title" => "Login", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-
-        if (RequestMethods::get("action") == "reset") {
-            $message = $this->_resetPassword();
-            $view->set("message", $message);
-        }
         
         if (RequestMethods::post("action") == "login") {
             $message =  $this->_login();
             $view->set("message", $message);
+        }
+    }
+
+    /**
+     * @before _session
+     */
+    public function forgotpassword() {
+        $this->seo(array("title" => "Forgot Password", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+
+        if (RequestMethods::get("action") == "reset" && $this->reCaptcha()) {
+            $message = $this->_resetPassword();
+            $view->set("message", $message);
+        }
+    }
+
+    /**
+     * @before _session
+     */
+    public function resetpassword($token) {
+        $this->seo(array("title" => "Forgot Password", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+
+        $meta = Meta::first(array("value = ?" => $token, "property = ?" => "resetpass"));
+        if (!isset($meta)) {
+            slef::redirect("/index.html");
+        }
+
+        if (RequestMethods::post("action") == "change") {
+            $user = User::first(array("id = ?" => $meta->user_id));
+            if(RequestMethods::post("password") == RequestMethods::post("cpassword")) {
+                $user->password = sha1(RequestMethods::post("password"));
+                $user->save();
+                $meta->delete();
+                $view->set("message", 'Password changed successfully now <a href="/login.html">Login</a>');
+            } else{
+                $view->set("message", 'Password Does not match');
+            }
         }
     }
 
@@ -44,7 +77,7 @@ class Auth extends Controller {
                     return "User account not verified";
                 }
             } else{
-                return 'Wrong Password, Try again or <a href="/auth/login?action=reset&email='.$email.'">Reset Password</a>';
+                return 'Wrong Password, Try again or <a href="/auth/forgotpassword.html">Reset Password</a>';
             }
             
         } else {
@@ -53,12 +86,18 @@ class Auth extends Controller {
     }
 
     protected function _resetPassword() {
-        $exist = User::first(array("email = ?" => RequestMethods::get("email")), array("id", "email", "name"));
+        $exist = User::first(array("email = ?" => RequestMethods::post("email")), array("id", "email", "name"));
         if ($exist) {
+            $meta = new Meta(array(
+                "user_id" => $exist->id,
+                "property" => "resetpass",
+                "value" => uniqid()
+            ));
             $this->notify(array(
                 "template" => "forgotPassword",
                 "subject" => "New Password Requested",
-                "user" => $exist
+                "user" => $exist,
+                "meta" => $meta
             ));
 
             $view->set("message", "Password Reset Email Sent Check Your Email. Check in Spam too.");
@@ -152,39 +191,7 @@ class Auth extends Controller {
             $pass[] = $alphabet[$n];
         }
         return implode($pass); //turn the array into a string
-    }
-
-    /**
-     * @before _session
-     */
-    public function forgotpassword() {
-        $this->seo(array("title" => "Forgot Password", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
-        if (RequestMethods::post("action") == "change") {
-            $token = RequestMethods::post("token");
-            $id = base64_decode($token);
-            $user = User::first(array("id = ?" => $id));
-            if(RequestMethods::post("password") == RequestMethods::post("cpassword")) {
-                $user->password = sha1(RequestMethods::post("password"));
-                $user->save();
-                $this->session($user);
-            } else{
-                $view->set("message", 'Password Does not match');
-            }
-        }
-
-        if (RequestMethods::get("action") == "reset") {
-            $token = RequestMethods::get("token");
-            $id = base64_decode($token);
-            $exist = User::first(array("id = ?" => $id), array("id"));
-            if($exist) {
-                $view->set("token", $token);
-            } else{
-                $view->set("message", 'Something Went Wrong please contact admin');
-            }
-        }
-    }
+    } 
 
     protected function session($user) {
         $session = Registry::get("session");

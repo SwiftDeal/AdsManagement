@@ -25,7 +25,7 @@
                             <td>{$item->title}</td>
                             <td><a href="{$link->short}" target="_blank">{$link->short}</a></td>
                             <td>{$link->created}</td>
-                            <td class="googl" data-time="allTime" data-property="shortUrlClicks" data-url="{$link->short}">
+                            <td class="linkstat" data-link="{echo $link->id}">
                                 <span class="label label-success">View</span>
                             </td>
                         </tr>

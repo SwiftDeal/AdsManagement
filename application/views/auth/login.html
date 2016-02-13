@@ -1,6 +1,3 @@
-<script type="text/javascript">
-    $("body").addClass("login-page");
-</script>
 <div class="container">
     <div class="login-box">
         {if(isset($message))}<div class="alert fresh-color alert-info" role="alert">{echo $message}</div>{/if}
@@ -8,13 +5,13 @@
             <div class="login-form row">
                 <div class="col-sm-12 text-center login-header">
                     <i class="login-logo fa fa-connectdevelop fa-5x"></i>
-                    <h4 class="login-title">Clicks99 Login</h4>
+                    <h4 class="login-title">Clicks99</h4>
                 </div>
                 <div class="col-sm-12">
                     <div class="login-body">
                         <form method="post" action="">
                             <div class="control">
-                                <input type="text" name="email" class="form-control" placeholder="Email" />
+                                <input type="email" name="email" class="form-control" placeholder="Email" />
                             </div>
                             <div class="control">
                                 <input type="password" name="password" class="form-control" placeholder="Password" />
@@ -26,10 +23,17 @@
                         </form>
                     </div>
                     <div class="login-footer">
-                        <span class="text-right"><a href="/auth/forgotpassword.html">Forgot password?</a></span>
+                        <span class="text-right"><a href="/auth/forgotpassword.html" class="color-white">Forgot password</a></span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    $("body").addClass("login-page");
+    $("nav").remove();
+    $(document).ready(function() {
+        $("footer").remove();
+    });
+</script>
