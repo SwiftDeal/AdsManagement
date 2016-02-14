@@ -215,7 +215,8 @@ class Publisher extends Analytics {
                     "name" => RequestMethods::post("name"),
                     "bank" => RequestMethods::post("bank"),
                     "number" => RequestMethods::post("number"),
-                    "ifsc" => RequestMethods::post("ifsc")
+                    "ifsc" => RequestMethods::post("ifsc"),
+                    "pan" => RequestMethods::post("pan")
                 ));
                 $bank->save();
                 $view->set("message", "Bank Account Saved <strong>Successfully!</strong>");

@@ -58,4 +58,15 @@ class Bank extends \Shared\Model {
      * @label ifsc code
      */
     protected $_ifsc;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * @length 100
+     * 
+     * @validate required, min(3), max(32)
+     * @label pan card
+     */
+    protected $_pan;
 }

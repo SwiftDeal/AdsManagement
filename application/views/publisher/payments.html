@@ -28,6 +28,7 @@
                     <th>Owner</th>
                     <th>A/C Number</th>
                     <th>IFSC</th>
+                    <th>PAN</th>
                 </tr>
                 {foreach $b in $banks}
                 <tr>
@@ -35,6 +36,7 @@
                     <td>{echo $b->name}</td>
                     <td>{echo $b->number}</td>
                     <td>{echo $b->ifsc}</td>
+                    <td>{echo $b->pan}</td>
                 </tr>
                 {/foreach}
             </table>
