@@ -166,35 +166,46 @@ class Publisher extends Analytics {
         $this->seo(array("title" => "Profile", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         $account = Account::first(array("user_id = ?" => $this->user->id));
-        
-        if (RequestMethods::post('action') == 'saveUser') {
-            $user = User::first(array("id = ?" => $this->user->id));
-            $view->set("message", "Saved <strong>Successfully!</strong>");
 
-            $user->phone = RequestMethods::post('phone', $user->phone);
-            $user->name = RequestMethods::post('name', $user->name);
-            $user->username = RequestMethods::post('username', $user->username);
-            
-            $user->save();
-            $view->set("user", $user);
-        }
-        
-        if (RequestMethods::post("action") == "saveAccount") {
-            $account = new Account(array(
-                "user_id" => $this->user->id,
-                "name" => RequestMethods::post("name"),
-                "bank" => RequestMethods::post("bank"),
-                "number" => RequestMethods::post("number"),
-                "ifsc" => RequestMethods::post("ifsc"),
-                "paypal" => RequestMethods::post("paypal", "")
-            ));
-            
-            $account->save();
-            $view->set("message", "Saved <strong>Successfully!</strong>");
+        switch (RequestMethods::post("action")) {
+            case 'saveUser':
+                $user = User::first(array("id = ?" => $this->user->id));
+                $view->set("message", "Saved <strong>Successfully!</strong>");
+
+                $user->phone = RequestMethods::post('phone', $user->phone);
+                $user->name = RequestMethods::post('name', $user->name);
+                $user->username = RequestMethods::post('username', $user->username);
+                
+                $user->save();
+                $view->set("user", $user);
+                break;
+
+            case 'saveAccount':
+                $account = new Account(array(
+                    "user_id" => $this->user->id,
+                    "name" => RequestMethods::post("name"),
+                    "bank" => RequestMethods::post("bank"),
+                    "number" => RequestMethods::post("number"),
+                    "ifsc" => RequestMethods::post("ifsc"),
+                    "paypal" => RequestMethods::post("paypal", "")
+                ));
+                
+                $account->save();
+                $view->set("message", "Saved <strong>Successfully!</strong>");
+                break;
+
+            case 'changePass':
+                $user = User::first(array("id = ?" => $this->user->id));
+                if (sha1($user->password) == sha1(RequestMethods::post("password"))) {
+                    $user->password = RequestMethods::post("npassword");
+                    
+                    $user->save();
+                    $view->set("message", "Password Changed <strong>Successfully!</strong>");
+                }
+                break;
         }
         
         $view->set("account", $account);
-        $view->set("domains", $this->target());
     }
     
     /**
