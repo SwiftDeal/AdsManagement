@@ -19,11 +19,11 @@
                     </thead>
                     <tbody>
                         {foreach $link in $links}
-                        {script $item = Item::first(array("id = ?" => $link->item_id), array("title"))}
+                        {script $item = Item::first(array("id = ?" => $link->item_id), array("title", "url"))}
                         <tr>
                             <td>{$link->id}</td>
-                            <td>{$item->title}</td>
-                            <td><a href="{$link->short}" target="_blank">{$link->short}</a></td>
+                            <td><a href="{$item->url}" target="_blank">{$item->title}</a></td>
+                            <td>{$link->short}</td>
                             <td>{$link->created}</td>
                             <td class="linkstat" data-link="{echo $link->id}">
                                 <span class="label label-success">View</span>

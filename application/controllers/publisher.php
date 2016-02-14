@@ -113,7 +113,7 @@ class Publisher extends Analytics {
         $m = new Mongo();
         $db = $m->stats;
         $collection = $db->clicks;
-        $stats = array();$stat = array();
+        $stats = array();$stat = array();$rank = 0;
 
         $cursor = $collection->find(array('created' => $today));
         if ($cursor) {
@@ -128,19 +128,23 @@ class Publisher extends Analytics {
             $stats = $this->array_sort($stats, 'click', SORT_DESC);
             $count = 0;
             foreach ($stats as $key => $value) {
-                array_push($stat, array(
-                    "user_id" => $key,
-                    "count" => $value
-                ));
-                if ($count > 10) {
-                    break;
+                if ($count < 15) {
+                    array_push($stat, array(
+                        "user_id" => $key,
+                        "count" => $value
+                    ));
+                }
+                if ($key == $this->user->id) {
+                    $rank = $count;
+                    if ($count > 15) {
+                        break;
+                    }
                 }
                 $count++;
             }
             $view->set("today", $stat);
+            $view->set("rank", $rank);
         }
-
-        $view->set("earners", $earners);
     }
     
     /**
