@@ -128,17 +128,12 @@ class Publisher extends Analytics {
             $stats = $this->array_sort($stats, 'click', SORT_DESC);
             $count = 0;
             foreach ($stats as $key => $value) {
-                if ($count < 15) {
-                    array_push($stat, array(
-                        "user_id" => $key,
-                        "count" => $value
-                    ));
-                }
-                if ($key == $this->user->id) {
-                    $rank = $count;
-                    if ($count > 15) {
-                        break;
-                    }
+                array_push($stat, array(
+                    "user_id" => $key,
+                    "count" => $value
+                ));
+                if ($count > 15) {
+                    break;
                 }
                 $count++;
             }
