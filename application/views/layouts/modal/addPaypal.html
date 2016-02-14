@@ -1,0 +1,21 @@
+<div class="modal fade" id="addPaypal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <form class="modal-content" method="post" action="">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">New Payout Method</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Paypal</label>
+                    <input type="email" name="email" class="form-control" placeholder="Your Paypal Email">
+                </div>
+            </div>
+            <div class="modal-footer">
+            	<input type="hidden" name="action" value="addPaypal">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>

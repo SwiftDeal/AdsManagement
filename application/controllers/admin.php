@@ -247,7 +247,10 @@ class Admin extends Auth {
         $view->set("models", Shared\Markup::models());
     }
 
-    public function sync($model) {
+    /**
+     * @before _secure, _admin
+     */
+    protected function sync($model) {
         $this->noview();
         $db = Framework\Registry::get("database");
         $db->sync(new $model);

@@ -1,33 +1,92 @@
+{include layouts/modal/addBank.html}
+{include layouts/modal/addPaypal.html}
 <div class="page-title">
     <span class="title">Payments</span>
     <div class="description">For any payments related issue leave us a message below</div>
 </div>
 <div class="row">
-    <div class="col-lg-12">
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Mode</th>
-                        <th>Paid Amount</th>
-                        <th>Ref Id</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {foreach $payment in $payments}
-                    <tr>
-                        <td>{$payment->id}</td>
-                        <td>{$payment->mode}</td>
-                        <td>{$payment->amount}</td>
-                        <td>{$payment->ref_id}</td>
-                        <td>{$payment->created}</td>
-                    </tr>
-                    {/foreach}
-                </tbody>
+    <div class="col-xs-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="title">
+                        Payout Methods
+                    </div>
+                </div>
+                <div class="pull-right card-action">
+                    <div class="btn-group" role="group" aria-label="...">
+                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addBank"><i class="fa fa-bank"></i> Add Bank</button>
+                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addPaypal"><i class="fa fa-paypal"></i> Add Paypal</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+            {if($banks)}
+            <table class="table">
+                <tr>
+                    <th>Bank</th>
+                    <th>Owner</th>
+                    <th>A/C Number</th>
+                    <th>IFSC</th>
+                </tr>
+                {foreach $b in $banks}
+                <tr>
+                    <td>{echo $b->bank}</td>
+                    <td>{echo $b->name}</td>
+                    <td>{echo $b->number}</td>
+                    <td>{echo $b->ifsc}</td>
+                </tr>
+                {/foreach}
             </table>
+            {/if}
+            {if($paypals)}
+            <table class="table">
+                <tr>
+                    <th>Paypal Email</th>
+                </tr>
+                {foreach $p in $paypals}
+                <tr>
+                    <td>{echo $p->email}</td>
+                </tr>
+                {/foreach}
+            </table>
+            {/if}
+            </div>
         </div>
-
+    </div>
+    <div class="col-xs-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="title">Transactions</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Mode</th>
+                                <th>Paid Amount</th>
+                                <th>Ref Id</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $payment in $payments}
+                            <tr>
+                                <td>{$payment->id}</td>
+                                <td>{$payment->mode}</td>
+                                <td>{$payment->amount}</td>
+                                <td>{$payment->ref_id}</td>
+                                <td>{$payment->created}</td>
+                            </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

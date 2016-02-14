@@ -179,21 +179,6 @@ class Publisher extends Analytics {
                 $user->save();
                 $view->set("user", $user);
                 break;
-
-            case 'saveAccount':
-                $account = new Account(array(
-                    "user_id" => $this->user->id,
-                    "name" => RequestMethods::post("name"),
-                    "bank" => RequestMethods::post("bank"),
-                    "number" => RequestMethods::post("number"),
-                    "ifsc" => RequestMethods::post("ifsc"),
-                    "paypal" => RequestMethods::post("paypal", "")
-                ));
-                
-                $account->save();
-                $view->set("message", "Saved <strong>Successfully!</strong>");
-                break;
-
             case 'changePass':
                 $user = User::first(array("id = ?" => $this->user->id));
                 if (sha1($user->password) == sha1(RequestMethods::post("password"))) {
@@ -215,8 +200,34 @@ class Publisher extends Analytics {
         $this->seo(array("title" => "Payments", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
+        switch (RequestMethods::post("action")) {
+            case 'addPaypal':
+                $paypal = new Paypal(array(
+                    "user_id" => $this->user->id,
+                    "email" => RequestMethods::post("email")
+                ));
+                $paypal->save();
+                $view->set("message", "Paypal Account Saved <strong>Successfully!</strong>");
+                break;
+            case 'addBank':
+                $bank = new Bank(array(
+                    "user_id" => $this->user->id,
+                    "name" => RequestMethods::post("name"),
+                    "bank" => RequestMethods::post("bank"),
+                    "number" => RequestMethods::post("number"),
+                    "ifsc" => RequestMethods::post("ifsc")
+                ));
+                $bank->save();
+                $view->set("message", "Bank Account Saved <strong>Successfully!</strong>");
+                break;
+        }
+        $banks = Bank::all(array("user_id = ?" => $this->user->id));
+        $paypals = Paypal::all(array("user_id = ?" => $this->user->id), array("email"));
         $payments = Payment::all(array("user_id = ?" => $this->user->id));
+        
         $view->set("payments", $payments);
+        $view->set("banks", $banks);
+        $view->set("paypals", $paypals);
     }
 
     /**
