@@ -74,7 +74,7 @@ class Analytics extends Admin {
         $this->seo(array("title" => "URL Debugger", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
-        $url = RequestMethods::get("urld", "http://likesbazar.in/");
+        $url = RequestMethods::get("urld", "http://clicks99.com/");
         $metas = get_meta_tags($url);
 
         $facebook = new Curl();
@@ -186,7 +186,11 @@ class Analytics extends Admin {
             } else {
                 $earning += ($rpm["NONE"])*($result["click"])/1000;
             }
-            $analytics[$code] += $result["click"];
+            if (array_key_exists($code, $analytics)) {
+                $analytics[$code] += $result["click"];
+            } else {
+                $analytics[$code] = $result["click"];
+            }
             
         }
 

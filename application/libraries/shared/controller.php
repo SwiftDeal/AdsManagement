@@ -202,18 +202,13 @@ namespace Shared {
         protected function notify($options) {
             $body = $this->getBody($options);
             $emails = isset($options["emails"]) ? $options["emails"] : array($options["user"]->email);
-
-            switch ($options["delivery"]) {
-                default:
-                    $mailgun = $this->mailgun();
-                    $mailgun->sendMessage("clicks99.com",array(
-                        'from'    => 'Milan Patel <info@clicks99.com>',
-                        'to'      => $emails,
-                        'subject' => $options["subject"],
-                        'text'    => $body
-                    ));
-                    break;
-            }
+            $mailgun = $this->mailgun();
+            $mailgun->sendMessage("clicks99.com",array(
+                'from'    => 'Milan Patel <info@clicks99.com>',
+                'to'      => $emails,
+                'subject' => $options["subject"],
+                'text'    => $body
+            ));
             $this->log(implode(",", $emails));
         }
 

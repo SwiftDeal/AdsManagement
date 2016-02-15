@@ -118,7 +118,7 @@ class Publisher extends Analytics {
         $cursor = $collection->find(array('created' => $today));
         if ($cursor) {
             foreach ($cursor as $key => $record) {
-                if ($stats[$record['user_id']]) {
+                if (array_key_exists($record['user_id'], $stats)) {
                     $stats[$record['user_id']] += $record['click'];
                 } else {
                     $stats[$record['user_id']] = $record['click'];
@@ -178,13 +178,15 @@ class Publisher extends Analytics {
                 $user->save();
                 $view->set("user", $user);
                 break;
-            case 'changePass':
+            case "changePass":
                 $user = User::first(array("id = ?" => $this->user->id));
-                if (sha1($user->password) == sha1(RequestMethods::post("password"))) {
-                    $user->password = RequestMethods::post("npassword");
+                if ($user->password == sha1(RequestMethods::post("password"))) {
+                    $user->password = sha1(RequestMethods::post("npassword"));
                     
                     $user->save();
                     $view->set("message", "Password Changed <strong>Successfully!</strong>");
+                } else {
+                    $view->set("message", "Incorrect old password entered");
                 }
                 break;
         }

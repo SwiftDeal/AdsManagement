@@ -18,17 +18,6 @@ class Account extends \Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type text
-     * @length 100
-     * 
-     * @validate required, min(3), max(32)
-     * @label tax pan
-     */
-    protected $_pan;
-
-    /**
-     * @column
-     * @readwrite
      * @type decimal
      * @length 10,2
      * @label balance
