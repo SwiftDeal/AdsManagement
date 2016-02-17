@@ -29,6 +29,9 @@ class Platform extends Shared\Model{
      * @column
      * @readwrite
      * @type text
+     *
+     * @validate required, min(5)
+     * @label url
      */
     protected $_url;
 }

@@ -56,8 +56,13 @@ class Advertiser extends Analytics {
         $view = $this->getActionView();
         
         if (RequestMethods::post("action") == "register") {
-            $message = $this->_advertiserRegister();
-            $view->set("message", $message);
+            $exist = User::first(array("email = ?" => RequestMethods::post("email")));
+            if (!$exist) {
+                $errors = $this->_advertiserRegister();
+                $view->set("errors", $errors);
+            } else {
+                $view->set("message", 'User exists, <a href="/auth/login.html">login</a>');
+            }
         }
     }
 }

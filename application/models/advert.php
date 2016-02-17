@@ -20,14 +20,20 @@ class Advert extends Shared\Model {
      * @readwrite
      * @type text
      * @length 4
+     * 
+     * @validate required, alpha, min(2), max(4)
+     * @label location
      */
     protected $_location;
-    
+
     /**
     * @column
     * @readwrite
     * @type text
     * @length 32
+    *
+    * @validate required, alpha, min(3), max(32)
+    * @label account
     */
     protected $_account = "basic";
 }

@@ -150,38 +150,44 @@ class Auth extends Controller {
     }
 
     protected function _advertiserRegister() {
-        $exist = User::first(array("email = ?" => RequestMethods::post("email")));
-        if (!$exist) {
-            $pass = $this->randomPassword();
-            $user = new User(array(
-                "username" => RequestMethods::post("username"),
-                "name" => RequestMethods::post("name"),
-                "email" => RequestMethods::post("email"),
-                "password" => sha1($pass),
-                "phone" => RequestMethods::post("phone"),
-                "admin" => 0,
-                "currency" => "INR",
-                "live" => 0
-            ));
+        $pass = $this->randomPassword();
+        $user = new User(array(
+            "username" => RequestMethods::post("username"),
+            "name" => RequestMethods::post("name"),
+            "email" => RequestMethods::post("email"),
+            "password" => sha1($pass),
+            "phone" => RequestMethods::post("phone"),
+            "admin" => 0,
+            "currency" => "INR",
+            "live" => 0
+        ));
+        if ($user->validate()) {
             $user->save();
-            
-            $platform = new Platform(array(
-                "user_id" => $user->id,
-                "type" => "WEBSITE",
-                "url" =>  RequestMethods::post("url")
-            ));
-            $platform->save();
-
-            $advert = new Advert(array(
-                "user_id" => $user->id,
-                "country" => $this->country(),
-                "live" => 1
-            ));
-            $publish->save();
-
-            return "Your account has been created, we will notify you once approved.";
         } else {
-            return 'User exists, <a href="/auth/login.html">login</a>';
+            return $user->getErrors();
+        }
+        
+        $platform = new Platform(array(
+            "user_id" => $user->id,
+            "type" => "WEBSITE",
+            "url" =>  RequestMethods::post("url")
+        ));
+        if ($platform->validate()) {
+            $platform->save();
+        } else {
+            return $platform->getErrors();
+        }
+
+        $advert = new Advert(array(
+            "user_id" => $user->id,
+            "country" => $this->country(),
+            "account" => "basic",
+            "live" => 1
+        ));
+        if ($advert->validate()) {
+            $advert->save();
+        } else {
+            return $advert->getErrors();
         }
     }
 
