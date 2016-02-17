@@ -209,7 +209,7 @@ class Auth extends Controller {
             $domains = Meta::all(array("property = ?" => "domain", "live = ?" => true));
             $session->set("domains", $domains);
             $session->set("publish", $publish);
-            self::redirect("/publisher");
+            self::redirect("/publisher/index.html");
         }
 
         //setting publisher
@@ -220,7 +220,7 @@ class Auth extends Controller {
             }
             $this->setUser($user);
             $session->set("advert", $advert);
-            self::redirect("/advertiser");
+            self::redirect("/advertiser/index.html");
         }
     }
 

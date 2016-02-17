@@ -250,4 +250,17 @@ class Analytics extends Admin {
         
         self::redirect($_SERVER['HTTP_REFERER']);
     }
+
+    /**
+     * @before _secure, changeLayout
+     */
+    public function reports() {
+        $this->noview();
+        $m = Registry::get("MongoDB")->urls;
+        $links = $m->find(array('user_id' => $this->user->id));
+        foreach ($links as $key => $value) {
+            echo "<pre>", print_r($value), "</pre>";
+        }
+    }
+
 }

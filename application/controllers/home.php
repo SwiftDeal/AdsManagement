@@ -48,5 +48,16 @@ class Home extends Controller {
             $view->set("success", TRUE);
         }
     }
+
+    public function ad() {
+        $this->willRenderLayoutView = false;
+        $this->defaultExtension = "json";
+        $view = $this->getActionView();
+        $view->set("ad", array(
+            "title" => "19 Funny Snaps That Will Make You Laugh Out Loud",
+            "url" => "http://chocoapps.in/OA==",
+            "image" => "http://chocoapps.in/image.php?file=56bdb51315180.jpg"
+        ));
+    }
     
 }
