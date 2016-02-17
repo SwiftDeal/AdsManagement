@@ -256,10 +256,24 @@ class Analytics extends Admin {
      */
     public function reports() {
         $this->noview();
+        $date = date('Y-m-d', strtotime("now"));
+        $yesterday = date('Y-m-d', strtotime("-1 Day"));
+        header("Content-Type: text/csv; charset=utf-8");
+        header("Content-Disposition: attachment; filename=report{$this->user->id}_{$yesterday}.csv");
+        $output = fopen('php://output', 'w');
+
+        fputcsv($output, array('Link', 'Clicks', 'Amount', 'RPM', 'Earning'));
         $m = Registry::get("MongoDB")->urls;
-        $links = $m->find(array('user_id' => $this->user->id));
+        $links = $m->find(array('user_id' => $this->user->id, "created < ?" => $now));
         foreach ($links as $key => $value) {
-            echo "<pre>", print_r($value), "</pre>";
+            $link = Link::first(array("id = ?" => $value["link_id"]), array("short", "id", "item_id"));
+            $stat = Stat::first(array("link_id = ?" => $value["link_id"]), array("click", "amount", "rpm"));
+            if (isset($stat)) {
+                fputcsv($output, array($link->short, $stat->click, $stat->amount, $stat->rpm, "Added"));
+            } else {
+                $data = $link->stat($yesterday);
+                fputcsv($output, array($link->short, $data["click"], $data["amount"], $data["rpm"], "Not Added, Clicks less than 30"));
+            }
         }
     }
 

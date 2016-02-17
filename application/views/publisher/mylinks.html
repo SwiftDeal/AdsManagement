@@ -10,7 +10,6 @@
                 <table class="table table-bordered table-hover table-striped">
                     <thead>
                         <tr>
-                            <th>Id</th>
                             <th>Link Title</th>
                             <th>Short URL</th>
                             <th>Created</th>
@@ -20,8 +19,8 @@
                     <tbody>
                         {foreach $link in $links}
                         {script $item = Item::first(array("id = ?" => $link->item_id), array("title", "url"))}
+                        {script $stat = Stat::first(array("link_id = ?" => $link->id), array("amount", "click", "rpm", "modified"))}
                         <tr>
-                            <td>{$link->id}</td>
                             <td><a href="{$item->url}" target="_blank">{$item->title}</a></td>
                             <td>{$link->short}</td>
                             <td>{$link->created}</td>
