@@ -11,12 +11,22 @@ class CRON extends Auth {
     public function index() {
         $this->noview();
         $this->log("CRON Started");
-        $this->verify();
+        $accounts = $this->verify();
         $this->log("CRON Ended");
+
+        if (!empty($accounts)) {
+            $this->log("Account Started");
+            $this->saveAccount($accounts);
+            $this->log("Account Ended");
+        }
+
+        $this->log("Password Meta Started");
         $this->passwordmeta();
+        $this->log("Password Meta Ended");
     }
     
     protected function verify() {
+        $accounts = array();
         $yesterday = strftime("%Y-%m-%d", strtotime('-1 day'));
         $startdate = date('Y-m-d', strtotime("-20 day"));
         $enddate = date('Y-m-d', strtotime("now"));
@@ -30,12 +40,19 @@ class CRON extends Auth {
         foreach ($links as $link) {
             $data = $link->stat($yesterday);
             if ($data["click"] > 30) {
-                $this->saveStats($data, $link);
+                $stat = $this->saveStats($data, $link);
+                if (array_key_exists($stat->user_id, $accounts)) {
+                    $accounts[$stat->user_id] += $stat->amount;
+                } else {
+                    $accounts[$stat->user_id] = $stat->amount;
+                }
 
                 //sleep the script
                 sleep(1);
             }
         }
+
+        return $accounts;
     }
 
     protected function saveStats($data, $link) {
@@ -47,7 +64,8 @@ class CRON extends Auth {
                 "item_id" => $link->item_id,
                 "click" => $data["click"] - 4,
                 "amount" => $data["earning"] - 0.6,
-                "rpm" => $data["rpm"]
+                "rpm" => $data["rpm"],
+                "live" => 1
             ));
             $stat->save();
         } else {
@@ -62,9 +80,32 @@ class CRON extends Auth {
             }
         }
         
-        $stat->removeProperty();
-        $output = '<pre>'. print_r($stat, true). '</pre>';
+        $output = "{$stat->id} - Done";
         $this->log($output);
+
+        return $stat;
+    }
+
+    protected function saveAccount($accounts) {
+        foreach ($accounts as $key => $value) {
+            $account = Account::first(array("user_id = ?" => $key));
+            if (!$account) {
+                $account = new Account(array(
+                    "user_id" => $key,
+                    "balance" => $value,
+                    "live" => 1
+                ));
+                $account->save();
+            } else {
+                $today =strtotime(date('Y-m-d', strtotime("now")));
+                $modified = strtotime($account->modified);
+
+                if($modified < $today) {
+                    $account->balance += $value;
+                    $account->save();
+                }
+            }
+        }
     }
 
     protected function reset() {
