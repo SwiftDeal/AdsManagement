@@ -19,14 +19,19 @@ $routes = array(
         "action" => "index"
     ),
     array(
-        "pattern" => "privacy",
+        "pattern" => "privacypolicy",
         "controller" => "home",
-        "action" => "privacy"
+        "action" => "privacypolicy"
     ),
     array(
-        "pattern" => "termsofuse",
+        "pattern" => "termsofservice",
         "controller" => "home",
-        "action" => "termsofuse"
+        "action" => "termsofservice"
+    ),
+    array(
+        "pattern" => "contact",
+        "controller" => "auth",
+        "action" => "contact"
     ),
     array(
         "pattern" => "home",

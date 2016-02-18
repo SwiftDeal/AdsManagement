@@ -24,10 +24,16 @@
     
     {include layouts/navigation/standard.html}
     {ayield action}
-    
+
     <footer class="app-footer">
         <div class="container">
-            <p class="text-muted">&copy; 2016, <a href="http://cloudstuff.tech">CloudStuff.Tech</a></p>
+            <ul class="nav nav-pills text-muted">
+                <li role="presentation"><a href="/index.html">Home</a></li>
+                <li role="presentation"><a href="/termsofservice.html">Terms of Service</a></li>
+                <li role="presentation"><a href="/privacypolicy.html">Privacy Policy</a></li>
+                <li role="presentation"><a href="/contact.html">Contact</a></li>
+                <li role="presentation" class="pull-right" target="_blank"><a href="http://cloudstuff.tech">&copy; 2016, CloudStuff.Tech</a></li>
+            </ul>
         </div>
     </footer>
     <!-- Javascript Libs -->

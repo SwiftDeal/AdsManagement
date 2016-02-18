@@ -255,4 +255,23 @@ class Auth extends Controller {
         $record = $reader->country(Shared\Markup::get_client_ip());
         return $record->country->isoCode;
     }
+
+    public function contact() {
+        $this->seo(array("title" => "Contact Us", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+
+        if (RequestMethods::post("message")) {
+            $emails = array();
+            array_push($emails, RequestMethods::post("email"));
+            $options = array(
+                "template" => "blank",
+                "subject" => RequestMethods::post("subject"),
+                "message" => RequestMethods::post("message"),
+                "emails" => $emails,
+                "delivery" => "mailgun"
+            );
+            $this->notify($options);
+            $view->set("success", TRUE);
+        }
+    }
 }
