@@ -13,7 +13,7 @@ class Advertiser extends Analytics {
     protected $_advert;
 	
 	/**
-     * @before _secure, _advertiser
+     * @before _secure, advertiserLayout
      */
 	public function index() {
 		$this->seo(array("title" => "Dashboard", "view" => $this->getLayoutView()));
@@ -25,11 +25,15 @@ class Advertiser extends Analytics {
         $view = $this->getActionView();
 	}
 
-	public function _advertiser() {
+	public function advertiserLayout() {
         $session = Registry::get("session");
         
         $advert = $session->get("advert");
-        $this->_publish = $advert;
+        if (isset($advert)) {
+            $this->_advert = $advert;
+        } else {
+            self::redirect("/index.html");
+        }
 
         $this->defaultLayout = "layouts/advertiser";
         $this->setLayout();

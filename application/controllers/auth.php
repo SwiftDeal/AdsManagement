@@ -63,16 +63,11 @@ class Auth extends Controller {
     }
 
     protected function _login() {
-        $email = RequestMethods::post("email");
-        $exist = User::first(array("email = ?" => $email), array("id", "email"));
+        $exist = User::first(array("email = ?" => RequestMethods::post("email")));
         if($exist) {
-            $user = User::first(array(
-                "email = ?" => RequestMethods::post("email"),
-                "password = ?" => sha1(RequestMethods::post("password"))
-            ));
-            if($user) {
-                if ($user->live) {
-                    return $this->session($user);
+            if($exist->password == sha1(RequestMethods::post("password"))) {
+                if ($exist->live) {
+                    return $this->authorize($exist);
                 } else {
                     return "User account not verified";
                 }
@@ -209,7 +204,7 @@ class Auth extends Controller {
         return implode($pass); //turn the array into a string
     } 
 
-    protected function session($user) {
+    protected function authorize($user) {
         $session = Registry::get("session");
         //setting publisher
         $publish = Publish::first(array("user_id = ?" => $user->id));
@@ -225,7 +220,7 @@ class Auth extends Controller {
             self::redirect("/publisher/index.html");
         }
 
-        //setting publisher
+        //setting advertiser
         $advert = Advert::first(array("user_id = ?" => $user->id));
         if ($advert) {
             if ($advert->live == 0) {
@@ -235,6 +230,23 @@ class Auth extends Controller {
             $session->set("advert", $advert);
             self::redirect("/advertiser/index.html");
         }
+    }
+
+    public function account() {
+        $this->noview();
+        $session = Registry::get("session");
+
+        $publish = $session->get("publish");
+        if ($publish) {
+            self::redirect("/publisher/index.html");
+        }
+
+        $advert = $session->get("advert");
+        if ($advert) {
+            self::redirect("/advertiser/index.html");
+        }
+
+        self::redirect("/index.html");
     }
 
     protected function reCaptcha() {
@@ -253,7 +265,7 @@ class Auth extends Controller {
     public function loginas($user_id) {
         $this->setUser(false);
         $user = User::first(array("id = ?" => $user_id));
-        $this->session($user);
+        $this->authorize($user);
     }
 
     protected function country() {

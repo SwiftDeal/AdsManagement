@@ -370,7 +370,11 @@ class Publisher extends Analytics {
         $session = Registry::get("session");
         
         $publish = $session->get("publish");
-        $this->_publish = $publish;
+        if ($publish) {
+            $this->_publish = $publish;
+        } else {
+            self::redirect("/index.html");
+        }
 
         $this->defaultLayout = "layouts/publisher";
         $this->setLayout();

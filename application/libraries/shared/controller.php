@@ -55,7 +55,7 @@ namespace Shared {
         public function _session() {
             $user = $this->getUser();
             if ($user) {
-                header("Location: /publisher.html");
+                header("Location: /auth/account.html");
                 exit();
             }
         }
@@ -130,6 +130,7 @@ namespace Shared {
         
         public function logout() {
             $this->setUser(false);
+            session_destroy();
             self::redirect("/index.html");
         }
         
