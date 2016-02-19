@@ -152,7 +152,7 @@ class Auth extends Controller {
     protected function _advertiserRegister() {
         $pass = $this->randomPassword();
         $user = new User(array(
-            "username" => RequestMethods::post("username"),
+            "username" => RequestMethods::post("name"),
             "name" => RequestMethods::post("name"),
             "email" => RequestMethods::post("email"),
             "password" => sha1($pass),
@@ -186,6 +186,13 @@ class Auth extends Controller {
         ));
         if ($advert->validate()) {
             $advert->save();
+
+            $this->notify(array(
+                "template" => "advertiserRegister",
+                "subject" => "Welcome to Clicks99",
+                "user" => $user,
+                "pass" => $pass
+            ));
         } else {
             return $advert->getErrors();
         }

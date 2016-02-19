@@ -11,6 +11,7 @@ class Platform extends Shared\Model{
      * @column
      * @readwrite
      * @type integer
+     * @validate required
      */
     protected $_user_id;
     

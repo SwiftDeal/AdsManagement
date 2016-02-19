@@ -12,6 +12,7 @@ class Advert extends Shared\Model {
      * @readwrite
      * @type integer
      * @index
+     * @validate required
      */
     protected $_user_id;
     
@@ -24,7 +25,7 @@ class Advert extends Shared\Model {
      * @validate required, alpha, min(2), max(4)
      * @label location
      */
-    protected $_location;
+    protected $_country;
 
     /**
     * @column
