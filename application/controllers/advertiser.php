@@ -57,11 +57,20 @@ class Advertiser extends Analytics {
         
         if (RequestMethods::post("action") == "register") {
             $exist = User::first(array("email = ?" => RequestMethods::post("email")));
-            if (!$exist) {
+            $pexist = Platform::first(array("url = ?" => RequestMethods::post("url")));
+            if ($exist) {
+                $view->set("message", 'User exists, <a href="/auth/login.html">login</a>');
+                exit;
+            }
+            if (isset($pexist)) {
+                if ($pexist->live == "1") {
+                    $view->set("message", 'Platform Already Exist');
+                    exit;
+                }
+            }
+            if (!$exist && !$pexist) {
                 $errors = $this->_advertiserRegister();
                 $view->set("errors", $errors);
-            } else {
-                $view->set("message", 'User exists, <a href="/auth/login.html">login</a>');
             }
         }
     }

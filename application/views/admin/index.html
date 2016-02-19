@@ -12,7 +12,7 @@
                             </a>
                             <a href="/admin/search?model=user&key=live&sign=equal&value=1" class="list-group-item"><i class="fa fa-users fa-2x"></i>  Publishers <span class="badge">{echo Shared\Markup::nice_number(Publish::count())}</span></a>
                             <a href="/admin/search?model=user&key=live&sign=equal&value=1" class="list-group-item"><i class="fa fa-bullhorn fa-2x"></i>  Advertisers <span class="badge">0</span></a>
-                            <a href="/content/all" class="list-group-item"><i class="fa fa-file fa-2x"></i> Campaigns <span class="badge">{echo Shared\Markup::nice_number(Item::count())}</span></a>
+                            <a href="/campaign/all" class="list-group-item"><i class="fa fa-file fa-2x"></i> Campaigns <span class="badge">{echo Shared\Markup::nice_number(Item::count())}</span></a>
                             <a href="/admin/search?model=link&key=live&sign=equal&value=1" class="list-group-item"><i class="fa fa-link fa-2x"></i>  Links <span class="badge">{echo Shared\Markup::nice_number(Link::count())}</span></a>
                         </div>
                     </div>

@@ -8,7 +8,7 @@
 use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
 
-class Content extends Publisher {
+class Campaign extends Publisher {
 
     protected $rpm = array(
         "IN" => 135,
