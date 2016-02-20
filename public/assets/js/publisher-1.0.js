@@ -127,7 +127,22 @@ $(document).ready(function() {
                 item.html('RPM : <i class="fa fa-inr"></i> '+ data.rpm +', Click : '+ data.click +', Earning : <i class="fa fa-inr"></i> '+ data.earning);
             }
         });
+    });
 
+    $(".stats").click(function (e) {
+        e.preventDefault();
+        var self = $(this);
+        self.addClass('disabled');
+        stats();
+        self.removeClass('disabled');
+    });
+
+    $(".fbshare").click(function (e) {
+        e.preventDefault();
+        var self = $(this);
+        self.addClass('disabled');
+        ouvre("https://www.facebook.com/sharer/sharer.php?u=" + self.attr('href'));
+        self.removeClass('disabled');
     });
 
 });
@@ -178,6 +193,10 @@ function stats() {
             });
         }
     });
+}
+
+function ouvre(fichier) {
+    ff=window.open(fichier,"popup","width=600px,height=300px,left=50%,top=50%");
 }
 
 //Google Analytics
