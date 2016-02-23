@@ -92,13 +92,13 @@ class Publisher extends Analytics {
             $k = array_rand($domains);
             $longURL = RequestMethods::get("domain", $domains[$k]) . '/' . base64_encode($link->id);
         }
-        $googl = Registry::get("googl");
-        $object = $googl->shortenURL($longURL);
+        //$googl = Registry::get("googl");
+        //$object = $googl->shortenURL($longURL);
 
-        $link->short = $object->id;
+        $link->short = $longURL;
         $link->save();
 
-        $view->set("shortURL", $object->id);
+        $view->set("shortURL", $longURL);
     }
     
     /**
