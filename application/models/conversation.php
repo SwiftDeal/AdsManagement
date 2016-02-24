@@ -41,7 +41,6 @@ class Conversation extends \Shared\Model {
      * @type text
      * @length 255
      *
-     * @validate min(4)
      * @label file
      */
     protected $_file;

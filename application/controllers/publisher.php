@@ -7,7 +7,7 @@
 use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
 
-class Publisher extends Analytics {
+class Publisher extends Advertiser {
 
     /**
      * @readwrite
