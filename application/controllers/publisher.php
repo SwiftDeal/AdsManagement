@@ -24,7 +24,7 @@ class Publisher extends Advertiser {
         $yesterday = strftime("%Y-%m-%d", strtotime('-1 day'));
         
         $database = Registry::get("database");
-        $paid = $database->query()->from("payments", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->all();
+        $paid = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 1)->all();
         $links = Link::all(array("user_id = ?" => $this->user->id, "live = ?" => true), array("id", "item_id", "short"), "created", "desc", 5, 1);
         
         $total = $database->query()->from("stats", array("SUM(amount)" => "earn", "SUM(click)" => "click"))->where("user_id=?", $this->user->id)->all();
@@ -224,9 +224,9 @@ class Publisher extends Advertiser {
         }
         $banks = Bank::all(array("user_id = ?" => $this->user->id));
         $paypals = Paypal::all(array("user_id = ?" => $this->user->id), array("email"));
-        $payments = Payment::all(array("user_id = ?" => $this->user->id));
+        $transactions = Transaction::all(array("user_id = ?" => $this->user->id));
         
-        $view->set("payments", $payments);
+        $view->set("transactions", $transactions);
         $view->set("banks", $banks);
         $view->set("paypals", $paypals);
     }

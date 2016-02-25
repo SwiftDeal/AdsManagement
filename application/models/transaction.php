@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * for live = 0 credit, live = 1 debit
  * @author Faizan Ayubi
  */
 class Transaction extends Shared\Model {
@@ -16,8 +17,11 @@ class Transaction extends Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type text
-     * @length 255
+     * @type decimal
+     * @length 10,2
+     *
+     * @validate required
+     * @label amount
      */
     protected $_amount;
 
@@ -25,16 +29,10 @@ class Transaction extends Shared\Model {
      * @column
      * @readwrite
      * @type text
-     * @length 64
+     * @length 255
+     *
+     * @validate required, min(3)
+     * @label reference
      */
-    protected $_mode;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * @length 64
-     */
-    protected $_ref_id;
-
+    protected $_ref;
 }

@@ -69,20 +69,26 @@
                         <thead>
                             <tr>
                                 <th>Id</th>
-                                <th>Mode</th>
-                                <th>Paid Amount</th>
-                                <th>Ref Id</th>
+                                <th>Ref</th>
+                                <th>Amount</th>
+                                <th>Type</th>
                                 <th>Date</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {foreach $payment in $payments}
+                            {foreach $t in $transactions}
                             <tr>
-                                <td>{$payment->id}</td>
-                                <td>{$payment->mode}</td>
-                                <td>{$payment->amount}</td>
-                                <td>{$payment->ref_id}</td>
-                                <td>{$payment->created}</td>
+                                <td>{$t->id}</td>
+                                <td>{$t->ref}</td>
+                                <td>{$t->amount}</td>
+                                <td>
+                                    {if($t->live)}
+                                    <span class="label label-info">Debit</span>
+                                    {/if} {else}
+                                    <span class="label label-info">Credit</span>
+                                    {/else}
+                                </td>
+                                <td>{echo Framework\StringMethods::only_date($t->created)}</td>
                             </tr>
                             {/foreach}
                         </tbody>

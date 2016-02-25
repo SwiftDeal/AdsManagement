@@ -28,19 +28,10 @@ class Finance extends Admin {
             $where = array("user_id = ?" => RequestMethods::get("user_id"));
         }
         
-        $accounts = array();
-        $stats = Stat::all($where, array("DISTINCT user_id"), "created", "desc", $limit, $page);
-        foreach ($stats as $stat) {
-            $earnings = $database->query()->from("stats", array("SUM(amount)" => "earn"))->where("user_id=?", $stat->user_id)->all();
-            $payments = $database->query()->from("payments", array("SUM(amount)" => "payment"))->where("user_id=?", $stat->user_id)->all();
-            $pending = $earnings[0]['earn'] - $payments[0]['payment'];
-            if ($pending > 0) {
-                array_push($accounts, array("user_id" => $stat->user_id, "pending" => $pending, "paid" => round($payments[0]["payment"], 2)));
-            }
-        }
+        $accounts = Account::all($where, array("user_id", "balance"), "balance", "desc", $limit, $page);
         
         $view->set("accounts", $accounts);
-        $view->set("count", count($stats));
+        $view->set("count", Account::count($where));
         $view->set("page", $page);
         $view->set("limit", $limit);
         $view->set("live", $live);
@@ -147,7 +138,7 @@ class Finance extends Admin {
     /**
      * @before _secure, changeLayout, _admin
      */
-    public function payments() {
+    public function transactions() {
         $this->seo(array("title" => "Payments", "view" => $this->getLayoutView()));
 
         $page = RequestMethods::get("page", 1);
@@ -162,10 +153,10 @@ class Finance extends Admin {
         }
 
         $view = $this->getActionView();
-        $payments = Payment::all($where, array("*"), "created", "desc", $limit, $page);
-        $count = Payment::count($where);
+        $transactions = Transaction::all($where, array("*"), "created", "desc", $limit, $page);
+        $count = Transaction::count($where);
 
-        $view->set("payments", $payments);
+        $view->set("transactions", $transactions);
         $view->set("limit", $limit);
         $view->set("page", $page);
         $view->set("count", $count);

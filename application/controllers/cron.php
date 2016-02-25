@@ -105,6 +105,12 @@ class CRON extends Auth {
                     $account->save();
                 }
             }
+            $transaction = new Transaction(array(
+                "user_id" => $key,
+                "amount" => $value,
+                "ref" => "Links Tracking"
+            ));
+            $transaction->save();
         }
     }
 

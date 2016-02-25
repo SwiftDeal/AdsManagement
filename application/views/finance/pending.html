@@ -22,19 +22,15 @@
                 </thead>
                 <tbody>
                 {foreach $account in $accounts}
-                    {script $user = User::first(array("id = ?" => $account['user_id']), array("name", "id"))}
+                    {script $user = User::first(array("id = ?" => $account->user_id), array("name", "id"))}
                     <tr>
                         <td>{$user->id}</td>
                         <td><a href="/admin/info/user/{$user->id}">{echo $user->name}</a></td>
-                        <td><i class="fa fa-inr"></i> {echo round($account['pending'], 2)}</td>
+                        <td><i class="fa fa-inr"></i> {echo $account->balance}</td>
                         <td>
-                        {if($account['paid'])}
-                            <a href="/finance/payments?user_id={$user->id}" class="btn btn-primary btn-xs"><i class="fa fa-bank"></i> Payment History </a>
-                        {/if}
-                        {if($account['pending'] > 0)}
-                            <a href="/finance/makepayment/{$user->id}" class="btn btn-primary btn-xs"><i class="fa fa-bank"></i> Make Payment </a>&nbsp;
-                        {/if}
-                        <a href="/analytics/verify/{$user->id}" class="btn btn-info btn-xs"><i class="fa fa-inr"></i> Double Earnings</a>&nbsp;
+                            <a href="/finance/transactions?user_id={$user->id}" class="btn btn-primary btn-xs"><i class="fa fa-bank"></i> Transaction </a>
+                            <a href="/finance/makepayment/{$user->id}" class="btn btn-warning btn-xs"><i class="fa fa-inr"></i> Make Payment </a>&nbsp;
+                            <a href="/analytics/verify/{$user->id}" class="btn btn-info btn-xs"><i class="fa fa-check"></i> Verify</a>&nbsp;
                         </td>
                     </tr>
                 {/foreach}

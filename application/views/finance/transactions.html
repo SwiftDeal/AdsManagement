@@ -1,6 +1,6 @@
 <div id="page-wrapper">
     <div class="row col-lg-12">
-        <h3 class="page-header text-center">Payments</h3>
+        <h3 class="page-header text-center">Transactions</h3>
         <form class="form-inline text-center" role="form" method="get" action="">
             <div class="form-group">
                 <div class="input-group">
@@ -14,7 +14,7 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>PaymentId</th>
+                        <th>Id</th>
                         <th>UserId</th>
                         <th>Name</th>
                         <th>Mode</th>
@@ -24,16 +24,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {foreach $payment in $payments}
-                    {script $user = User::first(array("id = ?" => $payment->user_id), array("id", "name"))}
+                    {foreach $t in $transactions}
+                    {script $user = User::first(array("id = ?" => $t->user_id), array("id", "name"))}
                     <tr>
-                        <td>{$payment->id}</td>
+                        <td>{$t->id}</td>
                         <td>{$user->id}</td>
                         <td>{$user->name}</td>
-                        <td>{$payment->mode}</td>
-                        <td>{$payment->amount}</td>
-                        <td>{$payment->ref_id}</td>
-                        <td>{$payment->created}</td>
+                        <td>
+                            {if($t->live)}
+                            <span class="label label-info">Debit</span>
+                            {/if} {else}
+                            <span class="label label-info">Credit</span>
+                            {/else}
+                        </td>
+                        <td>{$t->amount}</td>
+                        <td>{$t->ref}</td>
+                        <td>{$t->created}</td>
                     </tr>
                     {/foreach}
                 </tbody>
