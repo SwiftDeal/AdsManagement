@@ -16,7 +16,7 @@ class Campaign extends Publisher {
         "CA" => 220,
         "AU" => 220,
         "GB" => 220,
-        "NONE" => 100
+        "NONE" => 80
     );
 
     /**

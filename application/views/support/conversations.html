@@ -1,0 +1,48 @@
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h2 class="page-header text-center">{echo $ticket->subject}</h2>{if isset($message)}
+            <div class="alert alert-success alert-dismissible fade in" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                {$message}
+            </div>
+            {/if}
+            <div class="panel panel-default">
+                <table>
+                	<tr>
+                		<td>{$u->name}</td>
+                		<td>{$u->email}</td>
+                		<td>{$u->phone}</td>
+                		<td>
+                			<a href="/auth/loginas/{$u->id}" class="btn btn-default btn-xs"><i class="fa fa-sign-in"></i> Login As</a>
+                		</td>
+                	</tr>
+                </table>
+            </div>
+            {foreach $c in $conversations}
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    {$c->message} {if(!empty($c->file))}
+                    <a href="/public/assets/uploads/files/{$c->file}" target="_blank">File</a> {/if}
+                </div>
+            </div>
+            {/foreach}
+            <div class="panel panel-success">
+                <div class="panel-body">
+                    <form method="post" action="">
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea name="message" class="form-control" placeholder="Enter Message" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>File (Optional)</label>
+                            <input type="file" name="file">
+                        </div>
+                        <input type="hidden" name="action" value="reply">
+                        <button type="submit" class="btn btn-default">Reply</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

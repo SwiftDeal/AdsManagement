@@ -23,6 +23,53 @@ class Support extends Publisher {
         $view->set("tickets", $tickets);
 	}
 
+    /**
+     * @before _secure, changeLayout, _admin
+     */
+    public function manageticket() {
+        $this->seo(array("title" => "Support Tickets","view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+        $page = RequestMethods::get("page", 1);
+        $limit = RequestMethods::get("limit", 10);
+
+        $tickets = Ticket::all(array("live = ?" => true), array("user_id", "subject", "created", "live", "id"), "created", "asc", $limit, $page);
+        $count = Ticket::count(array("live = ?" => true));
+        
+        $view->set("tickets", $tickets);
+        $view->set("page", $page);
+        $view->set("limit", $limit);
+        $view->set("count", $count);
+    }
+
+    /**
+     * @before _secure, changeLayout, _admin
+     */
+    public function conversations($ticket_id) {
+        $this->seo(array("title" => "Conversation","view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+        
+        $ticket = Ticket::first(array("id = ?" => $ticket_id));
+        $u = User::first(array("id = ?" => $ticket->user_id), array("name", "email", "phone"));
+        $conversations = Conversation::all(array("ticket_id = ?" => $ticket_id), array("user_id", "message", "created", "file"), "created", "asc");
+
+        if (RequestMethods::post("action") == "reply") {
+            $conversation = new Conversation(array(
+                "user_id" => $this->user->id,
+                "ticket_id" => $ticket->id,
+                "message" => RequestMethods::post("message"),
+                "file" => $this->_upload("file", "files")
+            ));
+            if ($conversation->validate()) {
+                $conversation->save();
+                $view->set("message", "Message sent successfully");
+            }
+        }
+        
+        $view->set("conversations", $conversations);
+        $view->set("ticket", $ticket);
+        $view->set("u", $u);
+    }
+
 	/**
      * @before _secure, _layout
      */
