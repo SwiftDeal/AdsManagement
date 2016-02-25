@@ -232,7 +232,10 @@ class Analytics extends Admin {
         
         $stat = Stat::first(array("id = ?" => $stat_id));
         $link = Link::first(array("id = ?" => $stat->link_id));
+        $account = Account::first(array("user_id = ?" => $stat->user_id));
         if ($link->delete()) {
+            $account->balance -= $stat->amount;
+            $account->save();
             $stat->delete();
         }
         

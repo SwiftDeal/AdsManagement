@@ -10,8 +10,7 @@
                 <table class="table table-bordered table-hover table-striped">
                     <thead>
                         <tr>
-                            <th>Link Title</th>
-                            <th>Short URL</th>
+                            <th>Link</th>
                             <th>Created</th>
                             <th>Realtime</th>
                         </tr>
@@ -21,9 +20,11 @@
                         {script $item = Item::first(array("id = ?" => $link->item_id), array("title", "url"))}
                         {script $stat = Stat::first(array("link_id = ?" => $link->id), array("amount", "click", "rpm", "modified"))}
                         <tr>
-                            <td><a href="{$item->url}" target="_blank">{$item->title}</a></td>
-                            <td><a href="{$link->short}" class="fbshare">{$link->short}</a></td>
-                            <td>{$link->created}</td>
+                            <td>
+                                <a href="{$item->url}" target="_blank">{$item->title}</a><br>
+                                <a href="{$link->short}" class="fbshare">{$link->short}</a>
+                            </td>
+                            <td>{echo Framework\StringMethods::datetime_to_text($link->created)}</td>
                             <td class="linkstat" data-link="{echo $link->id}">
                                 <span class="label label-success">View</span>
                             </td>
