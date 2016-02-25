@@ -1,13 +1,12 @@
-Dear {$user->name},<br>
-<br>
-We have transferred a payment to your bank account ending in {echo substr($account->number, -4)}.<br>
-<br>
-Amount Transferred: 	{$payment->amount} INR<br>
-Payment Reference Number: 	{$payment->ref_id}<br>
-<br>
-Please allow up to 5 business days for the funds to arrive in your account.<br>
-<br>
-If you have any questions, please visit our Website.<br>
-<br>
-Thank you,<br>
-Clicks99 Team<br>
+Dear {$user->name},
+
+We have transferred a payment to your {$bank->name} bank account ending in {echo substr($bank->number, -4)}.
+
+Amount Transferred: 	{$transaction->amount} INR
+Payment Reference Number: 	{$transaction->ref}
+
+Please allow up to 5 business days for the funds to arrive in your account.
+If you have any questions, please visit our Website.
+
+Thank you,
+Clicks99 Team

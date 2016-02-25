@@ -215,25 +215,13 @@ class Analytics extends Admin {
 
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
-        $offset = ($page - 1) * $limit;
-
-        $database = Registry::get("database");
-        $result = $database->execute("SELECT user_id, item_id, count(*) AS tot FROM stats WHERE user_id={$user_id} GROUP BY user_id, item_id HAVING tot > 1 ORDER BY created DESC LIMIT {$offset},{$limit}");
         
-        $stats = array();
-        for ($i = 0; $i < $result->num_rows; $i++) {
-            $data = $result->fetch_array(MYSQLI_ASSOC);
-            array_push($stats, \Framework\ArrayMethods::toObject(array(
-                "user_id" => $data["user_id"],
-                "item_id" => $data["item_id"],
-                "total" => $data["tot"]
-            )));
-        }
-
+        $stats = Stat::all(array("user_id = ?" => $user_id), array("*"), "amount", "desc", $limit, $page);
+        
         $view->set("stats", $stats);
         $view->set("limit", $limit);
         $view->set("page", $page);
-        $view->set("count", count($stats));
+        $view->set("count", Stat::count(array("user_id = ?" => $user_id)));
     }
 
     /**

@@ -21,10 +21,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                {foreach $stat in $stats}
-                {script $ss = Stat::all(array("item_id = ?" => $stat->item_id, "user_id = ?" => $stat->user_id))}
-                    {foreach $s in $ss}
+                {foreach $s in $stats}
                     {script $l = Link::first(array("id = ?" => $s->link_id), array("short"))}
+                    {if(strpos($l->short, "http://goo.gl/") !== false)}
                     <tr>
                         <td><a href="{echo $l->short}+" target="_blank">{echo $l->short}</a></td>
                         <td>{$s->item_id}</td>
@@ -36,7 +35,7 @@
                             <a href="/analytics/delduplicate/{echo $s->id}" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> Delete </a> 
                         </td>
                     </tr>
-                    {/foreach}
+                    {/if}
                 {/foreach}
                 </tbody>
             </table>

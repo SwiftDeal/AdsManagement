@@ -40,10 +40,10 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{$account->bank}</td>
-                            <td>{$account->name}</td>
-                            <td>{$account->number}</td>
-                            <td>{$account->ifsc}</td>
+                            <td>{$bank->bank}</td>
+                            <td>{$bank->name}</td>
+                            <td>{$bank->number}</td>
+                            <td>{$bank->ifsc}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -58,24 +58,13 @@
                         <tr>
                             <td><b>Amount</b></td>
                             <td>
-                                {echo round($amount, 2)}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><b>Mode of Payment</b></td>
-                            <td>
-                                <select class="form-control" name="mode">
-                                    <option value="bank">Bank Transfer</option>
-                                    <option value="online">Online Transfer</option>
-                                    <option value="cash">Cash</option>
-                                    <option value="others">Others</option>
-                                </select>
+                                {echo $account->balance}
                             </td>
                         </tr>
                         <tr>
                             <td><b>Reference Id</b></td>
                             <td>
-                                <input type="text" class="form-control" name="ref_id">
+                                <input type="text" class="form-control" name="ref">
                             </td>
                         </tr>
                         <tr>

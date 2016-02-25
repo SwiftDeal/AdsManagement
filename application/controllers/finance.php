@@ -70,36 +70,25 @@ class Finance extends Admin {
         $view = $this->getActionView();
         $payee = User::first(array("id = ?" => $user_id), array("id", "name", "email", "phone"));
         $account = Account::first(array("user_id = ?" => $user_id));
-
-        $database = Registry::get("database");
-        $amount = $database->query()
-            ->from("stats", array("SUM(amount)" => "earn"))
-            ->where("user_id=?",$user_id)
-            ->where("live=?",0)
-            ->all();
-
-        $paid = $database->query()
-            ->from("payments", array("SUM(amount)" => "earn"))
-            ->where("user_id=?",$user_id)
-            ->all();
+        $bank = Bank::first(array("user_id = ?" => $user_id));
 
         if (RequestMethods::post("action") == "payment") {
-            $payment = new Payment(array(
+            $transaction = new Transaction(array(
                 "user_id" => $user_id,
-                "amount" => round($amount[0]["earn"] - $paid[0]["earn"], 2),
-                "mode" => RequestMethods::post("mode"),
-                "ref_id" => RequestMethods::post("ref_id"),
+                "amount" => $account->balance,
+                "ref" => RequestMethods::post("ref"),
                 "live" => 1
             ));
-
-            $payment->save();
+            $transaction->save();
+            $account->balance = 0;
+            $account->save();
 
             $this->notify(array(
                 "template" => "makePayment",
                 "subject" => "Payments From Clicks99 Team",
                 "user" => $payee,
-                "payment" => $payment,
-                "account" => $account
+                "transaction" => $transaction,
+                "bank" => $bank
             ));
 
             self::redirect("/finance/pending");
@@ -107,7 +96,7 @@ class Finance extends Admin {
 
         $view->set("payee", $payee);
         $view->set("account", $account);
-        $view->set("amount", $amount[0]["earn"] - $paid[0]["earn"]);
+        $view->set("bank", $bank);
     }
 
     /**

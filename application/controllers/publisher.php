@@ -25,12 +25,14 @@ class Publisher extends Advertiser {
         
         $database = Registry::get("database");
         $paid = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 1)->all();
+        $earn = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 0)->all();
         $links = Link::all(array("user_id = ?" => $this->user->id, "live = ?" => true), array("id", "item_id", "short"), "created", "desc", 5, 1);
         
         $total = $database->query()->from("stats", array("SUM(amount)" => "earn", "SUM(click)" => "click"))->where("user_id=?", $this->user->id)->all();
     
         $view->set("total", $total);
         $view->set("paid", round($paid[0]["earn"], 2));
+        $view->set("earn", round($paid[0]["earn"], 2));
         $view->set("links", $links);
         $view->set("news", $news);
         $view->set("domain", substr($this->target()[array_rand($this->target())], 7));

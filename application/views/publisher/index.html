@@ -38,10 +38,10 @@
     <div class="col-lg-3 col-md-3">
         <div class="panel panel-default">
             <ul class="list-group">
-                <li class="list-group-item list-group-item-info text-center"><b><i class="fa fa-money"></i> Total Payments</b></li>
-                <li class="list-group-item">Earned <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number(round($total[0]["earn"], 2))}</span></li>
+                <li class="list-group-item list-group-item-info text-center"><b><i class="fa fa-money"></i> Finace</b></li>
+                <li class="list-group-item">Total <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number($earn)}</span></li>
                 <li class="list-group-item">Paid <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number($paid)}</span></li>
-                <li class="list-group-item">Pending <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number(round($total[0]["earn"], 2)-$paid)}</span></li>
+                <li class="list-group-item">Balance <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number($account->balance)}</span></li>
             </ul>
         </div>
     </div>

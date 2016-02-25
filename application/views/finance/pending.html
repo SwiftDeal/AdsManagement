@@ -43,7 +43,7 @@
                 {if($page != 1)}
                 <li><a href="{echo Shared\Markup::pagination($page - 1)}">Previous</a></li>
                 {/if}
-                {if($count == 10)}
+                {if($page < $count/$limit)}
                 <li><a href="{echo Shared\Markup::pagination($page + 1)}">Next</a></li>
                 {/if}
             </ul>
