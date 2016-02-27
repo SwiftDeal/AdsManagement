@@ -1,3 +1,20 @@
+<script src="{echo CDN}plugins/tinymce/tinymce.min.js"></script>
+<script type="text/javascript">
+tinymce.init({
+    selector: ".editor",
+    plugins: [
+        "advlist autolink lists link image charmap print preview anchor",
+        "searchreplace visualblocks code fullscreen",
+        "insertdatetime media table contextmenu jbimages"
+    ],
+    toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media jbimages",
+    autosave_ask_before_unload: false,
+    max_height: 200,
+    min_height: 160,
+    height: 180,
+    relative_urls: false
+});
+</script>
 <div id="page-wrapper">
     <div class="row">
         <div class="col-lg-12">
@@ -8,7 +25,7 @@
             </div>
             {/if}
             <div class="panel panel-default">
-                <table>
+                <table class="table">
                 	<tr>
                 		<td>{$u->name}</td>
                 		<td>{$u->email}</td>
@@ -32,7 +49,7 @@
                     <form method="post" action="">
                         <div class="form-group">
                             <label>Message</label>
-                            <textarea name="message" class="form-control" placeholder="Enter Message" rows="3"></textarea>
+                            <textarea name="message" class="form-control editor" placeholder="Enter Message" rows="3"></textarea>
                         </div>
                         <div class="form-group">
                             <label>File (Optional)</label>
