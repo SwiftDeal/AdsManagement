@@ -1,3 +1,12 @@
+<div class="page-title">
+    <span class="title">{$ticket->subject}</span>
+    <div class="description">
+        <ol class="breadcrumb navbar-breadcrumb">
+            <li><a href="/support/tickets.html">Tickets</a></li>
+            <li class="active">Reply</li>
+        </ol>
+    </div>
+</div>
 <div class="row">
     <div class="col-lg-12">{if isset($message)}
         <div class="alert alert-success alert-dismissible fade in" role="alert">
@@ -5,30 +14,27 @@
             {$message}
         </div>
         {/if}
+        {foreach $c in $conversations}
+        {script $u = User::first(array("id = ?" => $c->user_id), array("name", "admin"))}
         <div class="card">
-            <div class="card-header">
-                <div class="card-title">
-                    <div class="title">Create Support Ticket</div>
+            <div class="card-body">
+                <div class="text-indent row">
+                    <div class="col-sm-2">
+                        {if($u->admin)}<img src="/public/assets/images/logo.png" width="50"><br>{/if}{$u->name}
+                    </div>
+                    <div class="col-sm-10">
+                        {$c->message}<br>
+                        <small class="pull-right">{echo Framework\StringMethods::datetime_to_text($c->created)}</small>
+                    </div>
                 </div>
             </div>
+        </div><br>
+        {/foreach}
+        <div class="card">
             <div class="card-body">
                 <form class="form-horizontal" method="post" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">Subject</label>
-                        <div class="col-sm-10">
-                        	<select name="subject" class="form-control" required="">
-                        		<option value="Payment Not Received">Payment Not Received</option>
-                        		<option value="Click Counting Issue">Click Counting Issue</option>
-                        		<option value="Payment Not Added">Earning Not Added</option>
-                                <option value="Approve Platform">Approve Platform</option>
-                                <option value="Chocoghar Payment">Chocoghar Payment</option>
-                        		<option value="Other">Other</option>
-                        	</select>
-                            <span class="help-block">{echo Shared\Markup::errors($errors, "subject")}</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Message</label>
+                        <label class="col-sm-2 control-label">Reply Message</label>
                         <div class="col-sm-10">
                         	<textarea class="form-control" name="message" rows="3" placeholder="Explain your problem" required=""></textarea>
                             <span class="help-block">{echo Shared\Markup::errors($errors, "message")}</span>
@@ -43,7 +49,7 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                            <input type="hidden" name="action" value="ticket">
+                            <input type="hidden" name="action" value="reply">
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
                     </div>

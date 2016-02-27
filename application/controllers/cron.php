@@ -39,7 +39,7 @@ class CRON extends Auth {
 
         foreach ($links as $link) {
             $data = $link->stat($yesterday);
-            if ($data["click"] > 4) {
+            if ($data["click"] > 14) {
                 $stat = $this->saveStats($data, $link);
                 if (array_key_exists($stat->user_id, $accounts)) {
                     $accounts[$stat->user_id] += $stat->amount;

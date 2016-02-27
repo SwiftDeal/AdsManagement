@@ -70,6 +70,32 @@ class Support extends Publisher {
         $view->set("u", $u);
     }
 
+    /**
+     * @before _secure, _layout
+     */
+    public function reply($ticket_id) {
+        $this->seo(array("title" => "Conversation","view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+        
+        $ticket = Ticket::first(array("id = ?" => $ticket_id));
+        if (RequestMethods::post("action") == "reply") {
+            $conversation = new Conversation(array(
+                "user_id" => $this->user->id,
+                "ticket_id" => $ticket->id,
+                "message" => RequestMethods::post("message"),
+                "file" => $this->_upload("file", "files")
+            ));
+            if ($conversation->validate()) {
+                $conversation->save();
+                $view->set("message", "Thank You, we will reply within 24 hours.");
+            }
+        }
+        $conversations = Conversation::all(array("ticket_id = ?" => $ticket_id), array("user_id", "message", "created", "file"), "created", "asc");
+        
+        $view->set("conversations", $conversations);
+        $view->set("ticket", $ticket);
+    }
+
 	/**
      * @before _secure, _layout
      */
@@ -105,6 +131,14 @@ class Support extends Publisher {
         
         $view->set("tickets", $tickets);
 	}
+
+    public function receive() {
+        $this->JSONview();
+        $view = $this->getActionView();
+        $output = '<pre>'. print_r($_POST, true). '</pre>';
+        $this->log($output);
+        $view->set("success", true);
+    }
 
     public function _layout() {
         $session = Registry::get("session");
