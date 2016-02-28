@@ -7,12 +7,8 @@
 	if (isset($_GET['id']) && isset($_SERVER['HTTP_CLICKS99TRACK'])) {
 		$track = new LinkTracker($_GET['id']);
 		if (isset($track)) {
-			if ($track->is_ajax()) {
-				$track->process();
-				$arr["success"] = true;
-			} else {
-				$arr["success"] = "Not Ajax Request";
-			}
+			$track->process();
+			$arr["success"] = true;
 		} else {
 			$arr["success"] = "Link Doesnot exist";
 		}

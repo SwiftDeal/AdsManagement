@@ -1,6 +1,6 @@
 # basic password protection
 
-AuthUserFile /var/www/html/logs/.htpasswd
+AuthUserFile /var/www/www/logs/.htpasswd
 AuthName "Username and password required"
 AuthType Basic
 <Limit GET POST>

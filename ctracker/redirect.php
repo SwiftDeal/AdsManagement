@@ -9,7 +9,6 @@ if (isset($_GET['id'])) {
     $track = new LinkTracker($_GET['id']);
     if (isset($track->link)) {
         //$track->process();
-        session_start();
         $_SESSION["track"] = uniqid();
     	include 'view/dynamic.php';
     } else {
