@@ -1,8 +1,8 @@
 
 sftp-config.json
 
-application/configuration/database.ini
+www/application/configuration/database.ini
 
-application/plugins/googl/googl.php
+www/application/plugins/googl/googl.php
 
-application/configuration/mail.ini
+www/application/configuration/mail.ini
