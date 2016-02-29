@@ -7,9 +7,6 @@ define("URL", "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
 define("CDN", "https://$_SERVER[HTTP_HOST]/public/assets/");
 
 date_default_timezone_set('Asia/Kolkata');
-ini_set('max_execution_time', 9000);
-ini_set('memory_limit','256M');
-
 try {
     
     // library's class autoloader

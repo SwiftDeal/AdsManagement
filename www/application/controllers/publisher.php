@@ -26,7 +26,8 @@ class Publisher extends Advertiser {
         $database = Registry::get("database");
         $paid = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 1)->all();
         $earn = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 0)->all();
-        $account = Account::first(array("user_id = ?" => $this->user->id));
+        $account = Account::first(array("user_id = ?" => $this->user->id), array("balance"));
+        $ticket = Ticket::first(array("user_id = ?" => $this->user->id, "live = ?" => 1), array("subject", "id"), "created", "desc");
         $links = Link::all(array("user_id = ?" => $this->user->id, "live = ?" => true), array("id", "item_id", "short"), "created", "desc", 5, 1);
         
         $total = $database->query()->from("stats", array("SUM(amount)" => "earn", "SUM(click)" => "click"))->where("user_id=?", $this->user->id)->all();
@@ -37,6 +38,7 @@ class Publisher extends Advertiser {
         $view->set("links", $links);
         $view->set("news", $news);
         $view->set("account", $account);
+        $view->set("ticket", $ticket);
     }
 
     /**

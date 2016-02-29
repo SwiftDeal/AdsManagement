@@ -50,7 +50,6 @@ class Support extends Publisher {
         
         $ticket = Ticket::first(array("id = ?" => $ticket_id));
         $u = User::first(array("id = ?" => $ticket->user_id), array("name", "email", "phone"));
-        $conversations = Conversation::all(array("ticket_id = ?" => $ticket_id), array("user_id", "message", "created", "file"), "created", "asc");
 
         if (RequestMethods::post("action") == "reply") {
             $conversation = new Conversation(array(
@@ -61,9 +60,17 @@ class Support extends Publisher {
             ));
             if ($conversation->validate()) {
                 $conversation->save();
+                $this->notify(array(
+                    "template" => "blank",
+                    "subject" => $ticket->subject,
+                    "message" => strip_tags($conversation->message),
+                    "user" => $u
+                ));
                 $view->set("message", "Message sent successfully");
             }
         }
+
+        $conversations = Conversation::all(array("ticket_id = ?" => $ticket_id), array("user_id", "message", "created", "file"), "created", "asc");
         
         $view->set("conversations", $conversations);
         $view->set("ticket", $ticket);
