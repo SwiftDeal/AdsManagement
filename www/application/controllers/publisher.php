@@ -18,7 +18,7 @@ class Publisher extends Advertiser {
      * @before _secure, publisherLayout
      */
     public function index() {
-        $this->seo(array("title" => "Dashboard","view" => $this->getLayoutView()));
+        $this->seo(array("title" => "Dashboard", "description" => "Stats for your Data", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         $news = Meta::first(array("property = ?" => "news", "live = ?" => 1));
         $yesterday = strftime("%Y-%m-%d", strtotime('-1 day'));

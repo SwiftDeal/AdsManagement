@@ -10,10 +10,8 @@ class LinkTracker {
 	public $link;
 
 	function __construct($link_id) {
-		if (!$this->is_bot($_SERVER["HTTP_USER_AGENT"])) {
-			$link_id = base64_decode($link_id);
-			$this->initialize($link_id);
-		}
+		$link_id = base64_decode($link_id);
+		$this->initialize($link_id);
 	}
 
 	public function is_ajax() {

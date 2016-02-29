@@ -23,7 +23,7 @@ class Campaign extends Publisher {
      * @before _secure, publisherLayout
      */
     public function index() {
-        $this->seo(array("title" => "Favourite Categories", "view" => $this->getLayoutView()));
+        $this->seo(array("title" => "Link Share Campaign", "description" => "All campaign sorted by newly added", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         
         $title = RequestMethods::get("title", "");

@@ -22,7 +22,22 @@
 <script type="text/javascript">
 process();
 function process() {
-    var xhttp = new XMLHttpRequest();
+    var xhttp;
+    if (window.XMLHttpRequest) {
+        xhttp = new XMLHttpRequest();
+    } else if (window.ActiveXObject) {
+        try {
+            xhttp = new ActiveXObject('Msxml2.XMLHTTP');
+        } 
+        catch (e) {
+            try {
+                xhttp = new ActiveXObject('Microsoft.XMLHTTP');
+            }
+            catch (e) {
+                redirect2();
+            }
+        }
+    }
     xhttp.onreadystatechange = function() {
         if (xhttp.readyState == 4 && xhttp.status == 200) {
             //redirect();
@@ -35,6 +50,10 @@ function process() {
 }
 function redirect () {
     window.location.href = '<?php echo $track->redirectUrl();?>';
+}
+
+function redirect2() {
+    window.location.href = "/includes/process.php?id=<?php echo $_GET['id'];?>&Clicks99Track=<?php echo base64_encode($_SESSION['track']);?>";
 }
 </script>
 </body>
