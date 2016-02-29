@@ -33,11 +33,10 @@ class Campaign extends Publisher {
 
         $where = array(
             "title LIKE ?" => "%{$title}%",
-            "category LIKE ?" => "%{$category}%",
             "live = ?" => true
         );
         
-        $items = Item::all(array(), array("id", "title", "image", "url", "description"), "created", "desc", $limit, $page);
+        $items = Item::all($where, array("id", "title", "image", "url", "description"), "created", "desc", $limit, $page);
         $count = Item::count($where);
 
         $view->set("limit", $limit);

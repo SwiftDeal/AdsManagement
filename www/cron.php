@@ -2,7 +2,7 @@
 ob_start();
 define("DEBUG", TRUE);
 define("APP_PATH", str_replace(DIRECTORY_SEPARATOR, "/", dirname(__FILE__)));
-define("CDN", "http://chocoghar.com/public/assets/");
+define("CDN", "https://clicks99.com/public/assets/");
 
 date_default_timezone_set('Asia/Kolkata');
 ini_set('max_execution_time', 9000);
@@ -65,6 +65,8 @@ try {
 
     // 8. dispatch the current request 
     $router->dispatch();
+
+    var_dump($router);
 
     // 9. unset global variables
     unset($configuration);

@@ -6,7 +6,7 @@
  * @author Faizan Ayubi
  */
 
-class CRON extends Auth {
+class CRON extends Shared\Controller {
 
     public function index() {
         $this->noview();

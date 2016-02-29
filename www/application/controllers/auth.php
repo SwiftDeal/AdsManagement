@@ -263,13 +263,28 @@ class Auth extends Controller {
      * @before _secure, _admin
      */
     public function loginas($user_id) {
+        $session = Registry::get("session");
+        $session->set("admin_user_id", $user_id);
         $this->setUser(false);
         $user = User::first(array("id = ?" => $user_id));
         $this->authorize($user);
     }
 
+    /**
+     * @before _secure
+     */
+    public function loginadmin() {
+        $session = Registry::get("session");
+        $session->get("admin_user_id");
+        $user_id = $this->setUser(false);
+        if (!empty($user_id)) {
+            $user = User::first(array("id = ?" => $user_id));
+            $this->authorize($user);
+        }
+    }
+
     protected function country() {
-        require '/var/www/powerfeeds/includes/vendor/autoload.php';
+        require '/var/www/ctracker/includes/vendor/autoload.php';
         $reader = new GeoIp2\Database\Reader('/var/www/powerfeeds/includes/GeoLite2-Country.mmdb');
         $record = $reader->country(Shared\Markup::get_client_ip());
         return $record->country->isoCode;
