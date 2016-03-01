@@ -344,15 +344,14 @@ class Publisher extends Advertiser {
 
         if (empty($id)) {
             $where = array(
-                "created >= ?" => $this->changeDate($startdate, "-1"),
-                "created <= ?" => $this->changeDate($enddate, "1")
+                "live = ?" => 0
             );
         } else {
             $where = array(
                 "id = ?" => $id
             );
         }
-        $users = User::all($where, array("id","name", "created", "live"), "live", "asc", $limit, $page);
+        $users = User::all($where, array("id","name", "created", "live"), "created", "desc", $limit, $page);
         $count = User::count($where);
 
         $view->set("users", $users);

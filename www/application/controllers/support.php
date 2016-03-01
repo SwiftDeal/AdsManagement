@@ -19,7 +19,7 @@ class Support extends Publisher {
 		$this->seo(array("title" => "Support Tickets","view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
-        $tickets = Ticket::all(array("user_id = ?" => $this->user->id, "live = ?" => true));
+        $tickets = Ticket::all(array("user_id = ?" => $this->user->id));
         $view->set("tickets", $tickets);
 	}
 
@@ -31,14 +31,21 @@ class Support extends Publisher {
         $view = $this->getActionView();
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
+        $live = RequestMethods::get("live", 1);
+        if ($live == 1) {
+            $where = array("live = ?" => $live);
+        } else {
+            $where = array("live = ?" => 0);
+        }
 
-        $tickets = Ticket::all(array("live = ?" => true), array("user_id", "subject", "created", "live", "id"), "created", "asc", $limit, $page);
-        $count = Ticket::count(array("live = ?" => true));
+        $tickets = Ticket::all($where, array("user_id", "subject", "modified", "live", "id"), "modified", "desc", $limit, $page);
+        $count = Ticket::count($where);
         
         $view->set("tickets", $tickets);
         $view->set("page", $page);
         $view->set("limit", $limit);
         $view->set("count", $count);
+        $view->set("live", $live);
     }
 
     /**
@@ -94,6 +101,8 @@ class Support extends Publisher {
             ));
             if ($conversation->validate()) {
                 $conversation->save();
+                $ticket->live = 1;
+                $ticket->save();
                 $view->set("message", "Thank You, we will reply within 24 hours.");
             }
         }
@@ -142,6 +151,42 @@ class Support extends Publisher {
     public function receive() {
         $this->JSONview();
         $view = $this->getActionView();
+        $email = substr(RequestMethods::post("From"), strpos(RequestMethods::post("From") + 1, "<"), -1);
+        $user = User::first(array("email = ?" => $email), array("user_id"));
+        if (!isset($user)) {
+            $name = substr(RequestMethods::post("From"), 0, strpos(RequestMethods::post("From"), "<"));
+            $user = new User(array(
+                "username" => $name,
+                "name" => $name,
+                "email" => $email,
+                "password" => sha1($this->randomPassword()),
+                "phone" => "",
+                "admin" => 0,
+                "currency" => "INR",
+                "live" => 0
+            ));
+            $user->save();
+        }
+        $ticket = Ticket::first(array("subject = ?" => str_replace("Re: ", "", RequestMethods::post("Subject")), "user_id = ?" => $user->id));
+        if (!isset($ticket)) {
+            $ticket = new Ticket(array(
+                "user_id" => $user->id,
+                "subject" => RequestMethods::post("Subject"),
+                "live" => true
+            ));
+            $ticket->save();
+        } else {
+            $ticket->live = 1;
+            $ticket->save();
+        }
+        $conversation = new Conversation(array(
+            "user_id" => $user->id,
+            "ticket_id" => $ticket->id,
+            "message" => RequestMethods::post("message"),
+            "file" => "",
+        ));
+        $conversation->save();
+
         $output = '<pre>'. print_r($_POST, true). '</pre>';
         $this->log($output);
         $view->set("success", true);

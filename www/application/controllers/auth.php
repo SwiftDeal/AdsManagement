@@ -292,7 +292,7 @@ class Auth extends Controller {
 
     protected function country() {
         require '/var/www/ctracker/includes/vendor/autoload.php';
-        $reader = new GeoIp2\Database\Reader('/var/www/powerfeeds/includes/GeoLite2-Country.mmdb');
+        $reader = new GeoIp2\Database\Reader('/var/www/ctracker/includes/GeoLite2-Country.mmdb');
         $record = $reader->country(Shared\Markup::get_client_ip());
         return $record->country->isoCode;
     }
