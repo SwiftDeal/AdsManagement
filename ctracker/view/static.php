@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <meta property="fb:app_id" content="583482395136457">
     <meta property="og:locale" content="en_US">
@@ -17,6 +18,9 @@
     <meta name="twitter:title" content="Clicks99">
     <meta name="twitter:description" content="A real Network for real publishers developed by CloudStuff.Tech">
     <meta name="twitter:url" content="<?php echo SITE;?>">
+
+    <title>Clicks99</title>
+    <link rel="icon" href="/includes/favicon.ico">
 </head>
 
 <body>
