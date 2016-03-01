@@ -97,13 +97,14 @@ class Publisher extends Advertiser {
             $k = array_rand($domains);
             $longURL = RequestMethods::get("domain", $domains[$k]) . '/' . base64_encode($link->id);
         }
-        //$googl = Registry::get("googl");
-        //$object = $googl->shortenURL($longURL);
+        $googl = Registry::get("googl");
+        $object = $googl->shortenURL($longURL);
+        $link->short = $object->id;
 
-        $link->short = $longURL;
+        //$link->short = $longURL;
         $link->save();
 
-        $view->set("shortURL", $longURL);
+        $view->set("shortURL", $link->short);
     }
     
     /**
@@ -404,10 +405,18 @@ class Publisher extends Advertiser {
     public function register() {
         $this->seo(array("title" => "Register as Publisher", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-        
+
         if (RequestMethods::post("action") == "register") {
-            $message = $this->_publisherRegister();
-            $view->set("message", $message);
+            $exist = User::first(array("email = ?" => RequestMethods::post("email")));
+            if ($exist) {
+                $view->set("message", 'User exists, <a href="/auth/login.html">login</a>');
+            } else {
+                $errors = $this->_publisherRegister();
+                $view->set("errors", $errors);
+                if (empty($errors)) {
+                    $view->set("message", "Your account has been created, we will notify you once approved.");
+                }
+            }
         }
     }
 }

@@ -61,7 +61,6 @@ class Advertiser extends Analytics {
         
         if (RequestMethods::post("action") == "register") {
             $exist = User::first(array("email = ?" => RequestMethods::post("email")));
-            $pexist = Platform::first(array("url = ?" => RequestMethods::post("url")));
             if ($exist) {
                 $view->set("message", 'User exists, <a href="/auth/login.html">login</a>');
             } else {

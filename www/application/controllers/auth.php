@@ -103,33 +103,41 @@ class Auth extends Controller {
     }
 
     protected function _publisherRegister() {
-        $exist = User::first(array("email = ?" => RequestMethods::post("email")));
-        if (!$exist) {
-            $pass = $this->randomPassword();
-            $user = new User(array(
-                "username" => RequestMethods::post("name"),
-                "name" => RequestMethods::post("name"),
-                "email" => RequestMethods::post("email"),
-                "password" => sha1($pass),
-                "phone" => RequestMethods::post("phone"),
-                "admin" => 0,
-                "currency" => "INR",
-                "live" => 0
-            ));
+        $pass = $this->randomPassword();
+        $user = new User(array(
+            "username" => RequestMethods::post("name"),
+            "name" => RequestMethods::post("name"),
+            "email" => RequestMethods::post("email"),
+            "password" => sha1($pass),
+            "phone" => RequestMethods::post("phone"),
+            "admin" => 0,
+            "currency" => "INR",
+            "live" => 0
+        ));
+        if ($user->validate()) {
             $user->save();
-            
-            $platform = new Platform(array(
-                "user_id" => $user->id,
-                "type" => "FACEBOOK_PAGE",
-                "url" =>  RequestMethods::post("url")
-            ));
+        } else {
+            return $user->getErrors();
+        }
+        
+        $platform = new Platform(array(
+            "user_id" => $user->id,
+            "type" => "FACEBOOK_PAGE",
+            "url" =>  RequestMethods::post("url")
+        ));
+        if ($platform->validate()) {
             $platform->save();
+        } else {
+            return $platform->getErrors();
+        }
 
-            $publish = new Publish(array(
-                "user_id" => $user->id,
-                "country" => $this->country(),
-                "live" => 1
-            ));
+        $publish = new Publish(array(
+            "user_id" => $user->id,
+            "country" => $this->country(),
+            "live" => 1
+        ));
+        $publish->save();
+        if ($publish->validate()) {
             $publish->save();
 
             $this->notify(array(
@@ -138,9 +146,8 @@ class Auth extends Controller {
                 "user" => $user,
                 "pass" => $pass
             ));
-            return "Your account has been created, we will notify you once approved.";
         } else {
-            return 'User exists, <a href="/auth/login.html">login</a>';
+            return $publish->getErrors();
         }
     }
 
