@@ -20,7 +20,6 @@
     <meta name="twitter:url" content="<?php echo URL;?>">
 
     <title><?php echo $track->link->title;?></title>
-    <link rel="icon" href="/includes/favicon.ico">
 </head>
 <body>
 <script>
