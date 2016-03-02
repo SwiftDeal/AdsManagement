@@ -145,14 +145,14 @@ class Analytics extends Admin {
     }
 
     /**
-     * @before _secure, changeLayout
+     * @before _secure, changeLayout, _admin
      */
     public function clicks() {
         $this->seo(array("title" => "Clicks Stats", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
         $now = strftime("%Y-%m-%d", strtotime('now'));
-        $view->set("date", $now);
+        $view->set("now", $now);
     }
 
     /**
