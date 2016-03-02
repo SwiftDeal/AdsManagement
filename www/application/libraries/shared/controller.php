@@ -252,6 +252,14 @@ namespace Shared {
             });
         }
 
+        public function __destruct() {
+            $view = $this->layoutView;
+            if ($view && !$view->get('seo')) {
+                $view->set('seo', \Framework\Registry::get("seo"));
+            }
+            parent::__destruct();
+        }
+
         /**
          * Checks whether the user is set and then assign it to both the layout and action views.
          */
