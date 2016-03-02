@@ -259,63 +259,7 @@ class Publisher extends Advertiser {
         $view->set("platforms", $platforms);
     }
 
-    /**
-     * @before _secure, changeLayout, _admin
-     */
-    public function news() {
-        $this->seo(array("title" => "Member News", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-        if (RequestMethods::post("news")) {
-            $news = new Meta(array(
-                "user_id" => $this->user->id,
-                "property" => "news",
-                "value" => RequestMethods::post("news")
-            ));
-            $news->save();
-            $view->set("message", "News Saved Successfully");
-        }
-        
-        $allnews = Meta::all(array("property = ?" => "news"));
-            
-        $view->set("allnews", $allnews);
-    }
-
-    /**
-     * @before _secure, _admin
-     */
-    public function delete($user_id) {
-        $this->noview();
-        $stats = Stat::first(array("user_id = ?" => $user_id));
-        foreach ($stats as $stat) {
-            $stat->delete();
-        }
-
-        $links = Link::all(array("user_id = ?" => $user_id));
-        foreach ($links as $link) {
-            $stat = Stat::first(array("link_id = ?" => $link->id));
-            if ($stat) {
-                $stat->delete();
-            }
-            $link->delete();
-        }
-        
-        $platforms = Platform::all(array("user_id = ?" => $user_id));
-        foreach ($platforms as $platform) {
-            $platform->delete();
-        }
-
-        $account = Account::first(array("user_id = ?" => $user_id));
-        if ($account) {
-            $account->delete();
-        }
-
-        $user = User::first(array("id = ?" => $user_id));
-        if ($user) {
-            $user->delete();
-        }
-        
-        self::redirect($_SERVER["HTTP_REFERER"]);
-    }
+    
 
     protected function target() {
         $session = Registry::get("session");
@@ -328,49 +272,7 @@ class Publisher extends Advertiser {
         
         return $alias;
     }
-
-    /**
-     * @before _secure, changeLayout, _admin
-     */
-    public function all() {
-        $this->seo(array("title" => "New User Platforms", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-        $page = RequestMethods::get("page", 1);
-        $limit = RequestMethods::get("limit", 10);
-        
-        $startdate = RequestMethods::get("startdate", date('Y-m-d', strtotime("-7 day")));
-        $enddate = RequestMethods::get("enddate", date('Y-m-d', strtotime("now")));
-        $id = RequestMethods::get("id", "");
-
-        if (empty($id)) {
-            $where = array(
-                "live = ?" => 0
-            );
-        } else {
-            $where = array(
-                "id = ?" => $id
-            );
-        }
-        $users = User::all($where, array("id","name", "created", "live"), "created", "desc", $limit, $page);
-        $count = User::count($where);
-
-        $view->set("users", $users);
-        $view->set("id", $id);
-        $view->set("startdate", $startdate);
-        $view->set("enddate", $enddate);
-        $view->set("page", $page);
-        $view->set("count", $count);
-        $view->set("limit", $limit);
-    }
-
-	/**
-     * @before _secure, changeLayout, _admin
-     */
-    public function fraud() {
-        $this->seo(array("title" => "Fraud Links", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-    }
-
+    
     public function publisherLayout() {
         $session = Registry::get("session");
         

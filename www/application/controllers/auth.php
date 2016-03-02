@@ -134,7 +134,7 @@ class Auth extends Controller {
         $publish = new Publish(array(
             "user_id" => $user->id,
             "country" => $this->country(),
-            "live" => 1
+            "live" => 0
         ));
         $publish->save();
         if ($publish->validate()) {
@@ -212,13 +212,13 @@ class Auth extends Controller {
     } 
 
     protected function authorize($user) {
+        if ($user->live == 0) {
+            return "Account Suspended";
+        }
         $session = Registry::get("session");
         //setting publisher
         $publish = Publish::first(array("user_id = ?" => $user->id));
         if ($publish) {
-            if ($publish->live == 0) {
-                return "Account Suspended";
-            }
             $this->setUser($user);
             //setting domains
             $domains = Meta::all(array("property = ?" => "domain", "live = ?" => true));
@@ -230,9 +230,6 @@ class Auth extends Controller {
         //setting advertiser
         $advert = Advert::first(array("user_id = ?" => $user->id));
         if ($advert) {
-            if ($advert->live == 0) {
-                return "Account Suspended";
-            }
             $this->setUser($user);
             $session->set("advert", $advert);
             self::redirect("/advertiser/index.html");

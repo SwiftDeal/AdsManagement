@@ -1,15 +1,13 @@
 <?php
 
 /**
- * Description of analytics
- *
  * @author Faizan Ayubi
  */
 use Framework\Registry as Registry;
 use Framework\RequestMethods as RequestMethods;
 use \Curl\Curl;
 
-class Analytics extends Admin {
+class Analytics extends Manage {
     
     /**
      * @before _secure, changeLayout, _admin
