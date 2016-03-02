@@ -33,6 +33,11 @@
 
 </script>
 <script type="text/javascript">
+<?php
+if (!isset($_SERVER["HTTP_USER_AGENT"])) {
+    echo "redirect2();";
+}
+?>
 redirect();
 function process() {
     var xhttp;
