@@ -413,7 +413,7 @@ class Publisher extends Advertiser {
                 $errors = $this->_publisherRegister();
                 $view->set("errors", $errors);
                 if (empty($errors)) {
-                    $view->set("message", "Your account has been created, we will notify you once approved.");
+                    $view->set("message", "Your account has been created, Check your email for password");
                 }
             }
         }

@@ -18,6 +18,8 @@ class Ticket extends \Shared\Model {
      * @readwrite
      * @type text
      * @length 255
+     *
+     * @validate required, min(3), max(255)
      * @label subject
      */
     protected $_subject;

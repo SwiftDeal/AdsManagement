@@ -6,6 +6,7 @@
  * @author Faizan Ayubi
  */
 class Meta extends Shared\Model {
+    
     /**
      * @column
      * @readwrite
@@ -19,6 +20,9 @@ class Meta extends Shared\Model {
      * @readwrite
      * @type text
      * @length 255
+     *
+     * @validate required
+     * @label property
      */
     protected $_property;
     
@@ -26,6 +30,9 @@ class Meta extends Shared\Model {
      * @column
      * @readwrite
      * @type text
+     *
+     * @validate required
+     * @label value
      */
     protected $_value;
 }

@@ -20,6 +20,8 @@ class Account extends \Shared\Model {
      * @readwrite
      * @type decimal
      * @length 10,2
+     *
+     * @validate required
      * @label balance
      */
     protected $_balance;

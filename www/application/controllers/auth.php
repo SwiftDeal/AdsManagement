@@ -112,7 +112,7 @@ class Auth extends Controller {
             "phone" => RequestMethods::post("phone"),
             "admin" => 0,
             "currency" => "INR",
-            "live" => 0
+            "live" => 1
         ));
         if ($user->validate()) {
             $user->save();
