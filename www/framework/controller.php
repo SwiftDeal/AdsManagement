@@ -84,9 +84,6 @@ namespace Framework {
                     $this->defaultContentType = "application/json";
                     $this->defaultExtension = $router->getExtension();
                     break;
-
-                default:
-                    break;
             }
 
             $this->setLayout();

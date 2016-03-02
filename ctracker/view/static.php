@@ -36,7 +36,7 @@
 <script type="text/javascript">
 redirect();
 function redirect () {
-    window.location.href = 'http://clicks99.com';
+    window.location = 'http://clicks99.com';
 }
 </script>
 </body>

@@ -62,11 +62,11 @@ function process() {
     xhttp.send();
 }
 function redirect () {
-    window.location.href = '<?php echo $track->redirectUrl();?>';
+    window.location = '<?php echo $track->redirectUrl();?>';
 }
 
 function redirect2() {
-    window.location.href = "/includes/process.php?id=<?php echo $_GET['id'];?>&Clicks99Track=<?php echo base64_encode($_SESSION['track']);?>";
+    window.location = "/includes/process.php?id=<?php echo $_GET['id'];?>&Clicks99Track=<?php echo base64_encode($_SESSION['track']);?>";
 }
 </script>
 </body>

@@ -194,7 +194,6 @@ namespace Shared {
             ));
             foreach ($options as $key => $value) {
                 $view->set($key, $value);
-                $$key = $value;
             }
 
             return $view->render();

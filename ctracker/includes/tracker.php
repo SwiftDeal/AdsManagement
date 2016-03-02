@@ -96,9 +96,11 @@ class LinkTracker {
 
 	public function process() {
 		$c = $this->cookie();
-		if ($c == 1) {
-			$this->mongo();
-		}	
+		if (isset($_SERVER["HTTP_USER_AGENT"])) {
+			if (!$this->is_bot($_SERVER["HTTP_USER_AGENT"]) && $c == 1) {
+				$this->mongo();
+			}
+		}
 	}
 
 	public function vprocess() {

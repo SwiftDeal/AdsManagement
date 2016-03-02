@@ -39,7 +39,7 @@ class CRON extends Shared\Controller {
 
         foreach ($links as $link) {
             $data = $link->stat($yesterday);
-            if ($data["click"] > 14) {
+            if ($data["click"] > 30) {
                 $stat = $this->saveStats($data, $link);
                 if (array_key_exists($stat->user_id, $accounts)) {
                     $accounts[$stat->user_id] += $stat->amount;

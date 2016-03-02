@@ -11,10 +11,6 @@ use Framework\StringMethods as StringMethods;
 class SEO {
     
     protected $_title;
-    protected $_keywords;
-    protected $_description;
-    protected $_author;
-    protected $_robots;
     protected $_photo;
 
     public function __construct($options) {
@@ -23,10 +19,6 @@ class SEO {
         }
 
         $this->_title       = $options["title"];
-        $this->_keywords    = $options["keywords"];
-        $this->_description = $options["description"];
-        $this->_author      = $options["author"];
-        $this->_robots      = $options["robots"];
         $this->_photo       = $options["photo"];
     }
 
