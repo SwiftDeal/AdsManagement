@@ -19,6 +19,16 @@ class Ticket extends \Shared\Model {
      * @type text
      * @length 255
      *
+     * @label type
+     */
+    protected $_type = "other";
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * @length 255
+     *
      * @validate required, min(3), max(255)
      * @label subject
      */

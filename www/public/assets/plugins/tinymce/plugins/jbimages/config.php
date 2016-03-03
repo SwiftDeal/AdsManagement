@@ -36,7 +36,7 @@
 | $config['img_path'] = '/images/somefolder';
 | 
 | -------------------------------------------------------------------*/
-        define("APP_PATH", "/var/www/html");
+        define("APP_PATH", "/var/www/www");
 	
 	$config['img_path'] = '/public/assets/uploads/files'; // Relative to domain name
 	$config['upload_path'] = APP_PATH . $config['img_path']; // Physical path. [Usually works fine like this]

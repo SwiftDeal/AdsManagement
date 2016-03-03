@@ -31,12 +31,10 @@ class Support extends Publisher {
         $view = $this->getActionView();
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
-        $live = RequestMethods::get("live", 1);
-        if ($live == 1) {
-            $where = array("live = ?" => $live);
-        } else {
-            $where = array("live = ?" => 0);
-        }
+        
+        $property = RequestMethods::get("property", "live");
+        $value = RequestMethods::get("value", 1);
+        $where = array("{$property} = ?" => $value);
 
         $tickets = Ticket::all($where, array("user_id", "subject", "modified", "live", "id"), "modified", "desc", $limit, $page);
         $count = Ticket::count($where);
@@ -45,7 +43,8 @@ class Support extends Publisher {
         $view->set("page", $page);
         $view->set("limit", $limit);
         $view->set("count", $count);
-        $view->set("live", $live);
+        $view->set("property", $property);
+        $view->set("value", $value);
     }
 
     /**
@@ -56,7 +55,7 @@ class Support extends Publisher {
         $view = $this->getActionView();
         
         $ticket = Ticket::first(array("id = ?" => $ticket_id));
-        $u = User::first(array("id = ?" => $ticket->user_id), array("name", "email", "phone"));
+        $u = User::first(array("id = ?" => $ticket->user_id), array("name", "email", "phone", "id"));
 
         if (RequestMethods::post("action") == "reply") {
             $conversation = new Conversation(array(

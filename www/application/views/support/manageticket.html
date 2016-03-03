@@ -1,20 +1,25 @@
 <div id="page-wrapper">
     <div class="row">
         <div class="col-lg-12">
-            <h2 class="page-header text-center">
-                Support Tickets
-                <small class="pull-right">
-                    <form method="get" action="">
-                        <label class="radio-inline">
-                            <input type="radio" name="live" value="1" {if($live == "1")}checked{/if}> Open
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="live" value="null" {if($live != "1")}checked{/if}> Closed
-                        </label>
-                        <button type="submit" class="btn btn-primary btn-sm">Show</button>
-                    </form>
-                </small>
-            </h2>
+            <h3 class="page-header text-center">Support Tickets</h3>
+            <form class="form-inline text-center" role="form" method="get" action="">
+                <div class="form-group">
+                    <div class="input-group">
+                        <select name="property" class="form-control" value="{$property}">
+                            <option value="live">Live</option>
+                            <option value="user_id">UserId</option>
+                            <option value="subject">Subject</option>
+                            <option value="type">Type</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" name="value" class="form-control" placeholder="Enter value" value="{$value}" />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form><hr>
             <div class="panel panel-default">
                 <table class="table">
                     <thead>
@@ -40,7 +45,7 @@
                                 <span class="label label-success">Closed</span> {/else}
                             </td>
                             <td>
-                                <a href="/support/conversations/{$t->id}" class="btn btn-info btn-xs"><i class="fa fa-reply"></i>Reply</a>
+                                <a href="/support/conversations/{$t->id}" class="btn btn-info btn-xs" target="_blank"><i class="fa fa-reply"></i>Reply</a>
                             </td>
                         </tr>
                         {/foreach}
