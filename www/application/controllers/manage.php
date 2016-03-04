@@ -1,7 +1,5 @@
 <?php
 /**
- * Description of publisher
- *
  * @author Faizan Ayubi
  */
 use Framework\RequestMethods as RequestMethods;

@@ -42,9 +42,9 @@ class CRON extends Shared\Controller {
             if ($data["click"] > 30) {
                 $stat = $this->saveStats($data, $link);
                 if (array_key_exists($stat->user_id, $accounts)) {
-                    $accounts[$stat->user_id] += $stat->amount;
+                    $accounts[$stat->user_id] += $data["earning"];
                 } else {
-                    $accounts[$stat->user_id] = $stat->amount;
+                    $accounts[$stat->user_id] = $data["earning"];
                 }
 
                 //sleep the script
@@ -62,8 +62,8 @@ class CRON extends Shared\Controller {
                 "user_id" => $link->user_id,
                 "link_id" => $link->id,
                 "item_id" => $link->item_id,
-                "click" => $data["click"] - 4,
-                "amount" => $data["earning"] - 0.6,
+                "click" => $data["click"],
+                "amount" => $data["earning"],
                 "rpm" => $data["rpm"],
                 "live" => 1
             ));
@@ -108,7 +108,7 @@ class CRON extends Shared\Controller {
             $transaction = new Transaction(array(
                 "user_id" => $key,
                 "amount" => $value,
-                "ref" => "Links Tracking"
+                "ref" => "linkstracking"
             ));
             $transaction->save();
         }
