@@ -70,29 +70,31 @@
                     Select field to search and enter keyword and then click on search button to see results.
                 {/else}
             </div>
-            <table class="table table-striped text-center table-hover table-bordered table-responsive">
-                <thead>
-                    <tr>
-                        {foreach $value in $values}
-                        <th>{$value}</th>
-                        {/foreach}
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {foreach $item in $items}
+            <div class="table-responsive">
+                <table class="table table-striped text-center table-hover table-bordered">
+                    <thead>
                         <tr>
-                        {foreach $value in $values}
-                            <td>{echo $item[$value]}</td>
-                        {/foreach}
-                        <td>
-                            <a href="/admin/update/{$model}/{echo $item[id]}" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i> Edit</a>
-                            <a href="/admin/delete/{$model}/{echo $item[id]}" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> Delete</a>
-                        </td>
+                            {foreach $value in $values}
+                            <th>{$value}</th>
+                            {/foreach}
+                            <th>Action</th>
                         </tr>
-                    {/foreach}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {foreach $item in $items}
+                            <tr>
+                            {foreach $value in $values}
+                                <td>{echo $item[$value]}</td>
+                            {/foreach}
+                            <td>
+                                <a href="/admin/update/{$model}/{echo $item[id]}" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i> Edit</a>
+                                <a href="/admin/delete/{$model}/{echo $item[id]}" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> Delete</a>
+                            </td>
+                            </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
         </div>
     
         <div class="text-center">
