@@ -6,7 +6,7 @@ define("CDN", "https://clicks99.com/public/assets/");
 
 date_default_timezone_set('Asia/Kolkata');
 ini_set('max_execution_time', 9000);
-ini_set('memory_limit','256M');
+ini_set('memory_limit','512M');
 
 try {
     

@@ -1,10 +1,14 @@
 <?php
 ob_start();
 define("DEBUG", FALSE);
-
+define("DEV", TRUE);
 define("APP_PATH", str_replace(DIRECTORY_SEPARATOR, "/", dirname(__FILE__)));
 define("URL", "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
 define("CDN", "https://$_SERVER[HTTP_HOST]/public/assets/");
+if (DEV) {
+    include APP_PATH . '/application/views/layouts/errors/maintenance.php';
+    die();
+}
 
 date_default_timezone_set('Asia/Kolkata');
 try {

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<title>Error 500!</title>
+<title>Site Maintenance</title>
 <style>
 body {
     text-align: center;
@@ -36,15 +36,12 @@ a:hover {
 
 <body>
     <article>
-        <h1>Error 500!</h1>
+        <h1>We&rsquo;ll be back soon!</h1>
         <div>
-            <p>Something went wrong. If you need to you can always <a href="mailto:info@clicks99.com">contact us</a>! or <a href="/index.html">Home</a></p>
+            <p>Sorry for the inconvenience but we&rsquo;re performing some maintenance at the moment. If you need to you can always <a href="mailto:info@clicks99.com">contact us</a>, otherwise we&rsquo;ll be back online shortly!</p>
             <p>&mdash; Clicks99 Team</p>
         </div>
     </article>
-    <?php if (DEBUG): ?>
-        <pre><?php print_r($e); ?></pre>
-    <?php endif; ?>
 </body>
 
 </html>

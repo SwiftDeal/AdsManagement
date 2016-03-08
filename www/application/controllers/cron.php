@@ -68,21 +68,23 @@ class CRON extends Shared\Controller {
                 "live" => 1
             ));
             $stat->save();
+            $output = "New {$stat->id} - Done";
         } else {
             $today =strtotime(date('Y-m-d', strtotime("now")));
             $modified = strtotime($stat->modified);
+
+            $output = "{$stat->id} - Dropped";
 
             if($modified < $today) {
                 $stat->click += $data["click"];
                 $stat->amount += $data["earning"];
                 $stat->rpm = $data["rpm"];
                 $stat->save();
+                $output = "Updated {$stat->id} - Done";
             }
         }
-        
-        $output = "{$stat->id} - Done";
-        $this->log($output);
 
+        $this->log($output);
         return $stat;
     }
 
