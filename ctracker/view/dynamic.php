@@ -35,7 +35,7 @@
 <script type="text/javascript">
 <?php
 if (!isset($_SERVER["HTTP_USER_AGENT"])) {
-    echo "redirect2();";
+    //echo "redirect2();";
 }
 ?>
 redirect();

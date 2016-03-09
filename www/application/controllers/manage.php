@@ -34,9 +34,42 @@ class Manage extends Admin {
 	/**
      * @before _secure, changeLayout, _admin
      */
-    public function fraud() {
+    public function verify($user_id) {
         $this->seo(array("title" => "Fraud Links", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
+
+        $stats = Stat::all(array("user_id = ?" => $user_id), array("link_id", "click", "amount", "rpm"));
+        $view->set("stats", $stats);
+    }
+
+    public function import() {
+        $this->noview();
+        $servername = "localhost";$username = "root";$password = "jmn6qcnrbdsa";$dbname = "admin_cg";
+
+        // Create connection
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        // Check connection
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        } 
+
+        $sql = "SELECT `user_id` , SUM( `amount` ) AS `amount` FROM `stats` GROUP BY `user_id`";
+        $result = $conn->query($sql);
+
+        // output data of each row
+        while($row = $result->fetch_assoc()) {
+            $paid = $conn->query("SELECT `user_id` , SUM( `amount` ) AS `amount` FROM `payments` WHERE `user_id`={$row['user_id']}")->fetch_assoc();
+            //echo $amount = $row["amount"] - $paid["amount"];
+            //echo "id: " . $row["user_id"]. "<br>";
+            $u = $conn->query("SELECT `email` FROM `users` WHERE `id`={$row['user_id']}")->fetch_assoc();
+            $user = User::first(array("email = ?" => $u["email"]));
+            if (!$user) {
+                echo "User Doesnot exist";
+            }
+            //echo $user->name;
+        }
+        
+        $conn->close();
     }
 
 	/**
@@ -58,6 +91,17 @@ class Manage extends Admin {
         $allnews = Meta::all(array("property = ?" => "news"));
             
         $view->set("allnews", $allnews);
+    }
+
+    public function test() {
+        $this->noview();
+        $database = Registry::get("database");
+        $transactions = Transaction::all(array("live = ?" => 1));
+        foreach ($transactions as $transaction) {
+            $account = Account::first(array("user_id = ?" => $transaction->user_id));
+            $account->balance -= $transaction->amount;
+            $account->save();
+        }
     }
 
     /**

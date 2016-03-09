@@ -11,6 +11,10 @@ class CRON extends Shared\Controller {
     public function index() {
         $this->noview();
         $this->log("CRON Started");
+        $this->range();
+        $this->log("CRON Ended");
+        
+        /*$this->log("CRON Started");
         $accounts = $this->verify();
         $this->log("CRON Ended");
 
@@ -22,63 +26,66 @@ class CRON extends Shared\Controller {
 
         $this->log("Password Meta Started");
         $this->passwordmeta();
-        $this->log("Password Meta Ended");
+        $this->log("Password Meta Ended");*/
+    }
+
+    protected function range() {
+        $where = array("live = ?" => true);
+        $links = Link::all($where, array("id", "short", "item_id", "user_id"));
+
+        $startdate = date('Y-m-d', strtotime("-7 day"));
+        $enddate = date('Y-m-d', strtotime("now"));
+        $diff = date_diff(date_create($startdate), date_create($enddate));
+        for ($i = 0; $i <= $diff->format("%a"); $i++) {
+            $date = date('Y-m-d', strtotime($startdate . " +{$i} day"));
+            $accounts = $this->verify($date, $links);
+            sleep(60);
+        }
     }
     
-    protected function verify() {
+    protected function verify($today, $links) {
         $accounts = array();
-        $yesterday = strftime("%Y-%m-%d", strtotime('-1 day'));
-        $startdate = date('Y-m-d', strtotime("-20 day"));
-        $enddate = date('Y-m-d', strtotime("now"));
-        $where = array(
-            "live = ?" => true,
-            "created >= ?" => $startdate,
-            "created < ?" => $enddate
-        );
-        $links = Link::all($where, array("id", "short", "item_id", "user_id"));
+        $yesterday = date('Y-m-d', strtotime($today . " -1 day"));
 
         foreach ($links as $link) {
             $data = $link->stat($yesterday);
             if ($data["click"] > 30) {
-                $stat = $this->saveStats($data, $link);
+                $stat = $this->saveStats($data, $link, $today);
                 if (array_key_exists($stat->user_id, $accounts)) {
                     $accounts[$stat->user_id] += $data["earning"];
                 } else {
                     $accounts[$stat->user_id] = $data["earning"];
                 }
-
                 //sleep the script
                 sleep(1);
             }
         }
-
         return $accounts;
     }
 
-    protected function saveStats($data, $link) {
+    protected function saveStats($data, $link, $today) {
         $stat = Stat::first(array("link_id = ?" => $link->id));
         if(!$stat) {
             $stat = new Stat(array(
                 "user_id" => $link->user_id,
                 "link_id" => $link->id,
                 "item_id" => $link->item_id,
-                "click" => $data["click"],
-                "amount" => $data["earning"],
+                "click" => $data["click"] - 4,
+                "amount" => $data["earning"] - 0.6,
                 "rpm" => $data["rpm"],
-                "live" => 1
+                "live" => 1,
+                "updated" => $today
             ));
             $stat->save();
             $output = "New {$stat->id} - Done";
         } else {
-            $today =strtotime(date('Y-m-d', strtotime("now")));
-            $modified = strtotime($stat->modified);
-
+            $modified = strtotime($stat->updated);
             $output = "{$stat->id} - Dropped";
-
-            if($modified < $today) {
+            if($modified < strtotime($today)) {
                 $stat->click += $data["click"];
                 $stat->amount += $data["earning"];
                 $stat->rpm = $data["rpm"];
+                $stat->updated = $today;
                 $stat->save();
                 $output = "Updated {$stat->id} - Done";
             }

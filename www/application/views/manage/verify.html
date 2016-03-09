@@ -1,0 +1,39 @@
+<div id="page-wrapper">
+    <div class="row col-lg-12">
+        <h1 class="page-header text-center">Earning Verification</h1> {if isset($message)}
+        <div class="alert alert-success alert-dismissible fade in" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+            {$message}
+        </div>
+        {/if}
+        <div class="panel panel-default">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Link</th>
+                        <th>CLK99</th>
+                        <th>GOOGL</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {foreach $stat in $stats}
+                    {script $link = Link::first(array("id = ?" => $stat->link_id))}
+                    <tr>
+                        <td>{$link->short}</td>
+                        <td class="linkstat" data-link="{echo $link->id}">
+                            <span class="label label-success">View</span>
+                        </td>
+                        <td class="googl" data-link="{echo $link->id}">
+                            <span class="label label-success">View</span>
+                        </td>
+                        <td>
+                            <a href="#" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> Delete </a>
+                        </td>
+                    </tr>
+                    {/foreach}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

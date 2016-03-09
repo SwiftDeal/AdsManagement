@@ -6,7 +6,7 @@ define("CDN", "https://clicks99.com/public/assets/");
 
 date_default_timezone_set('Asia/Kolkata');
 ini_set('max_execution_time', 9000);
-ini_set('memory_limit','512M');
+ini_set('memory_limit','1024M');
 
 try {
     
@@ -65,8 +65,6 @@ try {
 
     // 8. dispatch the current request 
     $router->dispatch();
-
-    var_dump($router);
 
     // 9. unset global variables
     unset($configuration);

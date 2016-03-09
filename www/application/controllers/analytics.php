@@ -13,31 +13,20 @@ class Analytics extends Manage {
      * @before _secure, changeLayout, _admin
      */
     public function googl() {
-        $this->seo(array("title" => "shortURL Analytics", "view" => $this->getLayoutView()));
+        //$this->JSONview();
+        $this->noview();
         $view = $this->getActionView();
         
-        if (RequestMethods::get("shortURL")) {
-            $shortURL = RequestMethods::get("shortURL");
-            $googl = Registry::get("googl");
-            $object = $googl->analyticsFull($shortURL);
-            $link = Link::first(array("short = ?" => $shortURL), array("item_id", "user_id"));
-            if ($link) {
-                $view->set("verified", $link->clusterpoint());
+        if (RequestMethods::get("link")) {
+            $link_id = RequestMethods::get("link");
+            $link = Link::first(array("id = ?" => $link_id), array("id", "short", "item_id", "user_id"));
+            if ($link->googl()) {
+                $googl = Registry::get("googl");
+                $object = $googl->analyticsFull($link->short);
+                $view->set("googl", $object);
+                echo "<pre>", print_r($object), "</pre>";
             }
-
-            $longUrl = explode("?item=", $object->longUrl);
-            if($longUrl) {
-                $str = base64_decode($longUrl[1]);
-                $datas = explode("&", $str);
-                foreach ($datas as $data) {
-                    $property = explode("=", $data);
-                    $item[$property[0]] = $property[1];
-                }
-            }
-
-            $view->set("shortURL", $shortURL);
-            $view->set("googl", $object);
-            $view->set("item", $item);
+            $view->set("link", $link);
         }
     }
 

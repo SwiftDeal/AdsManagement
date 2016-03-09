@@ -32,9 +32,30 @@ class Link extends Shared\Model {
     protected $_user_id;
 
     public function googl() {
-        $googl = Framework\Registry::get("googl");
-        $object = $googl->analyticsFull($this->short);
-        return isset($object) ? $object : NULL;
+        if (strpos($this->short, "goo.gl")) {
+            $googl = Framework\Registry::get("googl");
+            $object = $googl->analyticsFull($this->short);
+            return isset($object) ? $object : NULL;
+        }
+        return false;
+    }
+
+    public function is_bot() {
+        if (strpos($this->short, "goo.gl")) {
+            $googl = Framework\Registry::get("googl");
+            $object = $googl->analyticsFull($this->short);
+            $clk99 = $this->stat();
+            if (isset($object)) {
+                $referrers = $object->analytics->allTime->referrers;
+                $countries = $object->analytics->allTime->countries;
+                $browsers = $object->analytics->allTime->browsers;
+                $platforms = $object->analytics->allTime->platforms;
+                if ($object->analytics->allTime->shortUrlClicks > 30) {
+                    return;
+                }
+            }
+        }
+        return false;
     }
 
     public function mongodb($date = NULL) {

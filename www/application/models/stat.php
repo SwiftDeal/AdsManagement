@@ -53,5 +53,12 @@ class Stat extends Shared\Model {
      * @length 10,2
      */
     protected $_rpm;
+
+    /**
+     * @column
+     * @readwrite
+     * @type date
+     */
+    protected $_updated;
     
 }
