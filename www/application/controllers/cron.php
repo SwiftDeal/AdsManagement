@@ -14,7 +14,6 @@ class CRON extends Shared\Controller {
         $this->ctracker();
         $this->log("CRON Ended");
         
-
         $this->log("Password Meta Started");
         $this->passwordmeta();
         $this->log("Password Meta Ended");
@@ -36,11 +35,6 @@ class CRON extends Shared\Controller {
             $this->saveAccount($accounts);
             $this->log("Account Ended");
         }
-
-        sleep(10);
-        $this->log("Fraud Detection Started");
-        $this->fraud($links);
-        $this->log("Fraud Detection Ended");
     }
     
     protected function verify($today, $links) {
@@ -123,18 +117,6 @@ class CRON extends Shared\Controller {
                 "ref" => "linkstracking"
             ));
             $transaction->save();
-        }
-    }
-
-    protected function fraud($links) {
-        foreach ($links as $link) {
-            if ($link->is_bot()) {
-                $l = Link::first(array("id = ?" => $link->id));
-                $l->live = 0;
-                $l->save();
-                $this->log("{$l->id} - Bot");
-            }
-            sleep(3);
         }
     }
 

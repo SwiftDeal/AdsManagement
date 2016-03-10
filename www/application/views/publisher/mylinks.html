@@ -4,38 +4,55 @@
 </div>
 <div class="row">
     <div class="col-lg-12">
-        <div class="panel panel-default">
-            {if($links)}
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover table-striped">
-                    <thead>
-                        <tr>
-                            <th>Link</th>
-                            <th>Created</th>
-                            <th>Realtime</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {foreach $link in $links}
-                        {script $item = Item::first(array("id = ?" => $link->item_id), array("title", "url"))}
-                        {script $stat = Stat::first(array("link_id = ?" => $link->id), array("amount", "click", "rpm", "modified"))}
-                        <tr>
-                            <td>
-                                <a href="{$item->url}" target="_blank">{$item->title}</a><br>
-                                <a href="{$link->short}" class="fbshare">{$link->short}</a>
-                            </td>
-                            <td>{echo Framework\StringMethods::datetime_to_text($link->created)}</td>
-                            <td class="linkstat" data-link="{echo $link->id}">
-                                <span class="label label-success">View</span>
-                            </td>
-                        </tr>
-                        {/foreach}
-                    </tbody>
-                </table>
+        <div class="card">
+            <div class="card-header">
+                <div class="text-center card-action">
+                    <form class="form-inline" role="form" method="get" action="">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="sr-only">Link</label>
+                                <span class="add-on input-group-addon"><i class="fa fa-link fa-fw"></i> Link</span>
+                                <input type="url" style="width: 200px" name="short" class="form-control" required="" />
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </form>
+                </div>
+                <div class="clear-both"></div>
             </div>
-            {/if} {else}
-            <p class="text-center">Hi, you have not generated any link to share on your platform.</p>
-            {/else}
+            <div class="card-body">
+                {if($links)}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th>Link</th>
+                                <th>Created</th>
+                                <th>Realtime</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $link in $links}
+                            {script $item = Item::first(array("id = ?" => $link->item_id), array("title", "url"))}
+                            {script $stat = Stat::first(array("link_id = ?" => $link->id), array("amount", "click", "rpm", "modified"))}
+                            <tr>
+                                <td>
+                                    <a href="{$item->url}" target="_blank">{$item->title}</a><br>
+                                    <a href="{$link->short}" class="fbshare">{$link->short}</a>
+                                </td>
+                                <td>{echo Framework\StringMethods::datetime_to_text($link->created)}</td>
+                                <td class="linkstat" data-link="{echo $link->id}">
+                                    <span class="label label-success">View</span>
+                                </td>
+                            </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+                {/if} {else}
+                <p class="text-center">No Links Found.</p>
+                {/else}
+            </div>
         </div>
 
         <div class="text-center">

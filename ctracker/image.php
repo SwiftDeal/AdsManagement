@@ -1,5 +1,5 @@
 <?php
-
+header ("Cache-Control: max-age=6000");
 if (isset($_GET['file'])) {
 	$file = $_GET['file'];
 	$filename = basename($file);

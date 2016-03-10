@@ -101,11 +101,18 @@ class LinkTracker {
 		}
 	}
 
-	public function vprocess() {
-		$c = $this->cookie();
-		if ($c == 1) {
-			$this->mongo("vclicks");
-		}	
+	public function log($collection = "visits") {
+		$today = new \MongoDate(strtotime(date('Y-m-d')));
+		$m = new MongoClient();
+		$db = $m->stats;
+		$log = $db->$collection;
+
+		$log->insert(array(
+			'link_id' => $this->link->link_id,
+			'ip' => $this->get_client_ip(),
+			'ua' => $_SERVER["HTTP_USER_AGENT"],
+			'time' => new MongoDate()
+		));
 	}
 
 	public function mongo($collection = "clicks") {

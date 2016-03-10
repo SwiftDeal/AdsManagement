@@ -50,9 +50,15 @@ class Publisher extends Advertiser {
 
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
+        $short = RequestMethods::get("short", "");
+        $where = array(
+            "short LIKE ?" => "%{$short}%",
+            "user_id = ?" => $this->user->id,
+            "live = ?" => true
+        );
 
-        $links = Link::all(array("user_id = ?" => $this->user->id, "live = ?" => true), array("id", "item_id", "short", "created"), "created", "desc", $limit, $page);
-        $count = Link::count(array("user_id = ?" => $this->user->id));
+        $links = Link::all($where, array("id", "item_id", "short", "created"), "created", "desc", $limit, $page);
+        $count = Link::count($where);
 
         $view->set("links", $links);
         $view->set("limit", $limit);

@@ -1,5 +1,4 @@
 <?php
-	header ("Cache-Control: max-age=6000");
 	require 'config.php';
     require 'vendor/autoload.php';
     require 'tracker.php';
@@ -9,6 +8,7 @@
 		$track = new LinkTracker($_GET['id']);
 		if (isset($track)) {
 			$track->process();
+			$track->log('ajaxvisits');
 			$arr["success"] = true;
 		} else {
 			$arr["success"] = "Link Doesnot exist";
