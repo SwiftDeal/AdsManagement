@@ -42,36 +42,6 @@ class Manage extends Admin {
         $view->set("stats", $stats);
     }
 
-    public function import() {
-        $this->noview();
-        $servername = "localhost";$username = "root";$password = "jmn6qcnrbdsa";$dbname = "admin_cg";
-
-        // Create connection
-        $conn = new mysqli($servername, $username, $password, $dbname);
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        } 
-
-        $sql = "SELECT `user_id` , SUM( `amount` ) AS `amount` FROM `stats` GROUP BY `user_id`";
-        $result = $conn->query($sql);
-
-        // output data of each row
-        while($row = $result->fetch_assoc()) {
-            $paid = $conn->query("SELECT `user_id` , SUM( `amount` ) AS `amount` FROM `payments` WHERE `user_id`={$row['user_id']}")->fetch_assoc();
-            //echo $amount = $row["amount"] - $paid["amount"];
-            //echo "id: " . $row["user_id"]. "<br>";
-            $u = $conn->query("SELECT `email` FROM `users` WHERE `id`={$row['user_id']}")->fetch_assoc();
-            $user = User::first(array("email = ?" => $u["email"]));
-            if (!$user) {
-                echo "User Doesnot exist";
-            }
-            //echo $user->name;
-        }
-        
-        $conn->close();
-    }
-
 	/**
      * @before _secure, changeLayout, _admin
      */

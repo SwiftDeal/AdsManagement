@@ -11,36 +11,36 @@ class CRON extends Shared\Controller {
     public function index() {
         $this->noview();
         $this->log("CRON Started");
-        $this->range();
+        $this->ctracker();
         $this->log("CRON Ended");
         
-        /*$this->log("CRON Started");
-        $accounts = $this->verify();
-        $this->log("CRON Ended");
 
+        $this->log("Password Meta Started");
+        $this->passwordmeta();
+        $this->log("Password Meta Ended");
+    }
+
+    protected function ctracker() {
+        $date = date('Y-m-d', strtotime("now"));
+        $where = array(
+            "live = ?" => true,
+            "created >= ?" => date('Y-m-d', strtotime("-20 day")),
+            "created < ?" => date('Y-m-d', strtotime("now"))
+        );
+        $links = Link::all($where, array("id", "short", "item_id", "user_id"));
+        $accounts = $this->verify($date, $links);
+        
+        sleep(10);
         if (!empty($accounts)) {
             $this->log("Account Started");
             $this->saveAccount($accounts);
             $this->log("Account Ended");
         }
 
-        $this->log("Password Meta Started");
-        $this->passwordmeta();
-        $this->log("Password Meta Ended");*/
-    }
-
-    protected function range() {
-        $where = array("live = ?" => true);
-        $links = Link::all($where, array("id", "short", "item_id", "user_id"));
-
-        $startdate = date('Y-m-d', strtotime("-7 day"));
-        $enddate = date('Y-m-d', strtotime("now"));
-        $diff = date_diff(date_create($startdate), date_create($enddate));
-        for ($i = 0; $i <= $diff->format("%a"); $i++) {
-            $date = date('Y-m-d', strtotime($startdate . " +{$i} day"));
-            $accounts = $this->verify($date, $links);
-            sleep(60);
-        }
+        sleep(10);
+        $this->log("Fraud Detection Started");
+        $this->fraud($links);
+        $this->log("Fraud Detection Ended");
     }
     
     protected function verify($today, $links) {
@@ -52,9 +52,17 @@ class CRON extends Shared\Controller {
             if ($data["click"] > 30) {
                 $stat = $this->saveStats($data, $link, $today);
                 if (array_key_exists($stat->user_id, $accounts)) {
-                    $accounts[$stat->user_id] += $data["earning"];
+                    if (date('Y-m-d', strtotime($stat->created)) == $today) {
+                        $accounts[$stat->user_id] += ($data["earning"] - 0.6);
+                    } else {
+                        $accounts[$stat->user_id] += $data["earning"];
+                    }
                 } else {
-                    $accounts[$stat->user_id] = $data["earning"];
+                    if (date('Y-m-d', strtotime($stat->created)) == $today) {
+                        $accounts[$stat->user_id] = $data["earning"] - 0.6;
+                    } else {
+                        $accounts[$stat->user_id] = $data["earning"];
+                    }
                 }
                 //sleep the script
                 sleep(1);
@@ -106,13 +114,8 @@ class CRON extends Shared\Controller {
                 ));
                 $account->save();
             } else {
-                $today =strtotime(date('Y-m-d', strtotime("now")));
-                $modified = strtotime($account->modified);
-
-                if($modified < $today) {
-                    $account->balance += $value;
-                    $account->save();
-                }
+                $account->balance += $value;
+                $account->save();
             }
             $transaction = new Transaction(array(
                 "user_id" => $key,
@@ -120,6 +123,18 @@ class CRON extends Shared\Controller {
                 "ref" => "linkstracking"
             ));
             $transaction->save();
+        }
+    }
+
+    protected function fraud($links) {
+        foreach ($links as $link) {
+            if ($link->is_bot()) {
+                $l = Link::first(array("id = ?" => $link->id));
+                $l->live = 0;
+                $l->save();
+                $this->log("{$l->id} - Bot");
+            }
+            sleep(3);
         }
     }
 

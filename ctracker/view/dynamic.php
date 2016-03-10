@@ -20,6 +20,7 @@
     <meta name="twitter:url" content="<?php echo URL;?>">
 
     <title><?php echo $track->link->title;?></title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 </head>
 <body>
 <script>
@@ -38,33 +39,26 @@ if (!isset($_SERVER["HTTP_USER_AGENT"])) {
     //echo "redirect2();";
 }
 ?>
-redirect();
+process();
 function process() {
-    var xhttp;
-    if (window.XMLHttpRequest) {
-        xhttp = new XMLHttpRequest();
-    } else if (window.ActiveXObject) {
-        try {
-            xhttp = new ActiveXObject('Msxml2.XMLHTTP');
-        } 
-        catch (e) {
-            try {
-                xhttp = new ActiveXObject('Microsoft.XMLHTTP');
-            }
-            catch (e) {
-                redirect2();
-            }
+    $.ajax({
+        url: 'includes/process.php',
+        headers: { 'Clicks99Track': "<?php echo base64_encode($_SESSION['track']);?>" },
+        type: 'GET',
+        cache: true,
+        data: {id: "<?php echo $_GET['id'];?>"},
+        success: function (data) {
+            redirect();
         }
-    }
-    xhttp.onreadystatechange = function() {
-        if (xhttp.readyState == 4 && xhttp.status == 200) {
-            //redirect();
-        }
-        redirect();
-    };
-    xhttp.open("GET", "includes/process.php?id=<?php echo $_GET['id'];?>", true);
-    xhttp.setRequestHeader("Clicks99Track", "<?php echo $_SESSION['track'];?>");
-    xhttp.send();
+    })
+    .fail(function(data) {
+        _gaq.push([
+            '_trackEvent',
+            'JavaScript Error',
+            'Tracking',
+            'link' + ':  ' + '<?php echo $_GET['id'];?>'
+        ]);
+    });
 }
 function redirect () {
     window.location = '<?php echo $track->redirectUrl();?>';

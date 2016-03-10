@@ -1,4 +1,5 @@
 <?php
+	header ("Cache-Control: max-age=6000");
 	require 'config.php';
     require 'vendor/autoload.php';
     require 'tracker.php';

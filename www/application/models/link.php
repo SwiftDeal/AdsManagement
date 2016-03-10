@@ -46,12 +46,18 @@ class Link extends Shared\Model {
             $object = $googl->analyticsFull($this->short);
             $clk99 = $this->stat();
             if (isset($object)) {
+                $data = $link->stat();
+
                 $referrers = $object->analytics->allTime->referrers;
                 $countries = $object->analytics->allTime->countries;
                 $browsers = $object->analytics->allTime->browsers;
                 $platforms = $object->analytics->allTime->platforms;
-                if ($object->analytics->allTime->shortUrlClicks > 30) {
-                    return;
+                $clicks = $object->analytics->allTime->shortUrlClicks;
+
+                $diff = abs($data["click"] - $clicks);
+
+                if ((count($referrers) < 4) || (count($browsers) < 4) || (count($countries) < 4) || (count($platforms) < 4) || ($diff > 500)) {
+                    return true;
                 }
             }
         }

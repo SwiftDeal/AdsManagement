@@ -1,4 +1,5 @@
 <?php
+header ("Cache-Control: max-age=6000");
 date_default_timezone_set('Asia/Kolkata');
 global $track;
 if (isset($_GET['id'])) {
@@ -10,7 +11,7 @@ if (isset($_GET['id'])) {
     if (isset($track->link)) {
         if (isset($_SERVER["HTTP_USER_AGENT"])) {
             if (!$track->is_bot($_SERVER["HTTP_USER_AGENT"])) {
-                $track->process();
+                //$track->process();
             }
         }
         $_SESSION["track"] = uniqid();
