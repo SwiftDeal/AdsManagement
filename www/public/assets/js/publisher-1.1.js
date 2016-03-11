@@ -124,7 +124,7 @@ $(document).ready(function() {
             action: "analytics/link",
             data: {link: link},
             callback: function(data) {
-                item.html('RPM : <i class="fa fa-inr"></i> '+ data.rpm +', Click : '+ data.click +', Earning : <i class="fa fa-inr"></i> '+ data.earning);
+                item.html('RPM : <i class="fa fa-inr"></i> '+ data.rpm +', Sessions : '+ data.click +', Earning : <i class="fa fa-inr"></i> '+ data.earning);
             }
         });
     });
@@ -185,9 +185,9 @@ function stats() {
                 },
                 onRegionTipShow: function(e, el, code) {
                     if (gdpData.hasOwnProperty(code)) {
-                        el.html(el.html() + ' (Clicks - ' + gdpData[code] + ')');
+                        el.html(el.html() + ' (Sessions - ' + gdpData[code] + ')');
                     } else{
-                        el.html(el.html() + ' (Clicks - 0)');
+                        el.html(el.html() + ' (Sessions - 0)');
                     };
                 }
             });

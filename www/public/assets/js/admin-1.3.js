@@ -183,19 +183,18 @@ $(document).ready(function () {
         };
     });
 
-    $(".googl").click(function(e) {
+    $(".linkstat").click(function(e) {
         e.preventDefault();
         var item = $(this),
             link = item.data('link');
         item.html('<i class="fa fa-spinner fa-pulse"></i>');
         request.read({
-            action: "analytics/googl",
+            action: "analytics/link",
             data: {link: link},
             callback: function(data) {
-                item.html('RPM : <i class="fa fa-inr"></i> '+ data.rpm +', Click : '+ data.click +', Earning : <i class="fa fa-inr"></i> '+ data.earning+', Verified : <i class="fa fa-check"></i> '+ data.verified);
+                item.html('RPM : <i class="fa fa-inr"></i> '+ data.rpm +', Sessions : '+ data.click +', Earning : <i class="fa fa-inr"></i> '+ data.earning);
             }
         });
-
     });
 
 });

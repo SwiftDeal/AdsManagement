@@ -7,8 +7,12 @@
 	if (isset($_GET['id']) && isset($_SERVER['HTTP_CLICKS99TRACK'])) {
 		$track = new LinkTracker($_GET['id']);
 		if (isset($track)) {
-			$track->process();
-			$track->log('ajaxvisits');
+			if (isset($_SERVER["HTTP_USER_AGENT"])) {
+	            if (!$track->is_bot($_SERVER["HTTP_USER_AGENT"])) {
+	                $track->process();
+	                $track->log('ajaxvisits');
+	            }
+	        }
 			$arr["success"] = true;
 		} else {
 			$arr["success"] = "Link Doesnot exist";

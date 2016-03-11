@@ -13,8 +13,9 @@
                 <thead>
                     <tr>
                         <th>Short</th>
+                        <th>Realtime</th>
                         <th>Item_Id</th>
-                        <th>Click</th>
+                        <th>Session</th>
                         <th>Amount</th>
                         <th>RPM</th>
                         <th>Action</th>
@@ -26,6 +27,9 @@
                     {if(strpos($l->short, "http://goo.gl/") !== false)}
                     <tr>
                         <td><a href="{echo $l->short}+" target="_blank">{echo $l->short}</a></td>
+                        <td class="linkstat" data-link="{echo $s->link_id}">
+                            <span class="label label-success">View</span>
+                        </td>
                         <td>{$s->item_id}</td>
                         <td>{$s->click}</td>
                         <td>{$s->amount}</td>
