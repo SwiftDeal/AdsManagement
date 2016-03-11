@@ -46,17 +46,9 @@ class CRON extends Shared\Controller {
             if ($data["click"] > 30) {
                 $stat = $this->saveStats($data, $link, $today);
                 if (array_key_exists($stat->user_id, $accounts)) {
-                    if (date('Y-m-d', strtotime($stat->created)) == $today) {
-                        $accounts[$stat->user_id] += ($data["earning"] - 0.6);
-                    } else {
-                        $accounts[$stat->user_id] += $data["earning"];
-                    }
+                    $accounts[$stat->user_id] += $data["earning"];
                 } else {
-                    if (date('Y-m-d', strtotime($stat->created)) == $today) {
-                        $accounts[$stat->user_id] = $data["earning"] - 0.6;
-                    } else {
-                        $accounts[$stat->user_id] = $data["earning"];
-                    }
+                    $accounts[$stat->user_id] = $data["earning"];
                 }
                 //sleep the script
                 sleep(1);
@@ -72,8 +64,8 @@ class CRON extends Shared\Controller {
                 "user_id" => $link->user_id,
                 "link_id" => $link->id,
                 "item_id" => $link->item_id,
-                "click" => $data["click"] - 4,
-                "amount" => $data["earning"] - 0.6,
+                "click" => $data["click"],
+                "amount" => $data["earning"],
                 "rpm" => $data["rpm"],
                 "live" => 1,
                 "updated" => $today
@@ -118,6 +110,29 @@ class CRON extends Shared\Controller {
             ));
             $transaction->save();
         }
+    }
+
+    public function fraud() {
+        $this->noview();
+        $this->log("Fraud Started");
+        $now = date('Y-m-d', strtotime("now"));
+        $fp = fopen(APP_PATH . "/logs/fraud-{$now}.csv", 'w');
+        fputcsv($fp, array("USER_ID", "STAT_ID", "LINK_ID"));
+
+        $users = Stat::all(array(), array("DISTINCT user_id"), "amount", "DESC");
+        foreach ($users as $user) {
+            $this->log("Checking User - {$user->user_id}");
+            $stats = Stat::all(array("user_id = ?" => $user->user_id), array("id", "link_id", "user_id"));
+            foreach ($stats as $stat) {
+                if ($stat->is_bot()) {
+                    fputcsv($fp, array($stat->user_id, $stat->id, $stat->link_id));
+                    $this->log("Fraud - {$stat->link_id}");
+                }
+                sleep(1);
+            }
+        }
+        fclose($fp);
+        $this->log("Fraud Ended");
     }
 
     protected function reset() {

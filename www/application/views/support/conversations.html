@@ -45,8 +45,9 @@ tinymce.init({
             {foreach $c in $conversations}
             <div class="panel panel-default">
                 <div class="panel-body">
-                    {$c->message} {if(!empty($c->file))}
-                    <a href="/public/assets/uploads/files/{$c->file}" target="_blank">File</a> {/if}
+                    {$c->message} {if($c->file)}
+                    <b><a href="{echo CDN}uploads/files/{echo $c->file}" target="_blank">Attachment</a></b>
+                    {/if}
                 </div>
             </div>
             {/foreach}

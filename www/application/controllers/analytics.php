@@ -254,28 +254,4 @@ class Analytics extends Manage {
             }
         }
     }
-
-    public function fraud() {
-        $this->noview();
-        $this->log("Fraud Started");
-        $now = date('Y-m-d', strtotime("now"));
-        $fp = fopen(APP_PATH . "/logs/fraud-{$now}.csv", 'w');
-        fputcsv($fp, array("USER_ID", "STAT_ID", "LINK_ID"));
-
-        $users = Stat::all(array(), array("DISTINCT user_id"), "amount", "DESC");
-        foreach ($users as $user) {
-            $this->log("Checking User - {$user->user_id}");
-            $stats = Stat::all(array("user_id = ?" => $user->user_id), array("id", "link_id", "user_id"));
-            foreach ($stats as $stat) {
-                if ($stat->is_bot()) {
-                    fputcsv($fp, array($stat->user_id, $stat->id, $stat->link_id));
-                    $this->log("Fraud - {$stat->link_id}");
-                }
-                sleep(1);
-            }
-        }
-        fclose($fp);
-        $this->log("Fraud Ended");
-    }
-
 }
