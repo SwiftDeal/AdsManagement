@@ -263,9 +263,7 @@ class Publisher extends Advertiser {
 
         $platforms = Platform::all(array("user_id = ?" => $this->user->id));
         $view->set("platforms", $platforms);
-    }
-
-    
+    }   
 
     protected function target() {
         $session = Registry::get("session");

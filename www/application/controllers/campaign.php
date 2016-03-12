@@ -81,7 +81,7 @@ class Campaign extends Publisher {
      * @before _secure, changeLayout, _admin
      */
     public function all() {
-        $this->seo(array("title" => "Manage Content", "view" => $this->getLayoutView()));
+        $this->seo(array("title" => "Manage Campaign", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
@@ -94,6 +94,31 @@ class Campaign extends Publisher {
             "url LIKE ?" => "%{$website}%",
             "created >= ?" => $this->changeDate($startdate, "-1"),
             "created <= ?" => $this->changeDate($enddate, "1")
+        );
+        
+        $contents = Item::all($where, array("id", "title", "created", "image", "url", "live"), "created", "desc", $limit, $page);
+        $count = Item::count($where);
+
+        $view->set("contents", $contents);
+        $view->set("page", $page);
+        $view->set("count", $count);
+        $view->set("limit", $limit);
+    }
+
+    /**
+     * @before _secure, advertiserLayout
+     */
+    public function manage() {
+        $this->seo(array("title" => "Manage Campaign", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+        $page = RequestMethods::get("page", 1);
+        $limit = RequestMethods::get("limit", 10);
+        
+        $title = RequestMethods::get("title", "");
+        
+        $where = array(
+            "title LIKE ?" => "%{$title}%",
+            "user_id = ?" => $this->user->id
         );
         
         $contents = Item::all($where, array("id", "title", "created", "image", "url", "live"), "created", "desc", $limit, $page);

@@ -13,13 +13,13 @@
     <!-- /.navbar-header -->
 
     <ul class="nav navbar-top-links navbar-right">
-        <li><a href="/publisher/index.html"><i class="fa fa-bullhorn"></i> Publisher</a></li>
         <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                 <i class="fa fa-user fa-fw"></i> {echo $user->name}  <i class="fa fa-caret-down"></i>
             </a>
             <ul class="dropdown-menu dropdown-user">
-                <li><a href="/publisher/index.html"><i class="fa fa-gear fa-fw"></i> Publisher</a></li>
+                <li><a href="/publisher/index.html"><i class="fa fa-lightbulb-o fa-fw"></i> Publisher</a></li>
+                <li><a href="/advertiser/index.html"><i class="fa fa-bullhorn fa-fw"></i> Advertiser</a></li>
                 <li class="divider"></li>
                 <li><a href="/logout.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>
             </ul>
@@ -70,6 +70,7 @@
                 <ul class="nav nav-second-level">
                     <li><a href="/phpmyadmin">MySQL</a></li>
                     <li><a href="/application/libraries/MongoDB/admin.php">NoSQL</a></li>
+                    <li><a href="/application/libraries/phpMemcachedAdmin/">MemCache</a></li>
                 </ul>
             </li>
             <li><a href="/analytics/logs.html"><i class="fa fa-file-archive-o fa-fw"></i> Logs</a></li>

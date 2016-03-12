@@ -32,7 +32,12 @@ class Advertiser extends Analytics {
         if (isset($advert)) {
             $this->_advert = $advert;
         } else {
-            self::redirect("/index.html");
+            $user = $this->getUser();
+            if ($user) {
+
+            } else {
+                self::redirect("/index.html");
+            }
         }
 
         $this->defaultLayout = "layouts/advertiser";
