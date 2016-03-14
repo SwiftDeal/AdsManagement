@@ -22,6 +22,10 @@ class Home extends Controller {
         $this->seo(array("title" => "Terms of Use", "view" => $this->getLayoutView()));
     }
 
+    public function faqs() {
+        $this->seo(array("title" => "Frequently Asked Questions", "view" => $this->getLayoutView()));
+    }
+
     public function ad() {
         $this->willRenderLayoutView = false;
         $this->defaultExtension = "json";

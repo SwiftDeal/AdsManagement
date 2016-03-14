@@ -299,17 +299,37 @@ class Auth extends Controller {
         $view = $this->getActionView();
 
         if (RequestMethods::post("message")) {
-            $emails = array();
-            array_push($emails, RequestMethods::post("email"));
-            $options = array(
-                "template" => "blank",
+            $email = RequestMethods::post("email");
+            $user = User::first(array("email = ?" => $email), array("id"));
+            if (!isset($user)) {
+                $name = RequestMethods::post("name");
+                $user = new User(array(
+                    "username" => $name,
+                    "name" => $name,
+                    "email" => $email,
+                    "password" => sha1($this->randomPassword()),
+                    "phone" => "",
+                    "admin" => 0,
+                    "currency" => "INR",
+                    "live" => 0
+                ));
+                $user->save();
+            }
+            $ticket = new Ticket(array(
+                "user_id" => $user->id,
                 "subject" => RequestMethods::post("subject"),
+                "type" => "contact",
+                "live" => true
+            ));
+            $ticket->save();
+            $conversation = new Conversation(array(
+                "user_id" => $user->id,
+                "ticket_id" => $ticket->id,
                 "message" => RequestMethods::post("message"),
-                "emails" => $emails,
-                "delivery" => "mailgun"
-            );
-            $this->notify($options);
-            $view->set("success", TRUE);
+                "file" => "",
+            ));
+            $conversation->save();
+            $view->set("message", "Submitted Successfully");
         }
     }
 }

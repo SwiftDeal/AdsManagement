@@ -8,6 +8,7 @@
         </div>
         <div class="row">
             <div class="col-md-12">
+                {if(isset($message))}<div class="alert fresh-color alert-info" role="alert">{echo $message}</div>{/if}
                 <div class="row no-margin no-gap">
                     <div class="col-md-6">
                         <p class="contact-us-description">Email: info@clicks99.com</p>
@@ -22,9 +23,15 @@
                         <form method="post" action="">
                             <div class="row">
                                 <div class="col-sm-6">
-                                    <input name="name" type="text" class="form-control" placeholder="Full Name"> </div>
+                                    <input name="name" type="text" class="form-control" placeholder="Full Name">
+                                </div>
                                 <div class="col-sm-6">
                                     <input name="email" type="email" class="form-control" placeholder="Email address">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <input name="subject" type="text" class="form-control" placeholder="Subject">
                                 </div>
                             </div>
                             <div class="row">
