@@ -170,33 +170,6 @@ class Campaign extends Publisher {
     /**
      * @before _secure, changeLayout, _admin
      */
-    public function domains() {
-        $this->seo(array("title" => "All Domains", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-        $domains = Meta::all(array("property = ?" => "domain"));
-
-        if (RequestMethods::get("domain")) {
-            $exist = Meta::first(array("property" => "domain", "value = ?" => RequestMethods::get("domain")));
-            if($exist) {
-                $view->set("message", "Domain Exists");
-            } else {
-                $domain = new Meta(array(
-                    "user_id" => $this->user->id,
-                    "property" => "domain",
-                    "value" => RequestMethods::get("domain")
-                ));
-                $domain->save();
-                array_push($domains, $domain);
-                $view->set("message", "Domain Added Successfully");
-            }
-        }
-
-        $view->set("domains", $domains);
-    }
-
-    /**
-     * @before _secure, changeLayout, _admin
-     */
     public function delete($id = NULL) {
         $this->noview();
         $item = Item::first(array("id = ?" => $id));

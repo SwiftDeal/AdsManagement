@@ -63,15 +63,31 @@ class Manage extends Admin {
         $view->set("allnews", $allnews);
     }
 
-    public function test() {
-        $this->noview();
-        $database = Registry::get("database");
-        $transactions = Transaction::all(array("live = ?" => 1));
-        foreach ($transactions as $transaction) {
-            $account = Account::first(array("user_id = ?" => $transaction->user_id));
-            $account->balance -= $transaction->amount;
-            $account->save();
+    /**
+     * @before _secure, changeLayout, _admin
+     */
+    public function domains() {
+        $this->seo(array("title" => "All Domains", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+        $domains = Meta::all(array("property = ?" => "domain"));
+
+        if (RequestMethods::get("domain")) {
+            $exist = Meta::first(array("property" => "domain", "value = ?" => RequestMethods::get("domain")));
+            if($exist) {
+                $view->set("message", "Domain Exists");
+            } else {
+                $domain = new Meta(array(
+                    "user_id" => $this->user->id,
+                    "property" => "domain",
+                    "value" => RequestMethods::get("domain")
+                ));
+                $domain->save();
+                array_push($domains, $domain);
+                $view->set("message", "Domain Added Successfully");
+            }
         }
+
+        $view->set("domains", $domains);
     }
 
     /**

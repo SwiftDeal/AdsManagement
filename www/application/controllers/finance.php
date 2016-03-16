@@ -128,7 +128,7 @@ class Finance extends Admin {
      * @before _secure, changeLayout, _admin
      */
     public function transactions() {
-        $this->seo(array("title" => "Payments", "view" => $this->getLayoutView()));
+        $this->seo(array("title" => "Transactions", "view" => $this->getLayoutView()));
 
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
