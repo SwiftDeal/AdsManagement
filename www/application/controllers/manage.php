@@ -140,4 +140,24 @@ class Manage extends Admin {
         
         self::redirect($_SERVER["HTTP_REFERER"]);
     }
+
+    /**
+     * @before _secure, _admin
+     */
+    public function suspend($user_id) {
+        $this->noview();
+        $user = User::first(array("id = ?" => $user_id));
+        if ($user) {
+            $user->live = 0;
+            $user->save();
+
+            $this->notify(array(
+                "template" => "accountSuspend",
+                "subject" => "Account Suspended",
+                "user" => $user
+            ));
+        }
+
+        self::redirect($_SERVER["HTTP_REFERER"]);
+    }
 }
