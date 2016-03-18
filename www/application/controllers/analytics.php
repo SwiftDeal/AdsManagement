@@ -250,7 +250,7 @@ class Analytics extends Manage {
                 fputcsv($output, array($link->short, $stat->click, $stat->amount, $stat->rpm, "Added"));
             } else {
                 $data = $link->stat($yesterday);
-                fputcsv($output, array($link->short, $data["click"], $data["amount"], $data["rpm"], "Not Added, Clicks less than 20"));
+                fputcsv($output, array($link->short, $data["click"], $data["amount"], $data["rpm"], "Not Added, Sessions less than 10"));
             }
         }
     }

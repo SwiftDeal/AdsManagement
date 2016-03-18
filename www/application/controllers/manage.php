@@ -160,4 +160,5 @@ class Manage extends Admin {
 
         self::redirect($_SERVER["HTTP_REFERER"]);
     }
+
 }

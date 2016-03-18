@@ -324,4 +324,41 @@ class Publisher extends Advertiser {
             }
         }
     }
+
+    /**
+     * @before _secure, publisherLayout
+     */
+    public function chocoghar() {
+        $this->seo(array("title" => "ChocoGhar Payment", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+
+        if (RequestMethods::post("action") == "process") {
+            $meta = Meta::first(array("id = ?" => base64_decode(RequestMethods::post("code")), "property = ?" => RequestMethods::post("email")));
+            if (isset($meta)) {
+                $account = Account::first(array("user_id = ?" => $this->user->id));
+                if (!$account) {
+                    $account = new Account(array(
+                        "user_id" => $this->user->id,
+                        "balance" => $meta->value,
+                        "live" => 1
+                    ));
+                    $account->save();
+                } else {
+                    $account->balance += $meta->value;
+                    $account->save();
+                }
+                $transaction = new Transaction(array(
+                    "user_id" => $this->user->id,
+                    "amount" => $meta->value,
+                    "ref" => "chocoghar"
+                ));
+                $transaction->save();
+
+                $meta->delete();
+                $view->set("message", "Amount added see Payments");
+            } else {
+                $view->set("message", "Record not exists");
+            }
+        }
+    }
 }

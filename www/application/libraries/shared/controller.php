@@ -191,7 +191,7 @@ namespace Shared {
         
         protected function notify($options) {
             $body = $this->getBody($options);
-            $emails = isset($options["emails"]) ? $options["emails"] : array($options["user"]->email);
+            $emails = isset($options["email"]) ? array($options["email"]) : array($options["user"]->email);
             $mailgun = $this->mailgun();
             $mailgun->sendMessage("clicks99.com",array(
                 'from'    => 'Clicks99 Team <info@clicks99.com>',

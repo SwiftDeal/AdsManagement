@@ -34,7 +34,7 @@ class Advertiser extends Analytics {
         } else {
             $user = $this->getUser();
             if ($user) {
-
+                $this->_newAdvertiser($user);
             } else {
                 self::redirect("/index.html");
             }
@@ -42,6 +42,17 @@ class Advertiser extends Analytics {
 
         $this->defaultLayout = "layouts/advertiser";
         $this->setLayout();
+    }
+
+    protected function _newAdvertiser($user) {
+        $advert = new Advert(array(
+            "user_id" => $user->id,
+            "country" => $this->country(),
+            "account" => "basic"
+        ));
+        $advert->save();
+        $session = Registry::get("session");
+        $session->set("advert", $advert);
     }
 
     public function render() {
