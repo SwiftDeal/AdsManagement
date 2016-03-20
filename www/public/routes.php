@@ -29,6 +29,21 @@ $routes = array(
         "action" => "termsofservice"
     ),
     array(
+        "pattern" => "refundspolicy",
+        "controller" => "home",
+        "action" => "refundspolicy"
+    ),
+    array(
+        "pattern" => "pricing",
+        "controller" => "home",
+        "action" => "pricing"
+    ),
+    array(
+        "pattern" => "adformats",
+        "controller" => "home",
+        "action" => "adformats"
+    ),
+    array(
         "pattern" => "contact",
         "controller" => "auth",
         "action" => "contact"

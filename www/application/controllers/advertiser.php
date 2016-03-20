@@ -18,15 +18,38 @@ class Advertiser extends Analytics {
 	public function index() {
 		$this->seo(array("title" => "Dashboard", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
+        $where = array(
+            "live = ?" => true,
+            "user_id = ?" => $this->user->id
+        );
 
-        $items = Item::all($where, array("id", "title", "created", "image", "url", "live"), "created", "desc", 5, 1);
+        $items = Item::all($where, array("id", "title", "created", "image", "url", "live", "commission"), "created", "desc", 5, 1);
         $view->set("items", $items);
 	}
 
-	public function settings() {
+	/**
+     * @before _secure, advertiserLayout
+     */
+    public function settings() {
 		$this->seo(array("title" => "Settings", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
 	}
+
+    /**
+     * @before _secure, advertiserLayout
+     */
+    public function billings() {
+        $this->seo(array("title" => "Billings", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+    }
+
+    /**
+     * @before _secure, advertiserLayout
+     */
+    public function transactions() {
+        $this->seo(array("title" => "Transactions", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+    }
 
 	public function advertiserLayout() {
         $session = Registry::get("session");
@@ -37,7 +60,10 @@ class Advertiser extends Analytics {
         } else {
             $user = $this->getUser();
             if ($user) {
-                $this->_newAdvertiser($user);
+                $advert = Advert::first(array("user_id = ?" => $user->id), array("id"));
+                if (!$advert) {
+                    $this->_newAdvertiser($user);
+                }
             } else {
                 self::redirect("/index.html");
             }

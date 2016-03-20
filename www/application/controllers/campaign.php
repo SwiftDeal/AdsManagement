@@ -49,7 +49,7 @@ class Campaign extends Publisher {
     }
     
     /**
-     * @before _secure, changeLayout, _admin
+     * @before _secure, advertiserLayout
      */
     public function create() {
         $this->seo(array("title" => "Create Content", "view" => $this->getLayoutView()));
@@ -60,7 +60,7 @@ class Campaign extends Publisher {
                 "url" =>  RequestMethods::post("url"),
                 "title" => RequestMethods::post("title"),
                 "image" => $this->_upload("image", "images"),
-                "commission" => 0,
+                "commission" => 5,
                 "category" => implode(",", RequestMethods::post("category", "")),
                 "description" => RequestMethods::post("description"),
                 "user_id" => $this->user->id
@@ -121,7 +121,7 @@ class Campaign extends Publisher {
             "user_id = ?" => $this->user->id
         );
         
-        $items = Item::all($where, array("id", "title", "created", "image", "url", "live"), "created", "desc", $limit, $page);
+        $items = Item::all($where, array("id", "title", "created", "image", "url", "live", "commission"), "created", "desc", $limit, $page);
         $count = Item::count($where);
 
         $view->set("items", $items);

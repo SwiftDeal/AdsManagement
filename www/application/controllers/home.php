@@ -26,15 +26,12 @@ class Home extends Controller {
         $this->seo(array("title" => "Frequently Asked Questions", "view" => $this->getLayoutView()));
     }
 
-    public function ad() {
-        $this->willRenderLayoutView = false;
-        $this->defaultExtension = "json";
-        $view = $this->getActionView();
-        $view->set("ad", array(
-            "title" => "19 Funny Snaps That Will Make You Laugh Out Loud",
-            "url" => "http://chocoapps.in/OA==",
-            "image" => "http://chocoapps.in/image.php?file=56bdb51315180.jpg"
-        ));
+    public function refundspolicy() {
+        $this->seo(array("title" => "Refunds Policy", "view" => $this->getLayoutView()));
+    }
+
+    public function pricing() {
+        $this->seo(array("title" => "Pricing", "view" => $this->getLayoutView()));
     }
 
     public function seo($params = array()) {
