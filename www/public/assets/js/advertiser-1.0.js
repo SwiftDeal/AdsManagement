@@ -87,6 +87,70 @@ $(function() {
     });
 });
 
+$(document).ready(function() {
+    $(".campaignstat").click(function(e) {
+        e.preventDefault();
+        var item = $(this),
+            link = item.data('link');
+        item.html('<i class="fa fa-spinner fa-pulse"></i>');
+        request.read({
+            action: "analytics/link",
+            data: {link: link},
+            callback: function(data) {
+                item.html('RPM : <i class="fa fa-inr"></i> '+ data.rpm +', Sessions : '+ data.click +', Earning : <i class="fa fa-inr"></i> '+ data.earning);
+            }
+        });
+    });
+});
+
+function today () {
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1; //January is 0!
+    var yyyy = today.getFullYear();
+
+    if(dd<10) {
+        dd='0'+dd
+    } 
+
+    if(mm<10) {
+        mm='0'+mm
+    } 
+
+    today = yyyy+'-'+mm+'-'+dd;
+    return today;
+}
+
+function campaigns() {
+    request.read({
+        action: "analytics/campaign/" + today(),
+        callback: function(data) {
+            $('#today_click').html(data.stats.click);
+            $('#today_rpm').html('<i class="fa fa-inr"></i> '+ data.stats.rpm);
+            $('#today_earning').html('<i class="fa fa-inr"></i> '+ data.stats.earning);
+
+            var gdpData = data.stats.analytics;
+            $('#world-map').vectorMap({
+                map: 'world_mill_en',
+                series: {
+                    regions: [{
+                        values: gdpData,
+                        scale: ['#C8EEFF', '#0071A4'],
+                        normalizeFunction: 'polynomial'
+                    }]
+                },
+                onRegionTipShow: function(e, el, code) {
+                    if (gdpData.hasOwnProperty(code)) {
+                        el.html(el.html() + ' (Sessions - ' + gdpData[code] + ')');
+                    } else{
+                        el.html(el.html() + ' (Sessions - 0)');
+                    };
+                }
+            });
+        }
+    });
+}
+
 //Google Analytics
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

@@ -18,6 +18,9 @@ class Advertiser extends Analytics {
 	public function index() {
 		$this->seo(array("title" => "Dashboard", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
+
+        $items = Item::all($where, array("id", "title", "created", "image", "url", "live"), "created", "desc", 5, 1);
+        $view->set("items", $items);
 	}
 
 	public function settings() {

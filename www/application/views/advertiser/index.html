@@ -1,8 +1,9 @@
+<link rel="stylesheet" href="/public/assets/css/jquery-jvectormap-2.0.3.css" type="text/css" media="screen" />
 <div class="row no-margin-bottom">
     <div class="col-sm-6 col-xs-12">
         <div class="card primary">
             <div class="card-jumbotron no-padding">
-                <canvas id="jumbotron-line-chart" class="chart no-padding"></canvas>
+                <div class="text-center" id="world-map" style="max-width: 1200px; height: 400px"></div>
             </div>
             <div class="card-body half-padding">
                 <h4 class="float-left no-margin font-weight-300">Visitors</h4>
@@ -55,21 +56,28 @@
                         <th>Platform</th>
                         <th>Campaign</th>
                         <th>Commission</th>
-                        <th>Clicks</th>
-                        <th>CPC</th>
-                        <th>Spent</th>
+                        <th>Realtime</th>
                     </tr>
+                    {foreach $item in $items}
                     <tr>
-                        <td></td>
-                        <td><img src="../img/profile/profile-1.jpg" class="profile-img pull-left"></td>
-                        <td>Tui2Tone</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td>{echo Framework\StringMethods::datetime_to_text($item->created)}</td>
+                        <td><a href="/public/assets/uploads/images/{$item->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}/50/50"></a></td>
+                        <td>{echo $item->title}</td>
+                        <td>{echo $item->commission}</td>
+                        <td>
+                            <span class="label label-success">View</span>
+                        </td>
                     </tr>
+                    {/foreach}
                 </table>
             </div>
         </div>
     </div>
 </div>
+<script src="{echo CDN}plugins/jvectormap/jquery-jvectormap-2.0.3.min.js"></script>
+<script src="{echo CDN}plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+<script type="text/javascript">
+$(function() {
+    campaigns();
+});
+</script>

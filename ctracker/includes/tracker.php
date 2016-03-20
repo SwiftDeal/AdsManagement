@@ -40,7 +40,7 @@ class LinkTracker {
 	}
 
 	public function is_bot($user_agent) {
-	    $preg = preg_match('/bot|spider|curl|crawl/i', $user_agent);
+	    $preg = preg_match('/bot|spider|curl|crawl|google/i', $user_agent);
 	    return !empty($user_agent) ? $preg > 0 : false;
     }
 

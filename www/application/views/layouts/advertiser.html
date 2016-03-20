@@ -5,26 +5,33 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="likesbazar Publisher Control Panel">
+    <meta name="description" content="Clicks99 Advertiser Panel">
     <meta name="author" content="CloudStuff.Tech">
     
     <title>{echo $seo->getTitle()}</title>
+    <link rel="icon" href="/public/assets/images/favicon.ico">
 
     <!-- Fonts -->
-    <link href="http://fonts.googleapis.com/css?family=Roboto+Condensed:300,400" rel="stylesheet" type="text/css">
-    <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,900" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,900" rel="stylesheet" type="text/css">
     
     <!-- CSS Libs -->
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/public/assets/css/animate.css">
-    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
     
     <!-- CSS App -->
     <link rel="stylesheet" type="text/css" href="/public/assets/css/theme.css">
     <link rel="stylesheet" type="text/css" href="/public/assets/css/themes/flat-green.css">
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script type="text/javascript">
+        //check for https
+        if (window.location.protocol != "https:") {
+            window.location.href = "https:" + window.location.href.substring(window.location.protocol.length);
+        }
+    </script>
 </head>
 
 <body class="flat-green">
@@ -33,7 +40,7 @@
             {include layouts/navigation/advertiser.html}
             <!-- Main Content -->
             <div class="container-fluid">
-                <div class="side-body padding-top">
+                <div class="side-body">
                     {ayield action}
                 </div>
             </div>
@@ -47,8 +54,8 @@
     <!-- Javascript Libs -->
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.0/jquery.matchHeight-min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     
