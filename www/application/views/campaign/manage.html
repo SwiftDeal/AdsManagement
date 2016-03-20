@@ -9,6 +9,9 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
+                <div class="card-action">
+                    Total : {$count}
+                </div>
                 <div class="text-center card-action">
                     <form class="form-inline" role="form" method="get" action="">
                         <div class="form-group">
@@ -30,21 +33,32 @@
                         <th>Platform</th>
                         <th>Campaign</th>
                         <th>Commission</th>
-                        <th>Clicks</th>
-                        <th>CPC</th>
-                        <th>Spent</th>
+                        <th>Realtime</th>
                     </tr>
+                    {foreach $item in $items}
                     <tr>
-                        <td></td>
-                        <td><img src="../img/profile/profile-1.jpg" class="profile-img pull-left"></td>
-                        <td>Tui2Tone</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td>{echo Framework\StringMethods::datetime_to_text($item->created)}</td>
+                        <td><a href="/public/assets/uploads/images/{$item->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}/50/50"></a></td>
+                        <td>{echo $item->title}</td>
+                        <td>{echo $item->commission}</td>
+                        <td>
+                            <span class="label label-success">View</span>
+                        </td>
                     </tr>
+                    {/foreach}
                 </table>
             </div>
+        </div>
+
+        <div class="text-center">
+            <ul class="pager">
+                {if($page != 1)}
+                <li><a href="{echo Shared\Markup::pagination($page - 1)}">Previous</a></li>
+                {/if}
+                {if($page < $count/$limit)}
+                <li><a href="{echo Shared\Markup::pagination($page + 1)}">Next</a></li>
+                {/if}
+            </ul>
         </div>
     </div>
 </div>

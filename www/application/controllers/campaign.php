@@ -121,10 +121,10 @@ class Campaign extends Publisher {
             "user_id = ?" => $this->user->id
         );
         
-        $contents = Item::all($where, array("id", "title", "created", "image", "url", "live"), "created", "desc", $limit, $page);
+        $items = Item::all($where, array("id", "title", "created", "image", "url", "live"), "created", "desc", $limit, $page);
         $count = Item::count($where);
 
-        $view->set("contents", $contents);
+        $view->set("items", $items);
         $view->set("page", $page);
         $view->set("count", $count);
         $view->set("limit", $limit);

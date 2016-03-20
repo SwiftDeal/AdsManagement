@@ -153,7 +153,7 @@ class Support extends Publisher {
         $output = '<pre>'. print_r($_POST, true). '</pre>';
         $this->log($output);
 
-        echo $email = substr(RequestMethods::post("From"), strpos(RequestMethods::post("From") + 1, "<"), -1);
+        $email = substr(RequestMethods::post("From"), strpos(RequestMethods::post("From"), "<") + 1, -1);
         if (strlen($email) > 3) {
             $user = User::first(array("email = ?" => $email), array("id"));
             if (!isset($user)) {
@@ -185,7 +185,7 @@ class Support extends Publisher {
             $conversation = new Conversation(array(
                 "user_id" => $user->id,
                 "ticket_id" => $ticket->id,
-                "message" => RequestMethods::post("body-plain"),
+                "message" => RequestMethods::post("body-html"),
                 "file" => "",
             ));
             $conversation->save();
