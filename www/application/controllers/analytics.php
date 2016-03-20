@@ -193,6 +193,12 @@ class Analytics extends Manage {
         $view->set("stats", $return);
     }
 
+    protected function validateDate($date) {
+        $d = DateTime::createFromFormat('Y-m-d', $date);
+        return $d && $d->format('Y-m-d') == $date;
+    }
+
+
     /**
      * Analytics of Single Campaign Datewise
      * @return array earnings, clicks, rpm, analytics
@@ -205,7 +211,9 @@ class Analytics extends Manage {
         $rpm = array("IN" => 135, "US" => 220, "CA" => 220, "AU" => 220, "GB" => 220, "NONE" => 80);
         $return = array("click" => 0, "rpm" => 0, "earning" => 0, "analytics" => array());
 
-        is_null($created) ? NULL : $query['created'] = $created;
+        if ($this->validateDate($created)) {
+            $query['created'] = $created;
+        }
         if (is_null($item_id)) {
             $items = Item::all(array("user_id = ?" => $this->user->id), array("id"));
             foreach ($items as $item) {

@@ -14,23 +14,34 @@
     <div class="col-sm-6 col-xs-12">
         <div class="row">
             <div class="col-md-6 col-sm-12">
-                <div class="card primary">
-                    <div class="card-jumbotron no-padding">
-                        <canvas id="jumbotron-bar-chart" class="chart no-padding"></canvas>
-                    </div>
-                    <div class="card-body half-padding">
-                        <h4 class="float-left no-margin font-weight-300">Orders</h4>
-                        <div class="clear-both"></div>
-                    </div>
+                <div class="panel panel-default">
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-danger text-center"><b><i class="fa fa-globe"></i> Realtime Today</b></li>
+                        <li class="list-group-item">Sessions <span class="badge" id="today_click"><i class="fa fa-spinner fa-pulse"></i></span></li>
+                        <li class="list-group-item">Average RPM <span class="badge" id="today_rpm"><i class="fa fa-spinner fa-pulse"></i></span></li>
+                        <li class="list-group-item">Earnings <span class="badge" id="today_earning"><i class="fa fa-spinner fa-pulse"></i></span></li>
+                    </ul>
                 </div>
             </div>
             <div class="col-md-6 col-sm-12">
+                <div class="panel panel-default">
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-info text-center"><b><i class="fa fa-money"></i> Finace</b></li>
+                        <li class="list-group-item">Total <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number($earn)}</span></li>
+                        <li class="list-group-item">Paid <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number($paid)}</span></li>
+                        <li class="list-group-item">Balance <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number($account->balance)}</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
                 <div class="card primary">
                     <div class="card-jumbotron no-padding">
                         <canvas id="jumbotron-line-2-chart" class="chart no-padding"></canvas>
                     </div>
                     <div class="card-body half-padding">
-                        <h4 class="float-left no-margin font-weight-300">Pages view</h4>
+                        <h4 class="float-left no-margin font-weight-300">Budget Spent</h4>
                         <div class="clear-both"></div>
                     </div>
                 </div>
@@ -53,7 +64,6 @@
                 <table class="table table-responsive">
                     <tr>
                         <th>Created</th>
-                        <th>Platform</th>
                         <th>Campaign</th>
                         <th>Commission</th>
                         <th>Realtime</th>
@@ -61,10 +71,9 @@
                     {foreach $item in $items}
                     <tr>
                         <td>{echo Framework\StringMethods::datetime_to_text($item->created)}</td>
-                        <td><a href="/public/assets/uploads/images/{$item->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}/50/50"></a></td>
-                        <td>{echo $item->title}</td>
+                        <td><a href="/public/assets/uploads/images/{$item->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}/50/50">{echo $item->title}</a></td>
                         <td>{echo $item->commission}%</td>
-                        <td>
+                        <td class="campaignstat" data-campaign="{echo $item->id}">
                             <span class="label label-success">View</span>
                         </td>
                     </tr>

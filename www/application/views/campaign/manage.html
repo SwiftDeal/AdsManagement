@@ -38,7 +38,7 @@
                         <td><a href="/public/assets/uploads/images/{$item->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}/50/50"></a></td>
                         <td>{echo $item->title}</td>
                         <td>{echo $item->commission}%</td>
-                        <td>
+                        <td class="campaignstat" data-campaign="{echo $item->id}">
                             <span class="label label-success">View</span>
                         </td>
                     </tr>

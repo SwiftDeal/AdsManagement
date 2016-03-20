@@ -51,6 +51,14 @@ class Advertiser extends Analytics {
         $view = $this->getActionView();
     }
 
+    /**
+     * @before _secure, advertiserLayout
+     */
+    public function platforms() {
+        $this->seo(array("title" => "Transactions", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+    }
+
 	public function advertiserLayout() {
         $session = Registry::get("session");
         
