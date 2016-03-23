@@ -46,7 +46,9 @@ tinymce.init({
             {foreach $c in $conversations}
             <div class="panel panel-default">
                 <div class="panel-body">
-                    {$c->message} {if($c->file)}
+                    {$c->message} 
+                    <small class="pull-right">{echo Framework\StringMethods::datetime_to_text($c->created)}</small>
+                    {if($c->file)}
                     <b><a href="{echo CDN}uploads/files/{echo $c->file}" target="_blank">Attachment</a></b>
                     {/if}
                 </div>
