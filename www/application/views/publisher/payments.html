@@ -97,5 +97,16 @@
                 </div>
             </div>
         </div>
+
+        <div class="text-center">
+            <ul class="pager">
+                {if($page != 1)}
+                <li><a href="{echo Shared\Markup::pagination($page - 1)}">Previous</a></li>
+                {/if}
+                {if($page < $count/$limit)}
+                <li><a href="{echo Shared\Markup::pagination($page + 1)}">Next</a></li>
+                {/if}
+            </ul>
+        </div>
     </div>
 </div>

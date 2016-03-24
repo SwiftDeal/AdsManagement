@@ -88,6 +88,7 @@ $(function() {
 });
 
 $(document).ready(function() {
+    
     $(".campaignstat").click(function(e) {
         e.preventDefault();
         var item = $(this),
@@ -101,6 +102,24 @@ $(document).ready(function() {
             }
         });
     });
+
+    $("#addmoney").submit(function() {
+        e.preventDefault();
+        var self = $(this);
+        request.create({
+            action: "finance/credit",
+            data: self.serialize(),
+            callback: function(data) {
+                if (data.success == true) {
+                    window.location.href = data.payurl;
+                } else {
+                    $("#addCredit").modal("hide");
+                    alert("Something Went Wrong Please Try Later");
+                }
+            }
+        });
+    });
+
 });
 
 function today () {

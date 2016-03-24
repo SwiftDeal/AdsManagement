@@ -1,3 +1,4 @@
+{include layouts/modal/addCredit.html}
 <link rel="stylesheet" href="/public/assets/css/jquery-jvectormap-2.0.3.css" type="text/css" media="screen" />
 <div class="row no-margin-bottom">
     <div class="col-sm-6 col-xs-12">
@@ -27,7 +28,7 @@
                 <div class="panel panel-default">
                     <ul class="list-group">
                         <li class="list-group-item list-group-item-info text-center"><b><i class="fa fa-money"></i> Finace</b>
-                            <a href="#" class="btn btn-xs badge" download=""><i class="fa fa-credit-card-alt"></i> Add Credit</a>
+                            <button type="button" class="btn btn-xs badge" data-toggle="modal" data-target="#addCredit"><i class="fa fa-credit-card-alt"></i> Add Credit</button>
                         </li>
                         <li class="list-group-item">Total <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number($earn)}</span></li>
                         <li class="list-group-item">Paid <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number($paid)}</span></li>
