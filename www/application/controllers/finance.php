@@ -159,7 +159,7 @@ class Finance extends Admin {
         $view = $this->getActionView();
         $configuration = Registry::get("configuration");
         $amount = RequestMethods::post("amount");
-        if ($amount < 4999) {
+        if ($amount < 8) {
             $view->set("error", "Amount less than minimum amount");
             die();
         }
@@ -175,7 +175,6 @@ class Finance extends Admin {
                 "email" => $this->user->email,
                 "phone" => $this->user->phone,
                 "redirect_url" => "http://clicks99.com/finance/success",
-                "webhook_url" => "http://clicks99.com/finance/success",
                 "allow_repeated_payments" => false
             ));
 

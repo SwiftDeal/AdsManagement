@@ -103,7 +103,7 @@ $(document).ready(function() {
         });
     });
 
-    $("#addmoney").submit(function() {
+    $("#addmoney").submit(function(e) {
         e.preventDefault();
         var self = $(this);
         request.create({
