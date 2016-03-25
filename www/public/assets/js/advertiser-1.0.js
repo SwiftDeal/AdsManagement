@@ -114,7 +114,7 @@ $(document).ready(function() {
                     window.location.href = data.payurl;
                 } else {
                     $("#addCredit").modal("hide");
-                    alert("Something Went Wrong Please Try Later");
+                    alert(data.error);
                 }
             }
         });

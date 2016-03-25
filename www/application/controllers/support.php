@@ -193,6 +193,13 @@ class Support extends Publisher {
         }
     }
 
+    public function close($ticket_id, $live) {
+        $this->noview();
+        $ticket = Ticket::first(array("id = ?" => $ticket_id));
+        $ticket->live = $live;
+        $ticket->save();
+    }
+
     public function _layout() {
         $session = Registry::get("session");
         

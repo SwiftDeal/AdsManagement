@@ -6,3 +6,4 @@ www/application/configuration/database.ini
 www/application/plugins/googl/googl.php
 
 www/application/configuration/mail.ini
+www/application/configuration/payment.ini

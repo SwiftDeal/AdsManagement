@@ -159,7 +159,7 @@ class Finance extends Admin {
         $view = $this->getActionView();
         $configuration = Registry::get("configuration");
         $amount = RequestMethods::post("amount");
-        if ($amount < 8) {
+        if ($amount < 4999) {
             $view->set("error", "Amount less than minimum amount");
             die();
         }
@@ -186,7 +186,7 @@ class Finance extends Admin {
                     "amount" => $payment->payment_request->amount,
                     "status" => $payment->payment_request->status,
                     "longurl" => $payment->payment_request->longurl,
-                    "live" => 1
+                    "live" => 0
                 ));
                 $instamojo->save();
                 $view->set("success", true);
@@ -213,6 +213,9 @@ class Finance extends Admin {
                 $payment = $curl->response;
 
                 $instamojo->status = $payment->payment_request->status;
+                if ($instamojo->status == "Completed") {
+                    $instamojo->live = 1;
+                }
                 $instamojo->save();
 
                 $user = User::first(array("id = ?" => $instamojo->user_id));

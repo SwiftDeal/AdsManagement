@@ -24,9 +24,11 @@ class Admin extends Auth {
         $database = Registry::get("database");
         $total = $database->query()->from("stats", array("SUM(amount)" => "earn", "SUM(click)" => "clicks"))->all();
         $payments = $database->query()->from("transactions", array("SUM(amount)" => "payment"))->where("live=?", 1)->all();
+        $instamojos = $database->query()->from("instamojos", array("SUM(amount)" => "received"))->where("live=?", 1)->all();
         
         $view->set("now", $now);
         $view->set("total", $total);
+        $view->set("received", round($instamojos[0]["received"], 2));
         $view->set("payment", round($payments[0]["payment"], 2));
         $view->set("yesterday", $yesterday);
     }
