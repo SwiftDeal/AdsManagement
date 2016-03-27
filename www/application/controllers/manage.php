@@ -164,14 +164,19 @@ class Manage extends Admin {
 
     public function aws() {
         $this->noview();
-
-        $configuration = Registry::get("configuration");
-        $parsed = $configuration->parse("configuration/aws");
-
         require APP_PATH.'/application/libraries/Aws/functions.php';
+        require APP_PATH.'/application/libraries/GuzzleHttp/Psr7/functions.php';
+        require APP_PATH.'/application/libraries/GuzzleHttp/functions.php';
         $s3 = S3Client::factory([
-            'key' => $parsed->aws->s3->key,
-            'secret' => $parsed->aws->s3->secret
+            'version' => 'latest',
+            'region'  => 'ap-southeast-1',
+        ]);
+
+        $s3->putObject([
+            'Bucket' => 's3.clicks99.com',
+            'Key' => 'files',
+            'Body' => fopen(APP_PATH . "/logs/test.txt", 'r'),
+            'ACL' => 'public-read'
         ]);
 
         var_dump($s3);

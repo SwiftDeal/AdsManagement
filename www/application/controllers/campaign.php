@@ -196,7 +196,7 @@ class Campaign extends Publisher {
 
     public function resize($image, $width = 560, $height = 292) {
         $path = APP_PATH . "/public/assets/uploads/images";
-        $cdn = CDN;$image = base64_decode($image);
+        $cdn = CLOUDFRONT;$image = base64_decode($image);
         if ($image) {
             $filename = pathinfo($image, PATHINFO_FILENAME);
             $extension = pathinfo($image, PATHINFO_EXTENSION);
@@ -209,7 +209,7 @@ class Campaign extends Publisher {
                     $mode = Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
                     $imagine->open("{$path}/{$image}")->thumbnail($size, $mode)->save("{$path}/resize/{$thumbnail}");
                 }
-                $this->redirect("{$cdn}uploads/images/resize/{$thumbnail}");
+                $this->redirect("{$cdn}images/resize/{$thumbnail}");
             }
             $this->redirect(CDN."images/{$image}");
         } else {

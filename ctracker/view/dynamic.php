@@ -10,7 +10,7 @@
     <meta property="og:title" content="<?php echo $track->link->title;?>" />
     <meta property="og:description" content="<?php echo $track->link->description;?>">
     <meta property="og:url" content="<?php echo URL;?>">
-    <meta property="og:image" content="<?php echo SITE;?>image.php?file=<?php echo $track->link->image;?>">
+    <meta property="og:image" content="https://dh3fr73b75uve.cloudfront.net/images/resize/<?php $img = explode(".", $track->link->image); echo $img[0]."-560x292.".$img[1];?>">
     <meta property="og:site_name" content="Clicks99">
     <meta property="article:section" content="Pictures" />
     

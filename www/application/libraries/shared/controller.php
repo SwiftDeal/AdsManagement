@@ -142,6 +142,16 @@ namespace Shared {
             $this->willRenderLayoutView = false;
             $this->defaultExtension = "json";
         }
+
+        /**
+         * AWS S3 Upload
+         * @param  [type] $name [description]
+         * @param  string $type [description]
+         * @return [type]       [description]
+         */
+        protected function s3upload($name, $type = "images") {
+            $this->_upload($name, $type);
+        }
         
         /**
          * The method checks whether a file has been uploaded. If it has, the method attempts to move the file to a permanent location.
