@@ -108,7 +108,8 @@ class Support extends Publisher {
         $conversations = Conversation::all(array("ticket_id = ?" => $ticket_id), array("user_id", "message", "created", "file"), "created", "asc");
         
         $view->set("conversations", $conversations);
-        $view->set("ticket", $ticket);
+        $view->set("ticket", $ticket)
+            ->set("errors", array());
     }
 
 	/**
@@ -118,6 +119,7 @@ class Support extends Publisher {
 		$this->seo(array("title" => "Create Ticket","view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
+        $view->set("errors", array());
         if (RequestMethods::post("action") == "ticket") {
         	$ticket = new Ticket(array(
         		"user_id" => $this->user->id,

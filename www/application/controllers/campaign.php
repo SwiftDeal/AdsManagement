@@ -55,6 +55,7 @@ class Campaign extends Publisher {
         $this->seo(array("title" => "Create Content", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         
+        $view->set("errors", array());
         if (RequestMethods::post("action") == "content") {
             $item = new Item(array(
                 "url" =>  RequestMethods::post("url"),
@@ -208,15 +209,11 @@ class Campaign extends Publisher {
                     $mode = Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
                     $imagine->open("{$path}/{$image}")->thumbnail($size, $mode)->save("{$path}/resize/{$thumbnail}");
                 }
-                header("Location: {$cdn}uploads/images/resize/{$thumbnail}");
-                exit();
+                $this->redirect("{$cdn}uploads/images/resize/{$thumbnail}");
             }
-            header("Location: {CDN}images/{$image}");
-            exit();
+            $this->redirect(CDN."images/{$image}");
         } else {
-            header("Location: {$cdn}img/logo.png");
-            exit();
+            $this->redirect("{$cdn}img/logo.png");
         }
     }
-
 }

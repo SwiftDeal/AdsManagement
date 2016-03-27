@@ -168,6 +168,7 @@ class Manage extends Admin {
         $configuration = Registry::get("configuration");
         $parsed = $configuration->parse("configuration/aws");
 
+        require APP_PATH.'/application/libraries/Aws/functions.php';
         $s3 = S3Client::factory([
             'key' => $parsed->aws->s3->key,
             'secret' => $parsed->aws->s3->secret
