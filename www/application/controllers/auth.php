@@ -46,7 +46,7 @@ class Auth extends Controller {
 
         $meta = Meta::first(array("value = ?" => $token, "property = ?" => "resetpass"));
         if (!isset($meta)) {
-            self::redirect("/index.html");
+            $this->redirect("/index.html");
         }
 
         if (RequestMethods::post("action") == "change" && $this->reCaptcha()) {
@@ -223,7 +223,7 @@ class Auth extends Controller {
             $domains = Meta::all(array("property = ?" => "domain", "live = ?" => true));
             $session->set("domains", $domains);
             $session->set("publish", $publish);
-            self::redirect("/publisher/index.html");
+            $this->redirect("/publisher/index.html");
         }
 
         //setting advertiser
@@ -231,7 +231,7 @@ class Auth extends Controller {
         if ($advert) {
             $this->setUser($user);
             $session->set("advert", $advert);
-            self::redirect("/advertiser/index.html");
+            $this->redirect("/advertiser/index.html");
         }
     }
 
@@ -241,15 +241,15 @@ class Auth extends Controller {
 
         $publish = $session->get("publish");
         if ($publish) {
-            self::redirect("/publisher/index.html");
+            $this->redirect("/publisher/index.html");
         }
 
         $advert = $session->get("advert");
         if ($advert) {
-            self::redirect("/advertiser/index.html");
+            $this->redirect("/advertiser/index.html");
         }
 
-        self::redirect("/index.html");
+        $this->redirect("/index.html");
     }
 
     protected function reCaptcha() {

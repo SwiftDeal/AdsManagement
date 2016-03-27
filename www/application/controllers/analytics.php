@@ -113,7 +113,7 @@ class Analytics extends Manage {
         if ($action == "unlink") {
             $file = APP_PATH ."/logs/". $name . ".txt";
             @unlink($file);
-            self::redirect("/analytics/logs");
+            $this->redirect("/analytics/logs");
         }
 
         $logs = array();
@@ -286,7 +286,7 @@ class Analytics extends Manage {
             $stat->delete();
         }
         
-        self::redirect($_SERVER['HTTP_REFERER']);
+        $this->redirect($_SERVER['HTTP_REFERER']);
     }
 
     /**

@@ -93,7 +93,7 @@ class Finance extends Admin {
                 "bank" => $bank
             ));
 
-            self::redirect("/finance/pending");
+            $this->redirect("/finance/pending");
         }
 
         $view->set("payee", $payee);

@@ -139,7 +139,7 @@ class Manage extends Admin {
             $user->delete();
         }
         
-        self::redirect($_SERVER["HTTP_REFERER"]);
+        $this->redirect($_SERVER["HTTP_REFERER"]);
     }
 
     /**
@@ -159,7 +159,7 @@ class Manage extends Admin {
             ));
         }
 
-        self::redirect($_SERVER["HTTP_REFERER"]);
+        $this->redirect($_SERVER["HTTP_REFERER"]);
     }
 
     public function aws() {

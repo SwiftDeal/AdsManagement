@@ -218,7 +218,7 @@ class Support extends Publisher {
         }
 
         if (!isset($publish) && !isset($advert)) {
-            self::redirect("/index.html");
+            $this->redirect("/index.html");
         }
     }
 }

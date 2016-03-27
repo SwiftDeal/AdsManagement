@@ -282,7 +282,7 @@ class Publisher extends Advertiser {
         if ($publish) {
             $this->_publish = $publish;
         } else {
-            self::redirect("/index.html");
+            $this->redirect("/index.html");
         }
 
         $this->defaultLayout = "layouts/publisher";

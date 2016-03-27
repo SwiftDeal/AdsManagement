@@ -73,7 +73,7 @@ class Advertiser extends Analytics {
                     $this->_newAdvertiser($user);
                 }
             } else {
-                self::redirect("/index.html");
+                $this->redirect("/index.html");
             }
         }
 

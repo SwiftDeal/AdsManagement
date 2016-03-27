@@ -190,7 +190,7 @@ class Campaign extends Publisher {
         $rpm->delete();
 
         $item->delete();
-        self::redirect($_SERVER["HTTP_REFERER"]);        
+        $this->redirect($_SERVER["HTTP_REFERER"]);        
     }
 
     public function resize($image, $width = 560, $height = 292) {

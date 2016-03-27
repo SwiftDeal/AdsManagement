@@ -60,7 +60,8 @@ namespace Shared {
             }
         }
 
-        public static function redirect($url) {
+        public function redirect($url) {
+            $this->noview();
             header("Location: {$url}");
             exit();
         }
