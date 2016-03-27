@@ -4,6 +4,7 @@
  */
 use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
+use Aws\S3\S3Client;
 
 class Manage extends Admin {
 
@@ -159,6 +160,20 @@ class Manage extends Admin {
         }
 
         self::redirect($_SERVER["HTTP_REFERER"]);
+    }
+
+    public function aws() {
+        $this->noview();
+
+        $configuration = Registry::get("configuration");
+        $parsed = $configuration->parse("configuration/aws");
+
+        $s3 = S3Client::factory([
+            'key' => $parsed->aws->s3->key,
+            'secret' => $parsed->aws->s3->secret
+        ]);
+
+        var_dump($s3);
     }
 
 }

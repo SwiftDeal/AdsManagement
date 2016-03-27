@@ -5,6 +5,7 @@
  *
  * @author Faizan Ayubi
  */
+use Framework\Registry as Registry;
 class Link extends Shared\Model {
     /**
      * @column
@@ -41,9 +42,7 @@ class Link extends Shared\Model {
     }
 
     public function mongodb($date = NULL) {
-        $m = new Mongo();
-        $db = $m->stats;
-        $collection = $db->clicks;
+        $collection = Registry::get("MongoDB")->clicks;
         $stats = array();$stat = array();
         $doc = array("link_id" => (int) $this->id);
         if ($date) {

@@ -85,8 +85,8 @@ class LinkTracker {
 	}
 
 	public function initialize($link_id) {
-		$m = new MongoClient();
-		$db = $m->stats;
+		$m = new \MongoClient("mongodb://".DBUSER.":".DBPASS."@ds025849-a0.mlab.com:25849,ds025849-a1.mlab.com:25849/clicks99?replicaSet=rs-ds025849");
+		$db = $m->clicks99;
 		$urls = $db->urls;
 		$link = $urls->findOne(array('link_id' => (int) $link_id));
 		if (isset($link)) {
@@ -103,8 +103,8 @@ class LinkTracker {
 
 	public function log($collection = "visits") {
 		$today = new \MongoDate(strtotime(date('Y-m-d')));
-		$m = new MongoClient();
-		$db = $m->stats;
+		$m = new \MongoClient("mongodb://".DBUSER.":".DBPASS."@ds025849-a0.mlab.com:25849,ds025849-a1.mlab.com:25849/clicks99?replicaSet=rs-ds025849");
+		$db = $m->clicks99;
 		$log = $db->$collection;
 
 		$log->insert(array(
@@ -124,8 +124,8 @@ class LinkTracker {
 			//log the process
 		}
 		
-		$m = new MongoClient();
-		$db = $m->stats;
+		$m = new \MongoClient("mongodb://".DBUSER.":".DBPASS."@ds025849-a0.mlab.com:25849,ds025849-a1.mlab.com:25849/clicks99?replicaSet=rs-ds025849");
+		$db = $m->clicks99;
 		$clicks = $db->$collection;
 		$doc = array(
 			'link_id' => $this->link->link_id,

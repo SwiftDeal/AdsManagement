@@ -160,9 +160,7 @@ class Analytics extends Manage {
             $query['user_id'] = (is_null($user_id) ? $this->user->id : $user_id);
         }
 
-        $connection = new Mongo();
-        $db = $connection->stats;
-        $collection = $db->clicks;
+        $collection = Registry::get("MongoDB")->clicks;
 
         $cursor = $collection->find($query);
         foreach ($cursor as $id => $result) {
@@ -224,9 +222,7 @@ class Analytics extends Manage {
             $query['item_id'] = $item_id;
         }
         
-        $connection = new Mongo();
-        $db = $connection->stats;
-        $collection = $db->clicks;
+        $collection = Registry::get("MongoDB")->clicks;
 
         $cursor = $collection->find($query, array("click", "country"));
         foreach ($cursor as $id => $result) {

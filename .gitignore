@@ -7,3 +7,5 @@ www/application/plugins/googl/googl.php
 
 www/application/configuration/mail.ini
 www/application/configuration/payment.ini
+
+www/application/configuration/aws.ini

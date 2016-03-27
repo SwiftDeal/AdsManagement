@@ -121,9 +121,7 @@ class Publisher extends Advertiser {
         $view = $this->getActionView();
         $today = strftime("%Y-%m-%d", strtotime('now'));
         
-        $m = new Mongo();
-        $db = $m->stats;
-        $collection = $db->clicks;
+        $collection = Registry::get("MongoDB")->clicks;
         $stats = array();$stat = array();$rank = 0;
 
         $cursor = $collection->find(array('created' => $today));

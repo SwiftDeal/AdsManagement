@@ -211,8 +211,10 @@ namespace Shared {
 
             $mongoDB = Registry::get("MongoDB");
             if (!$mongoDB) {
-                $mongo = new \MongoClient();
-                $mongoDB = $mongo->selectDB("stats");
+                $configuration = Registry::get("configuration");
+                $parsed = $configuration->parse("configuration/database");
+                $mongo = new \MongoClient("mongodb://".$parsed->database->mongodb->dbuser.":".$parsed->database->mongodb->password."@ds025849-a0.mlab.com:25849,ds025849-a1.mlab.com:25849/clicks99?replicaSet=rs-ds025849");
+                $mongoDB = $mongo->selectDB("clicks99");
                 Registry::set("MongoDB", $mongoDB);
             }
 
