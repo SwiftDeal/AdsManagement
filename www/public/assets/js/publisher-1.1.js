@@ -60,6 +60,90 @@
     window.opts = {};
 }(window, window.Model));
 
+/**** FbModel: Controls facebook login/authentication ******/
+(function (window, $) {
+    var FbModel = (function () {
+        function FbModel() {
+            this.loaded = false;
+        }
+
+        FbModel.prototype = {
+            init: function(FB) {
+                if (!FB) {
+                    return false;
+                }
+
+                FB.init({
+                    appId: '583482395136457',
+                    version: 'v2.5'
+                });
+                this.loaded = true;
+            },
+            login: function(el) {
+                var self = this;
+                if (!this.loaded) {
+                    self.init(window.FB);
+                }
+                window.FB.getLoginStatus(function(response) {
+                    if (response.status === 'connected') {
+                        self._info(el); // User logged into fb and app
+                    } else {
+                        window.FB.login(function(response) {
+                            if (response.status === 'connected') {
+                                self._info(el);
+                            } else {
+                                alert('Please allow access to your Facebook account, for us to enable direct login to the  DinchakApps');
+                            }
+                        }, {
+                            scope: 'public_profile, email'
+                        });
+                    }
+                });
+            },
+            _info: function(el) {
+                var loginType = el.data('action'), extra;
+
+                if (typeof loginType === "undefined") {
+                    extra = '';
+                } else {
+                    switch (loginType) {
+                        case 'campaign':
+                            extra = 'game/authorize/'+ el.data('campaign');
+                            break;
+
+                        default:
+                            extra = '';
+                            break;
+                    }
+                }
+                window.FB.api('/me?fields=name,email,gender', function(response) {
+                    window.request.create({
+                        action: 'auth/fbLogin',
+                        data: {
+                            action: 'fbLogin',
+                            loc: extra,
+                            email: response.email,
+                            name: response.name,
+                            fbid: response.id,
+                            gender: response.gender
+                        },
+                        callback: function(data) {
+                            if (data.success == true && data.redirect) {
+                                window.location.href = data.redirect;
+                            } else {
+                                alert('Something went wrong');
+                            }
+                        }
+                    });
+                });
+            }
+        };
+        return FbModel;
+    }());
+
+    window.FbModel = new FbModel();
+}(window, jQuery));
+
 $(function() {
     $('select[value]').each(function() {
         $(this).val(this.getAttribute("value"));
@@ -88,6 +172,16 @@ $(function() {
 });
 
 $(document).ready(function() {
+
+    $.ajaxSetup({cache: true});
+    $.getScript('//connect.facebook.net/en_US/sdk.js', FbModel.init(window.FB));
+
+    $(".fbLogin").on("click", function(e) {
+        e.preventDefault();
+        $(this).addClass('disabled');
+        FbModel.login($(this));
+        $(this).removeClass('disabled');
+    });
 
     $(".shortenURL").click(function(e) {
         e.preventDefault();

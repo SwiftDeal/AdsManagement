@@ -17,11 +17,13 @@ class Auth extends Controller {
     public function login() {
         $this->seo(array("title" => "Login", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
+        $fb = RequestMethods::get("fb", false);
         
         if (RequestMethods::post("action") == "login") {
             $message =  $this->_login();
             $view->set("message", $message);
         }
+        $view->set("fb", $fb);
     }
 
     /**
@@ -76,7 +78,7 @@ class Auth extends Controller {
             }
             
         } else {
-            return 'User doesnot exist. Please signup <a href="/auth/register">here</a>';
+            return 'User doesnot exist. Please signup <a href="/publisher/register.html">here</a>';
         }
     }
 
@@ -128,6 +130,7 @@ class Auth extends Controller {
         if ($platform->validate()) {
             $platform->save();
         } else {
+            $user->delete();
             return $platform->getErrors();
         }
 
@@ -147,6 +150,9 @@ class Auth extends Controller {
                 "pass" => $pass
             ));
         } else {
+            $publish->delete();
+            $platform->delete();
+            $user->delete();
             return $publish->getErrors();
         }
     }

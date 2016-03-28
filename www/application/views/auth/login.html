@@ -19,11 +19,15 @@
                             <div class="login-button text-center">
                                 <input type="hidden" name="action" value="login">
                                 <input type="submit" class="btn btn-primary" value="Login">
+                                {if($fb)}
+                                <button type="button" class="btn btn-success fbLogin">Login with Facebook</button>
+                                {/if}
                             </div>
                         </form>
                     </div>
                     <div class="login-footer">
-                        <span class="text-right"><a href="/auth/forgotpassword.html" class="color-white">Forgot password</a></span>
+                        <span class="pull-left"><a href="/publisher/register.html" class="color-white">Register</a></span>
+                        <span class="text-right"><a href="/auth/forgotpassword.html" class="color-white">Forgot Password?</a></span>
                     </div>
                 </div>
             </div>
