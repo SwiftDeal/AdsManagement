@@ -18,7 +18,6 @@ class Auth extends Controller {
         $this->seo(array("title" => "Login", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         $fb = RequestMethods::get("fb", false);
-        
         if (RequestMethods::post("action") == "login") {
             $message =  $this->_login();
             $view->set("message", $message);
@@ -79,6 +78,34 @@ class Auth extends Controller {
             
         } else {
             return 'User doesnot exist. Please signup <a href="/publisher/register.html">here</a>';
+        }
+    }
+
+    protected function authorize($user) {
+        $session = Registry::get("session");
+        //setting publisher
+        $publish = Publish::first(array("user_id = ?" => $user->id));
+        if ($publish) {
+            if ($publish->live == 0) {
+                return "Account Suspended";
+            }
+            $this->setUser($user);
+            //setting domains
+            $domains = Meta::all(array("property = ?" => "domain", "live = ?" => true));
+            $session->set("domains", $domains);
+            $session->set("publish", $publish);
+            $this->redirect("/publisher/index.html");
+        }
+
+        //setting advertiser
+        $advert = Advert::first(array("user_id = ?" => $user->id));
+        if ($advert) {
+            if ($advert->live == 0) {
+                return "Account Suspended";
+            }
+            $this->setUser($user);
+            $session->set("advert", $advert);
+            $this->redirect("/advertiser/index.html");
         }
     }
 
@@ -214,31 +241,6 @@ class Auth extends Controller {
             $pass[] = $alphabet[$n];
         }
         return implode($pass); //turn the array into a string
-    } 
-
-    protected function authorize($user) {
-        if ($user->live == 0) {
-            return "Account Suspended";
-        }
-        $session = Registry::get("session");
-        //setting publisher
-        $publish = Publish::first(array("user_id = ?" => $user->id));
-        if ($publish) {
-            $this->setUser($user);
-            //setting domains
-            $domains = Meta::all(array("property = ?" => "domain", "live = ?" => true));
-            $session->set("domains", $domains);
-            $session->set("publish", $publish);
-            $this->redirect("/publisher/index.html");
-        }
-
-        //setting advertiser
-        $advert = Advert::first(array("user_id = ?" => $user->id));
-        if ($advert) {
-            $this->setUser($user);
-            $session->set("advert", $advert);
-            $this->redirect("/advertiser/index.html");
-        }
     }
 
     public function account() {

@@ -21,7 +21,7 @@ class Manage extends Admin {
         $value = RequestMethods::get("value", false);
 
         $where = array("{$property} = ?" => $value);
-        $users = User::all($where, array("id","name", "created", "live"), "created", "desc", $limit, $page);
+        $users = User::all($where, array("id","name", "modified", "live"), "created", "desc", $limit, $page);
         $count = User::count($where);
 
         $view->set("users", $users);

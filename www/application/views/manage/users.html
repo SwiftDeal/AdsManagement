@@ -28,7 +28,7 @@
                         <th>Name</th>
                         <th>Account</th>
                         <th>Status</th>
-                        <th>Created</th>
+                        <th>Modified</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -51,7 +51,7 @@
                                 <span class="label label-warning">InActive</span>
                             {/else}
                         </td>
-                        <td>{echo $user->created}</td>
+                        <td>{echo $user->modified}</td>
                         <td>
                             {if($user->live == 0)}
                                 <a href="/admin/edit/user/{$user->id}/live/1" class="btn btn-primary btn-xs"><i class="fa fa-check"></i></a>&nbsp;
