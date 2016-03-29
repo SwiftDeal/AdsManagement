@@ -58,13 +58,16 @@ class Campaign extends Publisher {
         $view->set("errors", array());
         if (RequestMethods::post("action") == "content") {
             $item = new Item(array(
+                "user_id" => $this->user->id,
+                "model" =>  RequestMethods::post("model", "rpm"),
                 "url" =>  RequestMethods::post("url"),
                 "title" => RequestMethods::post("title"),
                 "image" => $this->_upload("image", "images"),
                 "commission" => 5,
                 "category" => implode(",", RequestMethods::post("category", "")),
-                "description" => RequestMethods::post("description"),
-                "user_id" => $this->user->id
+                "description" => RequestMethods::post("description", ""),
+                "live" => 0
+                
             ));
             $item->save();
             
@@ -87,20 +90,23 @@ class Campaign extends Publisher {
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
         
-        $website = RequestMethods::get("website", "");
-        $startdate = RequestMethods::get("startdate", date('Y-m-d', strtotime("-7 day")));
-        $enddate = RequestMethods::get("enddate", date('Y-m-d', strtotime("now")));
+        $property = RequestMethods::get("property", "live");
+        $value = RequestMethods::get("value", false);
 
-        $where = array(
-            "url LIKE ?" => "%{$website}%",
-            "created >= ?" => $this->changeDate($startdate, "-1"),
-            "created <= ?" => $this->changeDate($enddate, "1")
-        );
-        
+        if (in_array($property, array("url", "title", "category"))) {
+            $where = array(
+                "{$property} LIKE ?" => "%{$value}%"
+            );
+        } else {
+            $where = array("{$property} = ?" => $value);
+        }
+
         $contents = Item::all($where, array("id", "title", "created", "image", "url", "live"), "created", "desc", $limit, $page);
         $count = Item::count($where);
 
         $view->set("contents", $contents);
+        $view->set("property", $property);
+        $view->set("value", $value);
         $view->set("page", $page);
         $view->set("count", $count);
         $view->set("limit", $limit);

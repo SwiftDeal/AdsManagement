@@ -1,98 +1,100 @@
 <div id="page-wrapper">
-    <div class="row">
-        <div class="col-lg-12">
-            <h1 class="page-header text-center">{echo $item->title}</h1> {if isset($success)}
-            <div class="alert alert-success alert-dismissible fade in" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-                Content Updated <strong>Successfully!</strong>
-            </div>
-            {/if}
-            <form class="panel panel-default text-center" method="post" action="">
-                <table class="table">
-                    <tbody>
-                        <tr>
-                            <td><b>Id</b></td>
-                            <td>{echo $item->id}</td>
-                        </tr>
-                        <tr>
-                            <td><b>Title</b></td>
-                            <td>
-                                <input type="text" class="form-control" name="title" value="{echo $item->title}">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><b>URL</b></td>
-                            <td>
-                                <input type="text" class="form-control" name="url" value="{echo $item->url}">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><b>Commission</b></td>
-                            <td>
-                                <input type="text" class="form-control" name="commission" value="{echo $item->commission}">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><b>Live</b></td>
-                            <td>
-                                <label class="radio-inline">
-                                    <input type="radio" name="live" value="1" {if($item->live == "1")}checked{/if}> Enable
-                                </label>
-                                <label class="radio-inline">
-                                    <input type="radio" name="live" value="0" {if($item->live == "0")}checked{/if}> Disable
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><b>Category</b></td>
-                            <td>
-                                <select name="category[]" class="form-control" multiple="">
-                                    <option {if(in_array("bollywood", $categories))}selected{/if} value="bollywood">Bollywood</option>
-                                    <option {if(in_array("sports", $categories))}selected{/if} value="sports">Sports</option>
-                                    <option {if(in_array("entertainment", $categories))}selected{/if} value="entertainment">Entertainment</option>
-                                    <option {if(in_array("vehicle", $categories))}selected{/if} value="vehicle">Bike / Cars</option>
-                                    <option {if(in_array("tollywood", $categories))}selected{/if} value="tollywood">Tollywood</option>
-                                    <option {if(in_array("tv", $categories))}selected{/if} value="tv">TV Soap</option>
-                                    <option {if(in_array("videos", $categories))}selected{/if} value="videos">Videos</option>
-                                    <option {if(in_array("hollywood", $categories))}selected{/if} value="hollywood">Hollywood</option>
-                                    <option {if(in_array("wwe", $categories))}selected{/if} value="wwe">WWE</option>
-                                    <option {if(in_array("fashion", $categories))}selected{/if} value="fashion">Fashion</option>
-                                    <option {if(in_array("news", $categories))}selected{/if} value="news">Breaking News</option>
-                                    <option {if(in_array("celebrities", $categories))}selected{/if} value="celebrities">Celebrities</option>
-                                    <option {if(in_array("politics", $categories))}selected{/if} value="politics">Politics</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><b>Details</b></td>
-                            <td>
-                                <textarea class="form-control" name="description">{echo $item->description}</textarea>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><b>RPM</b></td>
-                            <td class="form-inline">
-                                {foreach $rpm in $rpms}
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <div class="input-group-addon">{echo $rpm['country']}</div>
-                                        <input type="number" class="form-control" style="width: 70px;" name="rpm[{echo $rpm['country']}]" required="" value="{echo $rpm['value']}">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header text-center">{echo $item->title}</h1> {if isset($success)}
+                <div class="alert alert-success alert-dismissible fade in" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    Content Updated <strong>Successfully!</strong>
+                </div>
+                {/if}
+                <form class="panel panel-default text-center" method="post" action="">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td><b>Id</b></td>
+                                <td>{echo $item->id}</td>
+                            </tr>
+                            <tr>
+                                <td><b>Title</b></td>
+                                <td>
+                                    <input type="text" class="form-control" name="title" value="{echo $item->title}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>URL</b></td>
+                                <td>
+                                    <input type="text" class="form-control" name="url" value="{echo $item->url}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Commission</b></td>
+                                <td>
+                                    <input type="text" class="form-control" name="commission" value="{echo $item->commission}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Live</b></td>
+                                <td>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="live" value="1" {if($item->live == "1")}checked{/if}> Enable
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="live" value="0" {if($item->live == "0")}checked{/if}> Disable
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Category</b></td>
+                                <td>
+                                    <select name="category[]" class="form-control" multiple="">
+                                        <option {if(in_array("bollywood", $categories))}selected{/if} value="bollywood">Bollywood</option>
+                                        <option {if(in_array("sports", $categories))}selected{/if} value="sports">Sports</option>
+                                        <option {if(in_array("entertainment", $categories))}selected{/if} value="entertainment">Entertainment</option>
+                                        <option {if(in_array("vehicle", $categories))}selected{/if} value="vehicle">Bike / Cars</option>
+                                        <option {if(in_array("tollywood", $categories))}selected{/if} value="tollywood">Tollywood</option>
+                                        <option {if(in_array("tv", $categories))}selected{/if} value="tv">TV Soap</option>
+                                        <option {if(in_array("videos", $categories))}selected{/if} value="videos">Videos</option>
+                                        <option {if(in_array("hollywood", $categories))}selected{/if} value="hollywood">Hollywood</option>
+                                        <option {if(in_array("wwe", $categories))}selected{/if} value="wwe">WWE</option>
+                                        <option {if(in_array("fashion", $categories))}selected{/if} value="fashion">Fashion</option>
+                                        <option {if(in_array("news", $categories))}selected{/if} value="news">Breaking News</option>
+                                        <option {if(in_array("celebrities", $categories))}selected{/if} value="celebrities">Celebrities</option>
+                                        <option {if(in_array("politics", $categories))}selected{/if} value="politics">Politics</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Details</b></td>
+                                <td>
+                                    <textarea class="form-control" name="description">{echo $item->description}</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>RPM</b></td>
+                                <td class="form-inline">
+                                    {foreach $rpm in $rpms}
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-addon">{echo $rpm['country']}</div>
+                                            <input type="number" class="form-control" style="width: 70px;" name="rpm[{echo $rpm['country']}]" required="" value="{echo $rpm['value']}">
+                                        </div>
                                     </div>
-                                </div>
-                                {/foreach}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="hidden" name="action" value="update">
-                            </td>
-                            <td>
-                                <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Update</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </form>
+                                    {/foreach}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="hidden" name="action" value="update">
+                                </td>
+                                <td>
+                                    <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Update</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
         </div>
     </div>
 </div>
