@@ -69,30 +69,20 @@
         }
 
         FbModel.prototype = {
-            init: function(FB) {
-                if (!FB) {
-                    return false;
-                }
+            init: function() {
+                this.loaded = true; var self = this;
 
-                FB.init({
-                    appId: '583482395136457',
-                    version: 'v2.5'
-                });
-                this.loaded = true;
-                FB.getLoginStatus(function (response) {
+                window.FB.getLoginStatus(function (response) {
                     if (response.status === 'connected') {
-                        this.connected = true;
+                        self.loggedIn = true;
                     }
-                })
-
+                });
             },
             login: function(el) {
                 var self = this;
-                if (!this.loaded) {
-                    self.init(window.FB);
-                }
                 window.FB.login(function(response) {
                     if (response.status === 'connected') {
+                        self.loggedIn = true;
                         self._access(el);
                     } else {
                         alert('Please allow access to your Facebook account, for us to enable direct login to Clicks99');
@@ -122,49 +112,31 @@
                     });
                 });
             },
+            pages: function(el) {
+                window.FB.api('/me/accounts', function(response) {
+                    //add to db
+                    window.console.log(response);
+                });
+            },
             _router: function(el) {
                 var self = this;
-                if (!this.loaded) {
-                    self.init(window.FB);
-                }
                 if (!this.loggedIn) {
                     self.login(el);
-                }
-                if (el.hasData()) {
-                    var action = el.data('action'), pattern;
-                    pattern = '';
+                } else {
+                    var action = el.data('action') || '';
                     switch (action) {
-                        case 'campaign':
-                            pattern = 'game/authorize/'+ el.data('campaign');
+                        case 'pages':
+                           self.pages(el);
                             break;
-
+                        
                         default:
-                            pattern = '';
+                            // do something
+                            self.pages(el);
                             break;
                     }
-                } else {
-                    
+
                 }
-                window.FB.api('/me?fields=name,email,gender', function(response) {
-                    window.request.create({
-                        action: ac,
-                        data: {
-                            action: 'fbLogin',
-                            loc: pattern,
-                            email: response.email,
-                            name: response.name,
-                            fbid: response.id,
-                            gender: response.gender
-                        },
-                        callback: function(data) {
-                            if (data.success == true && data.redirect) {
-                                window.location.href = data.redirect;
-                            } else {
-                                alert('Something went wrong');
-                            }
-                        }
-                    });
-                });
+                
             }
         };
         return FbModel;
@@ -203,7 +175,13 @@ $(function() {
 $(document).ready(function() {
 
     $.ajaxSetup({cache: true});
-    $.getScript('//connect.facebook.net/en_US/sdk.js', FbModel.init(window.FB));
+    $.getScript('//connect.facebook.net/en_US/sdk.js', function () {
+        FB.init({
+            appId: '583482395136457',
+            version: 'v2.5'
+        });
+        window.FbModel.init();
+    });
 
     $(".fb").on("click", function(e) {
         e.preventDefault();

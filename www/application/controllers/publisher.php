@@ -38,7 +38,8 @@ class Publisher extends Advertiser {
         $view->set("links", $links);
         $view->set("news", $news);
         $view->set("account", $account);
-        $view->set("ticket", $ticket);
+        $view->set("ticket", $ticket)
+            ->set("fb", RequestMethods::get("fb", false));
     }
 
     /**

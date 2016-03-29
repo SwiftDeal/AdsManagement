@@ -71,18 +71,10 @@
 
         FbModel.prototype = {
             init: function(FB) {
-                if (!FB) {
-                    return false;
-                }
-
-                FB.init({
-                    appId: '583482395136457',
-                    version: 'v2.5'
-                });
-                this.loaded = true;
-                FB.getLoginStatus(function (response) {
+                this.loaded = true; var self = this;
+                window.FB.getLoginStatus(function (response) {
                     if (response.status === 'connected') {
-                        this.connected = true;
+                        self.loggedIn = true;
                     }
                 })
 
@@ -152,9 +144,15 @@
 
 $(document).ready(function() {
     $.ajaxSetup({cache: true});
-    $.getScript('//connect.facebook.net/en_US/sdk.js', FbModel.init(window.FB));
+    $.getScript('//connect.facebook.net/en_US/sdk.js', function () {
+        FB.init({
+            appId: '583482395136457',
+            version: 'v2.5'
+        });
+        window.FbModel.init();
+    });
 
-    $(".fbLogin").on("click", function(e) {
+    $(".fb").on("click", function(e) {
         e.preventDefault();
         $(this).addClass('disabled');
         FbModel.login($(this));
