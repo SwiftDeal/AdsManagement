@@ -167,19 +167,31 @@ class Manage extends Admin {
         require APP_PATH.'/application/libraries/Aws/functions.php';
         require APP_PATH.'/application/libraries/GuzzleHttp/Psr7/functions.php';
         require APP_PATH.'/application/libraries/GuzzleHttp/functions.php';
-        $s3 = S3Client::factory([
-            'version' => 'latest',
-            'region'  => 'ap-southeast-1',
-        ]);
+        require APP_PATH.'/application/libraries/GuzzleHttp/Promise/functions.php';
+        
+        $bucket = 's3.clicks99.com';
+        $conf = Registry::get("configuration")->parse("configuration/aws");
 
-        $s3->putObject([
-            'Bucket' => 's3.clicks99.com',
-            'Key' => 'files',
-            'Body' => fopen(APP_PATH . "/logs/test.txt", 'r'),
-            'ACL' => 'public-read'
-        ]);
+        try {
+            $s3 = S3Client::factory([
+                'credentials' => [
+                    'key'    => $conf->aws->s3->key,
+                    'secret' => $conf->aws->s3->secret
+                ],
+                'region' => 'ap-southeast-1',
+                'version' => 'latest',
+            ]);
 
-        var_dump($s3);
+            $string = file_get_contents(APP_PATH. '/logs/test.txt');
+            $result = $s3->putObject([
+                'Bucket' => $bucket,
+                'Key' => 'test.txt',
+                'Body' => $string
+            ]);
+            var_dump($result);   
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
+
     }
-
 }
