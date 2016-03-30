@@ -19,10 +19,10 @@
  */
 
 header('Pragma: no-cache');
-
+$path = "/var/www/www/application/configuration/database.ini";
+$ini = parse_ini_file($path);
 $server = array(
-  'mongodb://localhost:27017',
-//  'mongodb://example.org:27017',
+  "mongodb://".$ini["database.mongodb.dbuser"].":".$ini["database.mongodb.password"]."@ds025849-a0.mlab.com:25849,ds025849-a1.mlab.com:25849/clicks99?replicaSet=rs-ds025849",
 );
 
 $options = array(

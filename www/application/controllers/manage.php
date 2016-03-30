@@ -4,7 +4,6 @@
  */
 use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
-use Aws\S3\S3Client;
 
 class Manage extends Admin {
 
@@ -160,38 +159,5 @@ class Manage extends Admin {
         }
 
         $this->redirect($_SERVER["HTTP_REFERER"]);
-    }
-
-    public function aws() {
-        $this->noview();
-        require APP_PATH.'/application/libraries/Aws/functions.php';
-        require APP_PATH.'/application/libraries/GuzzleHttp/Psr7/functions.php';
-        require APP_PATH.'/application/libraries/GuzzleHttp/functions.php';
-        require APP_PATH.'/application/libraries/GuzzleHttp/Promise/functions.php';
-        
-        $bucket = 's3.clicks99.com';
-        $conf = Registry::get("configuration")->parse("configuration/aws");
-
-        try {
-            $s3 = S3Client::factory([
-                'credentials' => [
-                    'key'    => $conf->aws->s3->key,
-                    'secret' => $conf->aws->s3->secret
-                ],
-                'region' => 'ap-southeast-1',
-                'version' => 'latest',
-            ]);
-
-            $string = file_get_contents(APP_PATH. '/logs/test.txt');
-            $result = $s3->putObject([
-                'Bucket' => $bucket,
-                'Key' => 'test.txt',
-                'Body' => $string
-            ]);
-            var_dump($result);   
-        } catch (\Exception $e) {
-            echo $e->getMessage();
-        }
-
     }
 }

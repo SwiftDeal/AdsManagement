@@ -62,22 +62,25 @@ class Campaign extends Publisher {
                 "model" =>  RequestMethods::post("model", "rpm"),
                 "url" =>  RequestMethods::post("url"),
                 "title" => RequestMethods::post("title"),
-                "image" => $this->_upload("image", "images"),
+                "image" => $this->s3upload("image", "images"),
                 "commission" => 5,
                 "category" => implode(",", RequestMethods::post("category", "")),
                 "description" => RequestMethods::post("description", ""),
                 "live" => 0
                 
             ));
-            $item->save();
-            
-            $rpm = new RPM(array(
-                "item_id" => $item->id,
-                "value" => json_encode(RequestMethods::post("rpm")),
-            ));
-            $rpm->save();
+            if ($item->validate()) {
+                $item->save();
+                $rpm = new RPM(array(
+                    "item_id" => $item->id,
+                    "value" => json_encode(RequestMethods::post("rpm")),
+                ));
+                $rpm->save();
 
-            $view->set("success", true);
+                $view->set("success", true);
+            }  else {
+                $view->set("errors", $user->getErrors());
+            }
         }
     }
     
@@ -179,30 +182,39 @@ class Campaign extends Publisher {
      */
     public function delete($id = NULL) {
         $this->noview();
+        $urls = Registry::get("MongoDB")->urls;
+        $clicks = Registry::get("MongoDB")->clicks;
         $item = Item::first(array("id = ?" => $id));
+        if (isset($item)) {
+            $links = Link::all(array("item_id = ?" => $item->id));
+            foreach ($links as $link) {
+                $stat = Stat::all(array("link_id = ?" => $link->id));
+                $stat->delete();
+                $link->delete();
+            }
+            $urls->remove(array('item_id' => $item->id));
 
-        $stats = Stat::all(array("item_id = ?" => $item->id));
-        foreach ($earnings as $earning) {
-            $earning->delete();
+            $stats = Stat::all(array("item_id = ?" => $item->id));
+            foreach ($stats as $stat) {
+                $stat->delete();
+            }
+            $clicks->remove(array('item_id' => $item->id));
+
+            $model = $item->model;
+
+            $campaign_models = $model::all(array("item_id = ?" => $item->id));
+            foreach ($campaign_models as $cm) {
+                $cm->delete();
+            }
+
+            $item->delete();
         }
-
-        $links = Link::all(array("item_id = ?" => $item->id));
-        foreach ($links as $link) {
-            $stat = Stat::all(array("link_id = ?" => $link->id));
-            $stat->delete();
-            $link->delete();
-        }
-
-        $rpm = RPM::first(array("item_id = ?" => $item->id));
-        $rpm->delete();
-
-        $item->delete();
         $this->redirect($_SERVER["HTTP_REFERER"]);        
     }
 
     public function resize($image, $width = 560, $height = 292) {
-        $path = APP_PATH . "/public/assets/uploads/images";
-        $cdn = CLOUDFRONT;$image = base64_decode($image);
+        $path = APP_PATH . "/public/assets/uploads/images";$cdn = CLOUDFRONT;
+        $image = base64_decode($image);
         if ($image) {
             $filename = pathinfo($image, PATHINFO_FILENAME);
             $extension = pathinfo($image, PATHINFO_EXTENSION);
@@ -214,10 +226,18 @@ class Campaign extends Publisher {
                     $size = new \Imagine\Image\Box($width, $height);
                     $mode = Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
                     $imagine->open("{$path}/{$image}")->thumbnail($size, $mode)->save("{$path}/resize/{$thumbnail}");
+
+                    $s3 = $this->_s3();
+
+                    $string = file_get_contents("{$path}/resize/{$thumbnail}");
+                    $result = $s3->putObject([
+                        'Bucket' => 's3.clicks99.com',
+                        'Key' => 'images/resize/' . $thumbnail,
+                        'Body' => $string
+                    ]);
                 }
                 $this->redirect("{$cdn}images/resize/{$thumbnail}");
             }
-            $this->redirect(CDN."images/{$image}");
         } else {
             $this->redirect("{$cdn}img/logo.png");
         }

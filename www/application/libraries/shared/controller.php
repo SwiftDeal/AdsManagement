@@ -11,6 +11,7 @@ namespace Shared {
     use Framework\Events as Events;
     use Framework\Router as Router;
     use Framework\Registry as Registry;
+    use Aws\S3\S3Client;
 
     class Controller extends \Framework\Controller {
 
@@ -142,16 +143,6 @@ namespace Shared {
             $this->willRenderLayoutView = false;
             $this->defaultExtension = "json";
         }
-
-        /**
-         * AWS S3 Upload
-         * @param  [type] $name [description]
-         * @param  string $type [description]
-         * @return [type]       [description]
-         */
-        protected function s3upload($name, $type = "images") {
-            $this->_upload($name, $type);
-        }
         
         /**
          * The method checks whether a file has been uploaded. If it has, the method attempts to move the file to a permanent location.
@@ -169,6 +160,42 @@ namespace Shared {
                 }
             }
             return FALSE;
+        }
+
+        protected function _s3() {
+            require APP_PATH.'/application/libraries/Aws/functions.php';
+            require APP_PATH.'/application/libraries/GuzzleHttp/Psr7/functions.php';
+            require APP_PATH.'/application/libraries/GuzzleHttp/functions.php';
+            require APP_PATH.'/application/libraries/GuzzleHttp/Promise/functions.php';
+            
+            $conf = Registry::get("configuration")->parse("configuration/aws");
+
+            try {
+                $s3 = S3Client::factory([
+                    'credentials' => [
+                        'key'    => $conf->aws->s3->key,
+                        'secret' => $conf->aws->s3->secret
+                    ],
+                    'region' => 'ap-southeast-1',
+                    'version' => 'latest',
+                ]);
+
+                return $s3;
+            } catch (\Exception $e) {
+                echo $e->getMessage();
+            }
+        }
+
+        protected function s3upload($name, $type) {
+            $filename = $this->_upload($name, $type);
+            $s3 = $this->_s3();
+
+            $string = file_get_contents(APP_PATH. '/public/assets/uploads/'.$type.'/'.$filename);
+            $result = $s3->putObject([
+                'Bucket' => 's3.clicks99.com',
+                'Key' => $type . '/' . $filename,
+                'Body' => $string
+            ]);
         }
 
         /**

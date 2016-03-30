@@ -9,6 +9,7 @@
 		if (isset($track)) {
 			if (isset($_SERVER["HTTP_USER_AGENT"])) {
 	            if (!$track->is_bot($_SERVER["HTTP_USER_AGENT"])) {
+	            	//[@todo]check for campaign not exist
 	                $track->process();
 	                //$track->log('ajaxvisits');
 	            }
