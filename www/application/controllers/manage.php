@@ -144,18 +144,42 @@ class Manage extends Admin {
     /**
      * @before _secure, _admin
      */
-    public function suspend($user_id) {
+    public function validity($user_id, $live) {
         $this->noview();
         $user = User::first(array("id = ?" => $user_id));
         if ($user) {
-            $user->live = 0;
+            $user->live = $live;
             $user->save();
 
-            $this->notify(array(
-                "template" => "accountSuspend",
-                "subject" => "Account Suspended",
-                "user" => $user
-            ));
+            $advert = Advert::first(array("user_id = ?" => $user->id));
+            if ($advert) {
+                $advert->live = $live;
+                $advert->save();
+            }
+
+            $publish = Publish::first(array("user_id = ?" => $user->id));
+            if ($publish) {
+                $publish->live = $live;
+                $publish->save();
+            }
+
+            switch ($live) {
+                case '0':
+                    $this->notify(array(
+                        "template" => "accountSuspend",
+                        "subject" => "Account Suspended",
+                        "user" => $user
+                    ));
+                    break;
+                
+                case '1':
+                    $this->notify(array(
+                        "template" => "accountApproved",
+                        "subject" => "Account Approved",
+                        "user" => $user
+                    ));
+                    break;
+            }
         }
 
         $this->redirect($_SERVER["HTTP_REFERER"]);

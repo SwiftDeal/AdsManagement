@@ -224,7 +224,8 @@ class Auth extends Controller {
         $advert = new Advert(array(
             "user_id" => $user->id,
             "country" => $this->country(),
-            "account" => "basic"
+            "account" => "basic",
+            "live" => 0
         ));
         if ($advert->validate()) {
             $advert->save();

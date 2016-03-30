@@ -18,13 +18,17 @@ class Advertiser extends Analytics {
 	public function index() {
 		$this->seo(array("title" => "Dashboard", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-        $where = array(
-            "live = ?" => true,
-            "user_id = ?" => $this->user->id
-        );
+        $database = Registry::get("database");
+        $paid = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 1)->all();
+        $earn = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 0)->all();
+        $account = Account::first(array("user_id = ?" => $this->user->id), array("balance"));
 
-        $items = Item::all($where, array("id", "title", "created", "image", "url", "live", "commission"), "created", "desc", 5, 1);
+        $items = Item::all(array("user_id = ?" => $this->user->id), array("id", "title", "created", "image", "url", "live", "commission"), "created", "desc", 5, 1);
+        
         $view->set("items", $items);
+        $view->set("account", $account);
+        $view->set("paid", round($paid[0]["earn"], 2));
+        $view->set("earn", round($earn[0]["earn"], 2));
 	}
 
 	/**
@@ -49,6 +53,18 @@ class Advertiser extends Analytics {
     public function transactions() {
         $this->seo(array("title" => "Transactions", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
+
+        $page = RequestMethods::get("page", 1);
+        $limit = RequestMethods::get("limit", 10);
+        $where = array("user_id = ?" => $this->user->id);
+
+        $transactions = Transaction::all($where);
+        $count = Transaction::count($where);
+        
+        $view->set("transactions", $transactions);
+        $view->set("limit", $limit);
+        $view->set("page", $page);
+        $view->set("count", $count);
     }
 
     /**

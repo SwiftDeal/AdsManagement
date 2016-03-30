@@ -159,7 +159,7 @@ class Finance extends Admin {
         $view = $this->getActionView();
         $configuration = Registry::get("configuration");
         $amount = RequestMethods::post("amount");
-        if ($amount < 4999) {
+        if ($amount < 9999) {
             $view->set("error", "Amount less than minimum amount");
             die();
         }

@@ -13,47 +13,85 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-lg-3 col-md-3">
-        <div class="panel panel-default">
-            <ul class="list-group">
-                <li class="list-group-item list-group-item-danger text-center"><b><i class="fa fa-globe"></i> Realtime Today</b></li>
-                <li class="list-group-item">Sessions <span class="badge" id="today_click"><i class="fa fa-spinner fa-pulse"></i></span></li>
-                <li class="list-group-item">Average RPM <span class="badge" id="today_rpm"><i class="fa fa-spinner fa-pulse"></i></span></li>
-                <li class="list-group-item">Earnings <span class="badge" id="today_earning"><i class="fa fa-spinner fa-pulse"></i></span></li>
-            </ul>
+    <div class="col-lg-6 col-md-6">
+        <div class="row">
+            <div class="col-lg-6 col-md-6">
+                <div class="panel panel-default">
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-danger text-center"><b><i class="fa fa-globe"></i> Links Stats Today</b></li>
+                        <li class="list-group-item">Sessions <span class="badge" id="today_click"><i class="fa fa-spinner fa-pulse"></i></span></li>
+                        <li class="list-group-item">Average RPM <span class="badge" id="today_rpm"><i class="fa fa-spinner fa-pulse"></i></span></li>
+                        <li class="list-group-item">Earnings <span class="badge" id="today_earning"><i class="fa fa-spinner fa-pulse"></i></span></li>
+                        <li class="list-group-item list-group-item-warning text-center"><b><i class="fa fa-check-circle"></i> Link Stats Total</b>
+                            <a href="/analytics/reports" class="btn btn-xs badge" download="" data-toggle="tooltip" data-placement="top" title="Your Complete Earning Report"><i class="fa fa-download"></i> Report</a>
+                        </li>
+                        <li class="list-group-item">Sessions <span class="badge">{echo Shared\Markup::nice_number(round($total[0]["click"], 2))}</span></li>
+                        <li class="list-group-item">Average RPM <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number(round($total[0]["earn"]*1000/$total[0]["click"], 2))}</span></li>
+                        <li class="list-group-item">Earnings <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number(round($total[0]["earn"], 2))}</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <div class="panel panel-success">
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-success text-center"><b><i class="fa fa-support"></i> Account</b></li>
+                        <li class="list-group-item">Total Links <span class="badge">{echo Shared\Markup::nice_number(Link::count(array("user_id = ?" => $user->id)))}</span></li>
+                        <li class="list-group-item">Links Tracked <span class="badge">{echo Shared\Markup::nice_number(Stat::count(array("user_id = ?" => $user->id)))}</span></li>
+                        <li class="list-group-item">Platforms Added <span class="badge">{echo Shared\Markup::nice_number(Platform::count(array("user_id = ?" => $user->id)))}</span></li>
+                        <li class="list-group-item list-group-item-info text-center"><b><i class="fa fa-money"></i> Finace</b></li>
+                        <li class="list-group-item">Total <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number($earn)}</span></li>
+                        <li class="list-group-item">Paid <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number($paid)}</span></li>
+                        <li class="list-group-item">Balance <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number($account->balance)}</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-line-chart fa-fw"></i> Active Links</h3>
+                    </div>
+                    {if($links)}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Link</th>
+                                    <th>Realtime Stats</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {foreach $link in $links} {script $item = Item::first(array("id = ?" => $link->item_id), array("title", "url"))}
+                                <tr>
+                                    <td>
+                                        <a href="{$item->url}" target="_blank">{$item->title}</a>
+                                        <br>
+                                        <a href="{$link->short}" class="fbshare">{$link->short}</a>
+                                    </td>
+                                    <td class="linkstat" data-link="{echo $link->id}">
+                                        <span class="label label-success">View</span>
+                                    </td>
+                                </tr>
+                                {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
+                    {/if} {else}
+                    <p class="text-center">Hi, you have not generated any link to share on your platform.</p>
+                    {/else}
+                    <div class="panel-body">
+                        <div class="text-right">
+                            <a href="/publisher/mylinks.html">View All Links <i class="fa fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="col-lg-3 col-md-3">
-        <div class="panel panel-default">
-            <ul class="list-group">
-                <li class="list-group-item list-group-item-warning text-center"><b><i class="fa fa-check-circle"></i> Overall Stats</b>
-                    <a href="/analytics/reports" class="btn btn-xs badge" download="" data-toggle="tooltip" data-placement="top" title="Your Complete Earning Report"><i class="fa fa-download"></i> Report</a>
-                </li>
-                <li class="list-group-item">Sessions <span class="badge">{echo Shared\Markup::nice_number(round($total[0]["click"], 2))}</span></li>
-                <li class="list-group-item">Average RPM <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number(round($total[0]["earn"]*1000/$total[0]["click"], 2))}</span></li>
-                <li class="list-group-item">Earnings <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number(round($total[0]["earn"], 2))}</span></li>
-            </ul>
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-3">
-        <div class="panel panel-default">
-            <ul class="list-group">
-                <li class="list-group-item list-group-item-info text-center"><b><i class="fa fa-money"></i> Finace</b></li>
-                <li class="list-group-item">Total <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number($earn)}</span></li>
-                <li class="list-group-item">Paid <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number($paid)}</span></li>
-                <li class="list-group-item">Balance <span class="badge"><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number($account->balance)}</span></li>
-            </ul>
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-3">
-        <div class="panel panel-success">
-            <ul class="list-group">
-                <li class="list-group-item list-group-item-success text-center"><b><i class="fa fa-support"></i> Account</b></li>
-                <li class="list-group-item">Total Links <span class="badge">{echo Shared\Markup::nice_number(Link::count(array("user_id = ?" => $user->id)))}</span></li>
-                <li class="list-group-item">Links Tracked <span class="badge">{echo Shared\Markup::nice_number(Stat::count(array("user_id = ?" => $user->id)))}</span></li>
-                <li class="list-group-item">Platforms Added <span class="badge">{echo Shared\Markup::nice_number(Platform::count(array("user_id = ?" => $user->id)))}</span></li>
-            </ul>
-        </div>
+    
+    <div class="col-lg-6 col-md-6">
+        <div class="text-center" id="world-map" style="max-width: 1200px; height: 400px"></div>
     </div>
 </div>
 {if($ticket)}
@@ -69,49 +107,8 @@
 </div>
 {/if}
 <div class="row">
-    <div class="col-md-6">
-        <div class="text-center" id="world-map" style="max-width: 1200px; height: 400px"></div>
-    </div>
-    <div class="col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title"><i class="fa fa-line-chart fa-fw"></i> Active Links</h3>
-            </div>
-            {if($links)}
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover table-striped">
-                    <thead>
-                        <tr>
-                            <th>Link</th>
-                            <th>Realtime Stats</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {foreach $link in $links} {script $item = Item::first(array("id = ?" => $link->item_id), array("title", "url"))}
-                        <tr>
-                            <td>
-                                <a href="{$item->url}" target="_blank">{$item->title}</a>
-                                <br>
-                                <a href="{$link->short}" class="fbshare">{$link->short}</a>
-                            </td>
-                            <td class="linkstat" data-link="{echo $link->id}">
-                                <span class="label label-success">View</span>
-                            </td>
-                        </tr>
-                        {/foreach}
-                    </tbody>
-                </table>
-            </div>
-            {/if} {else}
-            <p class="text-center">Hi, you have not generated any link to share on your platform.</p>
-            {/else}
-            <div class="panel-body">
-                <div class="text-right">
-                    <a href="/publisher/mylinks.html">View All Links <i class="fa fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-        </div>
-    </div>
+    
+    
 </div>
 <script src="{echo CDN}plugins/jvectormap/jquery-jvectormap-2.0.3.min.js"></script>
 <script src="{echo CDN}plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>

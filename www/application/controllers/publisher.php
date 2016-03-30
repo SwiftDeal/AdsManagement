@@ -271,14 +271,34 @@ class Publisher extends Advertiser {
         $session = Registry::get("session");
         
         $publish = $session->get("publish");
-        if ($publish) {
+        if (isset($publish)) {
             $this->_publish = $publish;
         } else {
-            $this->redirect("/index.html");
+            $user = $this->getUser();
+            if ($user) {
+                $publish = Publish::first(array("user_id = ?" => $user->id), array("id"));
+                if (!$publish) {
+                    $this->_newPublisher($user);
+                }
+            } else {
+                $this->redirect("/index.html");
+            }
         }
 
         $this->defaultLayout = "layouts/publisher";
         $this->setLayout();
+    }
+
+    protected function _newPublisher($user) {
+        $publish = new Publish(array(
+            "user_id" => $user->id,
+            "country" => $this->country(),
+            "account" => "basic",
+            "live" => 1
+        ));
+        $publish->save();
+        $session = Registry::get("session");
+        $session->set("publish", $publish);
     }
 
     public function render() {
