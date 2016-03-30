@@ -61,87 +61,6 @@
     window.opts = {};
 }(window, window.Model));
 
-/**** FbModel: Controls facebook login/authentication ******/
-(function (window, $) {
-    var FbModel = (function () {
-        function FbModel() {
-            this.loaded = false;
-            this.loggedIn = false;
-        }
-
-        FbModel.prototype = {
-            init: function(FB) {
-                this.loaded = true; var self = this;
-                window.FB.getLoginStatus(function (response) {
-                    if (response.status === 'connected') {
-                        self.loggedIn = true;
-                    }
-                })
-
-            },
-            login: function(el) {
-                var self = this;
-                if (!this.loaded) {
-                    self.init(window.FB);
-                }
-                if (!this.loggedIn) {
-                    window.FB.login(function(response) {
-                        if (response.status === 'connected') {
-                            self._info(el);
-                        } else {
-                            alert('Please allow access to your Facebook account, for us to enable direct login to the  DinchakApps');
-                        }
-                    }, {
-                        scope: 'public_profile, email, publish_pages, read_insights, manage_pages'
-                    });
-                } else {
-                    self._info(el);
-                }
-            },
-            _info: function(el) {
-                var loginType = el.data('action'), extra;
-
-                if (typeof loginType === "undefined") {
-                    extra = '';
-                } else {
-                    switch (loginType) {
-                        case 'campaign':
-                            extra = 'game/authorize/'+ el.data('campaign');
-                            break;
-
-                        default:
-                            extra = '';
-                            break;
-                    }
-                }
-                window.FB.api('/me?fields=name,email,gender', function(response) {
-                    window.request.create({
-                        action: 'auth/fbLogin',
-                        data: {
-                            action: 'fbLogin',
-                            loc: extra,
-                            email: response.email,
-                            name: response.name,
-                            fbid: response.id,
-                            gender: response.gender
-                        },
-                        callback: function(data) {
-                            if (data.success == true && data.redirect) {
-                                window.location.href = data.redirect;
-                            } else {
-                                alert('Something went wrong');
-                            }
-                        }
-                    });
-                });
-            }
-        };
-        return FbModel;
-    }());
-
-    window.FbModel = new FbModel();
-}(window, jQuery));
-
 $(document).ready(function() {
     $.ajaxSetup({cache: true});
     $.getScript('//connect.facebook.net/en_US/sdk.js', function () {
@@ -155,7 +74,7 @@ $(document).ready(function() {
     $(".fb").on("click", function(e) {
         e.preventDefault();
         $(this).addClass('disabled');
-        FbModel.login($(this));
+        FbModel._router($(this));
         $(this).removeClass('disabled');
     });
 });

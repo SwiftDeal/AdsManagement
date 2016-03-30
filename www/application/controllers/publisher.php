@@ -249,19 +249,10 @@ class Publisher extends Advertiser {
         $this->seo(array("title" => "Platforms", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
-        if (RequestMethods::post("action") == "addPlatform") {
-            $platform = new Platform(array(
-                "user_id" => $this->user->id,
-                "type" => RequestMethods::post("type"),
-                "url" =>  RequestMethods::post("url"),
-                "live" => 0
-            ));
-            $platform->save();
-            $view->set("message", "Your Platform has been added successfully");
-        }
-
-        $platforms = Platform::all(array("user_id = ?" => $this->user->id));
-        $view->set("platforms", $platforms);
+        $fbpages = FBPage::all(array("user_id = ?" => $this->user->id));
+        $view->set("fbpages", $fbpages);
+        $fb = RequestMethods::get("fb", false);
+        $view->set("fb", $fb);
     }   
 
     protected function target() {

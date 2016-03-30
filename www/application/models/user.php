@@ -60,7 +60,7 @@ class User extends Shared\Model {
      * @type text
      * @length 20
      * 
-     * @validate required, max(20)
+     * @validate max(20)
      * @label phone number
      */
     protected $_phone;

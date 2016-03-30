@@ -1,8 +1,9 @@
-{include layouts/modal/addPlatform.html}
 <div class="page-title">
     <span class="title">
         Platforms
-        <span class="pull-right"><button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addPlatform"><i class="fa fa-globe"></i> Add Platform</button></span>
+        {if($fb)}
+        <span class="pull-right"><button type="button" class="btn btn-success btn-sm fb" data-action="pages"><i class="fa fa-facebook-square"></i> Add Pages</button></span>
+        {/if}
     </span>
     <div class="description">All Different Platforms you own</div>
 </div>
@@ -23,12 +24,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {foreach $platform in $platforms}
+                    {foreach $fbpage in $fbpages}
                     <tr>
-                        <td>{$platform->id}</td>
-                        <td><a href="{$platform->url}" target="_blank">{$platform->url}</a></td>
+                        <td>{$fbpage->fbid}</td>
+                        <td><a href="https://www.facebook.com/{$fbpage->fbid}" target="_blank">{$fbpage->name}</a></td>
                         <td>
-                            {if($platform->live)}
+                            {if($fbpage->live)}
                                 <span class="label label-success">Verified</span>
                             {/if}
                             {else}

@@ -1,6 +1,6 @@
 <?php
 ob_start();
-define("DEBUG", FALSE);
+define("DEBUG", TRUE);
 define("DEV", FALSE);
 define("APP_PATH", str_replace(DIRECTORY_SEPARATOR, "/", dirname(__FILE__)));
 define("URL", "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");

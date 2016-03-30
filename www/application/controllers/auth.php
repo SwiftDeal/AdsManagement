@@ -94,7 +94,11 @@ class Auth extends Controller {
             $domains = Meta::all(array("property = ?" => "domain", "live = ?" => true));
             $session->set("domains", $domains);
             $session->set("publish", $publish);
-            $this->redirect("/publisher/index.html");
+            if (RequestMethods::post("action") == "fblogin") {
+                return true;
+            } else {
+                $this->redirect("/publisher/index.html");
+            }
         }
 
         //setting advertiser
@@ -143,28 +147,33 @@ class Auth extends Controller {
             "currency" => "INR",
             "live" => 1
         ));
+        if (RequestMethods::post("action") == "fblogin") {
+            $user->phone = "0";
+        }
         if ($user->validate()) {
             $user->save();
         } else {
             return $user->getErrors();
         }
         
-        $platform = new Platform(array(
-            "user_id" => $user->id,
-            "type" => "FACEBOOK_PAGE",
-            "url" =>  RequestMethods::post("url")
-        ));
-        if ($platform->validate()) {
-            $platform->save();
-        } else {
-            $user->delete();
-            return $platform->getErrors();
+        if (RequestMethods::post("url")) {
+            $platform = new Platform(array(
+                "user_id" => $user->id,
+                "type" => "FACEBOOK_PAGE",
+                "url" =>  RequestMethods::post("url")
+            ));
+            if ($platform->validate()) {
+                $platform->save();
+            } else {
+                $user->delete();
+                return $platform->getErrors();
+            }
         }
 
         $publish = new Publish(array(
             "user_id" => $user->id,
             "country" => $this->country(),
-            "live" => 0
+            "live" => 1
         ));
         $publish->save();
         if ($publish->validate()) {
@@ -178,7 +187,6 @@ class Auth extends Controller {
             ));
         } else {
             $publish->delete();
-            $platform->delete();
             $user->delete();
             return $publish->getErrors();
         }

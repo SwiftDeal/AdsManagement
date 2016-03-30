@@ -1,3 +1,9 @@
+var a = "color:#F6782E;font-weight:bold;font-size:18px";
+var f = "font-size:14px;font-weight:bold; font-style:italic;color:#2c67b3;";
+var b = "CloudStuff";
+var d= "\nHi there, Are you passionate about coding? So are we. Want to join us? Send email to faizan@cloudstuff.tech\n\n";
+//console.log("%c%s%c%s",a,b,f,d);
+
 (function (window) {
 
     var Model = (function () {
@@ -59,91 +65,6 @@
     window.request = Model.initialize();
     window.opts = {};
 }(window, window.Model));
-
-/**** FbModel: Controls facebook login/authentication ******/
-(function (window, $) {
-    var FbModel = (function () {
-        function FbModel() {
-            this.loaded = false;
-            this.loggedIn = false;
-        }
-
-        FbModel.prototype = {
-            init: function() {
-                this.loaded = true; var self = this;
-
-                window.FB.getLoginStatus(function (response) {
-                    if (response.status === 'connected') {
-                        self.loggedIn = true;
-                    }
-                });
-            },
-            login: function(el) {
-                var self = this;
-                window.FB.login(function(response) {
-                    if (response.status === 'connected') {
-                        self.loggedIn = true;
-                        self._access(el);
-                    } else {
-                        alert('Please allow access to your Facebook account, for us to enable direct login to Clicks99');
-                    }
-                }, {
-                    scope: 'public_profile, email, publish_pages, read_insights, manage_pages'
-                });
-            },
-            _access: function(el) {
-                window.FB.api('/me?fields=name,email,gender', function(response) {
-                    window.request.create({
-                        action: 'auth/login',
-                        data: {
-                            action: 'fblogin',
-                            email: response.email,
-                            name: response.name,
-                            fbid: response.id,
-                            gender: response.gender
-                        },
-                        callback: function(data) {
-                            if (data.success == true) {
-                                window.location.href = el.redirect;
-                            } else {
-                                alert('Something went wrong');
-                            }
-                        }
-                    });
-                });
-            },
-            pages: function(el) {
-                window.FB.api('/me/accounts', function(response) {
-                    //add to db
-                    window.console.log(response);
-                });
-            },
-            _router: function(el) {
-                var self = this;
-                if (!this.loggedIn) {
-                    self.login(el);
-                } else {
-                    var action = el.data('action') || '';
-                    switch (action) {
-                        case 'pages':
-                           self.pages(el);
-                            break;
-                        
-                        default:
-                            // do something
-                            self.pages(el);
-                            break;
-                    }
-
-                }
-                
-            }
-        };
-        return FbModel;
-    }());
-
-    window.FbModel = new FbModel();
-}(window, jQuery));
 
 $(function() {
     $('select[value]').each(function() {
