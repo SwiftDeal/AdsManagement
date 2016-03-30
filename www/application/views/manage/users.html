@@ -28,7 +28,6 @@
                             <th>Id</th>
                             <th>Name</th>
                             <th>Account</th>
-                            <th>Status</th>
                             <th>Modified</th>
                             <th>Action</th>
                         </tr>
@@ -43,8 +42,6 @@
                             <td>
                                 {if($publish)} <span class="label label-info">Publisher</span>{/if}
                                 {if($advert)} <span class="label label-info">Advertiser</span>{/if}
-                            </td>
-                            <td>
                                 {if($user->live)}
                                     <span class="label label-success">Active</span>
                                 {/if}
@@ -63,6 +60,7 @@
                                 <a href="/manage/delete/{$user->id}" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
                                 <a href="/admin/update/user/{$user->id}" class="btn btn-info btn-xs"><i class="fa fa-edit"></i></a>
                                 <a href="/finance/transactions?user_id={$user->id}" class="btn btn-success btn-xs"><i class="fa fa-credit-card-alt"></i></a>&nbsp;
+                                <a href="/analytics/verify/{$user->id}" class="btn btn-default btn-xs"><i class="fa fa-link"></i></a>
                                 <a href="/auth/loginas/{$user->id}" class="btn btn-default btn-xs"><i class="fa fa-sign-in"></i> Login As</a>
                             </td>
                         </tr>

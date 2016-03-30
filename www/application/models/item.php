@@ -64,6 +64,17 @@ class Item extends Shared\Model {
      * @column
      * @readwrite
      * @type decimal
+     * @length 10,2
+     *
+     * @validate required, min(4)
+     * @label budget
+     */
+    protected $_budget;
+
+    /**
+     * @column
+     * @readwrite
+     * @type decimal
      * @length 4,2
      *
      * @validate required

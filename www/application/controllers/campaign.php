@@ -57,29 +57,35 @@ class Campaign extends Publisher {
         
         $view->set("errors", array());
         if (RequestMethods::post("action") == "content") {
-            $item = new Item(array(
-                "user_id" => $this->user->id,
-                "model" =>  RequestMethods::post("model", "rpm"),
-                "url" =>  RequestMethods::post("url"),
-                "title" => RequestMethods::post("title"),
-                "image" => $this->s3upload("image", "images"),
-                "commission" => 5,
-                "category" => implode(",", RequestMethods::post("category", "")),
-                "description" => RequestMethods::post("description", ""),
-                "live" => 0
-                
-            ));
-            if ($item->validate()) {
-                $item->save();
-                $rpm = new RPM(array(
-                    "item_id" => $item->id,
-                    "value" => json_encode(RequestMethods::post("rpm")),
+            $image = $this->s3upload("image", "images");
+            if ($image) {
+                $item = new Item(array(
+                    "user_id" => $this->user->id,
+                    "model" =>  RequestMethods::post("model", "rpm"),
+                    "url" =>  RequestMethods::post("url"),
+                    "title" => RequestMethods::post("title"),
+                    "image" => $image,
+                    "commission" => 5,
+                    "budget" => RequestMethods::post("budget", 5000),
+                    "category" => implode(",", RequestMethods::post("category", "")),
+                    "description" => RequestMethods::post("description", ""),
+                    "live" => 0
+                    
                 ));
-                $rpm->save();
+                if ($item->validate()) {
+                    $item->save();
+                    $rpm = new RPM(array(
+                        "item_id" => $item->id,
+                        "value" => json_encode(RequestMethods::post("rpm")),
+                    ));
+                    $rpm->save();
 
-                $view->set("success", true);
-            }  else {
-                $view->set("errors", $user->getErrors());
+                    $view->set("success", true);
+                }  else {
+                    $view->set("errors", $item->getErrors());
+                }
+            } else {
+                $view->set("message", "Image not uploaded");
             }
         }
     }
