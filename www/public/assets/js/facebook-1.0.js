@@ -52,7 +52,7 @@
                     });
                 });
             },
-            _authorize: function(el) {
+            _authorize: function(el, callback) {
                 var self = this;
                 window.FB.login(function(response) {
                     if (response.status === 'connected') {
@@ -65,14 +65,7 @@
                                     email: response.email,
                                     fbid: response.id
                                 },
-                                callback: function(data) {
-                                    if (data.success == true) {
-                                        console.log("Authorizing");
-                                        console.log(response);
-                                    } else {
-                                        alert('Some thing went Wrong');
-                                    }
-                                }
+                                callback: callback
                             });
                         });
                     } else {
@@ -108,24 +101,29 @@
             _router: function(el) {
                 var self = this;
                 if (!this.loggedIn) {
-                    self._authorize(el);
-                }
-                if (this.loggedIn) {
-                    var action = el.data('action') || '';
-                    switch (action) {
-                        case 'pages':
-                           self.pages(el);
-                            break;
+                    console.log('Not Logged In');
+                    self._authorize(el, function (data) {
+                        if (data.success == true) {
+                            console.log("Authorized");
+                            console.log(response);
+                        }
+                        console.log("Routing...");
+                        var action = el.data('action') || '';
+                        switch (action) {
+                            case 'pages':
+                               self.pages(el);
+                                break;
 
-                        case 'login':
-                           self.login(el);
-                            break;
-                        
-                        default:
-                            // do something
-                            self.pages(el);
-                            break;
-                    }
+                            case 'login':
+                               self.login(el);
+                                break;
+                            
+                            default:
+                                // do something
+                                self.pages(el);
+                                break;
+                        }
+                    });
                 }
             }
         };
@@ -134,3 +132,23 @@
 
     window.FbModel = new FbModel();
 }(window, jQuery));
+
+$(document).ready(function() {
+    $.ajaxSetup({cache: true});
+    $.getScript('//connect.facebook.net/en_US/sdk.js', function () {
+        FB.init({
+            appId: '583482395136457',
+            version: 'v2.5'
+        });
+        window.FbModel.init();
+    });
+
+    $(".fb").on("click", function(e) {
+        e.preventDefault();
+        $(this).addClass('disabled');
+        $(this).html('<i class="fa fa-spinner spin"></i> Processing');
+        FbModel._router($(this));
+        $(this).html('Done');
+        $(this).removeClass('disabled');
+    });
+});

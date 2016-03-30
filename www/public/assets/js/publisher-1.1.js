@@ -95,22 +95,6 @@ $(function() {
 
 $(document).ready(function() {
 
-    $.ajaxSetup({cache: true});
-    $.getScript('//connect.facebook.net/en_US/sdk.js', function () {
-        FB.init({
-            appId: '583482395136457',
-            version: 'v2.5'
-        });
-        window.FbModel.init();
-    });
-
-    $(".fb").on("click", function(e) {
-        e.preventDefault();
-        $(this).addClass('disabled');
-        FbModel._router($(this));
-        $(this).removeClass('disabled');
-    });
-
     $(".shortenURL").click(function(e) {
         e.preventDefault();
         var btn = $(this),

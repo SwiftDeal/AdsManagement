@@ -61,24 +61,6 @@
     window.opts = {};
 }(window, window.Model));
 
-$(document).ready(function() {
-    $.ajaxSetup({cache: true});
-    $.getScript('//connect.facebook.net/en_US/sdk.js', function () {
-        FB.init({
-            appId: '583482395136457',
-            version: 'v2.5'
-        });
-        window.FbModel.init();
-    });
-
-    $(".fb").on("click", function(e) {
-        e.preventDefault();
-        $(this).addClass('disabled');
-        FbModel._router($(this));
-        $(this).removeClass('disabled');
-    });
-});
-
 //Google Analytics
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
