@@ -18,17 +18,11 @@
             },
             login: function(el) {
                 var self = this;
-                window.FB.login(function(response) {
-                    if (response.status === 'connected') {
-                        self.loggedIn = true;
-                        console.log("Logging in");
-                        self._access(el);
-                    } else {
-                        alert('Please allow access to your Facebook account, for us to enable direct login to Clicks99');
-                    }
-                }, {
-                    scope: 'public_profile, email, publish_pages, read_insights, manage_pages'
-                });
+                if (self.loggedIn) {
+                    self._access(el);
+                } else {
+                    alert("login failed");
+                }
             },
             _access: function(el) {
                 window.FB.api('/me?fields=name,email,gender', function(response) {
@@ -46,6 +40,8 @@
                             if (data.success == true) {
                                 if (el.attr('data-target')) {
                                     window.location.href = el.attr('data-target');
+                                } else {
+                                    window.location.href = '/publisher';
                                 }
                             }
                         }
@@ -103,10 +99,7 @@
                 if (!this.loggedIn) {
                     console.log('Not Logged In');
                     self._authorize(el, function (data) {
-                        if (data.success == true) {
-                            console.log("Authorized");
-                            console.log(response);
-                        }
+                        
                         console.log("Routing...");
                         var action = el.data('action') || '';
                         switch (action) {
@@ -124,6 +117,8 @@
                                 break;
                         }
                     });
+                } else {
+                    self._access(el);
                 }
             }
         };
