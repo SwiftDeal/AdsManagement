@@ -26,7 +26,8 @@ class Finance extends Admin {
         $live = RequestMethods::get("live", 0);
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
-        if (RequestMethods::get("user_id")) {
+        $user_id = RequestMethods::get("user_id");
+        if ($user_id) {
             $where = array("user_id = ?" => RequestMethods::get("user_id"));
         }
         
@@ -37,6 +38,7 @@ class Finance extends Admin {
         $view->set("page", $page);
         $view->set("limit", $limit);
         $view->set("live", $live);
+        $view->set("user_id", $user_id);
     }
 
     /**
@@ -72,28 +74,41 @@ class Finance extends Admin {
         $view = $this->getActionView();
         $payee = User::first(array("id = ?" => $user_id), array("id", "name", "email", "phone"));
         $account = Account::first(array("user_id = ?" => $user_id));
-        $bank = Bank::first(array("user_id = ?" => $user_id));
+        $bank = Bank::first(array("user_id = ?" => $user_id), array("*"), "created", "desc");
 
         if (RequestMethods::post("action") == "payment") {
             $transaction = new Transaction(array(
                 "user_id" => $user_id,
-                "amount" => $account->balance,
+                "amount" => RequestMethods::post("amount"),
                 "ref" => RequestMethods::post("ref"),
-                "live" => 1
+                "live" => RequestMethods::post("live")
             ));
             $transaction->save();
-            $account->balance = 0;
+            $account->balance += RequestMethods::post("amount");
             $account->save();
 
-            $this->notify(array(
-                "template" => "makePayment",
-                "subject" => "Payments From Clicks99 Team",
-                "user" => $payee,
-                "transaction" => $transaction,
-                "bank" => $bank
-            ));
+            switch (RequestMethods::post("live")) {
+                case '0':
+                    $this->notify(array(
+                        "template" => "accountCredited",
+                        "subject" => "Payments From Clicks99 Team",
+                        "user" => $payee,
+                        "transaction" => $transaction,
+                        "bank" => $bank
+                    ));
+                    break;
+                case '1':
+                    $this->notify(array(
+                        "template" => "accountDebited",
+                        "subject" => "Payments From Clicks99 Team",
+                        "user" => $payee,
+                        "transaction" => $transaction,
+                        "bank" => $bank
+                    ));
+                    break;
+            }
 
-            $this->redirect("/finance/pending");
+            $this->redirect("/finance/transactions.html?user_id={$payee->id}");
         }
 
         $view->set("payee", $payee);

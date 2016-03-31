@@ -187,15 +187,21 @@ namespace Shared {
         }
 
         protected function s3upload($name, $type) {
-            $filename = $this->_upload($name, $type);
-            $s3 = $this->_s3();
+            try {
+                $filename = $this->_upload($name, $type);
+                $s3 = $this->_s3();
 
-            $string = file_get_contents(APP_PATH. '/public/assets/uploads/'.$type.'/'.$filename);
-            $result = $s3->putObject([
-                'Bucket' => 's3.clicks99.com',
-                'Key' => $type . '/' . $filename,
-                'Body' => $string
-            ]);
+                $string = file_get_contents(APP_PATH. '/public/assets/uploads/'.$type.'/'.$filename);
+                $result = $s3->putObject([
+                    'Bucket'=> 's3.clicks99.com',
+                    'Key'   => $type . '/' . $filename,
+                    'Body'  => $string,
+                    'ACL'   => 'public-read'
+                ]);
+                return $filename;
+            } catch (Exception $e) {
+                echo $e->getMessage();
+            }
         }
 
         /**

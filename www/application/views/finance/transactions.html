@@ -9,6 +9,11 @@
             </div>
             <button type="submit" class="btn btn-primary">Search</button>
         </form>
+        {if(isset($user_id))}
+        <span class="pull-right">
+            <a href="/finance/makepayment/{$user_id}" class="btn btn-primary btn-xs"><i class="fa fa-inr"></i> Make Payment </a>&nbsp;
+        </span>
+        {/if}
         <hr>
         <div class="panel panel-default">
             <table class="table">

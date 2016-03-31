@@ -33,7 +33,7 @@ class Publisher extends Advertiser {
         $total = $database->query()->from("stats", array("SUM(amount)" => "earn", "SUM(click)" => "click"))->where("user_id=?", $this->user->id)->all();
     
         $view->set("total", $total);
-        $view->set("paid", round($paid[0]["earn"], 2));
+        $view->set("paid", abs(round($paid[0]["earn"], 2)));
         $view->set("earn", round($earn[0]["earn"], 2));
         $view->set("links", $links);
         $view->set("news", $news);
