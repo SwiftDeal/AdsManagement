@@ -74,7 +74,16 @@ class Finance extends Admin {
         $view = $this->getActionView();
         $payee = User::first(array("id = ?" => $user_id), array("id", "name", "email", "phone"));
         $account = Account::first(array("user_id = ?" => $user_id));
+        if (!$account) {
+            $account = new Account(array(
+                "user_id" => $user_id,
+                "balance" => 0,
+                "live" => 1
+            ));
+            $account->save();
+        }
         $bank = Bank::first(array("user_id = ?" => $user_id), array("*"), "created", "desc");
+        $paypal = Paypal::first(array("user_id = ?" => $user_id), array("*"), "created", "desc");
 
         if (RequestMethods::post("action") == "payment") {
             $transaction = new Transaction(array(

@@ -107,6 +107,7 @@ class Publisher extends Advertiser {
         $googl = Registry::get("googl");
         $object = $googl->shortenURL($longURL);
         $link->short = $object->id;
+        $link->live = 0;
 
         //$link->short = $longURL;
         $link->save();

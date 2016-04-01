@@ -58,6 +58,31 @@
                         </table>
                     </div>
                 </div>
+
+                <div class="col-md-4">
+                    <div class="panel panel-default">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td>Paytm</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Paypal</td>
+                                    <td>{$paypal->email}</td>
+                                </tr>
+                                <tr>
+                                    <td>Currency</td>
+                                    <td>{$user->currency}</td>
+                                </tr>
+                                <tr>
+                                    <td>Registerd on</td>
+                                    <td>{$user->created}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
             
             <form class="panel panel-default text-center" method="post" action="">
@@ -80,14 +105,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>
-                                <input type="hidden" name="action" value="payment">
-                            </td>
-                            <td>
-                                <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Save</button>
-                            </td>
-                        </tr>
-                        <tr>
                             <td><b>Transaction</b></td>
                             <td>
                                 <label class="radio-inline">
@@ -96,6 +113,14 @@
                                 <label class="radio-inline">
                                     <input type="radio" name="live" value="1"> Debit <small>(Send Money to Bank)</small>
                                 </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="hidden" name="action" value="payment">
+                            </td>
+                            <td>
+                                <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Save</button>
                             </td>
                         </tr>
                     </tbody>
