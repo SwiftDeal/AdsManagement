@@ -100,7 +100,7 @@ class Finance extends Admin {
                 case '0':
                     $this->notify(array(
                         "template" => "accountCredited",
-                        "subject" => "Payments From Clicks99 Team",
+                        "subject" => "Payment Received",
                         "user" => $payee,
                         "transaction" => $transaction,
                         "bank" => $bank
@@ -251,8 +251,21 @@ class Finance extends Admin {
                 ));
                 $transaction->save();
 
+                $account = Account::first(array("user_id = ?" => $user_id));
+                if (!$account) {
+                    $account = new Account(array(
+                        "user_id" => $instamojo->user_id,
+                        "balance" => 0,
+                        "live" => 1
+                    ));
+                    $account->save();
+                }
+
+                $account->balance += $instamojo->amount;
+                $account->save();
+
                 $this->notify(array(
-                    "template" => "paymentReceived",
+                    "template" => "accountCredited",
                     "subject" => "Payment Received",
                     "user" => $user,
                     "transaction" => $transaction

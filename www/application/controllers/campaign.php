@@ -63,7 +63,7 @@ class Campaign extends Publisher {
                 "url" =>  RequestMethods::post("url"),
                 "title" => RequestMethods::post("title"),
                 "image" => $this->s3upload("image", "images"),
-                "commission" => 5,
+                "commission" => 15,
                 "budget" => RequestMethods::post("budget", 5000),
                 "category" => implode(",", RequestMethods::post("category", "")),
                 "description" => RequestMethods::post("description", ""),
