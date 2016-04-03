@@ -71,7 +71,7 @@ class Advertiser extends Analytics {
      * @before _secure, advertiserLayout
      */
     public function platforms() {
-        $this->seo(array("title" => "Transactions", "view" => $this->getLayoutView()));
+        $this->seo(array("title" => "Platforms", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
     }
 
