@@ -204,6 +204,31 @@ namespace Shared {
             }
         }
 
+        protected function urls3upload($url) {
+            try {
+                $extension = pathinfo($url, PATHINFO_EXTENSION);
+                if (!in_array($extension, array("jpg", "png", "gif"))) {
+                    $extension = "jpg";
+                }
+                $filename = uniqid() . ".{$extension}";
+                $img = APP_PATH. '/public/assets/uploads/images/'.$filename;
+                if(file_put_contents($img, file_get_contents($url))){
+                    $s3 = $this->_s3();
+
+                    $string = file_get_contents(APP_PATH. '/public/assets/uploads/images/'.$filename);
+                    $result = $s3->putObject([
+                        'Bucket'=> 's3.clicks99.com',
+                        'Key'   => 'images/' . $filename,
+                        'Body'  => $string,
+                        'ACL'   => 'public-read'
+                    ]);
+                    return $filename;
+                }
+            } catch (Exception $e) {
+                echo $e->getMessage();
+            }
+        }
+
         /**
          * The Main Method to return Mailgun Instance
          * 

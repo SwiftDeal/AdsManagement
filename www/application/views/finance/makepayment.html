@@ -36,6 +36,7 @@
 
                 <div class="col-md-4">
                     <div class="panel panel-default">
+                        {if($bank)}
                         <table class="table">
                             <tbody>
                                 <tr>
@@ -56,6 +57,9 @@
                                 </tr>
                             </tbody>
                         </table>
+                        {/if} {else}
+                            <p>No Bank Account added</p>
+                        {/else}
                     </div>
                 </div>
 
@@ -69,11 +73,11 @@
                                 </tr>
                                 <tr>
                                     <td>Paypal</td>
-                                    <td>{$paypal->email}</td>
-                                </tr>
-                                <tr>
-                                    <td>Currency</td>
-                                    <td>{$user->currency}</td>
+                                    <td>
+                                        {if($paypal)}
+                                        {echo $paypal->email}
+                                        {/if}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Registerd on</td>

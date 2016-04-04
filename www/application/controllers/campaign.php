@@ -58,12 +58,17 @@ class Campaign extends Publisher {
         
         $view->set("errors", array());
         if (RequestMethods::post("action") == "content") {
+            if (RequestMethods::post("image_url")) {
+                $image = $this->urls3upload(RequestMethods::post("image_url"));
+            } else {
+                $image = $this->s3upload("image", "images");
+            }
             $item = new Item(array(
                 "user_id" => $this->user->id,
                 "model" =>  RequestMethods::post("model", "rpm"),
                 "url" =>  RequestMethods::post("url"),
                 "title" => RequestMethods::post("title"),
-                "image" => $this->s3upload("image", "images"),
+                "image" => $image,
                 "commission" => 15,
                 "budget" => RequestMethods::post("budget", 5000),
                 "category" => implode(",", RequestMethods::post("category", "")),
@@ -83,6 +88,19 @@ class Campaign extends Publisher {
             }  else {
                 $view->set("errors", $item->getErrors());
             }
+        }
+    }
+
+    /**
+     * @before _secure, advertiserLayout
+     */
+    public function fetch() {
+        $this->seo(array("title" => "Create Content", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+        
+        $view->set("errors", array());
+        if (RequestMethods::post("action") == "prefetch") {
+            $view->set("meta", $this->_bot(RequestMethods::post("url")));
         }
     }
 

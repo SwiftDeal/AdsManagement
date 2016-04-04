@@ -217,6 +217,40 @@ $(document).ready(function() {
         });
     });
 
+    $(".fetch").submit(function(e) {
+        e.preventDefault();
+        var self = $(this);
+        $(".fetch button").html('Fetching ...<i class="fa fa-spinner fa-pulse"></i>');
+        request.create({
+            action: "campaign/fetch",
+            data: self.serialize(),
+            callback: function(data) {
+                $(".fetch button").html('Done');console.log(data);
+
+                $('.meta_img').attr('src', data.meta.image);
+                $('#meta_title').html(data.meta.title);
+                $('#meta_url').html(data.meta.url);
+                $('textarea').val(data.meta.description);
+                $('#meta_description').html(data.meta.description);
+                $('input[name="title"]').val(data.meta.title);
+                $('input[name="url"]').val(data.meta.url);
+                $('input[name="image_url"]').val(data.meta.image);
+
+                $('#myTabs li:eq(0)').removeClass('active');
+                $('#myTabs li:eq(1)').removeClass('hidden');
+                $('#myTabs li:eq(1)').addClass('step-success');
+                $('#myTabs li:eq(1) a').tab('show');
+            }
+        });
+    });
+
+    $("#finalize").click(function(e) {
+        $('#myTabs li:eq(1)').removeClass('active');
+        $('#myTabs li:eq(2)').removeClass('hidden');
+        $('#myTabs li:eq(2)').addClass('step-success');
+        $('#myTabs li:eq(2) a').tab('show');
+    })
+
 });
 
 function today () {
