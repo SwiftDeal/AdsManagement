@@ -2,31 +2,6 @@
 <div class="row">
     <div class="col-lg-12">
         <form class="form-inline page-header text-center" role="form" method="get" action="">
-            <!-- <div class="form-group">
-                <div class="input-group">
-                    <label class="sr-only">Category</label>
-                    <select name="category" class="form-control">
-                        <option value="" selected="">All</option>
-                        <option value="bollywood">Bollywood</option>
-                        <option value="fashion">Fashion</option>
-                        <option value="funny">Funny</option>
-                        <option value="hollywood">Hollywood</option>
-                        <option value="life">Life</option>
-                        <option value="news">News</option>
-                        <option value="omg">OMG</option>
-                        <option value="sports">Sports</option>
-                        <option value="trending">Trending</option>
-                        <option value="videos">Viral Videos</option>
-                        <option value="entertainment">Entertainment</option>
-                        <option value="gadgets">Gadgets</option>
-                        <option value="religion">Religion</option>
-                        <option value="interesting">Interesting</option>
-                        <option value="health">Health</option>
-                        <option value="celebrities">Celebrities</option>
-                        <option value="amazing">Amazing</option>
-                    </select>
-                </div>
-            </div> -->
             <div class="form-group">
                 <div class="input-group">
                     <label class="sr-only">Title</label>
@@ -38,7 +13,7 @@
     </div>
     <div class="row">
         {foreach $item in $items}
-        <div class="col-md-4 col-sm-12">
+        <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="thumbnail no-margin-bottom">
                 <a href="{echo $item->url}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}" class="img-responsive" alt="{echo $item->title}" height="240"></a>
                 <div class="caption">

@@ -111,6 +111,7 @@ $(document).ready(function() {
                 btn.closest('div').find('.shorturl').focus();
                 $('#link_data').val(title+"\n"+data.shortURL);
                 $('#link_modal').modal('show');
+                $('#link_modal_fb').attr('href', 'https://www.facebook.com/sharer/sharer.php?u='+data.shortURL);
                 document.execCommand('SelectAll');
                 document.execCommand("Copy", false, null);
             }

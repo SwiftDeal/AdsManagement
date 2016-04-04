@@ -2,7 +2,10 @@
     <span class="title">Ad Campaigns</span>
     <div class="description">
         Manage all your adcampaign from here, edit and disable.
-        <span class="pull-right"><a href="/campaign/create.html" class="btn btn-danger"><i class="fa fa-bullhorn"></i> New Campaign</a></span>
+        <span class="pull-right">
+            <a href="/campaign/create.html" class="btn btn-danger"><i class="fa fa-bullhorn"></i> New Campaign</a>
+            <a href="/campaign/fetch.html" class="btn btn-info"><i class="fa fa-link"></i> Quick Campaign</a>
+        </span>
     </div>
 </div>
 <div class="row">
@@ -26,17 +29,19 @@
             <div class="card-body no-padding">
                 <table class="table table-responsive">
                     <tr>
-                        <th>Created</th>
-                        <th>Platform</th>
+                        <th>Id</th>
                         <th>Campaign</th>
                         <th>Commission</th>
                         <th>Realtime</th>
                     </tr>
                     {foreach $item in $items}
                     <tr>
-                        <td>{echo Framework\StringMethods::datetime_to_text($item->created)}</td>
-                        <td><a href="/public/assets/uploads/images/{$item->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}/50/50"></a></td>
-                        <td>{echo $item->title}</td>
+                        <td>{echo $item->id}</td>
+                        <td>
+                            <a href="/public/assets/uploads/images/{$item->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}/50/50"></a>
+                            {echo $item->title}<br>
+                            <small>{echo Framework\StringMethods::datetime_to_text($item->created)}</small>
+                        </td>
                         <td>{echo $item->commission}%</td>
                         <td class="campaignstat" data-campaign="{echo $item->id}">
                             <span class="label label-success">View</span>
