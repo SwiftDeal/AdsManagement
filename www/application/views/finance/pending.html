@@ -28,7 +28,7 @@
                         <td><a href="/admin/info/user/{$user->id}">{echo $user->name}</a></td>
                         <td><i class="fa fa-inr"></i> {echo $account->balance}</td>
                         <td>
-                            <a href="/finance/transactions?user_id={$user->id}" class="btn btn-primary btn-xs"><i class="fa fa-bank"></i> Transaction </a>
+                            <a href="/finance/transactions.html?property=user_id&value={$user->id}" class="btn btn-primary btn-xs" target="_blank"><i class="fa fa-bank"></i> Transaction </a>
                             <a href="/finance/makepayment/{$user->id}" class="btn btn-warning btn-xs"><i class="fa fa-inr"></i> Make Payment </a>&nbsp;
                             <a href="/analytics/verify/{$user->id}" class="btn btn-info btn-xs"><i class="fa fa-check"></i> Verify</a>&nbsp;
                         </td>

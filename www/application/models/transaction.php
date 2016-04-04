@@ -35,4 +35,12 @@ class Transaction extends Shared\Model {
      * @label reference
      */
     protected $_ref;
+
+    /**
+    * @column
+    * @readwrite
+    * @type text
+    * @length 3
+    */
+    protected $_currency = "INR";
 }

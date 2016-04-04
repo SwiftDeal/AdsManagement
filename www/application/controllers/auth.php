@@ -144,7 +144,6 @@ class Auth extends Controller {
             "password" => sha1($pass),
             "phone" => RequestMethods::post("phone"),
             "admin" => 0,
-            "currency" => "INR",
             "live" => 1
         ));
         if (RequestMethods::post("action") == "fblogin") {
@@ -201,7 +200,6 @@ class Auth extends Controller {
             "password" => sha1($pass),
             "phone" => RequestMethods::post("phone"),
             "admin" => 0,
-            "currency" => "INR",
             "live" => 0
         ));
         if ($user->validate()) {
@@ -326,7 +324,6 @@ class Auth extends Controller {
                     "password" => sha1($this->randomPassword()),
                     "phone" => "",
                     "admin" => 0,
-                    "currency" => "INR",
                     "live" => 0
                 ));
                 $user->save();

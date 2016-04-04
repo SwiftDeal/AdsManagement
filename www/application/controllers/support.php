@@ -167,7 +167,6 @@ class Support extends Publisher {
                     "password" => sha1($this->randomPassword()),
                     "phone" => "",
                     "admin" => 0,
-                    "currency" => "INR",
                     "live" => 0
                 ));
                 $user->save();
