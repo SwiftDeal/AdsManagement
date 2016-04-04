@@ -7,6 +7,7 @@
  */
 use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
+use \WebBot\lib\WebBot\Bot as Bot;
 
 class Campaign extends Publisher {
 
@@ -84,6 +85,29 @@ class Campaign extends Publisher {
             }
         }
     }
+
+    protected function _bot($url) {
+        $bot = new Bot(['cloud' => $url]);
+        $bot->execute();
+        $doc = array_shift($bot->getDocuments());
+        $data["title"] = $doc->query("/html/head/title")->item(0)->nodeValue;
+        $data["url"] = $url;
+
+        $metas = $doc->query("/html/head/meta");
+        for ($i = 0; $i < $metas->length; $i++) {
+            $meta = $metas->item($i);
+            
+            if($meta->getAttribute('name') == 'description') {
+                $data["description"] = $meta->getAttribute('content');
+            }
+
+            if($meta->getAttribute('property') == 'og:image') {
+                $data["image"] = $meta->getAttribute('content');
+            }
+        }
+
+        return $data;
+    }
     
     /**
      * @before _secure, changeLayout, _admin
@@ -95,7 +119,7 @@ class Campaign extends Publisher {
         $limit = RequestMethods::get("limit", 10);
         
         $property = RequestMethods::get("property", "live");
-        $value = RequestMethods::get("value", false);
+        $value = RequestMethods::get("value", 0);
 
         if (in_array($property, array("url", "title", "category"))) {
             $where = array(
@@ -105,7 +129,7 @@ class Campaign extends Publisher {
             $where = array("{$property} = ?" => $value);
         }
 
-        $contents = Item::all($where, array("id", "title", "created", "image", "url", "live"), "created", "desc", $limit, $page);
+        $contents = Item::all($where, array("id", "title", "created", "image", "url", "live", "user_id"), "created", "desc", $limit, $page);
         $count = Item::count($where);
 
         $view->set("contents", $contents);

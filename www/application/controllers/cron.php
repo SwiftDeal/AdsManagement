@@ -22,7 +22,7 @@ class CRON extends Shared\Controller {
     protected function ctracker() {
         $date = date('Y-m-d', strtotime("now"));
         $where = array(
-            "live = ?" => false,
+            "live = ?" => true,
             "created >= ?" => date('Y-m-d', strtotime("-20 day")),
             "created < ?" => date('Y-m-d', strtotime("now"))
         );

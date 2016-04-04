@@ -4,12 +4,22 @@
         <form class="form-inline text-center" role="form" method="get" action="">
             <div class="form-group">
                 <div class="input-group">
-                    <input type="text" style="width: 150px" name="user_id" class="form-control" placeholder="Enter User Id" value="{$user_id}" />
+                    <select name="property" class="form-control" value="{$property}">
+                        <option value="user_id">UserId</option>
+                        <option value="amount">Amount</option>
+                        <option value="Ref">Refernce</option>
+                        <option value="live">Live</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="text" name="value" class="form-control" placeholder="Enter value" value="{$value}" />
                 </div>
             </div>
             <button type="submit" class="btn btn-primary">Search</button>
         </form>
-        {if(isset($user_id))}
+        {if($property == "user_id")}
         <span class="pull-right">
             <a href="/finance/makepayment/{$user_id}" class="btn btn-primary btn-xs"><i class="fa fa-inr"></i> Make Payment </a>&nbsp;
         </span>

@@ -86,18 +86,15 @@ class Finance extends Admin {
         $paypal = Paypal::first(array("user_id = ?" => $user_id), array("*"), "created", "desc");
 
         if (RequestMethods::post("action") == "payment") {
-            $transaction = new Transaction(array(
-                "user_id" => $user_id,
-                "amount" => RequestMethods::post("amount"),
-                "ref" => RequestMethods::post("ref"),
-                "live" => RequestMethods::post("live")
-            ));
-            $transaction->save();
-            $account->balance += RequestMethods::post("amount");
-            $account->save();
-
             switch (RequestMethods::post("live")) {
                 case '0':
+                    $transaction = new Transaction(array(
+                        "user_id" => $user_id,
+                        "amount" => RequestMethods::post("amount"),
+                        "ref" => RequestMethods::post("ref"),
+                        "live" => RequestMethods::post("live")
+                    ));
+                    $account->balance += RequestMethods::post("amount");
                     $this->notify(array(
                         "template" => "accountCredited",
                         "subject" => "Payment Received",
@@ -107,6 +104,13 @@ class Finance extends Admin {
                     ));
                     break;
                 case '1':
+                    $transaction = new Transaction(array(
+                        "user_id" => $user_id,
+                        "amount" => -(RequestMethods::post("amount")),
+                        "ref" => RequestMethods::post("ref"),
+                        "live" => RequestMethods::post("live")
+                    ));
+                    $account->balance -= RequestMethods::post("amount");
                     $this->notify(array(
                         "template" => "accountDebited",
                         "subject" => "Payments From Clicks99 Team",
@@ -116,6 +120,8 @@ class Finance extends Admin {
                     ));
                     break;
             }
+            $transaction->save();
+            $account->save();
 
             $this->redirect("/finance/transactions.html?user_id={$payee->id}");
         }
@@ -155,19 +161,14 @@ class Finance extends Admin {
      */
     public function transactions() {
         $this->seo(array("title" => "Transactions", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
 
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
-        $user_id = RequestMethods::get("user_id");
-        if (!empty($user_id)) {
-            $where = array(
-                "user_id = ?" => $user_id
-            );
-        } else{
-            $where = array();
-        }
+        $property = RequestMethods::get("property", "live");
+        $value = RequestMethods::get("value", 0);
 
-        $view = $this->getActionView();
+        $where = array("{$property} = ?" => $value);
         $transactions = Transaction::all($where, array("*"), "created", "desc", $limit, $page);
         $count = Transaction::count($where);
 
@@ -175,7 +176,8 @@ class Finance extends Admin {
         $view->set("limit", $limit);
         $view->set("page", $page);
         $view->set("count", $count);
-        $view->set("user_id", $user_id);
+        $view->set("property", $property);
+        $view->set("value", $value);
     }
 
     public function credit() {

@@ -29,7 +29,9 @@
                     <table class="table">
                         <thead>
                             <tr>
+                                <th>Id</th>
                                 <th>Title</th>
+                                <th>Advertiser</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -38,16 +40,21 @@
                             {foreach $content in $contents}
                             <tr>
                                 <td>
+                                    {if($content->live)}
+                                        <i class="fa fa-dot-circle-o text-success"></i>
+                                    {/if}
+                                    {else}
+                                        <i class="fa fa-dot-circle-o text-warning"></i>
+                                    {/else}
+                                    {echo $content->id}
+                                </td>
+                                <td>
                                     <a href="/public/assets/uploads/images/{$content->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($content->image)}/50/50"></a>
                                     <a href="/admin/info/item/{$content->id}" target="_blank">{echo $content->title}</a>
                                 </td>
+                                <td><a href="/admin/info/user/{$content->user_id}" target="_blank">{echo $content->user_id}</a></td>
                                 <td>
-                                    {if($content->live)}
-                                        <span class="label label-success">Active</span>
-                                    {/if}
-                                    {else}
-                                        <span class="label label-warning">InActive</span>
-                                    {/else}
+                                    <small>{echo $content->created}</small>
                                 </td>
                                 <td>
                                     <a href="/analytics/campaign/{$content->id}" class="btn btn-default btn-xs"><i class="fa fa-pie-chart"></i></a>
