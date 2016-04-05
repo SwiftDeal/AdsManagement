@@ -87,6 +87,17 @@ class Manage extends Admin {
             }
         }
 
+        if (RequestMethods::post("action") == "assignDomain") {
+            $domain = new Meta(array(
+                "user_id" => RequestMethods::post("user_id"),
+                "property" => "domain",
+                "value" => RequestMethods::post("domain"),
+                "live" => 1
+            ));
+            $domain->save();
+            $view->set("message", "Domain Added Successfully");
+        }
+
         $view->set("domains", $domains);
     }
 

@@ -99,7 +99,7 @@
                         <tr>
                             <td><b>Amount (INR)</b></td>
                             <td>
-                                <input type="number" class="form-control" name="amount" value="{echo $account->balance}" placeholder="Amount to pay">
+                                <input type="number" class="form-control" name="amount" value="{echo round($account->balance)}" placeholder="Amount to pay">
                             </td>
                         </tr>
                         <tr>

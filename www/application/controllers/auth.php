@@ -91,7 +91,7 @@ class Auth extends Controller {
             }
             $this->setUser($user);
             //setting domains
-            $domains = Meta::all(array("property = ?" => "domain", "live = ?" => true));
+            $domains = Meta::all(array("property = ?" => "domain", "live = ?" => true, "user_id = ?" => 1));
             $session->set("domains", $domains);
             $session->set("publish", $publish);
             if (RequestMethods::post("action") == "fblogin") {

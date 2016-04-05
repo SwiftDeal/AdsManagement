@@ -1,18 +1,10 @@
 <?php
 ob_start();
-define("DEBUG", TRUE);
-define("DEV", FALSE);
+define("DEBUG", FALSE);
 define("APP_PATH", str_replace(DIRECTORY_SEPARATOR, "/", dirname(__FILE__)));
 define("URL", "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
 define("CDN", "https://$_SERVER[HTTP_HOST]/public/assets/");
 define("CLOUDFRONT", "https://dh3fr73b75uve.cloudfront.net/");
-if (DEV) {
-    if ($_SERVER['HTTP_USER_AGENT'] != "FaizanAyubiCL99") {
-        include APP_PATH . '/application/views/layouts/errors/maintenance.php';
-        die();
-    }
-}
-
 date_default_timezone_set('Asia/Kolkata');
 try {
     

@@ -123,7 +123,7 @@ class Finance extends Admin {
             $transaction->save();
             $account->save();
 
-            $this->redirect("/finance/transactions.html?user_id={$payee->id}");
+            $this->redirect("/finance/transactions.html?property=user_id&value={$payee->id}");
         }
 
         $view->set("payee", $payee);

@@ -50,7 +50,12 @@
             <div class="col-lg-12 col-md-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title"><i class="fa fa-line-chart fa-fw"></i> Active Links</h3>
+                        <p class="panel-title">
+                            <strong><i class="fa fa-line-chart fa-fw"></i> Active Links</strong>
+                            <span class="pull-right">
+                                <a href="/publisher/mylinks.html">View All Links <i class="fa fa-arrow-circle-right"></i></a>
+                            </span>
+                        </p>
                     </div>
                     {if($links)}
                     <div class="table-responsive">
@@ -80,11 +85,6 @@
                     {/if} {else}
                     <p class="text-center">Hi, you have not generated any link to share on your platform.</p>
                     {/else}
-                    <div class="panel-body">
-                        <div class="text-right">
-                            <a href="/publisher/mylinks.html">View All Links <i class="fa fa-arrow-circle-right"></i></a>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -106,10 +106,6 @@
     </div>
 </div>
 {/if}
-<div class="row">
-    
-    
-</div>
 <script src="{echo CDN}plugins/jvectormap/jquery-jvectormap-2.0.3.min.js"></script>
 <script src="{echo CDN}plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
 <script type="text/javascript">
