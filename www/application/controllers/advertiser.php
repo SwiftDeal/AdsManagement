@@ -11,6 +11,23 @@ class Advertiser extends Analytics {
      * @readwrite
      */
     protected $_advert;
+
+    public function __construct($options = array()) {
+        parent::__construct($options);
+
+        $conf = Registry::get("configuration");
+        $google = $conf->parse("configuration/google")->google;
+
+        $session = Registry::get("session");
+        if (!Registry::get("gClient")) {
+            $client = new Google_Client();
+            $client->setClientId($google->client->id);
+            $client->setClientSecret($google->client->secret);
+            $client->setRedirectUri('http://'.$_SERVER['HTTP_HOST'].'/advertiser/gaLogin');
+            
+            Registry::set("gClient", $client);
+        }
+    }
 	
 	/**
      * @before _secure, advertiserLayout
@@ -68,11 +85,70 @@ class Advertiser extends Analytics {
     }
 
     /**
-     * @before _secure, advertiserLayout
+     * @before _secure, advertiserLayout, googleAnalytics
      */
     public function platforms() {
         $this->seo(array("title" => "Platforms", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
+
+        $client = Registry::get("gClient");
+        $token = $client->getAccessToken();
+        if (!$token) {
+            $url = $client->createAuthUrl();
+            $view->set("url", $url);
+        } elseif ($client->isAccessTokenExpired()) {
+            $url = $client->createAuthUrl();
+            $this->redirect($url);
+        } elseif (RequestMethods::get("sync") == "analytics") {
+            $accounts = Shared\Services\GA::fetch($client);
+
+            $ga_stats = Registry::get("MongoDB")->ga_stats;
+            foreach ($accounts as $properties) {
+                foreach ($properties as $p) {
+                    $website = Website::first([
+                        "user_id = ?" => $this->user->id,
+                        "url = ?" => $p['website']
+                    ]);
+
+                    if (!$website) {
+                        $website = new Website([
+                            "user_id" => $this->user->id,
+                            "url" => $p['url'],
+                            "gaid" => $p['id'],
+                            "name" => $p['name']
+                        ]);
+                    }
+                    $website->save();
+
+                    foreach ($p['profiles'] as $profile) {
+                        $about = $profile['about']; $cols = $profile['columns'];
+                        unset($profile['about']); unset($profile['columns']);
+
+                        foreach ($profile as $key => $value) {
+                            if ($value[1] != 'Clicks99') continue;
+                            $search = [
+                                'source' => $value[0],
+                                'medium' => $value[1],
+                                'user_id' => (int) $this->user->id,
+                                'website_id' => (int) $website->id
+                            ];
+                            $data = Shared\Services\GA::fields($value);
+                            $newdata = ['$set' => array_merge($data, $search)];
+                            
+                            $record = $ga_stats->update([
+                                $search
+                            ], $newdata, [
+                                'upsert' => true
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            $view->set("message", "All analytics stats for Clicks99 have been stored!!");
+        } else {
+            $view->set("sync", true);
+        }
     }
 
 	public function advertiserLayout() {
@@ -140,5 +216,41 @@ class Advertiser extends Analytics {
                 }
             }
         }
+    }
+
+    /**
+     * @before _secure
+     */
+    public function gaLogin() {
+        $this->noview(); $session = Registry::get("session");
+        $client = Registry::get("gClient");
+        $code = RequestMethods::get("code");
+        if (!$code) {
+            $this->redirect("/404");
+        }
+
+        $c = $client->authenticate($code);
+        $token = $client->getAccessToken();
+        if (!$token) {
+            $this->redirect("/404");
+        }
+        $session->set('Google:$accessToken', $token);
+        $this->redirect("http://".$_SERVER['HTTP_HOST']."/advertiser/platforms.html");
+    }
+
+    /**
+     * @protected
+     */
+    public function googleAnalytics() {
+        $client = Registry::get("gClient"); $session = Registry::get("session");
+        $token = $session->get('Google:$accessToken');
+        if ($token) {
+            $client->setAccessToken($token);
+        }
+
+        $client->setApplicationName("Cloudstuff");
+        $client->addScope(Google_Service_Analytics::ANALYTICS_READONLY);
+
+        Registry::set("gClient", $client);
     }
 }

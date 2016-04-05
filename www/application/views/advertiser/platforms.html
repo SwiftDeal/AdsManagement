@@ -1,7 +1,12 @@
 <div class="page-title">
     <span class="title">
         Platforms
-        <span class="pull-right"><button type="button" class="btn btn-danger btn-sm"><i class="fa fa-google"></i> Add Platform</button></span>
+        {if isset($url)}
+        <span class="pull-right"><a href="{echo $url}" class="btn btn-danger btn-sm"><i class="fa fa-google"></i> Add Platform</a></span>
+        {/if}
+        {if isset($sync)}
+        <span class="pull-right"><a href="/advertiser/platforms?sync=analytics" class="btn btn-danger btn-sm"><i class="fa fa-google"></i> Sync Analytics Data</a></span>
+        {/if}
     </span>
     <div class="description">All Different Platforms you own</div>
 </div>

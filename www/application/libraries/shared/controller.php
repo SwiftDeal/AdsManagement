@@ -163,10 +163,10 @@ namespace Shared {
         }
 
         protected function _s3() {
-            require APP_PATH.'/application/libraries/Aws/functions.php';
-            require APP_PATH.'/application/libraries/GuzzleHttp/Psr7/functions.php';
-            require APP_PATH.'/application/libraries/GuzzleHttp/functions.php';
-            require APP_PATH.'/application/libraries/GuzzleHttp/Promise/functions.php';
+            require_once APP_PATH.'/application/libraries/Aws/functions.php';
+            require_once APP_PATH.'/application/libraries/GuzzleHttp/Psr7/functions.php';
+            require_once APP_PATH.'/application/libraries/GuzzleHttp/functions.php';
+            require_once APP_PATH.'/application/libraries/GuzzleHttp/Promise/functions.php';
             
             $conf = Registry::get("configuration")->parse("configuration/aws");
 
