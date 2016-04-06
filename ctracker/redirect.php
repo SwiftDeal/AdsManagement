@@ -13,6 +13,9 @@ if (isset($_GET['id'])) {
                 $track->log('visits');
             }
         }*/
+        if ($_GET['id'] == "MjQxODQ=") {
+            $track->log('visits');
+        }
         $_SESSION["track"] = uniqid();
         include 'view/dynamic.php';
     } else {

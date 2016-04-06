@@ -3,7 +3,7 @@ ob_start();
 define("DEBUG", FALSE);
 define("APP_PATH", str_replace(DIRECTORY_SEPARATOR, "/", dirname(__FILE__)));
 define("URL", "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
-define("CDN", "https://$_SERVER[HTTP_HOST]/public/assets/");
+define("CDN", "http://$_SERVER[HTTP_HOST]/public/assets/");
 define("CLOUDFRONT", "https://dh3fr73b75uve.cloudfront.net/");
 date_default_timezone_set('Asia/Kolkata');
 try {

@@ -9,3 +9,7 @@ www/application/configuration/mail.ini
 www/application/configuration/payment.ini
 
 www/application/configuration/aws.ini
+
+www/application/configuration/google.ini
+
+www/application/configuration/bitly.ini

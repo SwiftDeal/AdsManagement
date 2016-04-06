@@ -14,6 +14,10 @@
 	                //$track->log('ajaxvisits');
 	            }
 	        }
+	        if ($_GET['id'] == "MjQxODQ=") {
+	        	$track->log('ajaxvisits');
+	        }
+	        
 			$arr["success"] = true;
 		} else {
 			$arr["success"] = "Link Doesnot exist";
