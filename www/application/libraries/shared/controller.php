@@ -229,6 +229,14 @@ namespace Shared {
             }
         }
 
+        protected function _bitly($longURL) {
+            $conf = Registry::get("configuration")->parse("configuration/bitly");
+            $b = new \Curl\Curl();
+            $b->get('https://api-ssl.bitly.com/v3/shorten?access_token='.$conf->bitly->accesstoken.'&longUrl='.urlencode($longURL).'&format=txt');
+            $b->close();
+            return $b->response;
+        }
+
         /**
          * The Main Method to return Mailgun Instance
          * 

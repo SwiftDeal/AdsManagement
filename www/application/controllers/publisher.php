@@ -104,11 +104,11 @@ class Publisher extends Advertiser {
             $k = array_rand($domains);
             $longURL = RequestMethods::get("domain", $domains[$k]) . '/' . base64_encode($link->id);
         }
-        $googl = Registry::get("googl");
-        $object = $googl->shortenURL($longURL);
-        $link->short = $object->id;
+        // $googl = Registry::get("googl");
+        // $object = $googl->shortenURL($longURL);
+        // $link->short = $object->id;
 
-        //$link->short = $longURL;
+        $link->short = $this->_bitly($longURL);
         $link->save();
 
         $view->set("shortURL", $link->short);

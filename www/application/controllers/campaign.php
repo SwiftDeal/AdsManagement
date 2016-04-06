@@ -8,6 +8,7 @@
 use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
 use \WebBot\lib\WebBot\Bot as Bot;
+use \Curl\Curl;
 
 class Campaign extends Publisher {
 
