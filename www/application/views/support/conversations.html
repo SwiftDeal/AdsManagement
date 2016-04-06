@@ -28,17 +28,15 @@ tinymce.init({
                 <table class="table">
                 	<tr>
                         <td>{$ticket->user_id}</td>
-                		<td>{$u->name}</td>
+                		<td><a href="/manage/users.html?property=id&amp;value={$ticket->user_id}" target="_blank">{$u->name}</a></td>
                 		<td>{$u->email}</td>
                 		<td>{$u->phone}</td>
                 		<td>
-                			<a href="/auth/loginas/{$u->id}" class="btn btn-default btn-xs"><i class="fa fa-sign-in"></i> Login As</a>
                             {if($ticket->live)}
                                 <a href="/admin/edit/ticket/{$ticket->id}/live/0" class="btn btn-primary btn-xs"><i class="fa fa-check"></i> Close</a>
                             {/if} {else}
                                 <a href="/admin/edit/ticket/{$ticket->id}/live/1" class="btn btn-warning btn-xs"><i class="fa fa-ban"></i> Open</a>
                             {/else}
-                            <a href="/finance/transactions?user_id={$ticket->user_id}" class="btn btn-primary btn-xs" target="_blank"><i class="fa fa-bank"></i> Transaction </a>
                 		</td>
                 	</tr>
                 </table>
