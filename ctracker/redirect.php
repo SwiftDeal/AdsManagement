@@ -8,15 +8,6 @@ if (isset($_GET['id'])) {
 
     $track = new LinkTracker($_GET['id']);
     if (isset($track->link)) {
-        /*if (isset($_SERVER["HTTP_USER_AGENT"])) {
-            if (!$track->is_bot($_SERVER["HTTP_USER_AGENT"])) {
-                $track->log('visits');
-            }
-        }*/
-        if ($_GET['id'] == "MjQxODQ=") {
-            $track->log('visits');
-        }
-        $_SESSION["track"] = uniqid();
         include 'view/dynamic.php';
     } else {
     	include 'view/static.php';

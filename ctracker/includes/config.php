@@ -6,9 +6,4 @@ define('SITE', "http://$_SERVER[HTTP_HOST]/");
 define('DIMENSION', '560x292');
 define('DBUSER', 'webserver');
 define('DBPASS', 'jmn6qcnrbdsa');
-
-
-
 define("URL", "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
-
-session_start();

@@ -96,7 +96,7 @@ class LinkTracker {
 
 	public function process() {
 		$c = $this->cookie();
-		if ($c == 1) {
+		if ($c < 4) {
 			$this->mongo();
 		}
 	}

@@ -24,41 +24,19 @@
 </head>
 <body>
 <script type="text/javascript">
-<?php
-if (!isset($_SERVER["HTTP_USER_AGENT"])) {
-    //echo "redirect2();";
-}
-?>
 process();
 function process() {
     $.ajax({
         url: 'includes/process.php',
-        headers: { 'Clicks99Track': "<?php echo base64_encode($_SESSION['track']);?>" },
+        headers: { 'Clicks99Track': "<?php echo uniqid();?>" },
         type: 'GET',
         cache: true,
         data: {id: "<?php echo $_GET['id'];?>"},
         success: function (data) {
-            redirect();
+            window.location = '<?php echo $track->redirectUrl();?>';
         }
     });
 }
-function redirect () {
-    window.location = '<?php echo $track->redirectUrl();?>';
-}
-
-function redirect2() {
-    window.location = "/includes/process.php?id=<?php echo $_GET['id'];?>&Clicks99Track=<?php echo base64_encode($_SESSION['track']);?>";
-}
-</script>
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-74080200-2', 'auto');
-  ga('send', 'pageview');
 </script>
 </body>
-
 </html>
