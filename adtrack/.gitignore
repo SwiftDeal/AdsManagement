@@ -1,2 +1,4 @@
 # Exclude node modules
 node_modules/
+config.js
+sftp-config.json
