@@ -7,7 +7,7 @@ use Framework\Registry as Registry;
 
 class Advertiser extends Analytics {
 
-	/**
+    /**
      * @readwrite
      */
     protected $_advert;
@@ -28,12 +28,12 @@ class Advertiser extends Analytics {
             Registry::set("gClient", $client);
         }
     }
-	
-	/**
+    
+    /**
      * @before _secure, advertiserLayout
      */
-	public function index() {
-		$this->seo(array("title" => "Dashboard", "view" => $this->getLayoutView()));
+    public function index() {
+        $this->seo(array("title" => "Dashboard", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         $database = Registry::get("database");
         $paid = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 1)->all();
@@ -46,15 +46,15 @@ class Advertiser extends Analytics {
         $view->set("account", $account);
         $view->set("paid", round($paid[0]["earn"], 2));
         $view->set("earn", round($earn[0]["earn"], 2));
-	}
+    }
 
-	/**
+    /**
      * @before _secure, advertiserLayout
      */
     public function settings() {
-		$this->seo(array("title" => "Settings", "view" => $this->getLayoutView()));
+        $this->seo(array("title" => "Settings", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-	}
+    }
 
     /**
      * @before _secure, advertiserLayout
@@ -91,6 +91,8 @@ class Advertiser extends Analytics {
         $this->seo(array("title" => "Platforms", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
+        $websites = Website::all(array("user_id = ?" => $this->user->id));
+
         $client = Registry::get("gClient");
         $token = $client->getAccessToken();
         if (!$token) {
@@ -113,9 +115,10 @@ class Advertiser extends Analytics {
                     if (!$website) {
                         $website = new Website([
                             "user_id" => $this->user->id,
-                            "url" => $p['url'],
+                            "url" => $p['website'],
                             "gaid" => $p['id'],
-                            "name" => $p['name']
+                            "name" => $p['name'],
+                            "live" => 1
                         ]);
                     }
                     $website->save();
@@ -133,13 +136,14 @@ class Advertiser extends Analytics {
                                 'website_id' => (int) $website->id
                             ];
                             $data = Shared\Services\GA::fields($value);
-                            $newdata = ['$set' => array_merge($data, $search)];
-                            
-                            $record = $ga_stats->update([
-                                $search
-                            ], $newdata, [
-                                'upsert' => true
-                            ]);
+                            $newFields = array_merge($data, $search);
+
+                            $record = $ga_stats->findOne($search);
+                            if (isset($record)) {
+                                $ga_stats->update($search, ['$set' => $data]);
+                            } else {
+                                $ga_stats->insert($newFields);
+                            }
                         }
                     }
                 }
@@ -150,11 +154,10 @@ class Advertiser extends Analytics {
             $view->set("sync", true);
         }
 
-        $websites = Website::all(array("user_id = ?" => $this->user->id));
         $view->set("websites", $websites);
     }
 
-	public function advertiserLayout() {
+    public function advertiserLayout() {
         $session = Registry::get("session");
         
         $advert = $session->get("advert");

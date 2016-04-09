@@ -4,7 +4,9 @@
  * @author Hemant Mann
  */
 use Framework\Registry as Registry;
-class Website extends Shared\Model{
+use Framework\ArrayMethods as ArrayMethods;
+
+class Website extends Shared\Model {
     
     /**
      * @column
@@ -63,11 +65,18 @@ class Website extends Shared\Model{
     protected $_url;
 
     public function campaign() {
-        $collection = Registry::get("MongoDB")->;
+        $collection = Registry::get("MongoDB")->ga_stats;
         
-        $records = $collection->find(array("website_id" => (int) $this->id));
-        if (isset($records)) {
-            echo "<pre>", print_r($records), "</pre>";
+        $records = $collection->find(array("website_id" => (int) $this->id), ['sessions']);
+        if (!isset($records)) {
+            return 0;
         }
+
+        $sessions = 0;
+        foreach ($records as $r) {
+            $r = ArrayMethods::toObject($r);
+            $sessions += (int) $r->sessions;
+        }
+        return $sessions;
     }
 }

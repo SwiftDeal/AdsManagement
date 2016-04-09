@@ -17,7 +17,7 @@ class GA {
 	/**
 	 * @param array $value
 	 */
-	public static function fields($value, $user) {
+	public static function fields($value) {
 		return [
 	        'pageviews' => $value[2],
 	        'sessions' => $value[3],
