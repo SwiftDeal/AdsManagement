@@ -91,8 +91,6 @@ class Advertiser extends Analytics {
         $this->seo(array("title" => "Platforms", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
-        $websites = Website::all(array("user_id = ?" => $this->user->id));
-
         $client = Registry::get("gClient");
         $token = $client->getAccessToken();
         if (!$token) {
@@ -152,6 +150,7 @@ class Advertiser extends Analytics {
             $view->set("sync", true);
         }
 
+        $websites = Website::all(array("user_id = ?" => $this->user->id));
         $view->set("websites", $websites);
     }
 

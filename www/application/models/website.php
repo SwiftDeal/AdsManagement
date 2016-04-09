@@ -3,6 +3,7 @@
 /**
  * @author Hemant Mann
  */
+use Framework\Registry as Registry;
 class Website extends Shared\Model{
     
     /**
@@ -60,4 +61,13 @@ class Website extends Shared\Model{
      * @label url
      */
     protected $_url;
+
+    public function campaign() {
+        $collection = Registry::get("MongoDB")->;
+        
+        $records = $collection->find(array("website_id" => (int) $this->id));
+        if (isset($records)) {
+            echo "<pre>", print_r($records), "</pre>";
+        }
+    }
 }

@@ -27,7 +27,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    
+                {foreach $website in $websites}
+                    <tr>
+                        <td>{echo $website->gaid}</td>
+                        <td>{echo $website->url}</td>
+                        <td>{echo $website->campaign()}</td>
+                    </tr>
+                {/foreach}
                 </tbody>
             </table>
         </div>

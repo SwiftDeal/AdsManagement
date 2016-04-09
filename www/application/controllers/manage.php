@@ -69,7 +69,6 @@ class Manage extends Admin {
     public function domains() {
         $this->seo(array("title" => "All Domains", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-        $domains = Meta::all(array("property = ?" => "domain"));
 
         if (RequestMethods::get("domain")) {
             $exist = Meta::first(array("property" => "domain", "value = ?" => RequestMethods::get("domain")));
@@ -82,7 +81,6 @@ class Manage extends Admin {
                     "value" => RequestMethods::get("domain")
                 ));
                 $domain->save();
-                array_push($domains, $domain);
                 $view->set("message", "Domain Added Successfully");
             }
         }
@@ -98,6 +96,7 @@ class Manage extends Admin {
             $view->set("message", "Domain Added Successfully");
         }
 
+        $domains = Meta::all(array("property = ?" => "domain"));
         $view->set("domains", $domains);
     }
 
