@@ -90,7 +90,10 @@ class Support extends Publisher {
         $this->seo(array("title" => "Conversation","view" => $this->getLayoutView()));
         $view = $this->getActionView();
         
-        $ticket = Ticket::first(array("id = ?" => $ticket_id));
+        $ticket = Ticket::first(array("id = ?" => $ticket_id, "user_id = ?" => $this->user->id));
+        if (!$ticket) {
+            $this->redirect("/publisher/index.html");
+        }
         if (RequestMethods::post("action") == "reply") {
             $conversation = new Conversation(array(
                 "user_id" => $this->user->id,
@@ -194,6 +197,9 @@ class Support extends Publisher {
         }
     }
 
+    /**
+     * @before _secure, _layout
+     */
     public function close($ticket_id, $live) {
         $this->noview();
         $ticket = Ticket::first(array("id = ?" => $ticket_id));

@@ -11,8 +11,14 @@ class CRON extends Shared\Controller {
     public function index() {
         $this->noview();
         $this->log("CRON Started");
-        $this->ctracker();
+        $this->_publisher();
         $this->log("CRON Ended");
+    }
+
+    protected function _publisher() {
+        $this->log("LinksTracking Started");
+        $this->ctracker();
+        $this->log("LinksTracking Ended");
         
         $this->log("Password Meta Started");
         $this->passwordmeta();
@@ -112,8 +118,15 @@ class CRON extends Shared\Controller {
         }
     }
 
-    public function fraud() {
-        $this->noview();
+    protected function passwordmeta() {
+        $now = date('Y-m-d', strtotime("now"));
+        $meta = Meta::all(array("property = ?" => "resetpass", "created < ?" => $now));
+        foreach ($meta as $m) {
+            $m->delete();
+        }
+    }
+
+    protected function fraud() {
         $this->log("Fraud Started");
         $now = date('Y-m-d', strtotime("now"));
         $fp = fopen(APP_PATH . "/logs/fraud-{$now}.csv", 'w');
@@ -133,35 +146,6 @@ class CRON extends Shared\Controller {
         }
         fclose($fp);
         $this->log("Fraud Ended");
-    }
-
-    protected function reset() {
-        $db = Framework\Registry::get("database");
-        $db->sync(new Stat);
-        $links = Link::all(array(), array("id", "short", "item_id", "user_id"));
-        $startdate = date('Y-m-d', strtotime("-6 day"));
-        $enddate = date('Y-m-d', strtotime("-1 day"));
-        $diff = date_diff(date_create($startdate), date_create($enddate));
-        for ($i = 0; $i <= $diff->format("%a"); $i++) {
-            $date = date('Y-m-d', strtotime($startdate . " +{$i} day"));
-            foreach ($links as $link) {
-                $data = $link->stat($date);
-                if ($data["click"] > 30) {
-                    $this->saveStats($data, $link);
-
-                    //sleep the script
-                    sleep(1);
-                }
-            }
-        }
-    }
-
-    protected function passwordmeta() {
-        $now = date('Y-m-d', strtotime("now"));
-        $meta = Meta::all(array("property = ?" => "resetpass", "created < ?" => $now));
-        foreach ($meta as $m) {
-            $m->delete();
-        }
     }
     
 }
