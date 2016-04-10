@@ -15,6 +15,65 @@ class CRON extends Shared\Controller {
         $this->log("CRON Ended");
     }
 
+    protected function _advertiser() {
+        $yesterday = date('Y-m-d', strtotime("-1 day"));
+        $today = date('Y-m-d', strtotime("now"));
+        $accounts = array();
+
+        $items = Item::all(array("live = ?" => true), array("id", "commission"));
+        foreach ($items as $item) {
+            $data = $item->stats($yesterday);
+            if ($data["click"] > 1) {
+                $insight = $this->_insight($data, $item, $today);
+                if (array_key_exists($insight->user_id, $accounts)) {
+                    $accounts[$insight->user_id] += -($data["earning"])*(1+$item->commission);
+                } else {
+                    $accounts[$insight->user_id] = -($data["earning"])*(1+$item->commission);
+                }
+                //sleep the script
+                sleep(1);
+            }
+        }
+
+        sleep(10);
+        if (!empty($accounts)) {
+            $this->log("Account Started");
+            $this->_account($accounts);
+            $this->log("Account Ended");
+        }
+    }
+
+    protected function _insight($data, $item, $today) {
+        $insight = Insight::first(array("item_id = ?" => $item->id));
+        if(!$insight) {
+            $insight = new Stat(array(
+                "user_id" => $item->user_id,
+                "item_id" => $item->id,
+                "click" => $data["click"],
+                "amount" => $data["earning"],
+                "rpm" => $data["rpm"],
+                "live" => 1,
+                "updated" => $today
+            ));
+            $insight->save();
+            $output = "New Insight {$insight->id} - Done";
+        } else {
+            $modified = strtotime($insight->updated);
+            $output = "Insight {$insight->id} - Dropped";
+            if($modified < strtotime($today)) {
+                $insight->click += $data["click"];
+                $insight->amount += $data["earning"];
+                $insight->rpm = $data["rpm"];
+                $insight->updated = $today;
+                $insight->save();
+                $output = "Updated Insight {$insight->id} - Done";
+            }
+        }
+
+        $this->log($output);
+        return $insight;
+    }
+
     protected function _publisher() {
         $this->log("LinksTracking Started");
         $this->ctracker();
@@ -38,7 +97,7 @@ class CRON extends Shared\Controller {
         sleep(10);
         if (!empty($accounts)) {
             $this->log("Account Started");
-            $this->saveAccount($accounts);
+            $this->_account($accounts);
             $this->log("Account Ended");
         }
     }
@@ -50,7 +109,7 @@ class CRON extends Shared\Controller {
         foreach ($links as $link) {
             $data = $link->stat($yesterday);
             if ($data["click"] > 10) {
-                $stat = $this->saveStats($data, $link, $today);
+                $stat = $this->_stat($data, $link, $today);
                 if (array_key_exists($stat->user_id, $accounts)) {
                     $accounts[$stat->user_id] += $data["earning"];
                 } else {
@@ -63,7 +122,7 @@ class CRON extends Shared\Controller {
         return $accounts;
     }
 
-    protected function saveStats($data, $link, $today) {
+    protected function _stat($data, $link, $today) {
         $stat = Stat::first(array("link_id = ?" => $link->id));
         if(!$stat) {
             $stat = new Stat(array(
@@ -77,7 +136,7 @@ class CRON extends Shared\Controller {
                 "updated" => $today
             ));
             $stat->save();
-            $output = "New {$stat->id} - Done";
+            $output = "New Stat {$stat->id} - Done";
         } else {
             $modified = strtotime($stat->updated);
             $output = "{$stat->id} - Dropped";
@@ -87,7 +146,7 @@ class CRON extends Shared\Controller {
                 $stat->rpm = $data["rpm"];
                 $stat->updated = $today;
                 $stat->save();
-                $output = "Updated {$stat->id} - Done";
+                $output = "Updated Stat {$stat->id} - Done";
             }
         }
 
@@ -95,7 +154,7 @@ class CRON extends Shared\Controller {
         return $stat;
     }
 
-    protected function saveAccount($accounts) {
+    protected function _account($accounts, $ref="linkstracking") {
         foreach ($accounts as $key => $value) {
             $account = Account::first(array("user_id = ?" => $key));
             if (!$account) {
@@ -112,7 +171,7 @@ class CRON extends Shared\Controller {
             $transaction = new Transaction(array(
                 "user_id" => $key,
                 "amount" => $value,
-                "ref" => "linkstracking"
+                "ref" => $ref
             ));
             $transaction->save();
         }

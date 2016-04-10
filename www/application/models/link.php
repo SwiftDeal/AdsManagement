@@ -6,6 +6,7 @@
  * @author Faizan Ayubi
  */
 use Framework\Registry as Registry;
+use \Curl\Curl;
 class Link extends Shared\Model {
     /**
      * @column
@@ -41,42 +42,15 @@ class Link extends Shared\Model {
         return false;
     }
 
-    public function mongodb($date = NULL) {
-        $collection = Registry::get("MongoDB")->clicks;
-        $stats = array();$stat = array();
+    public function stat($date = NULL) {
+        $total_click = 0;$earning = 0;$analytics = array();
+        $return = array("click" => 0, "rpm" => 0, "earning" => 0, "analytics" => 0);
         $doc = array("link_id" => (int) $this->id);
         if ($date) {
             $doc["created"] = $date;
         }
-    
-        $records = $collection->find($doc);
-        if (isset($records)) {
-            foreach ($records as $record) {
-                if (isset($stats[$record['country']])) {
-                    $stats[$record['country']] += $record['click'];
-                } else {
-                    $stats[$record['country']] = $record['click'];
-                }
-            }
 
-            foreach ($stats as $key => $value) {
-                array_push($stat, array(
-                    "country" => $key,
-                    "count" => $value
-                ));
-            }
-            
-            return $stat;
-        } else{
-            return 0;
-        }
-    }
-
-    public function stat($date = NULL) {
-        $total_click = 0;$earning = 0;$analytics = array();
-        $return = array("click" => 0, "rpm" => 0, "earning" => 0, "analytics" => 0);
-
-        $results = $this->mongodb($date);
+        $results = $this->mongodb($doc);
         if (is_array($results)) {
             //commision
             // $meta = Meta::first(array("property = ?" => "commision"), array("value"));
@@ -114,5 +88,17 @@ class Link extends Shared\Model {
         }
         
         return $return;
+    }
+
+    public function bitly() {
+        if (strpos($this->short, "bit.ly")) {
+            $conf = Registry::get("configuration")->parse("configuration/bitly");
+            $b = new Curl();
+            $b->get('https://api-ssl.bitly.com/v3/link/referrers?access_token='.$conf->bitly->accesstoken.'&link='.urlencode($this->short));
+            $b->close();
+
+            return $b->response->data->referrers;
+        }
+        return false;
     }
 }

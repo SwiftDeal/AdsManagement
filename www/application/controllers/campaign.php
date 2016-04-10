@@ -71,9 +71,9 @@ class Campaign extends Publisher {
                 "url" =>  RequestMethods::post("url"),
                 "title" => RequestMethods::post("title"),
                 "image" => $image,
-                "commission" => 15,
+                "commission" => 25,
                 "budget" => RequestMethods::post("budget", 5000),
-                "category" => implode(",", RequestMethods::post("category", "")),
+                "category" => implode(",", RequestMethods::post("category", "news")),
                 "description" => RequestMethods::post("description", ""),
                 "live" => 0
                 

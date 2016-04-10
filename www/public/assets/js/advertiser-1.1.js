@@ -193,9 +193,10 @@ $(document).ready(function() {
             n = null;
         item.html('<i class="fa fa-spinner fa-pulse"></i>');
         request.read({
-            action: "analytics/campaign/0/" + campaign,
+            action: "analytics/item",
+            data: {item_id: campaign},
             callback: function(data) {
-                item.html('RPM : <i class="fa fa-inr"></i> '+ data.stats.rpm +', Sessions : '+ data.stats.click +', Spent : <i class="fa fa-inr"></i> '+ data.stats.earning);
+                item.html('RPM : <i class="fa fa-inr"></i> '+ data.rpm +', Sessions : '+ data.click +', Spent : <i class="fa fa-inr"></i> '+ data.earning);
             }
         });
     });

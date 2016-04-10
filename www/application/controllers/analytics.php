@@ -104,6 +104,24 @@ class Analytics extends Manage {
     }
 
     /**
+     * @before _secure
+     */
+    public function item($date = NULL) {
+        $this->JSONview();
+        $view = $this->getActionView();
+
+        $item_id = RequestMethods::get("item_id");
+        $item = Item::first(array("id = ?" => $item_id), array("id"));
+        $result = $item->stats($date);
+        
+        $view->set("earning", $result["earning"]);
+        $view->set("click", $result["click"]);
+        $view->set("rpm", $result["rpm"]);
+        $view->set("analytics", $result["analytics"]);
+        $view->set("item", $item);
+    }
+
+    /**
      * @before _secure, changeLayout
      */
     public function logs($action = "", $name = "") {
@@ -206,7 +224,6 @@ class Analytics extends Manage {
         $this->seo(array("title" => "Stats", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         $total_click = 0;$earning = 0;$analytics = array();$query = array();$i = array();
-        $rpm = array("IN" => 135, "US" => 220, "CA" => 220, "AU" => 220, "GB" => 220, "NONE" => 80);
         $return = array("click" => 0, "rpm" => 0, "earning" => 0, "analytics" => array());
 
         if ($this->validateDate($created)) {
@@ -224,8 +241,10 @@ class Analytics extends Manage {
         
         $collection = Registry::get("MongoDB")->clicks;
 
-        $cursor = $collection->find($query, array("click", "country"));
+        $cursor = $collection->find($query);
         foreach ($cursor as $id => $result) {
+            $rpms = RPM::first(array("item_id = ?" => $result["item_id"]), array("value"));
+            $rpm = json_decode($rpms->value, true);
             $code = $result["country"];
             $total_click += $result["click"];
             if (array_key_exists($code, $rpm)) {
