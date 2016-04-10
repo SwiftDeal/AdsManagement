@@ -106,10 +106,12 @@ $(document).ready(function() {
             action: "publisher/shortenURL",
             data: {item: item},
             callback: function(data) {
+                var uri = data.shortURL;
                 btn.removeClass('disabled');
                 btn.closest('div').find('.shorturl').val(data.shortURL);
                 btn.closest('div').find('.shorturl').focus();
-                $('#link_data').val(title+"\n"+data.shortURL);
+                $('#link_data').val(title + "\n" + '<a href="' + uri + '">' + uri + '</a>');
+                $('#link_data').data('uri', uri);
                 $('#link_modal').modal('show');
                 $('#link_modal_fb').attr('href', 'https://www.facebook.com/sharer/sharer.php?u='+data.shortURL);
                 document.execCommand('SelectAll');

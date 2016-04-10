@@ -1,0 +1,24 @@
+<div class="modal fade" id="fbpages_modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 class="modal-title">Your FB Pages</h3>
+            </div>
+            <form action="" method="post" id="fbpages_post">
+                <div class="modal-body">
+                    {script $pages = FBPage::all(["user_id = ?" => $user->id], ["fbid", "name"])} 
+                    <select name="page_id" id="fb_page_id" class="form-control">
+                        {foreach $p in $pages}
+                        <option value="{echo $p->fbid}">{echo $p->name}</option>
+                        {/foreach}
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-info"><i class="fa fa-submit"></i> GO</a>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

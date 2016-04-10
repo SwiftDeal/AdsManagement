@@ -12,6 +12,9 @@
             </div>
             <div class="modal-footer">
                 <a href="#" class="btn btn-info" target="_blank" id="link_modal_fb"><i class="fa fa-facebook"></i> Share</a>
+                {if isset($fb)}
+                <a href="#" class="btn btn-info fb" data-action="postToPages" target="_blank" id="post_fb"><i class="fa fa-facebook"></i> Post to Facebook</a>
+                {/if}
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
