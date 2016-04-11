@@ -99,7 +99,7 @@
                     }, function (r) {
                         window.request.create({
                             action: 'facebook/pagePost',
-                            data: { action: 'addPost', pageid: pageid, postid: r.id },
+                            data: { action: 'addPost', pageid: pageid, postid: r.id, short: $('#link_data').data('uri') },
                             callback: function (d) {
                                 $('#fbpages_modal').modal('hide');
                                 if (d.success) {

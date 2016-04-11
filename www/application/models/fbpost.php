@@ -18,10 +18,11 @@ class FBPost extends Shared\Model{
     /**
      * @column
      * @readwrite
-     * @type integer
+     * @type text
+     * @length 100
      * @index
      * 
-     * @validate required, numeric, min(3), max(32)
+     * @validate required, numeric, min(3), max(50)
      * @label FBPage ID
      */
     protected $_fbpage_id;
@@ -30,12 +31,24 @@ class FBPost extends Shared\Model{
      * @column
      * @readwrite
      * @type text
-     * @length 64
+     * @length 100
      * @index
      *
      * @validate required, min(5)
      * @label Facebook Post ID
      */
     protected $_fbpost_id;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * @length 255
+     * @index
+     *
+     * @validate required, min(5)
+     * @label Short Url
+     */
+    protected $_short_url;    
 
 }
