@@ -33,6 +33,7 @@
                         <th>Campaign</th>
                         <th>Commission</th>
                         <th>Realtime</th>
+                        <th>Action</th>
                     </tr>
                     {foreach $item in $items}
                     <tr>
@@ -45,6 +46,9 @@
                         <td>{echo $item->commission}%</td>
                         <td class="campaignstat" data-campaign="{echo $item->id}">
                             <span class="label label-success">View</span>
+                        </td>
+                        <td>
+                            <a href="/campaign/update/{$item->id}.html" class="btn btn-info btn-xs"><i class="fa fa-edit"></i></a>
                         </td>
                     </tr>
                     {/foreach}

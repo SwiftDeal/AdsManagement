@@ -96,6 +96,35 @@ class Campaign extends Publisher {
     /**
      * @before _secure, advertiserLayout
      */
+    public function update($id = NULL) {
+        $this->seo(array("title" => "Edit Content", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+        $item = Item::first(array("id = ?" => $id, "user_id = ?" => $this->user->id));
+        if (!$item) {
+            $this->redirect("/advertiser/index.html");
+        }
+        
+        if (RequestMethods::post("action") == "update") {
+            $item->title = RequestMethods::post("title");
+            $item->url = RequestMethods::post("url");
+            $item->description = RequestMethods::post("description");
+            $item->live = 0;
+            if ($item->validate()) {
+                if (is_uploaded_file($_FILES['image']['tmp_name'])) {
+                    $item->image = $this->s3upload("image", "images");
+                }
+                $item->save();
+                $view->set("message", "Campaign Updated Successfully");
+            }  else {
+                $view->set("errors", $item->getErrors());
+            }
+        }
+        $view->set("item", $item);
+    }
+
+    /**
+     * @before _secure, advertiserLayout
+     */
     public function fetch() {
         $this->seo(array("title" => "Create Content", "view" => $this->getLayoutView()));
         $view = $this->getActionView();

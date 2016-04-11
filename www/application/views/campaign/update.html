@@ -1,0 +1,48 @@
+<div class="page-title">
+    <span class="title">Update Campaign</span>
+    <div class="description">
+        After edit your campaign become inactive for again approval by admin within 12 hours
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        {if isset($message)}
+        <div class="alert alert-info alert-dismissible fade in" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+            {echo $message}
+        </div>
+        {/if}
+        <div class="card">
+            <div class="card-body no-padding">
+                <form method="post" action="" enctype="multipart/form-data">
+                    <div class="panel panel-default panel-body">
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" name="title" class="form-control" maxlength="100" required="" value="{$item->title}">
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "title")}</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Original URL</label>
+                            <input type="url" class="form-control" name="url" required="" value="{$item->url}">
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "url")}</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea class="form-control" name="description" rows="3">{$item->description}</textarea>
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "description")}</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Image</label>
+                            <input type="file" class="form-control" name="image">
+                            <span class="help-block">Image should be 650px X 315px for good reach on Social Media<br>{echo Shared\Markup::errors($errors, "image")}</span>
+                            <img src="/campaign/resize/{echo base64_encode($item->image)}" class="img-responsive" alt="{echo $item->title}">
+                        </div>
+                        <hr>
+                        <input type="hidden" name="action" value="update">
+                        <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

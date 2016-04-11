@@ -10,9 +10,13 @@ class CRON extends Shared\Controller {
 
     public function index() {
         $this->noview();
-        $this->log("CRON Started");
+        $this->log("Publisher CRON Started");
         $this->_publisher();
         $this->log("CRON Ended");
+
+        /*$this->log("Advertiser CRON Started");
+        $this->_advertiser();
+        $this->log("Advertiser CRON Ended");*/
     }
 
     protected function _advertiser() {
