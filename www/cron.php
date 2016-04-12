@@ -21,6 +21,24 @@ try {
         }
     });
 
+    // Google Library Autoloader
+    spl_autoload_register(function($className) {
+        $classPath = explode('_', $className);
+        if ($classPath[0] != 'Google') {
+            return;
+        }
+        // Drop 'Google', and maximum class file path depth in this project is 3.
+        $classPath = array_slice($classPath, 1, 3);
+
+        $filePath = APP_PATH . '/application/libraries/Google/' . implode('/', $classPath) . '.php';
+        if (file_exists($filePath)) {
+            require_once APP_PATH. '/application/libraries/GuzzleHttp/functions.php';
+            require_once APP_PATH. '/application/libraries/GuzzleHttp/Psr7/functions.php';
+            require_once APP_PATH. '/application/libraries/GuzzleHttp/Promise/functions.php';
+            require_once($filePath);
+        }
+    });
+
     // 2. load the Core class that includes an autoloader
     require("framework/core.php");
     Framework\Core::initialize();
@@ -54,8 +72,10 @@ try {
     Framework\Registry::set("session", $session->initialize());
     
     // 7. load the Router class and provide the url + extension
+    $c = (isset($argv[1])) ? $argv[1] : "cron";
+    $a = (isset($argv[2])) ? $argv[2] : "index";
     $router = new Framework\Router(array(
-        "url" => isset($_GET["url"]) ? $_GET["url"] : "cron/index",
+        "url" => "$c/$a",
         "extension" => !empty($_GET["extension"]) ? $_GET["extension"] : "html"
     ));
     Framework\Registry::set("router", $router);

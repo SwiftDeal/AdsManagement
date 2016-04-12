@@ -23,6 +23,11 @@ class CRON extends Shared\Controller {
 
         //$this->log("Advertiser CRON Started");
         $this->_advertiser();
+        
+        // $this->log("Advertiser Analytics Cron Ended");
+        // $this->_ga();
+        // $this->log("Advertiser Analytics Cron Ended");
+        
         //$this->log("Advertiser CRON Ended");
     }
 
@@ -220,5 +225,41 @@ class CRON extends Shared\Controller {
         fclose($fp);
         $this->log("Fraud Ended");
     }
-    
+
+    protected function _gaClient($token) {
+        $conf = Framework\Registry::get("configuration");
+        $google = $conf->parse("configuration/google")->google;
+
+        $client = new Google_Client();
+        $client->setClientId($google->client->id);
+        $client->setClientSecret($google->client->secret);
+        $client->setRedirectUri('http://'.$_SERVER['HTTP_HOST'].'/advertiser/gaLogin');
+        $client->setApplicationName("Cloudstuff");
+        $client->addScope(Google_Service_Analytics::ANALYTICS_READONLY);
+        $client->setAccessType("offline");
+        $client->refreshToken($token);
+
+        return $client;
+    }
+
+    protected function _ga() {
+        try {
+            $advertiser = Advert::all(["live = ?" => true], ["user_id", "gatoken"]);
+            foreach ($advertiser as $a) {
+                if (!$a->gatoken) {
+                    continue;
+                }
+                $client = $this->_gaClient($a->gatoken);
+
+                $user = Framework\ArrayMethods::toObject([
+                    "id" => $a->user_id
+                ]);
+                Shared\Services\GA::update($client, $user);
+
+                sleep(1);
+            }
+        } catch (\Exception $e) {
+            $this->log("Google Analytics Cron Failed (Error: " . $e->getMessage(). " )");
+        }
+    }
 }

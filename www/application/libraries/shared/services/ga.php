@@ -1,5 +1,6 @@
 <?php
 namespace Shared\Services;
+use Framework\Registry as Registry;
 
 class GA {
 	protected static function _data(&$analytics, $profiles) {
@@ -72,6 +73,55 @@ class GA {
 			return $results;
 		} catch(\Exception $e) {
 			return [];
+		}
+	}
+
+	public static function update($client, $user) {
+		$accounts = self::fetch($client);
+
+		$ga_stats = Registry::get("MongoDB")->ga_stats;
+		foreach ($accounts as $properties) {
+		    foreach ($properties as $p) {
+		        $website = \Website::first([
+		            "user_id = ?" => $user->id,
+		            "url = ?" => $p['website']
+		        ]);
+
+		        if (!$website) {
+		            $website = new \Website([
+		                "user_id" => $user->id,
+		                "url" => $p['website'],
+		                "gaid" => $p['id'],
+		                "name" => $p['name'],
+		                "live" => 1
+		            ]);
+		        }
+		        $website->save();
+
+		        foreach ($p['profiles'] as $profile) {
+		            $about = $profile['about']; $cols = $profile['columns'];
+		            unset($profile['about']); unset($profile['columns']);
+
+		            foreach ($profile as $key => $value) {
+		                if ($value[1] != 'Clicks99') continue;
+		                $search = [
+		                    'source' => $value[0],
+		                    'medium' => $value[1],
+		                    'user_id' => (int) $user->id,
+		                    'website_id' => (int) $website->id
+		                ];
+		                $data = self::fields($value);
+		                $newFields = array_merge($data, $search);
+
+		                $record = $ga_stats->findOne($search);
+		                if (isset($record)) {
+		                    $ga_stats->update($search, ['$set' => $data]);
+		                } else {
+		                    $ga_stats->insert($newFields);
+		                }
+		            }
+		        }
+		    }
 		}
 	}
 }

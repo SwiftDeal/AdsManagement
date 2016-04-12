@@ -12,6 +12,17 @@ class Advertiser extends Analytics {
      */
     protected $_advert;
 
+    protected function setAdvert($advert) {
+        $session = Registry::get("session");
+        if ($advert) {
+            $session->set("advert", $advert);
+        } else {
+            $session->erase("advert");
+        }
+        $this->_advert = $advert;
+        return $this;
+    }
+
     public function __construct($options = array()) {
         parent::__construct($options);
 
@@ -89,69 +100,24 @@ class Advertiser extends Analytics {
      */
     public function platforms() {
         $this->seo(array("title" => "Platforms", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
+        $view = $this->getActionView(); $client = Registry::get("gClient");
 
         $websites = Website::all(array("user_id = ?" => $this->user->id));
-
-        $client = Registry::get("gClient");
-        $token = $client->getAccessToken();
-        if (!$token) {
+        $token = $this->advert->gatoken; $gtoken = $client->getAccessToken();
+        
+        if (!$token && !$websites) {
             $url = $client->createAuthUrl();
             $view->set("url", $url);
-        } elseif ($client->isAccessTokenExpired()) {
-            $url = $client->createAuthUrl();
-            $this->redirect($url);
-        } elseif (RequestMethods::get("sync") == "analytics") {
-            $accounts = Shared\Services\GA::fetch($client);
-
-            $ga_stats = Registry::get("MongoDB")->ga_stats;
-            foreach ($accounts as $properties) {
-                foreach ($properties as $p) {
-                    $website = Website::first([
-                        "user_id = ?" => $this->user->id,
-                        "url = ?" => $p['website']
-                    ]);
-
-                    if (!$website) {
-                        $website = new Website([
-                            "user_id" => $this->user->id,
-                            "url" => $p['website'],
-                            "gaid" => $p['id'],
-                            "name" => $p['name'],
-                            "live" => 1
-                        ]);
-                    }
-                    $website->save();
-
-                    foreach ($p['profiles'] as $profile) {
-                        $about = $profile['about']; $cols = $profile['columns'];
-                        unset($profile['about']); unset($profile['columns']);
-
-                        foreach ($profile as $key => $value) {
-                            if ($value[1] != 'Clicks99') continue;
-                            $search = [
-                                'source' => $value[0],
-                                'medium' => $value[1],
-                                'user_id' => (int) $this->user->id,
-                                'website_id' => (int) $website->id
-                            ];
-                            $data = Shared\Services\GA::fields($value);
-                            $newFields = array_merge($data, $search);
-
-                            $record = $ga_stats->findOne($search);
-                            if (isset($record)) {
-                                $ga_stats->update($search, ['$set' => $data]);
-                            } else {
-                                $ga_stats->insert($newFields);
-                            }
-                        }
-                    }
-                }
+        } elseif ($gtoken && !$websites) {
+            $msg = "All analytics stats for Clicks99 have been stored!!";
+            try {
+                Shared\Services\GA::update($client, $this->user); 
+            } catch (\Exception $e) {
+                $msg = $e->getMessage();
             }
-
-            $view->set("message", "All analytics stats for Clicks99 have been stored!!");
-        } else {
-            $view->set("sync", true);
+            $websites = Website::all(["user_id = ?" => $this->user->id]);
+            
+            $view->set("message", $msg);
         }
 
         $view->set("websites", $websites);
@@ -166,7 +132,7 @@ class Advertiser extends Analytics {
         } else {
             $user = $this->getUser();
             if ($user) {
-                $advert = Advert::first(array("user_id = ?" => $user->id), array("id"));
+                $advert = Advert::first(array("user_id = ?" => $user->id));
                 if (!$advert) {
                     $this->_newAdvertiser($user);
                 }
@@ -237,6 +203,19 @@ class Advertiser extends Analytics {
 
         $c = $client->authenticate($code);
         $token = $client->getAccessToken();
+        $refreshToken = (isset($token["refresh_token"]) ? $token["refresh_token"] : null);
+        if ($refreshToken) {
+            $advert = Advert::first(["user_id = ?" => $this->user->id]);
+            if (!$advert) {
+                $advert = new Advert([
+                    "user_id" => $this->user->id,
+                    "live" => true,
+                    "country" => "IN"
+                ]);
+            }
+            $advert->gatoken = $refreshToken;
+            $advert->save();
+        }
         if (!$token) {
             $this->redirect("/404");
         }
@@ -256,6 +235,7 @@ class Advertiser extends Analytics {
 
         $client->setApplicationName("Cloudstuff");
         $client->addScope(Google_Service_Analytics::ANALYTICS_READONLY);
+        $client->setAccessType("offline");
 
         Registry::set("gClient", $client);
     }
