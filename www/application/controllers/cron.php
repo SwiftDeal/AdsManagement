@@ -11,18 +11,18 @@ class CRON extends Shared\Controller {
     public function __construct($options = array()) {
         parent::__construct($options);
         if (php_sapi_name() != 'cli') {
-            //die("cannot run!");
+            die("cannot run!");
         }
     }
 
     public function index() {
         $this->noview();
-        /*$this->log("Publisher CRON Started");
+        $this->log("Publisher CRON Started");
         $this->_publisher();
-        $this->log("CRON Ended");*/
+        $this->log("CRON Ended");
 
         //$this->log("Advertiser CRON Started");
-        $this->_advertiser();
+        //$this->_advertiser();
         
         // $this->log("Advertiser Analytics Cron Ended");
         // $this->_ga();
