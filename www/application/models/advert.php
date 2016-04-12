@@ -1,8 +1,6 @@
 <?php
 
 /**
- * Description of advert
- *
  * @author Faizan Ayubi
  */
 class Advert extends Shared\Model {
@@ -37,4 +35,25 @@ class Advert extends Shared\Model {
     * @label account
     */
     protected $_account = "basic";
+
+    /**
+     * @column
+     * @readwrite
+     * @type decimal
+     * @length 4,2
+     *
+     * @validate required
+     * @label commission
+     */
+    protected $_commission;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * @length 255
+     * 
+     * @label GA token
+     */
+    protected $_gatoken;
 }
