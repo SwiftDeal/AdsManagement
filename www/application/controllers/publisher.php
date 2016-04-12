@@ -179,13 +179,17 @@ class Publisher extends Advertiser {
         switch (RequestMethods::post("action")) {
             case 'saveUser':
                 $user = User::first(array("id = ?" => $this->user->id));
-                $view->set("message", "Saved <strong>Successfully!</strong>");
 
-                $user->phone = RequestMethods::post('phone', $user->phone);
-                $user->name = RequestMethods::post('name', $user->name);
-                $user->username = RequestMethods::post('username', $user->username);
-                
-                $user->save();
+                $user->phone = RequestMethods::post("phone");
+                $user->name = RequestMethods::post("name");
+                $user->username = RequestMethods::post("username");
+                if ($user->validate()) {
+                    $view->set("message", "Saved <strong>Successfully!</strong>");
+                    $user->save();
+                } else {
+                    $view->set("message", "Error see required fields");
+                    $view->set("errors", $user->getErrors());
+                }
                 $view->set("user", $user);
                 break;
             case "changePass":

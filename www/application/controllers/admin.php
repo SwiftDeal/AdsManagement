@@ -131,6 +131,10 @@ class Admin extends Auth {
         $values = array();
 
         $object = $model::first(array("id = ?" => $id));
+        if (!$object) {
+            $this->noview();
+            echo "Not Found";
+        }
         $properties = $object->getJsonData();
         foreach ($properties as $key => $property) {
             $key = substr($key, 1);

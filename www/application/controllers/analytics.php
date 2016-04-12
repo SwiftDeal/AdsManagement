@@ -168,7 +168,7 @@ class Analytics extends Manage {
     public function stats($created = NULL, $auth = 1, $user_id = NULL, $item_id = NULL) {
         $this->seo(array("title" => "Stats", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-        $total_click = 0;$earning = 0;$analytics = array();$query = array();
+        $total_click = 0;$earning = 0;$analytics = array();$query = array();$publishers = array();
         $rpm = array("IN" => 135, "US" => 220, "CA" => 220, "AU" => 220, "GB" => 220, "NONE" => 80);
         $return = array("click" => 0, "rpm" => 0, "earning" => 0, "analytics" => array());
 
@@ -194,15 +194,29 @@ class Analytics extends Manage {
             } else {
                 $analytics[$code] = $result["click"];
             }
-            
+            if (array_key_exists($result["user_id"], $publishers)) {
+                $publishers[$result["user_id"]] += $result["click"];
+            } else {
+                $publishers[$result["user_id"]] = $result["click"];
+            }
         }
+        $publishers = $this->array_sort($publishers, 'click', SORT_DESC);$rank = array();
+        foreach ($publishers as $key => $value) {
+            array_push($rank, array(
+                "user_id" => $key,
+                "clicks" => $value
+            ));
+        }
+        arsort($analytics);
+        arsort($publishers);
 
         if ($total_click > 0) {
             $return = array(
                 "click" => round($total_click),
                 "rpm" => round($earning*1000/$total_click, 2),
                 "earning" => round($earning, 2),
-                "analytics" => $analytics
+                "analytics" => $analytics,
+                "publishers" => $rank
             );
         }
 

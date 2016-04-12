@@ -103,7 +103,7 @@ class Item extends Shared\Model {
     protected $_description;
 
     public function stats($date = NULL) {
-        $total_click = 0;$earning = 0;$analytics = array();
+        $total_click = 0;$earning = 0;$analytics = array();$publishers = array();
         $return = array("click" => 0, "rpm" => 0, "earning" => 0, "analytics" => 0);
         $doc = array("item_id" => $this->id);
         if ($date) {
@@ -116,18 +116,25 @@ class Item extends Shared\Model {
             $rpm = json_decode($rpms->value, true);
 
             foreach ($results as $result) {
-                $code = $result["country"];
-                $total_click += $result["count"];
-                if (array_key_exists($code, $rpm)) {
-                    $earning += ($rpm[$code])*($result["count"])/1000;
-                } else {
-                    $earning += ($rpm["NONE"])*($result["count"])/1000;
-                }
-
-                if (array_key_exists($code, $analytics)) {
-                    $analytics[$code] += $result["count"];
-                } else {
-                    $analytics[$code] = $result["count"];
+                $u = null;$u = User::first(array("id = ?" => $result["user_id"], "live = ?" => true), array("id"));
+                if ($u) {
+                    $code = $result["country"];
+                    $total_click += $result["count"];
+                    if (array_key_exists($code, $rpm)) {
+                        $earning += ($rpm[$code])*($result["count"])/1000;
+                    } else {
+                        $earning += ($rpm["NONE"])*($result["count"])/1000;
+                    }
+                    if (array_key_exists($code, $analytics)) {
+                        $analytics[$code] += $result["count"];
+                    } else {
+                        $analytics[$code] = $result["count"];
+                    }
+                    if (array_key_exists($result["user_id"], $publishers)) {
+                        $publishers[$result["user_id"]] += $result["click"];
+                    } else {
+                        $publishers[$result["user_id"]] = $result["click"];
+                    }
                 }
             }
 
@@ -136,7 +143,8 @@ class Item extends Shared\Model {
                     "click" => round($total_click),
                     "rpm" => round($earning*1000/$total_click, 2),
                     "earning" => round($earning, 2),
-                    "analytics" => $analytics
+                    "analytics" => $analytics,
+                    "publishers" => $publishers
                 );
             }
         }

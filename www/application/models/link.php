@@ -43,7 +43,7 @@ class Link extends Shared\Model {
     }
 
     public function stat($date = NULL) {
-        $total_click = 0;$earning = 0;$analytics = array();
+        $total_click = 0;$earning = 0;$analytics = array();$publishers = array();
         $return = array("click" => 0, "rpm" => 0, "earning" => 0, "analytics" => 0);
         $doc = array("link_id" => (int) $this->id);
         if ($date) {
@@ -52,12 +52,6 @@ class Link extends Shared\Model {
 
         $results = $this->mongodb($doc);
         if (is_array($results)) {
-            //commision
-            // $meta = Meta::first(array("property = ?" => "commision"), array("value"));
-            // $commision = 1 - ($meta->value)/100;
-            $commision = 1;
-
-            //rpm
             $rpms = RPM::first(array("item_id = ?" => $this->item_id), array("value"));
             $rpm = json_decode($rpms->value, true);
 
@@ -65,24 +59,29 @@ class Link extends Shared\Model {
                 $code = $result["country"];
                 $total_click += $result["count"];
                 if (array_key_exists($code, $rpm)) {
-                    $earning += ($rpm[$code])*($result["count"])*($commision)/1000;
+                    $earning += ($rpm[$code])*($result["count"])/1000;
                 } else {
-                    $earning += ($rpm["NONE"])*($result["count"])*($commision)/1000;
+                    $earning += ($rpm["NONE"])*($result["count"])/1000;
                 }
-
                 if (array_key_exists($code, $analytics)) {
                     $analytics[$code] += $result["count"];
                 } else {
                     $analytics[$code] = $result["count"];
                 }
+                if (array_key_exists($result["user_id"], $publishers)) {
+                    $publishers[$result["user_id"]] += $result["click"];
+                } else {
+                    $publishers[$result["user_id"]] = $result["click"];
+                }
             }
 
             if ($total_click > 0) {
                 $return = array(
-                    "click" => round($total_click*$commision),
+                    "click" => round($total_click),
                     "rpm" => round($earning*1000/$total_click, 2),
                     "earning" => round($earning, 2),
-                    "analytics" => $analytics
+                    "analytics" => $analytics,
+                    "publishers" => $publishers
                 );
             }
         }

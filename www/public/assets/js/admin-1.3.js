@@ -213,6 +213,9 @@ function stats(date) {
             $('#today_click').html(data.stats.click);
             $('#today_rpm').html('<i class="fa fa-inr"></i> '+ data.stats.rpm);
             $('#today_earning').html('<i class="fa fa-inr"></i> '+ data.stats.earning);
+            $.each(data.stats.publishers, function(i, publishers) {
+                $("#clicks-publishers").append('<tr><td><a href="/admin/info/user/'+publishers.user_id+'" target="_blank">'+publishers.user_id+'</a></td><td>'+publishers.clicks+'</td></tr>');
+            });
 
             var gdpData = data.stats.analytics;
             $('#world-map').vectorMap({

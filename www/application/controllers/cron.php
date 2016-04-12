@@ -8,15 +8,22 @@
 
 class CRON extends Shared\Controller {
 
+    public function __construct($options = array()) {
+        parent::__construct($options);
+        if (php_sapi_name() != 'cli') {
+            //die("cannot run!");
+        }
+    }
+
     public function index() {
         $this->noview();
-        $this->log("Publisher CRON Started");
+        /*$this->log("Publisher CRON Started");
         $this->_publisher();
-        $this->log("CRON Ended");
+        $this->log("CRON Ended");*/
 
-        /*$this->log("Advertiser CRON Started");
+        //$this->log("Advertiser CRON Started");
         $this->_advertiser();
-        $this->log("Advertiser CRON Ended");*/
+        //$this->log("Advertiser CRON Ended");
     }
 
     protected function _advertiser() {
@@ -24,33 +31,36 @@ class CRON extends Shared\Controller {
         $today = date('Y-m-d', strtotime("now"));
         $accounts = array();
 
-        $items = Item::all(array("live = ?" => true), array("id", "commission"));
+        $items = Item::all(array("live = ?" => true), array("id", "commission", "user_id"));
         foreach ($items as $item) {
             $data = $item->stats($yesterday);
             if ($data["click"] > 1) {
                 $insight = $this->_insight($data, $item, $today);
+                echo "<pre>", print_r($insight), "</pre>";
                 if (array_key_exists($insight->user_id, $accounts)) {
-                    $accounts[$insight->user_id] += -($data["earning"])*(1+$item->commission);
+                    $accounts[$insight->user_id] += -($data["earning"])*(1+$item->commission/100);
                 } else {
-                    $accounts[$insight->user_id] = -($data["earning"])*(1+$item->commission);
+                    $accounts[$insight->user_id] = -($data["earning"])*(1+$item->commission/100);
                 }
                 //sleep the script
                 sleep(1);
             }
         }
 
-        sleep(10);
+
+        echo "<pre>", print_r($accounts), "</pre>";
+        /*sleep(10);
         if (!empty($accounts)) {
             $this->log("Account Started");
             $this->_account($accounts);
             $this->log("Account Ended");
-        }
+        }*/
     }
 
     protected function _insight($data, $item, $today) {
         $insight = Insight::first(array("item_id = ?" => $item->id));
         if(!$insight) {
-            $insight = new Stat(array(
+            $insight = new Insight(array(
                 "user_id" => $item->user_id,
                 "item_id" => $item->id,
                 "click" => $data["click"],
@@ -59,7 +69,7 @@ class CRON extends Shared\Controller {
                 "live" => 1,
                 "updated" => $today
             ));
-            $insight->save();
+            //$insight->save();
             $output = "New Insight {$insight->id} - Done";
         } else {
             $modified = strtotime($insight->updated);
@@ -69,12 +79,12 @@ class CRON extends Shared\Controller {
                 $insight->amount += $data["earning"];
                 $insight->rpm = $data["rpm"];
                 $insight->updated = $today;
-                $insight->save();
+                //$insight->save();
                 $output = "Updated Insight {$insight->id} - Done";
             }
         }
 
-        $this->log($output);
+        //$this->log($output);
         return $insight;
     }
 
