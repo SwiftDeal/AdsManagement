@@ -76,27 +76,45 @@ class GA {
 		}
 	}
 
+	protected static function _saveWebsite($p, $user) {
+		$website = \Website::first([
+		    "gaid = ?" => $p['id'],
+		    "url = ?" => $p['website']
+		]);
+		if (!$website) {
+		    $website = new \Website([
+		        "url" => $p['website'],
+		        "gaid" => $p['id'],
+		        "name" => $p['name'],
+		        "live" => 1
+		    ]);
+		}
+		$website->save();
+		
+		$access = \Access::first([
+			"property = ?" => "website",
+			"property_id = ?" => $website->id,
+			"user_id = ?" => $user->id
+		]);
+		if (!$access) {
+			$access = new \Access([
+				"property" => "website",
+				"property_id" => $website->id,
+				"user_id" => $user->id,
+				"live" => 1
+			]);
+			$access->save();
+		}
+		return $website;
+	}
+
 	public static function update($client, $user) {
 		$accounts = self::fetch($client);
 
 		$ga_stats = Registry::get("MongoDB")->ga_stats;
 		foreach ($accounts as $properties) {
 		    foreach ($properties as $p) {
-		        $website = \Website::first([
-		            "user_id = ?" => $user->id,
-		            "url = ?" => $p['website']
-		        ]);
-
-		        if (!$website) {
-		            $website = new \Website([
-		                "user_id" => $user->id,
-		                "url" => $p['website'],
-		                "gaid" => $p['id'],
-		                "name" => $p['name'],
-		                "live" => 1
-		            ]);
-		        }
-		        $website->save();
+		        $website = self::_saveWebsite($p, $user);
 
 		        foreach ($p['profiles'] as $profile) {
 		            $about = $profile['about']; $cols = $profile['columns'];
@@ -105,6 +123,7 @@ class GA {
 		            foreach ($profile as $key => $value) {
 		                if ($value[1] != 'Clicks99') continue;
 		                $search = [
+		                	'view_id' => $key,
 		                    'source' => $value[0],
 		                    'medium' => $value[1],
 		                    'user_id' => (int) $user->id,

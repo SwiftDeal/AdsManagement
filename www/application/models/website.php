@@ -7,28 +7,6 @@ use Framework\Registry as Registry;
 use Framework\ArrayMethods as ArrayMethods;
 
 class Website extends Shared\Model {
-    
-    /**
-     * @column
-     * @readwrite
-     * @type integer
-     * @validate required
-     * @index
-     */
-    protected $_user_id;
-    
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * @length 100
-     * @index
-     * 
-     * @validate required, min(3), max(32)
-     * @label category
-     */
-    protected $_category = "";
-
     /**
      * @column
      * @readwrite

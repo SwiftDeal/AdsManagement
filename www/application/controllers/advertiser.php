@@ -102,25 +102,27 @@ class Advertiser extends Analytics {
         $this->seo(array("title" => "Platforms", "view" => $this->getLayoutView()));
         $view = $this->getActionView(); $client = Registry::get("gClient");
 
-        $websites = Website::all(array("user_id = ?" => $this->user->id));
-        $token = $this->advert->gatoken; $gtoken = $client->getAccessToken();
+        $access = Access::all(array("user_id = ?" => $this->user->id, "property = ?" => "website"));
+        $advert = Advert::first(["user_id = ?" => $this->user->id]); $this->setAdvert($advert);
+        $token = $this->advert->gatoken;
         
-        if (!$token && !$websites) {
+        if (!$token && !$access) {
             $url = $client->createAuthUrl();
             $view->set("url", $url);
-        } elseif ($gtoken && !$websites) {
+        } elseif ($token && !$access) {
+            $client->refreshToken($token);
             $msg = "All analytics stats for Clicks99 have been stored!!";
             try {
                 Shared\Services\GA::update($client, $this->user); 
             } catch (\Exception $e) {
                 $msg = $e->getMessage();
             }
-            $websites = Website::all(["user_id = ?" => $this->user->id]);
+            $access = Access::all(array("user_id = ?" => $this->user->id, "property = ?" => "website"));
             
             $view->set("message", $msg);
         }
 
-        $view->set("websites", $websites);
+        $view->set("access", $access);
     }
 
     public function advertiserLayout() {

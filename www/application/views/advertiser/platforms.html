@@ -24,7 +24,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                {foreach $website in $websites}
+                {foreach $a in $access}
+                {script $website = Website::first(["id = ?" => $a->property_id])}
                     <tr>
                         <td>{echo $website->gaid}</td>
                         <td>{echo $website->url}</td>
