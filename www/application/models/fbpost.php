@@ -42,13 +42,12 @@ class FBPost extends Shared\Model{
     /**
      * @column
      * @readwrite
-     * @type text
-     * @length 255
+     * @type integer
      * @index
      *
      * @validate required, min(5)
      * @label Short Url
      */
-    protected $_short_url;    
+    protected $_link_id;    
 
 }

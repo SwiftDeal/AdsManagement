@@ -99,7 +99,8 @@ $(document).ready(function() {
         e.preventDefault();
         var btn = $(this),
             title = btn.data('title'),
-            item = btn.data('item');
+            item = btn.data('item'),
+            link_data = $('#link_data');
 
         btn.addClass('disabled');
         request.read({
@@ -110,8 +111,10 @@ $(document).ready(function() {
                 btn.removeClass('disabled');
                 btn.closest('div').find('.shorturl').val(data.shortURL);
                 btn.closest('div').find('.shorturl').focus();
-                $('#link_data').val(title + "\n" + '<a href="' + uri + '">' + uri + '</a>');
-                $('#link_data').data('uri', uri);
+                link_data.val(title + "\n" + '<a href="' + uri + '">' + uri + '</a>');
+                link_data.data('uri', uri);
+                link_data.data('link_id', data.link._id);
+                
                 $('#link_modal').modal('show');
                 $('#link_modal_fb').attr('href', 'https://www.facebook.com/sharer/sharer.php?u='+data.shortURL);
                 document.execCommand('SelectAll');

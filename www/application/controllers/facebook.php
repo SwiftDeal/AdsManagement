@@ -86,7 +86,7 @@ class Facebook extends Auth {
                 "user_id" => $this->user->id,
                 "fbpage_id" => $pageid,
                 "fbpost_id" => $postid,
-                "short_url" => RequestMethods::post("short"),
+                "link_id" => RequestMethods::post("link_id"),
                 "live" => 1
             ]);
 

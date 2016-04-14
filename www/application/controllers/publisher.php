@@ -112,6 +112,7 @@ class Publisher extends Advertiser {
         $link->save();
 
         $view->set("shortURL", $link->short);
+        $view->set("link", $link);
     }
     
     /**
