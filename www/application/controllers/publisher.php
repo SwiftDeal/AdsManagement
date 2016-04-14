@@ -205,16 +205,6 @@ class Publisher extends Advertiser {
                 }
                 break;
         }
-        
-        $view->set("account", $account);
-    }
-    
-    /**
-     * @before _secure, publisherLayout
-     */
-    public function payments() {
-        $this->seo(array("title" => "Payments", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
 
         switch (RequestMethods::post("action")) {
             case 'addPaypal':
@@ -240,11 +230,28 @@ class Publisher extends Advertiser {
         }
         $banks = Bank::all(array("user_id = ?" => $this->user->id));
         $paypals = Paypal::all(array("user_id = ?" => $this->user->id), array("email"));
-        $transactions = Transaction::all(array("user_id = ?" => $this->user->id));
         
-        $view->set("transactions", $transactions);
+        $view->set("account", $account);
         $view->set("banks", $banks);
         $view->set("paypals", $paypals);
+    }
+    
+    /**
+     * @before _secure, publisherLayout
+     */
+    public function payments() {
+        $this->seo(array("title" => "Payments", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+
+        $page = RequestMethods::get("page", 1);
+        $limit = RequestMethods::get("limit", 10);
+        $transactions = Transaction::all(array("user_id = ?" => $this->user->id), array("id", "ref", "amount", "live", "created"), "created", "desc", $limit, $page);
+        $count = Transaction::count(array("user_id = ?" => $this->user->id));
+        
+        $view->set("transactions", $transactions);
+        $view->set("limit", $limit);
+        $view->set("page", $page);
+        $view->set("count", $count);
     }
 
     /**
@@ -336,43 +343,6 @@ class Publisher extends Advertiser {
                 if (empty($errors)) {
                     $view->set("message", "Your account has been created, Check your email for password");
                 }
-            }
-        }
-    }
-
-    /**
-     * @before _secure, publisherLayout
-     */
-    public function chocoghar() {
-        $this->seo(array("title" => "ChocoGhar Payment", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
-        if (RequestMethods::post("action") == "process") {
-            $meta = Meta::first(array("id = ?" => base64_decode(RequestMethods::post("code")), "property = ?" => RequestMethods::post("email")));
-            if (isset($meta)) {
-                $account = Account::first(array("user_id = ?" => $this->user->id));
-                if (!$account) {
-                    $account = new Account(array(
-                        "user_id" => $this->user->id,
-                        "balance" => $meta->value,
-                        "live" => 1
-                    ));
-                    $account->save();
-                } else {
-                    $account->balance += $meta->value;
-                    $account->save();
-                }
-                $transaction = new Transaction(array(
-                    "user_id" => $this->user->id,
-                    "amount" => $meta->value,
-                    "ref" => "chocoghar"
-                ));
-                $transaction->save();
-
-                $meta->delete();
-                $view->set("message", "Amount added see Payments");
-            } else {
-                $view->set("message", "Record not exists");
             }
         }
     }

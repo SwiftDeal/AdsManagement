@@ -284,6 +284,7 @@ class Analytics extends Manage {
         }
 
         $view->set("stats", $return);
+        $view->set("query", $query);
     }
 
     /**

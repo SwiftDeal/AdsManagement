@@ -1,3 +1,5 @@
+{include layouts/modal/addBank.html}
+{include layouts/modal/addPaypal.html}
 <div class="page-title">
     <span class="title">
         Profile
@@ -86,6 +88,58 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="title">
+                        Payout Methods
+                    </div>
+                </div>
+                <div class="pull-right card-action">
+                    <div class="btn-group" role="group" aria-label="...">
+                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addBank"><i class="fa fa-bank"></i> Add Bank</button>
+                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addPaypal"><i class="fa fa-paypal"></i> Add Paypal</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+            {if($banks)}
+            <table class="table">
+                <tr>
+                    <th>Bank</th>
+                    <th>Owner</th>
+                    <th>A/C Number</th>
+                    <th>IFSC</th>
+                    <th>PAN</th>
+                </tr>
+                {foreach $b in $banks}
+                <tr>
+                    <td>{echo $b->bank}</td>
+                    <td>{echo $b->name}</td>
+                    <td>{echo $b->number}</td>
+                    <td>{echo $b->ifsc}</td>
+                    <td>{echo $b->pan}</td>
+                </tr>
+                {/foreach}
+            </table>
+            {/if}
+            {if($paypals)}
+            <table class="table">
+                <tr>
+                    <th>Paypal Email</th>
+                </tr>
+                {foreach $p in $paypals}
+                <tr>
+                    <td>{echo $p->email}</td>
+                </tr>
+                {/foreach}
+            </table>
+            {/if}
+            <p class="text-warning">Note: Money is transferred to newest account added.</p>
             </div>
         </div>
     </div>
