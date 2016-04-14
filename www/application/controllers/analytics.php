@@ -257,6 +257,7 @@ class Analytics extends Manage {
 
         $cursor = $collection->find($query);
         foreach ($cursor as $id => $result) {
+            //echo "<pre>", print_r($result), "</pre>";
             $rpms = RPM::first(array("item_id = ?" => $result["item_id"]), array("value"));
             $rpm = json_decode($rpms->value, true);
             $code = $result["country"];

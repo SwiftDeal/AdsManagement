@@ -103,37 +103,39 @@ class Item extends Shared\Model {
     protected $_description;
 
     public function stats($date = NULL) {
+        $collection = \Framework\Registry::get("MongoDB")->clicks;
         $total_click = 0;$earning = 0;$analytics = array();$publishers = array();
         $return = array("click" => 0, "rpm" => 0, "earning" => 0, "analytics" => 0);
         $doc = array("item_id" => $this->id);
         if ($date) {
             $doc["created"] = $date;
         }
-        $results = $this->mongodb($doc);
-        if (is_array($results)) {
+        $records = $collection->find($doc);
+        if (isset($records)) {
             //rpm
             $rpms = RPM::first(array("item_id = ?" => $this->id), array("value"));
             $rpm = json_decode($rpms->value, true);
 
-            foreach ($results as $result) {
-                $u = null;$u = User::first(array("id = ?" => $result["user_id"], "live = ?" => true), array("id"));
+            foreach ($records as $record) {
+                $u = null;
+                $u = User::first(array("id = ?" => $record["user_id"], "live = ?" => true), array("id"));
                 if ($u) {
-                    $code = $result["country"];
-                    $total_click += $result["count"];
+                    $code = $record["country"];
+                    $total_click += $record["click"];
                     if (array_key_exists($code, $rpm)) {
-                        $earning += ($rpm[$code])*($result["count"])/1000;
+                        $earning += ($rpm[$code])*($record["click"])/1000;
                     } else {
-                        $earning += ($rpm["NONE"])*($result["count"])/1000;
+                        $earning += ($rpm["NONE"])*($record["click"])/1000;
                     }
                     if (array_key_exists($code, $analytics)) {
-                        $analytics[$code] += $result["count"];
+                        $analytics[$code] += $record["click"];
                     } else {
-                        $analytics[$code] = $result["count"];
+                        $analytics[$code] = $record["click"];
                     }
-                    if (array_key_exists($result["user_id"], $publishers)) {
-                        $publishers[$result["user_id"]] += $result["click"];
+                    if (array_key_exists($record["user_id"], $publishers)) {
+                        $publishers[$record["user_id"]] += $record["click"];
                     } else {
-                        $publishers[$result["user_id"]] = $result["click"];
+                        $publishers[$record["user_id"]] = $record["click"];
                     }
                 }
             }
