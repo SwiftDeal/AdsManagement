@@ -276,5 +276,25 @@ class Finance extends Admin {
 
         }
     }
+
+    /**
+     * @before _secure
+     */
+    public function payout() {
+        $this->JSONview();
+        $view = $this->getActionView();
+
+        $payout = Payout::first(array("user_id = ?" => $this->user->id));
+        if (isset($payout)) {
+            $payout->live = true;
+        } else {
+            $payout = new Payout(array(
+                "user_id" => $this->user->id,
+                "live" => 1
+            ));
+        }
+        $payout->save();
+        $view->set("payout", $payout);
+    }
     
 }

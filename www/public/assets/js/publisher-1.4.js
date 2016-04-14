@@ -157,6 +157,20 @@ $(document).ready(function() {
         self.removeClass('disabled');
     });
 
+    $("#payout").click(function (e) {
+        e.preventDefault();
+        var self = $(this);
+        self.addClass('disabled');
+        self.prop('disabled', true);
+        self.html('Processing ....<i class="fa fa-spinner fa-pulse"></i>');
+        request.read({
+            action: "finance/payout",
+            callback: function(data) {
+                self.html('Successfully Done!!!');
+            }
+        });
+    })
+
 });
 
 function today () {

@@ -25,23 +25,30 @@
                 <table class="table table-bordered table-hover table-striped">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>Link</th>
-                            <th>Created</th>
-                            <th>Realtime</th>
+                            <th>Stats</th>
                         </tr>
                     </thead>
                     <tbody>
                         {foreach $link in $links}
-                        {script $item = Item::first(array("id = ?" => $link->item_id), array("title", "url"))}
+                        {script $item = Item::first(array("id = ?" => $link->item_id), array("title", "url", "image"))}
                         {script $stat = Stat::first(array("link_id = ?" => $link->id), array("amount", "click", "rpm", "modified"))}
                         <tr>
                             <td>
-                                <a href="{$item->url}" target="_blank">{$item->title}</a><br>
-                                <a href="{$link->short}" class="fbshare">{$link->short}</a>
+                                <a href="/public/assets/uploads/images/{$item->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}/50/50"></a><br>
                             </td>
-                            <td>{echo Framework\StringMethods::datetime_to_text($link->created)}</td>
+                            <td>
+                                <a href="{$item->url}" target="_blank">{$item->title}</a><br>
+                                <a href="{$link->short}" class="fbshare">{$link->short}</a><br>
+                                <small>{echo Framework\StringMethods::datetime_to_text($link->created)}</small>
+                            </td>
                             <td class="linkstat" data-link="{echo $link->id}">
+                                {if($stat)}
+                                RPM :  <i class="fa fa-inr"></i> {echo $stat->rpm}, Sessions : {echo $stat->click}, Earning :  <i class="fa fa-inr"></i> {echo $stat->amount}
+                                {/if} {else}
                                 <span class="label label-success">View</span>
+                                {/else}
                             </td>
                         </tr>
                         {/foreach}

@@ -39,32 +39,8 @@ class Publisher extends Advertiser {
         $view->set("news", $news);
         $view->set("account", $account);
         $view->set("ticket", $ticket)
+            ->set("payout", Payout::first(array("user_id = ?" => $this->user->id, "live = ?" => true)))
             ->set("fb", RequestMethods::get("fb", false));
-    }
-
-    /**
-     * @before _secure, publisherLayout
-     */
-    public function mylinks() {
-        $this->seo(array("title" => "Stats Charts", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
-        $page = RequestMethods::get("page", 1);
-        $limit = RequestMethods::get("limit", 10);
-        $short = RequestMethods::get("short", "");
-        $where = array(
-            "short LIKE ?" => "%{$short}%",
-            "user_id = ?" => $this->user->id,
-            "live = ?" => true
-        );
-
-        $links = Link::all($where, array("id", "item_id", "short", "created"), "created", "desc", $limit, $page);
-        $count = Link::count($where);
-
-        $view->set("links", $links);
-        $view->set("limit", $limit);
-        $view->set("page", $page);
-        $view->set("count", $count);
     }
     
     /**
@@ -151,22 +127,6 @@ class Publisher extends Advertiser {
             $view->set("today", $stat);
             $view->set("rank", $rank);
         }
-    }
-    
-    /**
-     * @before _secure, publisherLayout
-     */
-    public function earnings() {
-        $this->seo(array("title" => "Earnings", "view" => $this->getLayoutView()));
-
-        $startdate = RequestMethods::get("startdate", date('Y-m-d', strtotime("-6 Day")));
-        $enddate = RequestMethods::get("enddate", date('Y-m-d', strtotime("now")));
-        
-        $view = $this->getActionView();
-        $stats = Stat::all(array("user_id = ?" => $this->user->id, "created >= ?" => $startdate, "created <= ?" => $enddate), array("link_id", "rpm", "amount", "created", "live", "click"), "created", "desc");
-
-        $view->set("stats", $stats);
-        $view->set("count", count($stats));
     }
     
     /**
@@ -265,7 +225,32 @@ class Publisher extends Advertiser {
         $view->set("fbpages", $fbpages);
         $fb = RequestMethods::get("fb", false);
         $view->set("fb", $fb);
-    }   
+    }
+
+    /**
+     * @before _secure, publisherLayout
+     */
+    public function links() {
+        $this->seo(array("title" => "Stats Charts", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+
+        $page = RequestMethods::get("page", 1);
+        $limit = RequestMethods::get("limit", 10);
+        $short = RequestMethods::get("short", "");
+        $where = array(
+            "short LIKE ?" => "%{$short}%",
+            "user_id = ?" => $this->user->id,
+            "live = ?" => true
+        );
+
+        $links = Link::all($where, array("id", "item_id", "short", "created"), "created", "desc", $limit, $page);
+        $count = Link::count($where);
+
+        $view->set("links", $links);
+        $view->set("limit", $limit);
+        $view->set("page", $page);
+        $view->set("count", $count);
+    }
 
     protected function target() {
         $session = Registry::get("session");
