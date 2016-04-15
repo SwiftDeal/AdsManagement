@@ -351,12 +351,12 @@ class Analytics extends Manage {
         }
     }
 
-    protected static function _records($user_id) {
+    protected static function _records($user_id, $opts) {
         $advert = Advert::first(["user_id = ?" => $user_id]); $token = $advert->gatoken;
         $user = ArrayMethods::toObject(['id' => $user_id]);
 
         $client = Shared\Services\GA::client($token);
-        $records = Shared\Services\GA::liveStats($client, $user, ['start' => $start, 'end' => $end]);
+        $records = Shared\Services\GA::liveStats($client, $user, $opts);
         return $records;
     }
 
@@ -374,8 +374,8 @@ class Analytics extends Manage {
             $start = RequestMethods::get("startdate", date('Y-m-d', strtotime("-7 day")));
             $end = RequestMethods::get("enddate", date('Y-m-d'));
             
-            $record_1 = $this->_records(1);
-            $record_2 = $this->_records(725);
+            $record_1 = $this->_records(1, ['start' => $start, 'end' => $end]);
+            $record_2 = $this->_records(725, ['start' => $start, 'end' => $end]);
             $records = array_merge($record_1, $record_2);
 
             $start_time = strtotime($start); $end_time = strtotime($end);
