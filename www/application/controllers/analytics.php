@@ -5,6 +5,7 @@
  */
 use Framework\Registry as Registry;
 use Framework\RequestMethods as RequestMethods;
+use Framework\ArrayMethods as ArrayMethods;
 use \Curl\Curl;
 
 class Analytics extends Manage {
@@ -348,5 +349,56 @@ class Analytics extends Manage {
                 fputcsv($output, array($link->short, $data["click"], $data["amount"], $data["rpm"], "Not Added, Sessions less than 10"));
             }
         }
+    }
+
+    protected static function _records($user_id) {
+        $advert = Advert::first(["user_id = ?" => $user_id]); $token = $advert->gatoken;
+        $user = ArrayMethods::toObject(['id' => $user_id]);
+
+        $client = Shared\Services\GA::client($token);
+        $records = Shared\Services\GA::liveStats($client, $user, ['start' => $start, 'end' => $end]);
+        return $records;
+    }
+
+    /**
+     * @before _secure, changeLayout, _admin
+     */
+    public function publisher() {
+        $this->seo(array("title" => "Platform GA Stats", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+        $user_id = RequestMethods::get("user");
+
+        $result = []; $count = 0;
+        $clicks = Registry::get("MongoDB")->clicks; $totalClicks = 0;
+        if ($user_id) {
+            $start = RequestMethods::get("startdate", date('Y-m-d', strtotime("-7 day")));
+            $end = RequestMethods::get("enddate", date('Y-m-d'));
+            
+            $record_1 = $this->_records(1);
+            $record_2 = $this->_records(725);
+            $records = array_merge($record_1, $record_2);
+
+            $start_time = strtotime($start); $end_time = strtotime($end);
+            for ($i = 0; $start_time < $end_time; $i++) {
+                $start_time = strtotime($start . " +{$i} day");
+                $date = date('Y-m-d', $start_time);
+                $clicks_records = $clicks->find(['user_id' => $user_id, 'created' => $date], ['click' => true]);
+
+                foreach ($clicks_records as $c) {
+                    $totalClicks += $c['click'];
+                }
+            }
+            
+            foreach ($records as $r) {
+                if ($r['source'] != $user_id) continue;
+
+                $result[] = ArrayMethods::toObject($r);
+                $count++;
+            }    
+        }
+        
+        $view->set("records", $result)
+            ->set("totalClicks", $totalClicks)
+            ->set("user_id", $user_id);
     }
 }

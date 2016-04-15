@@ -3,10 +3,19 @@ namespace Shared\Services;
 use Framework\Registry as Registry;
 
 class GA {
-	protected static function _data(&$analytics, $profiles) {
+	protected static $client = false;
+
+	protected static function _data(&$analytics, $profiles, $opts) {
 		$results = []; $ga = $analytics->data_ga;
+		if (isset($opts['start'])) {
+			$start = $opts['start'];
+			$end = $opts['end'];
+		} else {
+			$start = date('Y-m-d', strtotime("-30 day"));
+			$end = "today";
+		}
 		foreach ($profiles as $p) {
-			$d = $ga->get('ga:' . $p->getId(), date('Y-m-d', strtotime("-30 day")), "today", "ga:pageviews, ga:sessions, ga:percentNewSessions, ga:newUsers, ga:bounceRate, ga:avgSessionDuration, ga:pageviewsPerSession", ["dimensions" => "ga:source, ga:medium"]);
+			$d = $ga->get('ga:' . $p->getId(), $start, $end, "ga:pageviews, ga:sessions, ga:percentNewSessions, ga:newUsers, ga:bounceRate, ga:avgSessionDuration, ga:pageviewsPerSession", ["dimensions" => "ga:source, ga:medium"]);
 
 			$columns = self::_columnHeaders($d);
 			$about = self::_profile($p);
@@ -48,7 +57,7 @@ class GA {
 		return ['columns' => $results];
 	}
 
-	public static function fetch(&$client) {
+	public static function fetch(&$client, $opts = []) {
 		try {
 			$analytics = new \Google_Service_Analytics($client);
 			
@@ -60,7 +69,7 @@ class GA {
 				$key = $i->getName(); // account
 				$properties = $i->getWebProperties(); // properties
 				foreach ($properties as $prop) {
-					$d = self::_data($analytics, $prop->getProfiles());
+					$d = self::_data($analytics, $prop->getProfiles(), $opts);
 					$results[$key][] = [
 						'id' => $prop->getId(),
 						'name' => $prop->getName(),
@@ -123,13 +132,12 @@ class GA {
 		            foreach ($profile as $key => $value) {
 		                if ($value[1] != 'Clicks99') continue;
 		                $search = [
-		                	'view_id' => $key,
 		                    'source' => $value[0],
 		                    'medium' => $value[1],
 		                    'user_id' => (int) $user->id,
 		                    'website_id' => (int) $website->id
 		                ];
-		                $data = self::fields($value);
+		                $data = self::fields($value, ['view-id' => $about['id']]);
 		                $newFields = array_merge($data, $search);
 
 		                $record = $ga_stats->findOne($search);
@@ -142,5 +150,59 @@ class GA {
 		        }
 		    }
 		}
+	}
+
+	public static function liveStats($client, $user, $opts = []) {
+		$accounts = self::fetch($client, $opts);
+
+		$results = [];
+		foreach ($accounts as $properties) {
+		    foreach ($properties as $p) {
+		        $website = self::_saveWebsite($p, $user);
+
+		        foreach ($p['profiles'] as $profile) {
+		            $about = $profile['about']; $cols = $profile['columns'];
+		            unset($profile['about']); unset($profile['columns']);
+
+		            foreach ($profile as $key => $value) {
+		                if ($value[1] != 'Clicks99') continue;
+		                $search = [
+		                    'source' => $value[0],
+		                    'medium' => $value[1],
+		                    'user_id' => (int) $user->id,
+		                    'website_id' => (int) $website->id
+		                ];
+		                $data = self::fields($value, ['view-id' => $about['id']]);
+		                $results[] = array_merge($data, $search);
+		            }
+		        }
+		    }
+		}
+		return $results;
+	}
+
+	public static function client($token, $type = 'offline') {
+		$conf = Registry::get("configuration");
+        $google = $conf->parse("configuration/google")->google;
+
+        if (!self::$client) {
+            $client = new \Google_Client();
+            $client->setClientId($google->client->id);
+            $client->setClientSecret($google->client->secret);
+            $client->setRedirectUri('http://'.$_SERVER['HTTP_HOST'].'/advertiser/gaLogin');
+
+            $client->setApplicationName("Cloudstuff");
+            $client->addScope(\Google_Service_Analytics::ANALYTICS_READONLY);
+            $client->setAccessType("offline");
+        } else {
+        	$client = self::$client;
+        }
+
+        if ($type == 'offline') {
+        	$client->refreshToken($token);
+        } else {
+        	$client->setAccessToken($token);
+        }
+        return $client;
 	}
 }
