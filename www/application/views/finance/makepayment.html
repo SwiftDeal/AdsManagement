@@ -69,7 +69,11 @@
                             <tbody>
                                 <tr>
                                     <td>Paytm</td>
-                                    <td></td>
+                                    <td>
+                                        {if($paytm)}
+                                        {echo $paytm->phone}
+                                        {/if}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Paypal</td>

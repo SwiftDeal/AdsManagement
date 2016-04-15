@@ -21,8 +21,7 @@ class Finance extends Admin {
     public function pending() {
         $this->seo(array("title" => "Records Finance", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-        $database = Registry::get("database");
-        $where = array();
+        $database = Registry::get("database");$where = array();$today = date('Y-m-d', strtotime("now"));
         $live = RequestMethods::get("live", 0);
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
@@ -39,6 +38,7 @@ class Finance extends Admin {
         $view->set("limit", $limit);
         $view->set("live", $live);
         $view->set("user_id", $user_id);
+        $view->set("today", $today);
     }
 
     /**

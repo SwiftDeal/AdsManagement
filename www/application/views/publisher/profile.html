@@ -1,5 +1,6 @@
 {include layouts/modal/addBank.html}
 {include layouts/modal/addPaypal.html}
+{include layouts/modal/addPaytm.html}
 <div class="page-title">
     <span class="title">
         Profile
@@ -103,6 +104,7 @@
                     <div class="btn-group" role="group" aria-label="...">
                         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addBank"><i class="fa fa-bank"></i> Add Bank</button>
                         <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addPaypal"><i class="fa fa-paypal"></i> Add Paypal</button>
+                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#addPaytm"><i class="fa fa-paypal"></i> Add Paytm</button>
                     </div>
                 </div>
             </div>
@@ -135,6 +137,18 @@
                 {foreach $p in $paypals}
                 <tr>
                     <td>{echo $p->email}</td>
+                </tr>
+                {/foreach}
+            </table>
+            {/if}
+            {if($paytms)}
+            <table class="table">
+                <tr>
+                    <th>Paytm Number</th>
+                </tr>
+                {foreach $p in $paytms}
+                <tr>
+                    <td>{echo $p->phone}</td>
                 </tr>
                 {/foreach}
             </table>

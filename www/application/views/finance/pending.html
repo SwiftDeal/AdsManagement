@@ -37,7 +37,7 @@
                         <td>
                             <a href="/finance/transactions.html?property=user_id&value={$user->id}" class="btn btn-primary btn-xs" target="_blank"><i class="fa fa-bank"></i> Transaction </a>
                             <a href="/finance/makepayment/{$user->id}" class="btn btn-warning btn-xs"><i class="fa fa-inr"></i> Make Payment </a>&nbsp;
-                            <a href="/analytics/verify/{$user->id}" class="btn btn-info btn-xs"><i class="fa fa-check"></i> Verify</a>&nbsp;
+                            <a href="/analytics/publisher.html?user={$user->id}&amp;startdate=2016-02-14&amp;enddate={echo $today}" class="btn btn-info btn-xs" target="_blank"><i class="fa fa-check"></i> Verify</a>&nbsp;
                         </td>
                     </tr>
                 {/foreach}

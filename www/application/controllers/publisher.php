@@ -175,6 +175,14 @@ class Publisher extends Advertiser {
                 $paypal->save();
                 $view->set("message", "Paypal Account Saved <strong>Successfully!</strong>");
                 break;
+            case 'addPaytm':
+                $paytm = new Paytm(array(
+                    "user_id" => $this->user->id,
+                    "phone" => RequestMethods::post("number")
+                ));
+                $paytm->save();
+                $view->set("message", "Paytm Account Saved <strong>Successfully!</strong>");
+                break;
             case 'addBank':
                 $bank = new Bank(array(
                     "user_id" => $this->user->id,
@@ -190,10 +198,12 @@ class Publisher extends Advertiser {
         }
         $banks = Bank::all(array("user_id = ?" => $this->user->id));
         $paypals = Paypal::all(array("user_id = ?" => $this->user->id), array("email"));
+        $paytms = Paytm::all(array("user_id = ?" => $this->user->id), array("phone"));
         
         $view->set("account", $account);
         $view->set("banks", $banks);
         $view->set("paypals", $paypals);
+        $view->set("paytms", $paytms);
     }
     
     /**
