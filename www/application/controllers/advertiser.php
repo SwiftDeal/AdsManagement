@@ -125,6 +125,17 @@ class Advertiser extends Analytics {
         $view->set("access", $access);
     }
 
+    /**
+     * @before _secure, advertiserLayout, googleAnalytics
+     */
+    public function stats() {
+        $this->seo(array("title" => "Platforms", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+
+        $insights = Insight::all(array("user_id = ?" => $this->user->id));
+        $view->set("insights", $insights);
+    }
+
     public function advertiserLayout() {
         $session = Registry::get("session");
         

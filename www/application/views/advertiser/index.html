@@ -66,16 +66,17 @@
             <div class="card-body no-padding">
                 <table class="table table-responsive">
                     <tr>
-                        <th>Created</th>
+                        <th>Id</th>
                         <th>Campaign</th>
-                        <th>Commission</th>
                         <th>Realtime</th>
                     </tr>
                     {foreach $item in $items}
                     <tr>
-                        <td>{echo Framework\StringMethods::datetime_to_text($item->created)}</td>
-                        <td><a href="/public/assets/uploads/images/{$item->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}/50/50">{echo $item->title}</a></td>
-                        <td>{echo $item->commission}%</td>
+                        <td>{echo $item->id}</td>
+                        <td>
+                            <a href="/public/assets/uploads/images/{$item->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}/50/50">{echo $item->title}</a><br>
+                            <small>{echo Framework\StringMethods::datetime_to_text($item->created)}</small>
+                        </td>
                         <td class="campaignstat" data-campaign="{echo $item->id}">
                             <span class="label label-success">View</span>
                         </td>

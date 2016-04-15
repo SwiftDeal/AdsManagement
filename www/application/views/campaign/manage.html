@@ -31,7 +31,6 @@
                     <tr>
                         <th>Id</th>
                         <th>Campaign</th>
-                        <th>Commission</th>
                         <th>Realtime</th>
                         <th>Action</th>
                     </tr>
@@ -43,7 +42,6 @@
                             {echo $item->title}<br>
                             <small>{echo Framework\StringMethods::datetime_to_text($item->created)}</small>
                         </td>
-                        <td>{echo $item->commission}%</td>
                         <td class="campaignstat" data-campaign="{echo $item->id}">
                             <span class="label label-success">View</span>
                         </td>
