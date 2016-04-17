@@ -147,11 +147,9 @@ class Advertiser extends Analytics {
             $this->_advert = $advert;
         } else {
             $user = $this->getUser();
-            if ($user) {
-                $advert = Advert::first(array("user_id = ?" => $user->id));
-                if (!$advert) {
-                    $this->_newAdvertiser($user);
-                }
+            $advert = Advert::first(array("user_id = ?" => $user->id), array("id"));
+            if ($user && $advert) {
+                $session->set("advert", $advert);
             } else {
                 $this->redirect("/index.html");
             }
@@ -159,17 +157,6 @@ class Advertiser extends Analytics {
 
         $this->defaultLayout = "layouts/advertiser";
         $this->setLayout();
-    }
-
-    protected function _newAdvertiser($user) {
-        $advert = new Advert(array(
-            "user_id" => $user->id,
-            "country" => $this->country(),
-            "account" => "basic"
-        ));
-        $advert->save();
-        $session = Registry::get("session");
-        $session->set("advert", $advert);
     }
 
     /**

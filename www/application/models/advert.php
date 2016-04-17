@@ -13,17 +13,6 @@ class Advert extends Shared\Model {
      * @validate required
      */
     protected $_user_id;
-    
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * @length 4
-     * 
-     * @validate required, alpha, min(2), max(4)
-     * @label location
-     */
-    protected $_country;
 
     /**
     * @column
@@ -39,13 +28,12 @@ class Advert extends Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type decimal
-     * @length 4,2
+     * @type text
+     * @length 255
      *
-     * @validate required
-     * @label commission
+     * @label cpc value
      */
-    protected $_commission;
+    protected $_cpc;
 
     /**
      * @column

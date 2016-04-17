@@ -33,7 +33,9 @@ namespace Shared {
          * @protected
          */
         public function _admin() {
-            if (!$this->user->admin) {
+            $session = Registry::get("session");
+            $team = $session->get("team");
+            if (!isset($team)) {
                 $this->logout();
             }
         }

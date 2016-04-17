@@ -285,11 +285,9 @@ class Publisher extends Advertiser {
             $this->_publish = $publish;
         } else {
             $user = $this->getUser();
-            if ($user) {
-                $publish = Publish::first(array("user_id = ?" => $user->id), array("id"));
-                if (!$publish) {
-                    $this->_newPublisher($user);
-                }
+            $publish = Publish::first(array("user_id = ?" => $user->id), array("id"));
+            if ($user && $publish) {
+                $session->set("publish", $publish);
             } else {
                 $this->redirect("/index.html");
             }
@@ -297,18 +295,6 @@ class Publisher extends Advertiser {
 
         $this->defaultLayout = "layouts/publisher";
         $this->setLayout();
-    }
-
-    protected function _newPublisher($user) {
-        $publish = new Publish(array(
-            "user_id" => $user->id,
-            "country" => $this->country(),
-            "account" => "basic",
-            "live" => 1
-        ));
-        $publish->save();
-        $session = Registry::get("session");
-        $session->set("publish", $publish);
     }
 
     /**

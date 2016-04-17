@@ -37,7 +37,7 @@
                             </a>
                             <a href="/admin/search.html?model=stat&amp;key=modified&amp;sign=like&amp;value={echo $now}" class="list-group-item"><i class="fa fa-location-arrow fa-2x"></i>  Links Tracking <span class="badge">{echo Shared\Markup::nice_number(Stat::count(array("modified LIKE ?" => "%$now%")))}</span></a>
                             <a href="/admin/search.html?model=stat&amp;key=created&amp;sign=like&amp;value={echo $now}" class="list-group-item"><i class="fa fa-database fa-2x"></i>  Stats <span class="badge">{echo Shared\Markup::nice_number(Stat::count())}</span></a>
-                            <a href="/admin/search.html?model=user&amp;key=admin&amp;sign=equal&amp;value=1" class="list-group-item"><i class="fa fa-user-secret fa-2x"></i>  Admins <span class="badge">{echo User::count(array("admin = ?" => 1))}</span></a>
+                            <a href="/admin/search.html?model=user&amp;key=admin&amp;sign=equal&amp;value=1" class="list-group-item"><i class="fa fa-user-secret fa-2x"></i>  Admins <span class="badge">{echo Team::count(array("live = ?" => 1))}</span></a>
                             <a href="/support/manageticket.html" class="list-group-item"><i class="fa fa-tags fa-2x"></i>  Tickets <span class="badge">{echo Ticket::count(array("live = ?" => true))}</span></a>
                         </div>
                     </div>

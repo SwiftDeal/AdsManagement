@@ -83,6 +83,17 @@ class Auth extends Controller {
 
     protected function authorize($user) {
         $session = Registry::get("session");
+        //setting team
+        $team = Team::first(array("user_id = ?" => $user->id));
+        if ($team) {
+            if ($team->live == 0) {
+                return "Account Suspended";
+            }
+            $this->setUser($user);
+            $session->set("team", $team);
+            $this->redirect("/manage/index.html");
+        }
+
         //setting publisher
         $publish = Publish::first(array("user_id = ?" => $user->id));
         if ($publish) {
@@ -143,7 +154,7 @@ class Auth extends Controller {
             "email" => RequestMethods::post("email"),
             "password" => sha1($pass),
             "phone" => RequestMethods::post("phone"),
-            "admin" => 0,
+            "country" => $this->country(),
             "live" => 1
         ));
         if (RequestMethods::post("action") == "fblogin") {
@@ -171,7 +182,8 @@ class Auth extends Controller {
 
         $publish = new Publish(array(
             "user_id" => $user->id,
-            "country" => $this->country(),
+            "bouncerate" => 0,
+            "account" => "basic",
             "live" => 1
         ));
         $publish->save();
@@ -199,7 +211,7 @@ class Auth extends Controller {
             "email" => RequestMethods::post("email"),
             "password" => sha1($pass),
             "phone" => RequestMethods::post("phone"),
-            "admin" => 0,
+            "country" => $this->country(),
             "live" => 0
         ));
         if ($user->validate()) {
@@ -221,8 +233,9 @@ class Auth extends Controller {
 
         $advert = new Advert(array(
             "user_id" => $user->id,
-            "country" => $this->country(),
             "account" => "basic",
+            "cpc" => "",
+            "gatoken" => "",
             "live" => 0
         ));
         if ($advert->validate()) {
@@ -286,19 +299,6 @@ class Auth extends Controller {
         $this->setUser(false);
         $user = User::first(array("id = ?" => $user_id));
         $this->authorize($user);
-    }
-
-    /**
-     * @before _secure
-     */
-    public function loginadmin() {
-        $session = Registry::get("session");
-        $session->get("admin_user_id");
-        $user_id = $this->setUser(false);
-        if (!empty($user_id)) {
-            $user = User::first(array("id = ?" => $user_id));
-            $this->authorize($user);
-        }
     }
 
     protected function country() {

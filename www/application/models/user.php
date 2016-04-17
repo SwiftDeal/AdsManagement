@@ -68,7 +68,8 @@ class User extends Shared\Model {
     /**
     * @column
     * @readwrite
-    * @type boolean
+    * @type text
+    * @length 5
     */
-    protected $_admin = false;
+    protected $_country;
 }

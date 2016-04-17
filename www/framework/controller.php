@@ -176,14 +176,8 @@ namespace Framework {
                         }
                         echo json_encode($obj, JSON_PRETTY_PRINT);
                     }
-
                     $results = $view->render();
-
-                    $this
-                            ->actionView
-                            ->template
-                            ->implementation
-                            ->set("action", $results);
+                    $this->actionView->template->implementation->set("action", $results);
                 }
 
                 if ($doLayout) {
