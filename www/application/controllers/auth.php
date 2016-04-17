@@ -311,6 +311,9 @@ class Auth extends Controller {
     public function contact() {
         $this->seo(array("title" => "Contact Us", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
+        if ($this->user) {
+            $this->redirect("/support/tickets.html");
+        }
 
         if (RequestMethods::post("message")) {
             $email = RequestMethods::post("email");

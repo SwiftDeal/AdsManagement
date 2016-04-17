@@ -274,6 +274,9 @@ class Publisher extends Advertiser {
         return $alias;
     }
     
+    /**
+     * @protected
+     */
     public function publisherLayout() {
         $session = Registry::get("session");
         
@@ -308,6 +311,9 @@ class Publisher extends Advertiser {
         $session->set("publish", $publish);
     }
 
+    /**
+     * @protected
+     */
     public function render() {
         if ($this->publish) {
             if ($this->actionView) {

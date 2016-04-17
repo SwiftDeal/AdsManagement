@@ -95,6 +95,9 @@ class Analytics extends Manage {
 
         $link_id = RequestMethods::get("link");
         $link = Link::first(array("id = ?" => $link_id), array("item_id", "id"));
+        if (!$link || $link->user_id != $this->user->id) {
+            $this->redirect("/404");
+        }
         $result = $link->stat($date);
         
         $view->set("earning", $result["earning"]);
@@ -113,6 +116,9 @@ class Analytics extends Manage {
 
         $item_id = RequestMethods::get("item_id");
         $item = Item::first(array("id = ?" => $item_id), array("id"));
+        if (!$item || $item->user_id != $this->user->id) {
+            $this->redirect("/404");
+        }
         $result = $item->stats($date);
         
         $view->set("earning", $result["earning"]);
@@ -251,7 +257,8 @@ class Analytics extends Manage {
             }
             $query['item_id'] = array('$in' => $i);
         } else {
-            $query['item_id'] = $item_id;
+            $i = Item::first(array("id = ?" => $item_id, "user_id = ?" => $this->user->id));
+            $query['item_id'] = $i->id;
         }
         
         $collection = Registry::get("MongoDB")->clicks;
@@ -332,8 +339,6 @@ class Analytics extends Manage {
         $this->noview();
         $date = date('Y-m-d', strtotime("now"));
         $yesterday = date('Y-m-d', strtotime("-1 Day"));
-        header("Content-Type: text/csv; charset=utf-8");
-        header("Content-Disposition: attachment; filename=report{$this->user->id}_{$yesterday}.csv");
         $output = fopen('php://output', 'w');
 
         fputcsv($output, array('Link', 'Clicks', 'Amount', 'RPM', 'Earning'));
@@ -345,10 +350,20 @@ class Analytics extends Manage {
             if (isset($stat)) {
                 fputcsv($output, array($link->short, $stat->click, $stat->amount, $stat->rpm, "Added"));
             } else {
-                $data = $link->stat($yesterday);
-                fputcsv($output, array($link->short, $data["click"], $data["amount"], $data["rpm"], "Not Added, Sessions less than 10"));
+                if ($link) {
+                    $data = $link->stat($yesterday);
+                    fputcsv($output, array($link->short, $data["click"], $data["amount"], $data["rpm"], "Not Added, Sessions less than 10"));
+                }
             }
         }
+        header('Content-Description: File Transfer');
+        header("Content-Type: text/csv; charset=utf-8");
+        header("Content-Disposition: attachment; filename=report{$this->user->id}_{$yesterday}.csv");
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Pragma: public');
+        $done = fclose($output);
+        exit;
     }
 
     protected static function _records($user_id, $opts) {

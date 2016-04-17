@@ -136,6 +136,9 @@ class Advertiser extends Analytics {
         $view->set("insights", $insights);
     }
 
+    /**
+     * @protected
+     */
     public function advertiserLayout() {
         $session = Registry::get("session");
         
@@ -169,6 +172,9 @@ class Advertiser extends Analytics {
         $session->set("advert", $advert);
     }
 
+    /**
+     * @protected
+     */
     public function render() {
         if ($this->advert) {
             if ($this->actionView) {

@@ -198,6 +198,9 @@ class Finance extends Admin {
         $view->set("value", $value);
     }
 
+    /**
+     * @before _secure
+     */
     public function credit() {
         $this->JSONview();
         $view = $this->getActionView();
@@ -235,6 +238,8 @@ class Finance extends Admin {
                 $instamojo->save();
                 $view->set("success", true);
                 $view->set("payurl", $instamojo->longurl);
+            } else {
+                $this->redirect("/");
             }
         }
     }
@@ -290,8 +295,9 @@ class Finance extends Admin {
                     "user" => $user,
                     "transaction" => $transaction
                 ));
+            } else {
+                $this->redirect("/404");
             }
-
         }
     }
 

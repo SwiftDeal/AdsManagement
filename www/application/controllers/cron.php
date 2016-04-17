@@ -11,7 +11,7 @@ class CRON extends Shared\Controller {
     public function __construct($options = array()) {
         parent::__construct($options);
         if (php_sapi_name() != 'cli') {
-            die("cannot run!");
+            $this->redirect("/404");
         }
     }
 
