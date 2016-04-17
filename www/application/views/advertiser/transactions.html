@@ -7,42 +7,35 @@
 <div class="row">
     <div class="col-lg-12">
     	<div class="card">
-            <div class="card-header">
-                <div class="card-title">
-                    <div class="title">Transactions</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>Id</th>
-                                <th>Ref</th>
-                                <th>Amount</th>
-                                <th>Type</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {foreach $t in $transactions}
-                            <tr>
-                                <td>{$t->id}</td>
-                                <td>{$t->ref}</td>
-                                <td><i class="fa fa-inr"></i> {$t->amount}</td>
-                                <td>
-                                    {if($t->live)}
-                                    <span class="label label-success">Transferred</span>
-                                    {/if} {else}
-                                    <span class="label label-info">Credit</span>
-                                    {/else}
-                                </td>
-                                <td>{echo Framework\StringMethods::only_date($t->created)}</td>
-                            </tr>
-                            {/foreach}
-                        </tbody>
-                    </table>
-                </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Ref</th>
+                            <th>Amount</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $t in $transactions}
+                        <tr>
+                            <td>{$t->id}</td>
+                            <td>{$t->ref}</td>
+                            <td><i class="fa fa-inr"></i> {$t->amount}</td>
+                            <td>
+                                {if($t->live)}
+                                <span class="label label-info">Debit</span>
+                                {/if} {else}
+                                <span class="label label-success">Credit</span>
+                                {/else}
+                            </td>
+                            <td>{echo Framework\StringMethods::only_date($t->created)}</td>
+                        </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
             </div>
         </div>
 

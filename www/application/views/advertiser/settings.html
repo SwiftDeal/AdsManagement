@@ -1,0 +1,146 @@
+<div class="page-title">
+    <span class="title">
+        Settings
+    </span>
+</div>
+<div class="row">
+	<div class="col-xs-12">
+		<div class="card">
+		    <div class="card-header">
+		        <div class="card-title">
+		            <div class="title">CPC (Cost per thousand click) INR</div>
+		        </div>
+		    </div>
+		    <div class="card-body">
+		    	<form method="post" action="">
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon">IN</div>
+                                <input type="number" class="form-control" placeholder="India" name="cpc[IN]" required="" value="200">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon">US</div>
+                                <input type="number" class="form-control" placeholder="United States" name="cpc[US]" required="" value="300">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon">CA</div>
+                                <input type="number" class="form-control" placeholder="Canada" name="cpc[CA]" required="" value="300">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon">AU</div>
+                                <input type="number" class="form-control" placeholder="Australia" name="cpc[AU]" required="" value="300">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon">UK</div>
+                                <input type="number" class="form-control" placeholder="United Kingdom" name="cpc[GB]" required="" value="300">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon">Other</div>
+                                <input type="number" class="form-control" placeholder="Others" name="cpc[NONE]" required="" value="160">
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="action" value="setcpc">
+                    <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Save</button>
+                </form>
+		    </div>
+		</div>
+	</div>
+</div>
+<div class="row">
+    {if(isset($message))}
+    <div class="alert alert-success alert-dismissible fade in" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        {$message}
+    </div>
+    {/if}
+    <div class="col-xs-6">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="title">Account</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <form class="form-horizontal" method="post" action="">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Username</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="username" class="form-control" placeholder="Enter Username" value="{$user->username}">
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "username")}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="name" class="form-control" placeholder="Enter name" value="{$user->name}" required="">
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "name")}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+                        <div class="col-sm-10">
+                            <input type="email" name="email" class="form-control" placeholder="Enter email" value="{$user->email}" disabled>
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "email")}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Phone</label>
+                        <div class="col-sm-10">
+                            <input type="tel" name="phone" class="form-control" placeholder="Enter phone number" value="{$user->phone}" required="">
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "phone")}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <input type="hidden" name="action" value="saveUser">
+                            <button type="submit" class="btn btn-default">Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="title">Change Password</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <form class="form-horizontal" method="post" action="">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Old Password</label>
+                        <div class="col-sm-10">
+                            <input type="password" name="password" class="form-control" placeholder="old password">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">New Password</label>
+                        <div class="col-sm-10">
+                            <input type="password" name="npassword" class="form-control" placeholder="new password">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <input type="hidden" name="action" value="changePass">
+                            <button type="submit" class="btn btn-default">Change</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

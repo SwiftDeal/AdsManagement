@@ -65,6 +65,11 @@ class Advertiser extends Analytics {
     public function settings() {
         $this->seo(array("title" => "Settings", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
+
+        switch (RequestMethods::post("action")) {
+            case 'setcpc':
+                break;
+        }
     }
 
     /**

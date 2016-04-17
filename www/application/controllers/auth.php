@@ -267,6 +267,11 @@ class Auth extends Controller {
         $this->noview();
         $session = Registry::get("session");
 
+        $team = $session->get("team");
+        if ($team) {
+            $this->redirect("/manage/index.html");
+        }
+
         $publish = $session->get("publish");
         if ($publish) {
             $this->redirect("/publisher/index.html");
