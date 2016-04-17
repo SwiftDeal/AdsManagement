@@ -22,4 +22,12 @@ class Publish extends Shared\Model {
     * @length 3
     */
     protected $_country;
+
+    /**
+    * @column
+    * @readwrite
+    * @type decimal
+    * @length 5,2
+    */
+    protected $_bouncerate;
 }

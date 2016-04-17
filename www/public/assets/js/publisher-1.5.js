@@ -111,7 +111,7 @@ $(document).ready(function() {
                 btn.removeClass('disabled');
                 btn.closest('div').find('.shorturl').val(data.shortURL);
                 btn.closest('div').find('.shorturl').focus();
-                link_data.val(title + "\n" + '<a href="' + uri + '">' + uri + '</a>');
+                link_data.val(title + "\n" + uri);
                 link_data.data('uri', uri);
                 link_data.data('link_id', data.link._id);
                 

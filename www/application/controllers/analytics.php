@@ -94,7 +94,7 @@ class Analytics extends Manage {
         $view = $this->getActionView();
 
         $link_id = RequestMethods::get("link");
-        $link = Link::first(array("id = ?" => $link_id), array("item_id", "id"));
+        $link = Link::first(array("id = ?" => $link_id), array("item_id", "id", "user_id"));
         if (!$link || $link->user_id != $this->user->id) {
             $this->redirect("/404");
         }
