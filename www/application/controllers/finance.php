@@ -84,6 +84,7 @@ class Finance extends Admin {
         }
         $bank = Bank::first(array("user_id = ?" => $user_id), array("*"), "created", "desc");
         $paypal = Paypal::first(array("user_id = ?" => $user_id), array("*"), "created", "desc");
+        $paytm = Paytm::first(array("user_id = ?" => $user_id), array("*"), "created", "desc");
 
         if (RequestMethods::post("action") == "payment") {
             switch (RequestMethods::post("live")) {
@@ -92,7 +93,7 @@ class Finance extends Admin {
                         "user_id" => $user_id,
                         "amount" => RequestMethods::post("amount"),
                         "ref" => RequestMethods::post("ref"),
-                        "live" => RequestMethods::post("live")
+                        "live" => 0
                     ));
                     $account->balance += RequestMethods::post("amount");
                     $this->notify(array(
@@ -108,7 +109,7 @@ class Finance extends Admin {
                         "user_id" => $user_id,
                         "amount" => -(RequestMethods::post("amount")),
                         "ref" => RequestMethods::post("ref"),
-                        "live" => RequestMethods::post("live")
+                        "live" => 1
                     ));
                     $account->balance -= RequestMethods::post("amount");
                     $this->notify(array(
@@ -117,6 +118,21 @@ class Finance extends Admin {
                         "user" => $payee,
                         "transaction" => $transaction,
                         "bank" => $bank
+                    ));
+                    break;
+                case '2':
+                    $transaction = new Transaction(array(
+                        "user_id" => $user_id,
+                        "amount" => -(RequestMethods::post("amount")),
+                        "ref" => RequestMethods::post("ref"),
+                        "live" => 1
+                    ));
+                    $account->balance -= RequestMethods::post("amount");
+                    $this->notify(array(
+                        "template" => "accountDeducted",
+                        "subject" => "Amount Deducted From Clicks99 Account",
+                        "user" => $payee,
+                        "transaction" => $transaction
                     ));
                     break;
             }
@@ -129,6 +145,8 @@ class Finance extends Admin {
         $view->set("payee", $payee);
         $view->set("account", $account);
         $view->set("bank", $bank);
+        $view->set("paytm", $paytm);
+        $view->set("paypal", $paypal);
     }
 
     /**

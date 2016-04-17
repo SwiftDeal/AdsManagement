@@ -1,8 +1,6 @@
 <?php
 
 /**
- * Description of content
- *
  * @author Faizan Ayubi
  */
 use Framework\RequestMethods as RequestMethods;
@@ -80,12 +78,6 @@ class Campaign extends Publisher {
             ));
             if ($item->validate()) {
                 $item->save();
-                $rpm = new RPM(array(
-                    "item_id" => $item->id,
-                    "value" => json_encode(RequestMethods::post("rpm")),
-                ));
-                $rpm->save();
-
                 $view->set("message", "Campaign Created Successfully now we will approve it within 24 hours and notify you");
             }  else {
                 $view->set("errors", $item->getErrors());

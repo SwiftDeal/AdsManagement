@@ -59,7 +59,7 @@
                                 {/else}
                                 <a href="/manage/delete/{$user->id}" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
                                 <a href="/admin/update/user/{$user->id}" class="btn btn-info btn-xs"><i class="fa fa-edit"></i></a>
-                                <a href="/finance/transactions.html?property=user_id&amp;value={$user->id}" class="btn btn-success btn-xs"><i class="fa fa-credit-card-alt"></i></a>&nbsp;
+                                <a href="/finance/pending.html?user_id={$user->id}" class="btn btn-success btn-xs" target="_blank"><i class="fa fa-credit-card-alt"></i></a>&nbsp;
                                 <a href="/support/manageticket.html?property=user_id&amp;value={$user->id}" class="btn btn-primary btn-xs"><i class="fa fa-support"></i></a>&nbsp;
                                 <a href="/analytics/verify/{$user->id}" class="btn btn-default btn-xs"><i class="fa fa-link"></i></a>
                                 <a href="/auth/loginas/{$user->id}" class="btn btn-default btn-xs"><i class="fa fa-sign-in"></i> Login As</a>

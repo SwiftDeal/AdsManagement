@@ -23,10 +23,16 @@
                 </thead>
                 <tbody>
                 {foreach $account in $accounts}
-                    {script $user = User::first(array("id = ?" => $account->user_id), array("name", "id"))}
+                    {script $user = User::first(array("id = ?" => $account->user_id), array("name", "id", "live"))}
                     {script $payout = Payout::first(array("user_id = ?" => $user->id))}
                     <tr>
-                        <td>{$user->id}</td>
+                        <td>
+                            {if($user->live)}
+                            <span class="text-success">{$user->id}</span>
+                            {/if} {else}
+                            <span class="text-danger">{$user->id}</span>
+                            {/else}
+                        </td>
                         <td><a href="/admin/info/user/{$user->id}">{echo $user->name}</a></td>
                         <td><i class="fa fa-inr"></i> {echo $account->balance}</td>
                         <td>
