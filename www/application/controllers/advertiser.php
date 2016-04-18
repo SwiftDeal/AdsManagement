@@ -118,7 +118,7 @@ class Advertiser extends Analytics {
             $client->refreshToken($token);
             $msg = "All analytics stats for Clicks99 have been stored!!";
             try {
-                Shared\Services\GA::update($client, $this->user); 
+                Shared\Services\GA::update($client, $this->user, ['action' => 'update']); 
             } catch (\Exception $e) {
                 $msg = $e->getMessage();
             }

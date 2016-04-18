@@ -226,35 +226,23 @@ class CRON extends Shared\Controller {
         $this->log("Fraud Ended");
     }
 
-    protected function _gaClient($token) {
-        $conf = Framework\Registry::get("configuration");
-        $google = $conf->parse("configuration/google")->google;
-
-        $client = new Google_Client();
-        $client->setClientId($google->client->id);
-        $client->setClientSecret($google->client->secret);
-        $client->setRedirectUri('http://'.$_SERVER['HTTP_HOST'].'/advertiser/gaLogin');
-        $client->setApplicationName("Cloudstuff");
-        $client->addScope(Google_Service_Analytics::ANALYTICS_READONLY);
-        $client->setAccessType("offline");
-        $client->refreshToken($token);
-
-        return $client;
-    }
-
     protected function _ga() {
         try {
-            $advertiser = Advert::all(["live = ?" => true], ["user_id", "gatoken"]);
+            $advertiser = Advert::all(["live = ?" => true], ["user_id", "gatoken", "created"]);
             foreach ($advertiser as $a) {
                 if (!$a->gatoken) {
                     continue;
                 }
-                $client = $this->_gaClient($a->gatoken);
+                $client = Shared\Services\GA::client($a->gatoken);
 
                 $user = Framework\ArrayMethods::toObject([
                     "id" => $a->user_id
                 ]);
-                Shared\Services\GA::update($client, $user);
+                $opts = [
+                    "start" => date('Y-m-d', strtotime($advertiser->created)),
+                    "end" => "yesterday"
+                ];
+                Shared\Services\GA::update($client, $user, ['action' => 'addition', 'start' => 'yesterday', 'end' => 'yesterday']);
 
                 sleep(1);
             }

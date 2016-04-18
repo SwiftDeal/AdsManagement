@@ -115,7 +115,7 @@ class Analytics extends Manage {
         $view = $this->getActionView();
 
         $item_id = RequestMethods::get("item_id");
-        $item = Item::first(array("id = ?" => $item_id), array("id"));
+        $item = Item::first(array("id = ?" => $item_id), array("id", "user_id"));
         if (!$item || $item->user_id != $this->user->id) {
             $this->redirect("/404");
         }
@@ -371,7 +371,7 @@ class Analytics extends Manage {
         $user = ArrayMethods::toObject(['id' => $user_id]);
 
         $client = Shared\Services\GA::client($token);
-        $records = Shared\Services\GA::liveStats($client, $user, $opts);
+        $records = Shared\Services\GA::update($client, $user, $opts);
         return $records;
     }
 
@@ -389,8 +389,14 @@ class Analytics extends Manage {
             $start = RequestMethods::get("startdate", date('Y-m-d', strtotime("-7 day")));
             $end = RequestMethods::get("enddate", date('Y-m-d'));
             
-            $record_1 = $this->_records(1, ['start' => $start, 'end' => $end]);
-            $record_2 = $this->_records(725, ['start' => $start, 'end' => $end]);
+            $opts = [
+                'start' => $start,
+                'end' => $end,
+                'filters' => 'ga:source=~'.$user_id,
+                'returnResults' => true
+            ];
+            $record_1 = $this->_records(1, $opts);
+            $record_2 = $this->_records(725, $opts);
             $records = array_merge($record_1, $record_2);
 
             $start_time = strtotime($start); $end_time = strtotime($end);
@@ -405,8 +411,6 @@ class Analytics extends Manage {
             }
             
             foreach ($records as $r) {
-                if ($r['source'] != $user_id) continue;
-
                 $result[] = ArrayMethods::toObject($r);
                 $count++;
             }    
