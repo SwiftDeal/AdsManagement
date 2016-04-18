@@ -34,13 +34,5 @@ class Insight extends Shared\Model {
      * @type decimal
      * @length 10,2
      */
-    protected $_rpm;
-
-    /**
-     * @column
-     * @readwrite
-     * @type decimal
-     * @length 10,2
-     */
     protected $_cpc;
 }
