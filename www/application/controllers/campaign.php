@@ -5,7 +5,7 @@
  */
 use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
-use \WebBot\lib\WebBot\Bot as Bot;
+use WebBot\Core\Bot as Bot;
 use \Curl\Curl;
 
 class Campaign extends Publisher {
@@ -134,25 +134,38 @@ class Campaign extends Publisher {
     }
 
     protected function _bot($url) {
+        Bot::$logging = false; // Disable logging
         $bot = new Bot(['cloud' => $url]);
         $bot->execute();
         $doc = array_shift($bot->getDocuments());
-        $data["title"] = $doc->query("/html/head/title")->item(0)->nodeValue;
-        $data["url"] = $url;
+        $data = [];
 
-        $metas = $doc->query("/html/head/meta");
-        for ($i = 0; $i < $metas->length; $i++) {
-            $meta = $metas->item($i);
-            
-            if($meta->getAttribute('name') == 'description') {
-                $data["description"] = $meta->getAttribute('content');
-            }
-
-            if($meta->getAttribute('property') == 'og:image') {
-                $data["image"] = $meta->getAttribute('content');
-            }
+        $type = $doc->getHttpResponse()->getType();
+        if (preg_match("/image/i", $type)) {
+            $data["image"] = $data["url"] = $url;
+            $data["description"] = $data["title"] = "..";
+            return $data;
         }
+        try {
+            $data["title"] = $doc->query("/html/head/title")->item(0)->nodeValue;
+            $data["url"] = $url;
 
+            $metas = $doc->query("/html/head/meta");
+            for ($i = 0; $i < $metas->length; $i++) {
+                $meta = $metas->item($i);
+                
+                if($meta->getAttribute('name') == 'description') {
+                    $data["description"] = $meta->getAttribute('content');
+                }
+
+                if($meta->getAttribute('property') == 'og:image') {
+                    $data["image"] = $meta->getAttribute('content');
+                }
+            }
+        } catch (\Exception $e) {
+            $data["url"] = $url;
+            $data["image"] = $data["description"] = $data["title"] = "";
+        }
         return $data;
     }
     
