@@ -226,9 +226,80 @@ class CRON extends Shared\Controller {
         $this->log("Fraud Ended");
     }
 
+    /**
+     * Updates the google analytics insights for each advertiser
+     * @param array $results
+     * @param object $advertiser \Advert
+     */
+    protected function _gaInsight($results, $advertiser) {
+        $cpc = (array) json_decode($advertiser->cpc);
+        $clicks = [];
+        
+        foreach ($results as $r) {
+            $countryCode = $r['countryIsoCode'];
+            if (array_key_exists($countryCode, $clicks)) {
+                $d = (int) $clicks[$countryCode] + (int) $r['sessions'];
+            } else {
+                $d = (int) $r['sessions'];
+            }
+            $clicks[$countryCode] = $d;
+        }
+
+        $spent = 0; $clicks = 0; $rpm = 0;
+        foreach ($clicks as $key => $value) {
+            $spent += (int) $cpc[$key] * $value;
+            $clicks += $value;
+            $rpm += $cpc[$key];
+        }
+        $insight = Insight::first(["user_id = ?" => $advertiser->user_id]);
+        if (!$insight) {
+            $insight = new Insight([
+                "user_id" => $advertiser->user_id
+            ]);
+        }
+        $insight->click = $clicks;
+        $insight->amount = $spent;
+        $insight->cpc = ($spent * 1000) / $clicks;
+        $insight->save();
+    }
+
+    /**
+     * Updated Bounce Rate for each publisher
+     * @param array $results
+     */
+    protected function _gaPublish($results) {
+        $users = [];
+        foreach ($results as $r) {
+            $key = $r['source'];
+            if (array_key_exists($key, $users)) {
+                $d = array_merge($users[$key], $r);
+            } else {
+                $d = [$r];
+            }
+            $users[$key] = $d;
+        }
+
+        foreach ($users as $key => $value) {
+            $publish = Publish::first(["user_id = ?" => $key]);
+            if (!$publish) continue;
+
+            $bounceRate = 0.0; $c = 0;
+            foreach ($value as $v) {
+                $bounceRate += (float) $v['bounceRate'];
+                $c++;
+            }
+            if ($c == 0) $c = 1; // Error checking
+            $publish->bouncerate = $bounceRate / $c;
+            $publish->save();
+        }
+    }
+
+    /**
+     * Fetches Google Analytics data for each advertiser
+     */
     protected function _ga() {
         try {
-            $advertiser = Advert::all(["live = ?" => true], ["user_id", "gatoken", "created"]);
+            $advertiser = Advert::all(["live = ?" => true]);
             foreach ($advertiser as $a) {
                 if (!$a->gatoken) {
                     continue;
@@ -239,10 +310,13 @@ class CRON extends Shared\Controller {
                     "id" => $a->user_id
                 ]);
                 $opts = [
-                    "start" => date('Y-m-d', strtotime($advertiser->created)),
+                    "start" => "yesterday",
                     "end" => "yesterday"
                 ];
-                Shared\Services\GA::update($client, $user, ['action' => 'addition', 'start' => 'yesterday', 'end' => 'yesterday']);
+                $results = Shared\Services\GA::update($client, $user, ['action' => 'addition', 'start' => 'yesterday', 'end' => 'yesterday']);
+
+                $this->_gaInsight($results, $advertiser);
+                $this->_gaPublish($results);
 
                 sleep(1);
             }

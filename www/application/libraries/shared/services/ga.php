@@ -19,7 +19,7 @@ class GA {
 			$filters .= ";" . $opts['filters'];
 		}
 		foreach ($profiles as $p) {
-			$d = $ga->get('ga:' . $p->getId(), $start, $end, "ga:pageviews, ga:sessions, ga:percentNewSessions, ga:newUsers, ga:bounceRate, ga:avgSessionDuration, ga:pageviewsPerSession", [
+			$d = $ga->get('ga:' . $p->getId(), $start, $end, "ga:pageviews, ga:sessions, ga:newUsers, ga:bounceRate", [
 					"dimensions" => "ga:source, ga:medium, ga:countryIsoCode",
 					"filters" => $filters
 				]);
@@ -39,11 +39,8 @@ class GA {
 		return [
 	        'pageviews' => (int) $value[3],
 	        'sessions' => (int) $value[4],
-	        'percentNewSessions' => $value[5],
-	        'newUsers' => (int) $value[6],
-	        'bounceRate' => $value[7],
-	        'avgSessionDuration' => $value[8],
-	        'pageviewsPerSession' => $value[9]
+	        'newUsers' => (int) $value[5],
+	        'bounceRate' => $value[6]
 		];
 	}
 
@@ -162,18 +159,15 @@ class GA {
 		        $data = self::fields($value);
 		        $newFields = array_merge($data, $search);
 
-		        if (isset($opts['returnResults'])) {
-		        	$results[] = $newFields;
-		        } else {
-		        	$record = $ga_stats->findOne($search); $action = isset($opts['action']) ? $opts['action'] : "update";
-		        	if (isset($record)) {
-		        		if ($action == "addition") {
-		        			$data = self::_update($record, $data);
-		        		}
-		        		$ga_stats->update($search, ['$set' => $data]);
-		        	} else {
-		        	    $ga_stats->insert($newFields);
+		        $results[] = $newFields;
+		        $record = $ga_stats->findOne($search); $action = isset($opts['action']) ? $opts['action'] : "update";
+		        if (isset($record)) {
+		        	if ($action == "addition") {
+		        		$data = self::_update($record, $data);
 		        	}
+		        	$ga_stats->update($search, ['$set' => $data]);
+		        } else {
+		            $ga_stats->insert($newFields);
 		        }
 		    }
 		}
@@ -190,13 +184,6 @@ class GA {
 					$val = (int) $record[$key] + (int) $value;
 					break;
 				
-				case 'percentNewSessions':
-				case 'bounceRate':
-				case 'avgSessionDuration':
-				case 'pageviewsPerSession':
-					$val = (string) ((float) $record[$key] + (float) $value);
-					break;
-
 				default:
 					$val = $value;
 			}
