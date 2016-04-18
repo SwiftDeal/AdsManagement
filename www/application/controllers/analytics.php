@@ -56,37 +56,6 @@ class Analytics extends Manage {
     }
 
     /**
-     * @before _secure, changeLayout, _admin
-     */
-    public function urlDebugger() {
-        $this->seo(array("title" => "URL Debugger", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
-        $url = RequestMethods::get("urld", "http://clicks99.com/");
-        $metas = get_meta_tags($url);
-
-        $facebook = new Curl();
-        $facebook->get('https://api.facebook.com/method/links.getStats', array(
-            'format' => 'json',
-            'urls' => $url
-        ));
-        $facebook->setOpt(CURLOPT_ENCODING , 'gzip');
-        $facebook->close();
-
-        $twitter = new Curl();
-        $twitter->get('https://cdn.api.twitter.com/1/urls/count.json', array(
-            'url' => $url
-        ));
-        $twitter->setOpt(CURLOPT_ENCODING , 'gzip');
-        $twitter->close();
-
-        $view->set("url", $url);
-        $view->set("metas", $metas);
-        $view->set("facebook", array_values($facebook->response)[0]);
-        $view->set("twitter", $twitter->response);
-    }
-
-    /**
      * @before _secure
      */
     public function link($date = NULL) {
@@ -105,27 +74,6 @@ class Analytics extends Manage {
         $view->set("rpm", $result["rpm"]);
         $view->set("analytics", $result["analytics"]);
         $view->set("link", $link);
-    }
-
-    /**
-     * @before _secure
-     */
-    public function item($date = NULL) {
-        $this->JSONview();
-        $view = $this->getActionView();
-
-        $item_id = RequestMethods::get("item_id");
-        $item = Item::first(array("id = ?" => $item_id), array("id", "user_id"));
-        if (!$item || $item->user_id != $this->user->id) {
-            $this->redirect("/404");
-        }
-        $result = $item->stats($date);
-        
-        $view->set("earning", $result["earning"]);
-        $view->set("click", $result["click"]);
-        $view->set("rpm", $result["rpm"]);
-        $view->set("analytics", $result["analytics"]);
-        $view->set("item", $item);
     }
 
     /**
@@ -238,14 +186,14 @@ class Analytics extends Manage {
 
     /**
      * Analytics of Single Campaign Datewise
-     * @return array earnings, clicks, rpm, analytics
+     * @return array earnings, clicks, cpc, analytics
      * @before _secure
      */
     public function campaign($created = NULL, $item_id = NULL) {
         $this->seo(array("title" => "Stats", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-        $total_click = 0;$earning = 0;$analytics = array();$query = array();$i = array();
-        $return = array("click" => 0, "rpm" => 0, "earning" => 0, "analytics" => array());
+        $total_click = 0;$spent = 0;$analytics = array();$query = array();$i = array();
+        $return = array("click" => 0, "cpc" => 0, "spent" => 0, "analytics" => array());
 
         if ($this->validateDate($created)) {
             $query['created'] = $created;
@@ -265,71 +213,37 @@ class Analytics extends Manage {
 
         $cursor = $collection->find($query);
         foreach ($cursor as $id => $result) {
-            //echo "<pre>", print_r($result), "</pre>";
-            $rpms = RPM::first(array("item_id = ?" => $result["item_id"]), array("value"));
-            $rpm = json_decode($rpms->value, true);
-            $code = $result["country"];
-            $total_click += $result["click"];
-            if (array_key_exists($code, $rpm)) {
-                $earning += ($rpm[$code])*($result["click"])/1000;
-            } else {
-                $earning += ($rpm["NONE"])*($result["click"])/1000;
+            $u = null;
+            $u = User::first(array("id = ?" => $result["user_id"], "live = ?" => true), array("id"));
+            if ($u) {
+                $cpcs = CPC::first(array("item_id = ?" => $result["item_id"]), array("value"));
+                $cpc = json_decode($rpms->value, true);
+                $code = $result["country"];
+                $total_click += $result["click"];
+                if (array_key_exists($code, $cpc)) {
+                    $spent += ($cpc[$code])*($result["click"])/1000;
+                } else {
+                    $spent += ($cpc["NONE"])*($result["click"])/1000;
+                }
+                if (array_key_exists($code, $analytics)) {
+                    $analytics[$code] += $result["click"];
+                } else {
+                    $analytics[$code] = $result["click"];
+                }
             }
-            if (array_key_exists($code, $analytics)) {
-                $analytics[$code] += $result["click"];
-            } else {
-                $analytics[$code] = $result["click"];
-            }
-            
         }
 
         if ($total_click > 0) {
             $return = array(
                 "click" => round($total_click),
-                "rpm" => round($earning*1000/$total_click, 2),
-                "earning" => round($earning, 2),
+                "cpc" => round($spent*1000/$total_click, 2),
+                "spent" => round($spent, 2),
                 "analytics" => $analytics
             );
         }
 
         $view->set("stats", $return);
         $view->set("query", $query);
-    }
-
-    /**
-     * @before _secure, changeLayout, _admin
-     */
-    public function verify($user_id) {
-        $this->seo(array("title" => "Verify Stats", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
-        $page = RequestMethods::get("page", 1);
-        $limit = RequestMethods::get("limit", 10);
-        
-        $stats = Stat::all(array("user_id = ?" => $user_id), array("*"), "amount", "desc", $limit, $page);
-        
-        $view->set("stats", $stats);
-        $view->set("limit", $limit);
-        $view->set("page", $page);
-        $view->set("count", Stat::count(array("user_id = ?" => $user_id)));
-    }
-
-    /**
-     * @before _secure, changeLayout, _admin
-     */
-    public function delduplicate($stat_id) {
-        $this->noview();
-        
-        $stat = Stat::first(array("id = ?" => $stat_id));
-        $link = Link::first(array("id = ?" => $stat->link_id));
-        $account = Account::first(array("user_id = ?" => $stat->user_id));
-        if ($link->delete()) {
-            $account->balance -= $stat->amount;
-            $account->save();
-            $stat->delete();
-        }
-        
-        $this->redirect($_SERVER['HTTP_REFERER']);
     }
 
     /**

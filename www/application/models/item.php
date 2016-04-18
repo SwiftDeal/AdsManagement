@@ -43,7 +43,7 @@ class Item extends Shared\Model {
      * @length 255
      * @index
      *
-     * @validate required, min(3), max(255)
+     * @validate max(255)
      * @label title
      */
     protected $_title;
@@ -87,7 +87,7 @@ class Item extends Shared\Model {
      * @length 255
      * @index
      *
-     * @validate required, min(3)
+     * @validate required, max(255)
      * @label category
      */
     protected $_category;
@@ -100,55 +100,4 @@ class Item extends Shared\Model {
      * @label description
      */
     protected $_description;
-
-    public function stats($date = NULL) {
-        $collection = \Framework\Registry::get("MongoDB")->clicks;
-        $total_click = 0;$earning = 0;$analytics = array();$publishers = array();
-        $return = array("click" => 0, "rpm" => 0, "earning" => 0, "analytics" => 0);
-        $doc = array("item_id" => $this->id);
-        if ($date) {
-            $doc["created"] = $date;
-        }
-        $records = $collection->find($doc);
-        if (isset($records)) {
-            //rpm
-            $rpms = RPM::first(array("item_id = ?" => $this->id), array("value"));
-            $rpm = json_decode($rpms->value, true);
-
-            foreach ($records as $record) {
-                $u = null;
-                $u = User::first(array("id = ?" => $record["user_id"], "live = ?" => true), array("id"));
-                if ($u) {
-                    $code = $record["country"];
-                    $total_click += $record["click"];
-                    if (array_key_exists($code, $rpm)) {
-                        $earning += ($rpm[$code])*($record["click"])/1000;
-                    } else {
-                        $earning += ($rpm["NONE"])*($record["click"])/1000;
-                    }
-                    if (array_key_exists($code, $analytics)) {
-                        $analytics[$code] += $record["click"];
-                    } else {
-                        $analytics[$code] = $record["click"];
-                    }
-                    if (array_key_exists($record["user_id"], $publishers)) {
-                        $publishers[$record["user_id"]] += $record["click"];
-                    } else {
-                        $publishers[$record["user_id"]] = $record["click"];
-                    }
-                }
-            }
-
-            if ($total_click > 0) {
-                $return = array(
-                    "click" => round($total_click),
-                    "rpm" => round($earning*1000/$total_click, 2),
-                    "earning" => round($earning, 2),
-                    "analytics" => $analytics,
-                    "publishers" => $publishers
-                );
-            }
-        }
-        return $return;
-    }
 }
