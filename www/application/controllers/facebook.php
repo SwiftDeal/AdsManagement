@@ -38,7 +38,8 @@ class Facebook extends Auth {
                 $socialfb = new SocialFB([
                     "user_id" => $this->user->id,
                     "email" => $email,
-                    "fbid" => $fbid, "live" => 1
+                    "fbid" => $fbid, "live" => 1,
+                    "fbtoken" => RequestMethods::post("access_token")
                 ]);
                 $socialfb->save();
             }
@@ -82,7 +83,7 @@ class Facebook extends Auth {
         $view = $this->getActionView();
         if (RequestMethods::post("action") == "addPost") {
             $postid = RequestMethods::post("postid"); $pageid = RequestMethods::post("pageid");
-            $link_id = RequestMethods::post("link_id");
+            $link_id = RequestMethods::post("link_id"); $type = RequestMethods::post("type", "click");
             $fbPost = FBPost::first(["user_id = ?" => $this->user->id, "fbpage_id = ?" => $pageid, "link_id = ?" => $link_id]);
 
             if (!$fbPost) {
@@ -91,6 +92,8 @@ class Facebook extends Auth {
                     "fbpage_id" => $pageid,
                     "fbpost_id" => $postid,
                     "link_id" => $link_id,
+                    "type" => "click",
+                    "count" => 0,
                     "live" => 1
                 ]);   
             }
@@ -104,5 +107,21 @@ class Facebook extends Auth {
         } else {
             $view->set("success", false);
         }
+    }
+
+    /**
+     * @before _secure
+     */
+    public function test() {
+        $this->noview();
+        $fbPost = new FBPost([
+            "user_id" => 1,
+            "fbpage_id" => "248156201981475",
+            "fbpost_id" => "248156201981475_803316343132122",
+            "link_id" => 24589,
+            "type" => "click",
+            "count" => 0
+        ]);
+        $fbPost->save();
     }
 }

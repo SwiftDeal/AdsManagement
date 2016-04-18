@@ -3,6 +3,7 @@
     var FbModel = (function () {
         function FbModel() {
             this.loggedIn = false;
+            this.user = false;
         }
 
         FbModel.prototype = {
@@ -14,11 +15,44 @@
                         self.loggedIn = true;
                     }
                 });
+
+                window.request.read({
+                    action: 'publisher',
+                    callback: function (d) {
+                        if (d.user) {
+                            self.user = true;
+                        }
+                    }
+                });
             },
-            _access: function(el, callback) {
+            _login: function (callback) {
                 var self = this;
+                window.FB.login(function(response) {
+                    if (response.status === 'connected') {
+                        callback.call(self);
+                    } else {
+                        alert('Please allow access to your Facebook account, for us to enable direct login to Clicks99');
+                    }
+                }, {
+                    scope: 'public_profile, email, publish_pages, read_insights, manage_pages'
+                });
+            },
+            __appLogin: function (opts) {
+                var self = this;
+                if (!self.user) return false;
+
+                if (opts.callback) {
+                    opts.callback.call(self, opts.data);
+                } else if (opts.el && opts.el.attr('data-target')) {
+                    window.location.href = opts.el.attr('data-target');
+                } else {
+                    window.location.href = '/publisher/index.html';
+                }
+            },
+            _access: function(el, cb) {
+                var self = this;
+                self.__appLogin({ callback: cb })
                 window.FB.api('/me?fields=name,email,gender', function(response) {
-                    console.log(response);
                     window.request.create({
                         action: 'facebook/fblogin',
                         data: {
@@ -29,16 +63,9 @@
                             gender: response.gender
                         },
                         callback: function(data) {
-                            if (callback) {
-                                callback.call(self, data);
-                                return;
-                            }
-                            if (data.success == true) {
-                                if (el.attr('data-target')) {
-                                    window.location.href = el.attr('data-target');
-                                } else {
-                                    window.location.href = '/publisher';
-                                }
+                            if (data.success) {
+                                self.user = true;
+                                self.__appLogin({ el: el, callback: cb, data: data });
                             }
                         }
                     });
@@ -46,27 +73,19 @@
             },
             _authorize: function(el, callback) {
                 var self = this;
-                window.FB.login(function(response) {
-                    if (response.status === 'connected') {
-                        self.loggedIn = true;
-                        window.FB.api('/me?fields=name,email,gender', function(response) {
-                            window.request.create({
-                                action: 'facebook/fbauthorize',
-                                data: {
-                                    action: 'fbauthorize',
-                                    email: response.email,
-                                    fbid: response.id
-                                },
-                                callback: function (d) {
-                                    callback.call(self, d);
-                                }
-                            });
-                        });
-                    } else {
-                        alert('Please allow access to your Facebook account, for us to enable direct login to Clicks99');
-                    }
-                }, {
-                    scope: 'public_profile, email, publish_pages, read_insights, manage_pages'
+                window.FB.api('/me?fields=name,email,gender', function(response) {
+                    window.request.create({
+                        action: 'facebook/fbauthorize',
+                        data: {
+                            action: 'fbauthorize',
+                            email: response.email,
+                            fbid: response.id,
+                            access_token: window.FB.getAuthResponse()['accessToken']
+                        },
+                        callback: function (d) {
+                            callback.call(self, d);
+                        }
+                    });
                 });
             },
             _pages: function(el, callback) {
@@ -136,11 +155,11 @@
                     action = el.data('action') || '';
                     switch (action) {
                         case 'pages':
-                           self._pages(el);
+                            self._pages(el);
                             break;
 
-                        case 'login':
-                           self._access(el); // login user in website
+                        case 'login': // login in the website
+                            self._access(el);
                             break;
 
                         case 'postToPages':
@@ -155,12 +174,18 @@
             },
             router: function(el) {
                 var self = this;
-                if (!this.loggedIn) { // let the user log in the app
-                    self._access(el, function (data) {
+                if (!self.loggedIn) { // let the user log in the app
+                    self._login(function () {
                         self._process(el);
-                    })
+                    });
                 } else { // user logged into fb (and is returning user)
-                    self._process(el);
+                    if (!self.user) {
+                        self._access(el, function () {
+                            self._process(el);
+                        });
+                    } else {
+                        self._process(el);
+                    }
                 }
             }
         };
