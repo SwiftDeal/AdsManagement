@@ -299,8 +299,6 @@ class Auth extends Controller {
      * @before _secure, _admin
      */
     public function loginas($user_id) {
-        $session = Registry::get("session");
-        $session->set("admin_user_id", $user_id);
         $this->setUser(false);
         $user = User::first(array("id = ?" => $user_id));
         $this->authorize($user);

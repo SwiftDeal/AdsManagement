@@ -65,11 +65,18 @@ class Advertiser extends Analytics {
     public function settings() {
         $this->seo(array("title" => "Settings", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
+        $advert = Advert::first(array("id = ?" => $this->advert->id));
 
         switch (RequestMethods::post("action")) {
             case 'setcpc':
+                $advert->cpc = json_encode(RequestMethods::post("cpc"));
+                $advert->save();
+                $view->set("message", "Saved Successfully");
                 break;
         }
+
+        $view->set("advert", $advert);
+        $view->set("cpc", json_decode($advert->cpc));
     }
 
     /**
