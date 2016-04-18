@@ -82,13 +82,18 @@ class Facebook extends Auth {
         $view = $this->getActionView();
         if (RequestMethods::post("action") == "addPost") {
             $postid = RequestMethods::post("postid"); $pageid = RequestMethods::post("pageid");
-            $fbPost = new FBPost([
-                "user_id" => $this->user->id,
-                "fbpage_id" => $pageid,
-                "fbpost_id" => $postid,
-                "link_id" => RequestMethods::post("link_id"),
-                "live" => 1
-            ]);
+            $link_id = RequestMethods::post("link_id");
+            $fbPost = FBPost::first(["user_id = ?" => $this->user->id, "fbpage_id = ?" => $pageid, "link_id = ?" => $link_id]);
+
+            if (!$fbPost) {
+                $fbPost = new FBPost([
+                    "user_id" => $this->user->id,
+                    "fbpage_id" => $pageid,
+                    "fbpost_id" => $postid,
+                    "link_id" => $link_id,
+                    "live" => 1
+                ]);   
+            }
 
             if ($fbPost->validate()) {
                 $fbPost->save();

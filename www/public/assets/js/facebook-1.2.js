@@ -89,24 +89,25 @@
                     callback.call(self, pages);
                 });
             },
-            __post: function () {
-                var pageid = $('#fb_page_id').val();
+            __post: function (element) {
+                var pageid = $('#fb_page_id').val(),
+                    btn = element.find('button[type="submit"]');
+
+                btn.html('<i class="fa fa-spinner fa-spin"></i> Please Wait..');
                 window.FB.api('/' + pageid + '?fields=access_token', function (response) {
                     window.FB.api('/' + pageid + '/feed', 'post', {
                         message: $('#link_data').val(),
                         link: $('#link_data').data('uri'),
                         access_token: response.access_token
                     }, function (r) {
+                        $('#fbpages_modal').modal('hide');
+                        alert('This was posted to Facebook!!');
                         window.request.create({
                             action: 'facebook/pagePost',
                             data: { action: 'addPost', pageid: pageid, postid: r.id, short: $('#link_data').data('uri'), link_id: $('#link_data').data('link_id') },
                             callback: function (d) {
-                                $('#fbpages_modal').modal('hide');
-                                if (d.success) {
-                                    alert('This was posted to facebook!!');
-                                } else {
-                                    alert('Unable to post on facebook :(');
-                                }
+                                element.removeData('processing');
+                                btn.html('<i class="fa fa-submit"></i> GO');
                             }
                         });
                     });
@@ -190,6 +191,11 @@ $(document).ready(function() {
 
     $('#fbpages_post').on('submit', function (e) {
         e.preventDefault();
-        FbModel.__post();
+        var el = $(this),
+            processing = el.data('processing');
+        
+        if (processing === "postingToFB") return;
+        el.data('processing', "postingToFB");
+        FbModel.__post(el);
     });
 });
