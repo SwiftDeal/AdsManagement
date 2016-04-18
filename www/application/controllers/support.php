@@ -12,6 +12,17 @@ class Support extends Publisher {
         $view = $this->getActionView();
 	}
 
+    /**
+     * @before _secure, advertiserLayout
+     */
+    public function advertiser() {
+        $this->seo(array("title" => "Support","view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+
+        $access = Access::first(array("property_id = ?" => $this->advert->id, "property = ?" => "advert"));
+        $view->set("access", $access);
+    }
+
 	/**
      * @before _secure, _layout
      */

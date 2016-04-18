@@ -32,12 +32,12 @@ tinymce.init({
         </div>
         {/if}
         {foreach $c in $conversations}
-        {script $u = User::first(array("id = ?" => $c->user_id), array("name", "admin"))}
+        {script $u = User::first(array("id = ?" => $c->user_id), array("name"))}
         <div class="card">
             <div class="card-body">
                 <div class="text-indent row">
                     <div class="col-sm-2">
-                        {if($u->admin)}<img src="/public/assets/images/logo.png" width="50"><br>{/if}{$u->name}
+                        <img src="/public/assets/images/logo.png" width="50"><br>{$u->name}
                     </div>
                     <div class="col-sm-10">
                         {$c->message}<br>
