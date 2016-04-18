@@ -259,7 +259,8 @@ class Publisher extends Advertiser {
         $view->set("links", $links);
         $view->set("limit", $limit);
         $view->set("page", $page);
-        $view->set("count", $count);
+        $view->set("count", $count)
+            ->set("fb", RequestMethods::get("fb"));
     }
 
     protected function target() {

@@ -72,4 +72,13 @@ class FBPage extends Shared\Model{
      * @label facebook page name
      */
     protected $_name;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * 
+     * @label FB token
+     */
+    protected $_token = '';
 }

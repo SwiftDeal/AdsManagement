@@ -169,8 +169,29 @@ $(document).ready(function() {
                 self.html('Successfully Done!!!');
             }
         });
-    })
+    });
 
+    $(".fbLinkStat").on("click", function (e) {
+        e.preventDefault();
+        var el = $(this),
+        processing = el.data('processing');
+        el.html('<i class="fa fa-spinner fa-spin"></i> Fetching..');
+
+        if (processing) return;
+        el.data('processing', true);
+        window.request.create({
+            action: 'facebook/postStats',
+            data: { link_id: el.data('link'), action: 'showStats' },
+            callback: function (d) {
+                if (d.success) {
+                    el.html('Clicks: ' + d.clicks);
+                    el.removeData('processing');
+                } else {
+                    alert("Invalid request!!");
+                }
+            }
+        });
+    });
 });
 
 function today () {

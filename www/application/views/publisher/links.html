@@ -28,6 +28,9 @@
                             <th></th>
                             <th>Link</th>
                             <th>Stats</th>
+                            {if ($fb)}
+                            <th>FB Stats</th>
+                            {/if}
                         </tr>
                     </thead>
                     <tbody>
@@ -50,6 +53,11 @@
                                 <span class="label label-success">View</span>
                                 {/else}
                             </td>
+                            {if ($fb)}
+                            <td class="fbLinkStat" data-link="{echo $link->id}">
+                                <span class="label label-primary">View</span>
+                            </td>
+                            {/if}
                         </tr>
                         {/foreach}
                     </tbody>
