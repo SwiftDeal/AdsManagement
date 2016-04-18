@@ -73,13 +73,12 @@ class Item extends Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type decimal
-     * @length 4,2
+     * @type boolean
      *
      * @validate required
-     * @label commission
+     * @label visibility of campaign
      */
-    protected $_commission;
+    protected $_visibility;
 
     /**
      * @column

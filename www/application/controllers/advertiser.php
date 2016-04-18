@@ -51,7 +51,7 @@ class Advertiser extends Analytics {
         $earn = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 0)->all();
         $account = Account::first(array("user_id = ?" => $this->user->id), array("balance"));
 
-        $items = Item::all(array("user_id = ?" => $this->user->id), array("id", "title", "created", "image", "url", "live", "commission"), "created", "desc", 5, 1);
+        $items = Item::all(array("user_id = ?" => $this->user->id), array("id", "title", "created", "image", "url", "live", "visibility"), "created", "desc", 5, 1);
         
         $view->set("items", $items);
         $view->set("account", $account);

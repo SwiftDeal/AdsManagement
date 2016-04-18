@@ -57,7 +57,7 @@ class Campaign extends Publisher {
         $view = $this->getActionView();
         
         $view->set("errors", array());
-        if (RequestMethods::post("action") == "content") {
+        if (RequestMethods::post("action") == "content" && !empty($this->advert->cpc)) {
             if (RequestMethods::post("image_url")) {
                 $image = $this->urls3upload(RequestMethods::post("image_url"));
             } else {
@@ -65,23 +65,29 @@ class Campaign extends Publisher {
             }
             $item = new Item(array(
                 "user_id" => $this->user->id,
-                "model" =>  RequestMethods::post("model", "rpm"),
+                "model" =>  RequestMethods::post("model", "cpc"),
                 "url" =>  RequestMethods::post("url"),
                 "title" => RequestMethods::post("title"),
                 "image" => $image,
-                "commission" => 25,
-                "budget" => RequestMethods::post("budget", 5000),
+                "budget" => RequestMethods::post("budget", 2500),
+                "visibility" => 0,
                 "category" => implode(",", RequestMethods::post("category", "news")),
                 "description" => RequestMethods::post("description", ""),
                 "live" => 0
-                
             ));
             if ($item->validate()) {
                 $item->save();
+                 $rpm = new RPM(array(
+                    "item_id" => $item->id,
+                    "value" => json_encode($this->rpm),
+                ));
+                $rpm->save();
                 $view->set("message", "Campaign Created Successfully now we will approve it within 24 hours and notify you");
             }  else {
                 $view->set("errors", $item->getErrors());
             }
+        } else {
+            $view->set("message", "Account CPC not Set");
         }
     }
 
@@ -197,7 +203,7 @@ class Campaign extends Publisher {
             "user_id = ?" => $this->user->id
         );
         
-        $items = Item::all($where, array("id", "title", "created", "image", "url", "live", "commission"), "created", "desc", $limit, $page);
+        $items = Item::all($where, array("id", "title", "created", "image", "url", "live", "visibility"), "created", "desc", $limit, $page);
         $count = Item::count($where);
 
         $view->set("items", $items);
@@ -226,7 +232,7 @@ class Campaign extends Publisher {
         if (RequestMethods::post("action") == "update") {
             $item->title = RequestMethods::post("title");
             $item->url = RequestMethods::post("url");
-            $item->commission = RequestMethods::post("commission");
+            $item->visibility = RequestMethods::post("visibility");
             $item->category = implode(",", RequestMethods::post("category"));
             $item->description = RequestMethods::post("description");
             $item->live = RequestMethods::post("live", "0");

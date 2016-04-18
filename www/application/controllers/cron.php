@@ -36,16 +36,16 @@ class CRON extends Shared\Controller {
         $today = date('Y-m-d', strtotime("now"));
         $accounts = array();
 
-        $items = Item::all(array("live = ?" => true), array("id", "commission", "user_id"));
+        $items = Item::all(array("live = ?" => true), array("id", "user_id"));
         foreach ($items as $item) {
             $data = $item->stats($yesterday);
             if ($data["click"] > 1) {
                 $insight = $this->_insight($data, $item, $today);
                 echo "<pre>", print_r($insight), "</pre>";
                 if (array_key_exists($insight->user_id, $accounts)) {
-                    $accounts[$insight->user_id] += -($data["earning"])*(1+$item->commission/100);
+                    $accounts[$insight->user_id] += -($data["earning"]);
                 } else {
-                    $accounts[$insight->user_id] = -($data["earning"])*(1+$item->commission/100);
+                    $accounts[$insight->user_id] = -($data["earning"]);
                 }
                 //sleep the script
                 sleep(1);
