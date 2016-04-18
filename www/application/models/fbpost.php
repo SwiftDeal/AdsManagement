@@ -48,6 +48,26 @@ class FBPost extends Shared\Model{
      * @validate required, min(5)
      * @label Short Url
      */
-    protected $_link_id;    
+    protected $_link_id;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * @length 100
+     *
+     * @validate required
+     * @label Post Type
+     */
+    protected $_type;
+
+    /**
+     * @column
+     * @readwrite
+     * @type integer
+     *
+     * @label Count Value
+     */
+    protected $_count;
 
 }

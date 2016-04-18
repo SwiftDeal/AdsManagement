@@ -11,26 +11,28 @@
 		            <div class="title">CPC (Cost per thousand click) INR</div>
 		        </div>
 		    </div>
+            {if($cpc)}
             <div class="table-responsive">
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered">
                     <tbody>
                         <tr>
                             <td>IN</td>
-                            <td></td>
+                            <td>{echo $cpc->IN}</td>
                             <td>US</td>
-                            <td></td>
+                            <td>{echo $cpc->US}</td>
                             <td>CA</td>
-                            <td></td>
+                            <td>{echo $cpc->CA}</td>
                             <td>AU</td>
-                            <td></td>
+                            <td>{echo $cpc->AU}</td>
                             <td>GB</td>
-                            <td></td>
+                            <td>{echo $cpc->GB}</td>
                             <td>Other</td>
-                            <td></td>
+                            <td>{echo $cpc->NONE}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+            {/if}
 		    <div class="card-body">
 		    	<span class="help-text">To change CPC please contact your manager</span>
 		    </div>

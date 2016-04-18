@@ -29,4 +29,13 @@ class SocialFB extends Shared\Model {
      * @length 255
      */
     protected $_email;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * 
+     * @label FB token
+     */
+    protected $_fbtoken;
 }
