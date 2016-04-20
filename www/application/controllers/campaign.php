@@ -12,10 +12,10 @@ class Campaign extends Publisher {
 
     protected $rpm = array(
         "IN" => 140,
-        "US" => 220,
-        "CA" => 220,
-        "AU" => 220,
-        "GB" => 220,
+        "US" => 200,
+        "CA" => 200,
+        "AU" => 200,
+        "GB" => 200,
         "NONE" => 80
     );
 
@@ -244,12 +244,12 @@ class Campaign extends Publisher {
         
         if (RequestMethods::post("action") == "update") {
             $item->model = RequestMethods::post("model");
-            $item->title = RequestMethods::post("title");
             $item->url = RequestMethods::post("url");
+            $item->title = RequestMethods::post("title");
             $item->visibility = RequestMethods::post("visibility");
             $item->category = implode(",", RequestMethods::post("category"));
             $item->description = RequestMethods::post("description");
-            $item->live = RequestMethods::post("live", "0");
+            $item->live = RequestMethods::post("live", 0);
             $item->save();
 
             $rpm->value = json_encode(RequestMethods::post("rpm"));

@@ -334,15 +334,4 @@ class Analytics extends Manage {
             ->set("totalClicks", $totalClicks)
             ->set("user_id", $user_id);
     }
-
-    public function test() {
-        $this->noview();
-        $items = Item::all(array(), array("id"));
-        foreach ($items as $i) {
-            $rpm = RPM::first(array("item_id = ?" => $i->id));
-            if (!$rpm) {
-                echo "Does not exist<br>";
-            }
-        }
-    }
 }
