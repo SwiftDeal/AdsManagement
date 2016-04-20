@@ -67,7 +67,8 @@ class Admin extends Auth {
         $view->set("val", $val);
         $view->set("sign", $sign);
         $view->set("order", $order);
-        $view->set("sort", $sort);
+        $view->set("sort", $sort)
+            ->set("count", 0);
 
         if ($model) {
             if ($sign == "like") {

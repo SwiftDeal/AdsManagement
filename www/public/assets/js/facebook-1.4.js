@@ -132,7 +132,7 @@
                     });
                 });
             },
-            _postToPages: function () {
+            _postToPages: function (cb) {
                 var self = this, el = $('#fb_page_id');
                 if (el.has('option').length > 0) {
                     $('#link_modal').modal('hide');
@@ -146,12 +146,14 @@
                     }
                     $('#link_modal').modal('hide');
                     $('#fbpages_modal').modal('show');
+                    cb.call(self);
                 });
             },
             _process: function (el) {
                 // authorize the user and do what the action is given
                 var self = this, action;
                 self._authorize(el, function (d) {
+                    el.html('Done');
                     action = el.data('action') || '';
                     switch (action) {
                         case 'pages':
@@ -207,11 +209,13 @@ $(document).ready(function() {
 
     $(".fb").on("click", function(e) {
         e.preventDefault();
-        $(this).addClass('disabled');
-        $(this).html('<i class="fa fa-spinner spin"></i> Processing');
+        var el = $(this),
+            processing = el.data('processing');
+
+        if (processing === "fb") return;
+        el.data('processing', "fb");
+        $(this).html('<i class="fa fa-spinner fa-spin"></i> Processing');
         FbModel.router($(this));
-        $(this).html('Done');
-        $(this).removeClass('disabled');
     });
 
     $('#fbpages_post').on('submit', function (e) {

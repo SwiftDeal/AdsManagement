@@ -166,18 +166,16 @@ class Auth extends Controller {
             return $user->getErrors();
         }
         
-        if (RequestMethods::post("url")) {
-            $platform = new Platform(array(
-                "user_id" => $user->id,
-                "type" => "FACEBOOK_PAGE",
-                "url" =>  RequestMethods::post("url")
-            ));
-            if ($platform->validate()) {
-                $platform->save();
-            } else {
-                $user->delete();
-                return $platform->getErrors();
-            }
+        $platform = new Platform(array(
+            "user_id" => $user->id,
+            "type" => "FACEBOOK_PAGE",
+            "url" =>  RequestMethods::post("url")
+        ));
+        if ($platform->validate()) {
+            $platform->save();
+        } else {
+            $user->delete();
+            return $platform->getErrors();
         }
 
         $publish = new Publish(array(
@@ -186,7 +184,6 @@ class Auth extends Controller {
             "account" => "basic",
             "live" => 1
         ));
-        $publish->save();
         if ($publish->validate()) {
             $publish->save();
 
@@ -228,6 +225,7 @@ class Auth extends Controller {
         if ($platform->validate()) {
             $platform->save();
         } else {
+            $user->delete();
             return $platform->getErrors();
         }
 
@@ -248,6 +246,8 @@ class Auth extends Controller {
                 "pass" => $pass
             ));
         } else {
+            $user->delete();
+            $platform->delete();
             return $advert->getErrors();
         }
     }
@@ -305,7 +305,7 @@ class Auth extends Controller {
     }
 
     protected function country() {
-        require '/var/www/ctracker/includes/vendor/autoload.php';
+        require_once '/var/www/ctracker/includes/vendor/autoload.php';
         $reader = new GeoIp2\Database\Reader('/var/www/ctracker/includes/GeoLite2-Country.mmdb');
         $record = $reader->country(Shared\Markup::get_client_ip());
         return $record->country->isoCode;

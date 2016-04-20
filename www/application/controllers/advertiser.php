@@ -194,15 +194,17 @@ class Advertiser extends Analytics {
         $this->seo(array("title" => "Register as Advertiser", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         
+        $view->set("errors", []);
         if (RequestMethods::post("action") == "register") {
             $exist = User::first(array("email = ?" => RequestMethods::post("email")));
             if ($exist) {
                 $view->set("message", 'User exists, <a href="/auth/login.html">login</a>');
             } else {
                 $errors = $this->_advertiserRegister();
-                $view->set("errors", $errors);
                 if (empty($errors)) {
                     $view->set("message", "Your account has been created, we will notify you once approved.");
+                } else {
+                    $view->set("errors", $errors);
                 }
             }
         }

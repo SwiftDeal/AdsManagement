@@ -70,6 +70,7 @@
                             <td></td>
                             <td>{echo $totalClicks}</td>
                             <td>{echo $sessions}</td>
+                            {if $count == 0} {script $count = 1} {/if}
                             <td>{echo $bounceRate / $count}</td>
                             <td>{echo $pageviews}</td>
                         </tr>
