@@ -11,7 +11,7 @@ use \Curl\Curl;
 class Campaign extends Publisher {
 
     protected $rpm = array(
-        "IN" => 135,
+        "IN" => 140,
         "US" => 220,
         "CA" => 220,
         "AU" => 220,
@@ -77,7 +77,7 @@ class Campaign extends Publisher {
             ));
             if ($item->validate()) {
                 $item->save();
-                 $rpm = new RPM(array(
+                $rpm = new RPM(array(
                     "item_id" => $item->id,
                     "value" => json_encode($this->rpm),
                 ));
@@ -243,6 +243,7 @@ class Campaign extends Publisher {
         }
         
         if (RequestMethods::post("action") == "update") {
+            $item->model = RequestMethods::post("model");
             $item->title = RequestMethods::post("title");
             $item->url = RequestMethods::post("url");
             $item->visibility = RequestMethods::post("visibility");

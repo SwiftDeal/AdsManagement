@@ -16,6 +16,15 @@
                                 <td>{echo $item->id}</td>
                             </tr>
                             <tr>
+                                <td><b>Model</b></td>
+                                <td>
+                                    <select name="model" class="form-control" value="{echo $item->model}">
+                                        <option value="cpa">CPA</option>
+                                        <option value="cpc">CPC</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
                                 <td><b>Title</b></td>
                                 <td>
                                     <input type="text" class="form-control" name="title" value="{echo $item->title}">
@@ -35,6 +44,17 @@
                                     </label>
                                     <label class="radio-inline">
                                         <input type="radio" name="live" value="0" {if($item->live == "0")}checked{/if}> Disable
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Visibility</b></td>
+                                <td>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="visibility" value="1" {if($item->visibility == "1")}checked{/if}> Enable
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="visibility" value="0" {if($item->visibility == "0")}checked{/if}> Disable
                                     </label>
                                 </td>
                             </tr>
