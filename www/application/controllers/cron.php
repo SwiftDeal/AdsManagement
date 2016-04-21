@@ -63,66 +63,6 @@ class CRON extends Shared\Controller {
         // implement
     }
 
-    protected function _advertiser() {
-        $yesterday = date('Y-m-d', strtotime("-1 day"));
-        $today = date('Y-m-d', strtotime("now"));
-        $accounts = array();
-
-        $items = Item::all(array("live = ?" => true), array("id", "user_id"));
-        foreach ($items as $item) {
-            $data = $item->stats($yesterday);
-            if ($data["click"] > 1) {
-                $insight = $this->_insight($data, $item, $today);
-                echo "<pre>", print_r($insight), "</pre>";
-                if (array_key_exists($insight->user_id, $accounts)) {
-                    $accounts[$insight->user_id] += -($data["earning"]);
-                } else {
-                    $accounts[$insight->user_id] = -($data["earning"]);
-                }
-                sleep(1); //sleep the script
-            }
-        }
-
-        echo "<pre>", print_r($accounts), "</pre>";
-        /*sleep(10);
-        if (!empty($accounts)) {
-            $this->log("Account Started");
-            $this->_account($accounts);
-            $this->log("Account Ended");
-        }*/
-    }
-
-    protected function _insight($data, $item, $today) {
-        $insight = Insight::first(array("item_id = ?" => $item->id));
-        if(!$insight) {
-            $insight = new Insight(array(
-                "user_id" => $item->user_id,
-                "item_id" => $item->id,
-                "click" => $data["click"],
-                "amount" => $data["earning"],
-                "rpm" => $data["rpm"],
-                "live" => 1,
-                "updated" => $today
-            ));
-            //$insight->save();
-            $output = "New Insight {$insight->id} - Done";
-        } else {
-            $modified = strtotime($insight->updated);
-            $output = "Insight {$insight->id} - Dropped";
-            if($modified < strtotime($today)) {
-                $insight->click += $data["click"];
-                $insight->amount += $data["earning"];
-                $insight->rpm = $data["rpm"];
-                $insight->updated = $today;
-                //$insight->save();
-                $output = "Updated Insight {$insight->id} - Done";
-            }
-        }
-
-        //$this->log($output);
-        return $insight;
-    }
-
     protected function _publisher() {
         $this->log("LinksTracking Started");
         $this->ctracker();
@@ -302,7 +242,8 @@ class CRON extends Shared\Controller {
         if ($click_count == 0) $click_count = 1;
         $insight->cpc = ($spent * 1000) / $click_count;
         $insight->save();
-        $this->log("Insights: ". $insight->user_id);
+
+        return $insight;
     }
 
     /**
@@ -341,7 +282,8 @@ class CRON extends Shared\Controller {
     /**
      * Fetches Google Analytics data for each advertiser
      */
-    protected function _ga() {
+    public function _ga() {
+        $insights = [];
         try {
             $advertiser = Advert::all(["live = ?" => 1]);
             foreach ($advertiser as $a) {
@@ -359,12 +301,19 @@ class CRON extends Shared\Controller {
                     "action" => "addition"
                 ];
                 $results = Shared\Services\GA::update($client, $user, $opts);
-                
-                $this->_gaInsight($results, $a);
+
+                $insights[$a->user_id] = $this->_gaInsight($results, $a);
                 $this->_gaPublish($results);
                 $this->log("Updated advertiser insights: ". $a->user_id);
                 usleep(1000);
             }
+
+            $accounts = [];
+            foreach ($insights as $i) {
+                if (!is_object($i)) continue;
+                $accounts[$i->user_id] = -($i->amount);
+            }
+            // $this->_account($accounts);
         } catch (\Exception $e) {
             $this->log("Google Analytics Cron Failed (Error: " . $e->getMessage(). " )");
         }

@@ -87,6 +87,7 @@ class GA {
 			}
 			return $results;
 		} catch(\Exception $e) {
+			file_put_contents(APP_PATH . '/logs/'. date('Y-m-d') . '.txt', $e->getMessage(), FILE_APPEND);
 			return [];
 		}
 	}

@@ -116,16 +116,22 @@ class Advertiser extends Analytics {
 
         $access = Access::all(array("user_id = ?" => $this->user->id, "property = ?" => "website"));
         $advert = Advert::first(["user_id = ?" => $this->user->id]); $this->setAdvert($advert);
-        $token = $this->advert->gatoken;
+        $token = $advert->gatoken;
         
         if (!$token && !$access) {
             $url = $client->createAuthUrl();
             $view->set("url", $url);
         } elseif ($token && !$access) {
-            $client->refreshToken($token);
+            $start = explode(" ", $advert->created);
             $msg = "All analytics stats for Clicks99 have been stored!!";
+
+            $client = Shared\Services\GA::client($token);
             try {
-                Shared\Services\GA::update($client, $this->user, ['action' => 'update']); 
+                Shared\Services\GA::update($client, $this->user, [
+                    'action' => 'update',
+                    'start' => array_shift($start),
+                    'end' => date('Y-m-d', strtotime("-1 day"))
+                ]);
             } catch (\Exception $e) {
                 $msg = $e->getMessage();
             }

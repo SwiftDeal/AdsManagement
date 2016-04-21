@@ -382,7 +382,8 @@ namespace Framework {
         }
 
         protected function _validateRequired($value) {
-            return !empty($value);
+            $value = (string) $value;
+            return (boolean) strlen($value);
         }
 
         protected function _validateAlpha($value) {
