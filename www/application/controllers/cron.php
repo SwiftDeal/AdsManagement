@@ -29,9 +29,9 @@ class CRON extends Shared\Controller {
             case 'weekly':
                 $this->_weekly();
                 break;
-            
-            default:
-                $this->_daily();
+
+            case 'monthly':
+                $this->_monthly();
                 break;
         }
     }
@@ -56,6 +56,10 @@ class CRON extends Shared\Controller {
     }
 
     protected function _weekly() {
+        // implement
+    }
+
+    protected function _monthly() {
         // implement
     }
 

@@ -53,20 +53,41 @@ namespace Shared {
             return $model;
         }
 
-        public function nice_number($n) {
+        public function nice_number($n, $opts = []) {
             // first strip any formatting;
             $n = (0+str_replace(",", "", $n));
 
             // is this a number?
             if (!is_numeric($n)) return false;
+            $prefix = false;
+            if (isset($opts['currency'])) {
+                $currency = $opts["currency"];
+                if (strtolower($currency) == "usd") {
+                    $n = (float) ($n / 66);
+                    $prefix = '<i class="fa fa-usd"></i> ';
+                } else {
+                    $prefix = '<i class="fa fa-inr"></i> ';
+                }
+            }
 
             // now filter it;
-            if ($n > 1000000000000) return round(($n/1000000000000), 2).'T';
-            elseif ($n > 1000000000) return round(($n/1000000000), 2).'B';
-            elseif ($n > 1000000) return round(($n/1000000), 2).'M';
-            elseif ($n > 1000) return round(($n/1000), 2).'K';
+            $num = false;
+            if ($n > 1000000000000) $num = round(($n/1000000000000), 2).'T';
+            elseif ($n > 1000000000) $num = round(($n/1000000000), 2).'B';
+            elseif ($n > 1000000) $num = round(($n/1000000), 2).'M';
+            elseif ($n > 1000) $num = round(($n/1000), 2).'K';
+            if ($num !== false) {
+                if ($prefix) $num = $prefix . $num;
+                return $num;
+            }
 
-            return number_format($n);
+            if (is_float($n)) $n = number_format($n, 2);
+            else $n = number_format($n);
+
+            if ($prefix !== false) {
+                return $prefix . $n;
+            }
+            return $n;
         }
 
         public static function get_client_ip() {
