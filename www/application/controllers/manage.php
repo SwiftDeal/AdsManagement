@@ -39,6 +39,30 @@ class Manage extends Admin {
         $view->set("value", $value);
     }
 
+    /**
+     * @before _secure, changeLayout, _admin
+     */
+    public function advertisers() {
+        $this->seo(array("title" => "Advertisers Manage", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+        $page = RequestMethods::get("page", 1);
+        $limit = RequestMethods::get("limit", 10);
+        
+        $property = RequestMethods::get("property", "live");
+        $value = RequestMethods::get("value", 0);
+
+        $where = array("{$property} = ?" => $value);
+        $advertisers = Advert::all($where, array("id","user_id", "modified", "live"), "created", "desc", $limit, $page);
+        $count = Advert::count($where);
+
+        $view->set("advertisers", $advertisers);
+        $view->set("page", $page);
+        $view->set("count", $count);
+        $view->set("limit", $limit);
+        $view->set("property", $property);
+        $view->set("value", $value);
+    }
+
 	/**
      * @before _secure, changeLayout, _admin
      */
@@ -77,31 +101,32 @@ class Manage extends Admin {
     public function domains() {
         $this->seo(array("title" => "All Domains", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-
-        if (RequestMethods::get("domain")) {
-            $exist = Meta::first(array("property" => "domain", "value = ?" => RequestMethods::get("domain")));
-            if($exist) {
-                $view->set("message", "Domain Exists");
-            } else {
+        switch (RequestMethods::post("action")) {
+            case 'addDomain':
+                $exist = Meta::first(array("property" => "domain", "value = ?" => RequestMethods::post("domain")));
+                if($exist) {
+                    $view->set("message", "Domain Exists");
+                } else {
+                    $domain = new Meta(array(
+                        "user_id" => $this->user->id,
+                        "property" => "domain",
+                        "value" => RequestMethods::post("domain")
+                    ));
+                    $domain->save();
+                    $view->set("message", "Domain Added Successfully");
+                }
+                break;
+            
+            case 'assignDomain':
                 $domain = new Meta(array(
-                    "user_id" => $this->user->id,
+                    "user_id" => RequestMethods::post("user_id"),
                     "property" => "domain",
-                    "value" => RequestMethods::get("domain")
+                    "value" => RequestMethods::post("domain"),
+                    "live" => 1
                 ));
                 $domain->save();
                 $view->set("message", "Domain Added Successfully");
-            }
-        }
-
-        if (RequestMethods::post("action") == "assignDomain") {
-            $domain = new Meta(array(
-                "user_id" => RequestMethods::post("user_id"),
-                "property" => "domain",
-                "value" => RequestMethods::post("domain"),
-                "live" => 1
-            ));
-            $domain->save();
-            $view->set("message", "Domain Added Successfully");
+                break;
         }
 
         $domains = Meta::all(array("property = ?" => "domain"));
