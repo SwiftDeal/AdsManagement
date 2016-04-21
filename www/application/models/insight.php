@@ -35,4 +35,11 @@ class Insight extends Shared\Model {
      * @length 10,2
      */
     protected $_cpc;
+
+    /**
+     * @column
+     * @readwrite
+     * @type date
+     */
+    protected $_created;
 }

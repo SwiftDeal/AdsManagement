@@ -1,6 +1,7 @@
 <?php
 namespace Shared\Services;
 use Framework\Registry as Registry;
+use Framework\RequestMethods as RequestMethods;
 
 class GA {
 	protected static $client = false;
@@ -216,7 +217,7 @@ class GA {
             $client = new \Google_Client();
             $client->setClientId($google->client->id);
             $client->setClientSecret($google->client->secret);
-            $client->setRedirectUri('http://'.$_SERVER['HTTP_HOST'].'/advertiser/gaLogin');
+            $client->setRedirectUri('http://'.RequestMethods::server("HTTP_HOST", "domain.com").'/advertiser/gaLogin');
 
             $client->setApplicationName("Cloudstuff");
             $client->addScope(\Google_Service_Analytics::ANALYTICS_READONLY);

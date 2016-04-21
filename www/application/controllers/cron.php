@@ -10,13 +10,37 @@ class CRON extends Shared\Controller {
 
     public function __construct($options = array()) {
         parent::__construct($options);
+        $this->noview();
         if (php_sapi_name() != 'cli') {
             $this->redirect("/404");
         }
     }
 
-    public function index() {
-        $this->noview();
+    public function index($type = "daily") {
+        switch ($type) {
+            case 'hourly':
+                $this->_hourly();
+                break;
+
+            case 'daily':
+                $this->_daily();
+                break;
+
+            case 'weekly':
+                $this->_weekly();
+                break;
+            
+            default:
+                $this->_daily();
+                break;
+        }
+    }
+
+    protected function _hourly() {
+        // implement
+    }
+
+    protected function _daily() {
         $this->log("Publisher CRON Started");
         $this->_publisher();
         $this->log("CRON Ended");
@@ -24,11 +48,15 @@ class CRON extends Shared\Controller {
         //$this->log("Advertiser CRON Started");
         //$this->_advertiser();
         
-        // $this->log("Advertiser Analytics Cron Ended");
+        // $this->log("Analytics Cron Ended");
         // $this->_ga();
-        // $this->log("Advertiser Analytics Cron Ended");
+        // $this->log("Analytics Cron Ended");
         
         //$this->log("Advertiser CRON Ended");
+    }
+
+    protected function _weekly() {
+        // implement
     }
 
     protected function _advertiser() {
@@ -47,11 +75,9 @@ class CRON extends Shared\Controller {
                 } else {
                     $accounts[$insight->user_id] = -($data["earning"]);
                 }
-                //sleep the script
-                sleep(1);
+                sleep(1); //sleep the script
             }
         }
-
 
         echo "<pre>", print_r($accounts), "</pre>";
         /*sleep(10);
@@ -134,8 +160,7 @@ class CRON extends Shared\Controller {
                 } else {
                     $accounts[$stat->user_id] = $data["earning"];
                 }
-                //sleep the script
-                sleep(1);
+                sleep(1); //sleep the script
             }
         }
         return $accounts;
@@ -232,10 +257,18 @@ class CRON extends Shared\Controller {
      * @param object $advertiser \Advert
      */
     protected function _gaInsight($results, $advertiser) {
-        $cpc = (array) json_decode($advertiser->cpc);
+        $cpcs = json_decode($advertiser->cpc);
+        if (!$cpcs) {
+            $this->log("CPC not added for advertiser: " . $advertiser->user_id);
+            return;
+        } else {
+            $cpcs = (array) $cpcs;
+        }
+
         $clicks = [];
         
         foreach ($results as $r) {
+            unset($r['_id']);
             $countryCode = $r['countryIsoCode'];
             if (array_key_exists($countryCode, $clicks)) {
                 $d = (int) $clicks[$countryCode] + (int) $r['sessions'];
@@ -245,22 +278,27 @@ class CRON extends Shared\Controller {
             $clicks[$countryCode] = $d;
         }
 
-        $spent = 0; $clicks = 0; $rpm = 0;
+        $spent = 0.0; $click_count = 0; $rpm = 0;
         foreach ($clicks as $key => $value) {
-            $spent += (int) $cpc[$key] * $value;
-            $clicks += $value;
-            $rpm += $cpc[$key];
+            $cpc = (array_key_exists($key, $cpcs)) ? $cpcs[$key] : $cpcs["NONE"];
+            $spent += (float) ($cpc * $value / 1000);
+            $click_count += $value;
+            $rpm += $cpc;
         }
-        $insight = Insight::first(["user_id = ?" => $advertiser->user_id]);
+        $insight = Insight::first(["user_id = ?" => $advertiser->user_id, "created = ?" => date("Y-m-d")]);
         if (!$insight) {
             $insight = new Insight([
-                "user_id" => $advertiser->user_id
+                "user_id" => $advertiser->user_id,
+                "created" => date('Y-m-d'),
+                "live" => 1
             ]);
         }
-        $insight->click = $clicks;
+        $insight->click = $click_count;
         $insight->amount = $spent;
-        $insight->cpc = ($spent * 1000) / $clicks;
+        if ($click_count == 0) $click_count = 1;
+        $insight->cpc = ($spent * 1000) / $click_count;
         $insight->save();
+        $this->log("Insights: ". $insight->user_id);
     }
 
     /**
@@ -270,9 +308,9 @@ class CRON extends Shared\Controller {
     protected function _gaPublish($results) {
         $users = [];
         foreach ($results as $r) {
-            $key = $r['source'];
+            $key = $r['source']; unset($r['_id']);
             if (array_key_exists($key, $users)) {
-                $d = array_merge($users[$key], $r);
+                $d = array_merge($users[$key], [$r]);
             } else {
                 $d = [$r];
             }
@@ -291,6 +329,8 @@ class CRON extends Shared\Controller {
             if ($c == 0) $c = 1; // Error checking
             $publish->bouncerate = $bounceRate / $c;
             $publish->save();
+            $this->log("Updated publisher: ". $publish->user_id);
+            usleep(1000);
         }
     }
 
@@ -299,7 +339,7 @@ class CRON extends Shared\Controller {
      */
     protected function _ga() {
         try {
-            $advertiser = Advert::all(["live = ?" => true]);
+            $advertiser = Advert::all(["live = ?" => 1]);
             foreach ($advertiser as $a) {
                 if (!$a->gatoken) {
                     continue;
@@ -311,14 +351,15 @@ class CRON extends Shared\Controller {
                 ]);
                 $opts = [
                     "start" => "yesterday",
-                    "end" => "yesterday"
+                    "end" => "yesterday",
+                    "action" => "addition"
                 ];
-                $results = Shared\Services\GA::update($client, $user, ['action' => 'addition', 'start' => 'yesterday', 'end' => 'yesterday']);
-
-                $this->_gaInsight($results, $advertiser);
+                $results = Shared\Services\GA::update($client, $user, $opts);
+                
+                $this->_gaInsight($results, $a);
                 $this->_gaPublish($results);
-
-                sleep(1);
+                $this->log("Updated advertiser insights: ". $a->user_id);
+                usleep(1000);
             }
         } catch (\Exception $e) {
             $this->log("Google Analytics Cron Failed (Error: " . $e->getMessage(). " )");

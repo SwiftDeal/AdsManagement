@@ -24,7 +24,7 @@ namespace Shared {
          * @type boolean
          * @index
          */
-        protected $_live;
+        protected $_live = 0;
 
         /**
          * @column
@@ -47,9 +47,8 @@ namespace Shared {
             $primary = $this->getPrimaryColumn();
             $raw = $primary["raw"];
             if (empty($this-> $raw)) {
-                $this->setCreated(date("Y-m-d H:i:s"));
-                if (!$this->live) {
-                    $this->setLive(0);
+                if (!$this->getCreated()) {
+                    $this->created = date("Y-m-d H:i:s");
                 }
             }
             $this->setModified(date("Y-m-d H:i:s"));
