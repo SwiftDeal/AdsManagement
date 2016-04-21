@@ -80,9 +80,6 @@ class Publisher extends Advertiser {
             $k = array_rand($domains);
             $longURL = RequestMethods::get("domain", $domains[$k]) . '/' . base64_encode($link->id);
         }
-        // $googl = Registry::get("googl");
-        // $object = $googl->shortenURL($longURL);
-        // $link->short = $object->id;
 
         $link->short = $this->_bitly($longURL);
         $link->save();
@@ -286,7 +283,7 @@ class Publisher extends Advertiser {
             $this->_publish = $publish;
         } else {
             $user = $this->getUser();
-            $publish = Publish::first(array("user_id = ?" => $user->id), array("id"));
+            $publish = Publish::first(array("user_id = ?" => $user->id));
             if ($user && $publish) {
                 $session->set("publish", $publish);
             } else {

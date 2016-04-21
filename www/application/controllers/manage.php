@@ -18,20 +18,20 @@ class Manage extends Admin {
 	/**
      * @before _secure, changeLayout, _admin
      */
-    public function users() {
-        $this->seo(array("title" => "New User Platforms", "view" => $this->getLayoutView()));
+    public function publishers() {
+        $this->seo(array("title" => "Publishers Manage", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
         
         $property = RequestMethods::get("property", "live");
-        $value = RequestMethods::get("value", false);
+        $value = RequestMethods::get("value", 0);
 
         $where = array("{$property} = ?" => $value);
-        $users = User::all($where, array("id","name", "modified", "live"), "created", "desc", $limit, $page);
-        $count = User::count($where);
+        $publishers = Publish::all($where, array("id","user_id", "modified", "live"), "created", "desc", $limit, $page);
+        $count = Publish::count($where);
 
-        $view->set("users", $users);
+        $view->set("publishers", $publishers);
         $view->set("page", $page);
         $view->set("count", $count);
         $view->set("limit", $limit);
@@ -162,40 +162,62 @@ class Manage extends Admin {
     /**
      * @before _secure, _admin
      */
-    public function validity($user_id, $live) {
+    public function validity($model, $user_id, $live) {
         $this->noview();
         $user = User::first(array("id = ?" => $user_id));
         if ($user) {
             $user->live = $live;
             $user->save();
 
-            $advert = Advert::first(array("user_id = ?" => $user->id));
-            if ($advert) {
-                $advert->live = $live;
-                $advert->save();
-            }
-
-            $publish = Publish::first(array("user_id = ?" => $user->id));
-            if ($publish) {
-                $publish->live = $live;
-                $publish->save();
-            }
-
-            switch ($live) {
-                case '0':
-                    $this->notify(array(
-                        "template" => "accountSuspend",
-                        "subject" => "Account Suspended",
-                        "user" => $user
-                    ));
+            switch ($model) {
+                case 'publish':
+                    $publish = Publish::first(array("user_id = ?" => $user->id));
+                    if ($publish) {
+                        $publish->live = $live;
+                        $publish->save();
+                    }
+                    switch ($live) {
+                        case '0':
+                            $this->notify(array(
+                                "template" => "accountSuspend",
+                                "subject" => "Account Suspended",
+                                "user" => $user
+                            ));
+                            break;
+                        
+                        case '1':
+                            $this->notify(array(
+                                "template" => "accountApproved",
+                                "subject" => "Account Approved",
+                                "user" => $user
+                            ));
+                            break;
+                    }
                     break;
                 
-                case '1':
-                    $this->notify(array(
-                        "template" => "accountApproved",
-                        "subject" => "Account Approved",
-                        "user" => $user
-                    ));
+                case 'advert':
+                    $advert = Advert::first(array("user_id = ?" => $user->id));
+                    if ($advert) {
+                        $advert->live = $live;
+                        $advert->save();
+                    }
+                    switch ($live) {
+                        case '0':
+                            $this->notify(array(
+                                "template" => "accountSuspend",
+                                "subject" => "Account Suspended",
+                                "user" => $user
+                            ));
+                            break;
+                        
+                        case '1':
+                            $this->notify(array(
+                                "template" => "accountApproved",
+                                "subject" => "Account Approved",
+                                "user" => $user
+                            ));
+                            break;
+                    }
                     break;
             }
         }

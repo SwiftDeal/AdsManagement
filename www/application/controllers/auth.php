@@ -1,7 +1,5 @@
 <?php
 /**
- * Description of auth
- *
  * @author Faizan Ayubi
  */
 use Shared\Controller as Controller;
@@ -97,9 +95,6 @@ class Auth extends Controller {
         //setting publisher
         $publish = Publish::first(array("user_id = ?" => $user->id));
         if ($publish) {
-            if ($publish->live == 0) {
-                return "Account Suspended";
-            }
             $this->setUser($user);
             //setting domains
             $domains = Meta::all(array("property = ?" => "domain", "live = ?" => true));
@@ -115,9 +110,6 @@ class Auth extends Controller {
         //setting advertiser
         $advert = Advert::first(array("user_id = ?" => $user->id));
         if ($advert) {
-            if ($advert->live == 0) {
-                return "Account Suspended";
-            }
             $this->setUser($user);
             $session->set("advert", $advert);
             $this->redirect("/advertiser/index.html");

@@ -1,14 +1,12 @@
 <div id="page-wrapper">
     <div class="container-fluid">
         <div class="row col-lg-12">
-            <h3 class="page-header text-center">Users</h3>
+            <h3 class="page-header text-center">Publishers</h3>
             <form class="form-inline text-center" role="form" method="get" action="">
                 <div class="form-group">
                     <div class="input-group">
                         <select name="property" class="form-control" value="{$property}">
-                            <option value="id">Id</option>
-                            <option value="email">Email</option>
-                            <option value="phone">Phone</option>
+                            <option value="user_id">UserId</option>
                             <option value="live">Live</option>
                         </select>
                     </div>
@@ -33,16 +31,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {foreach $user in $users}
-                        {script $publish= Publish::first(array("user_id = ?" => $user->id), array("id"))}
-                        {script $advert= Advert::first(array("user_id = ?" => $user->id), array("id"))}
+                        {foreach $publish in $publishers}
+                        {script $user= User::first(array("id = ?" => $publish->user_id), array("id","name", "modified", "live"))}
                         <tr>
                             <td>{echo $user->id}</td>
                             <td><a href="/admin/info/user/{$user->id}">{echo $user->name}</a></td>
                             <td>
-                                {if($publish)} <span class="label label-info">Publisher</span>{/if}
-                                {if($advert)} <span class="label label-info">Advertiser</span>{/if}
-                                {if($user->live)}
+                                {if($publish->live)}
                                     <span class="label label-success">Active</span>
                                 {/if}
                                 {else}
@@ -51,11 +46,11 @@
                             </td>
                             <td>{echo $user->modified}</td>
                             <td>
-                                {if($user->live == 0)}
-                                    <a href="/manage/validity/{$user->id}/1" class="btn btn-primary btn-xs"><i class="fa fa-check"></i></a>&nbsp;
+                                {if($publish->live == 0)}
+                                    <a href="/manage/validity/publish/{$user->id}/1" class="btn btn-primary btn-xs"><i class="fa fa-check"></i></a>&nbsp;
                                 {/if}
                                 {else}
-                                    <a href="/manage/validity/{$user->id}/0" class="btn btn-warning btn-xs"><i class="fa fa-ban"></i></a>&nbsp;
+                                    <a href="/manage/validity/publish/{$user->id}/0" class="btn btn-warning btn-xs"><i class="fa fa-ban"></i></a>&nbsp;
                                 {/else}
                                 <a href="/manage/delete/{$user->id}" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
                                 <a href="/admin/update/user/{$user->id}" class="btn btn-info btn-xs"><i class="fa fa-edit"></i></a>

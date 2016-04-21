@@ -42,31 +42,6 @@ class Finance extends Admin {
     }
 
     /**
-     * Finds the earning from a website
-     * @before _secure, changeLayout, _admin
-     */
-    public function earnings() {
-        $this->seo(array("title" => "Earnings Finance", "view" => $this->getLayoutView()));
-        $view = $this->getActionView(); $amount = 0;
-        $website = RequestMethods::get("website", "http://www.khattimithi.com");
-
-        $where = array("url LIKE ?" => "%{$website}%");
-        $items = Item::all($where, array("id"));
-        $count = Item::count($where);
-
-        foreach ($items as $item) {
-            $database = Registry::get("database");
-            $earnings = $database->query()->from("stats", array("SUM(amount)" => "earn"))->where("item_id=?",$item->id)->all();
-            $amount += $earnings[0]["earn"];
-        }
-        
-        $view->set("items", $items);
-        $view->set("count", $count);
-        $view->set("website", $website);
-        $view->set("amount", $amount);
-    }
-
-    /**
      * @before _secure, changeLayout, _admin
      */
     public function makepayment($user_id) {

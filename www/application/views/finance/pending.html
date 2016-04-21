@@ -16,7 +16,8 @@
                     <tr>
                         <th>User Id</th>
                         <th>Name</th>
-                        <th>Amount</th>
+                        <th>Balance</th>
+                        <th>Total</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -35,6 +36,7 @@
                         </td>
                         <td><a href="/admin/info/user/{$user->id}">{echo $user->name}</a></td>
                         <td><i class="fa fa-inr"></i> {echo $account->balance}</td>
+                        <td><i class="fa fa-inr"></i> {echo Shared\Markup::nice_number($account->total())}</td>
                         <td>
                             {if($payout)}
                             <small class="label label-success">Payout Requested</small>
