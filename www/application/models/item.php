@@ -65,7 +65,7 @@ class Item extends Shared\Model {
      * @type decimal
      * @length 10,2
      *
-     * @validate required, min(4)
+     * @validate required
      * @label budget
      */
     protected $_budget;
@@ -78,7 +78,7 @@ class Item extends Shared\Model {
      * @validate required
      * @label visibility of campaign
      */
-    protected $_visibility;
+    protected $_visibility = 0;
 
     /**
      * @column

@@ -60,7 +60,11 @@ class Campaign extends Publisher {
         $view = $this->getActionView();
         
         $view->set("errors", array());
-        if (RequestMethods::post("action") == "content" && !empty($this->advert->cpc)) {
+        if (!empty($this->advert->cpc)) {
+            $view->set("message", "Account CPC not Set");
+            return;
+        }
+        if (RequestMethods::post("action") == "content") {
             if (RequestMethods::post("image_url")) {
                 $image = $this->urls3upload(RequestMethods::post("image_url"));
             } else {
@@ -68,16 +72,17 @@ class Campaign extends Publisher {
             }
             $item = new Item(array(
                 "user_id" => $this->user->id,
-                "model" =>  RequestMethods::post("model", "cpc"),
+                "model" => "cpc",
                 "url" =>  RequestMethods::post("url"),
                 "title" => RequestMethods::post("title"),
                 "image" => $image,
                 "budget" => RequestMethods::post("budget", 2500),
-                "visibility" => 0,
+                "visibility" => "0",
                 "category" => implode(",", RequestMethods::post("category", "news")),
                 "description" => RequestMethods::post("description", ""),
                 "live" => 0
             ));
+            echo "<pre>", print_r($item), "</pre>";
             if ($item->validate()) {
                 $item->save();
                 $rpm = new RPM(array(
@@ -88,9 +93,8 @@ class Campaign extends Publisher {
                 $view->set("message", "Campaign Created Successfully now we will approve it within 24 hours and notify you");
             }  else {
                 $view->set("errors", $item->getErrors());
+                echo "<pre>", print_r($item->getErrors()), "</pre>";
             }
-        } else {
-            $view->set("message", "Account CPC not Set");
         }
     }
 

@@ -159,7 +159,7 @@ class Advertiser extends Analytics {
             $this->_advert = $advert;
         } else {
             $user = $this->getUser();
-            $advert = Advert::first(array("user_id = ?" => $user->id), array("id"));
+            $advert = Advert::first(array("user_id = ?" => $user->id));
             if ($user && $advert) {
                 $session->set("advert", $advert);
             } else {

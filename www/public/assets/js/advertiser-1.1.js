@@ -170,6 +170,8 @@ $(function() {
 
 $(document).ready(function() {
 
+    $('select').select2();
+    
     $.ajaxSetup({cache: true});
     $.getScript('//connect.facebook.net/en_US/sdk.js', function () {
         FB.init({
@@ -248,7 +250,7 @@ $(document).ready(function() {
         $('#myTabs li:eq(2)').removeClass('hidden');
         $('#myTabs li:eq(2)').addClass('step-success');
         $('#myTabs li:eq(2) a').tab('show');
-    })
+    });
 
 });
 

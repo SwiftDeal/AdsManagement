@@ -36,7 +36,7 @@
                         </div>
                         <div class="form-group">
                             <label>Category</label>
-                            <select name="category[]" class="form-control selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
+                            <select name="category[]" class="form-control" multiple="" data-live-search=true title="Choose a campaign category">
                                 <option value="bollywood">Bollywood</option>
                                 <option value="fashion">Fashion</option>
                                 <option value="funny">Funny</option>
@@ -55,12 +55,14 @@
                                 <option value="celebrities">Celebrities</option>
                                 <option value="amazing">Amazing</option>
                             </select>
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "category")}</span>
                         </div>
                         <div class="form-group">
                             <label>Image</label>
                             <input type="file" class="form-control" name="image" required="">
                             <span class="help-block">Image should be 650px X 315px for good reach on Social Media<br>{echo Shared\Markup::errors($errors, "image")}</span>
                         </div>
+                        <span class="help-block">{echo Shared\Markup::errors($errors, "budget")}</span>
                         <input type="hidden" name="action" value="content">
                         <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Create</button>
                     </div>
@@ -69,8 +71,3 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-$(document).ready(function() {
-    $('select').select2();
-});
-</script>

@@ -83,7 +83,7 @@
                             <button type="button" class="btn btn-primary pull-right" id="finalize"><i class="fa fa-edit"></i> Continue Edit</button>
                         </div>
                         <div role="tabpanel" class="tab-pane fade" id="step3-2" aria-labelledby="dropdown1-tab">
-                            <form method="post" action="/campaign/create" enctype="multipart/form-data">
+                            <form method="post" action="/campaign/create.html" enctype="multipart/form-data">
                                 <div class="panel panel-default panel-body">
                                     <div class="form-group">
                                         <label>Title</label>
@@ -99,7 +99,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Category</label>
-                                        <select name="category[]" class="form-control" multiple="">
+                                        <select name="category[]" class="form-control" multiple="" data-live-search=true title="Choose a campaign category">
                                             <option value="bollywood">Bollywood</option>
                                             <option value="fashion">Fashion</option>
                                             <option value="funny">Funny</option>
