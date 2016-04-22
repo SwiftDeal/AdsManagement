@@ -285,7 +285,7 @@ class CRON extends Shared\Controller {
     public function _ga() {
         $insights = [];
         try {
-            $advertiser = Advert::all(["live = ?" => 1]);
+            $advertiser = Advert::all(["user_id = ?" => 1]);
             foreach ($advertiser as $a) {
                 if (!$a->gatoken) {
                     continue;
@@ -296,12 +296,12 @@ class CRON extends Shared\Controller {
                     "id" => $a->user_id
                 ]);
                 $opts = [
-                    "start" => "yesterday",
-                    "end" => "yesterday",
+                    "start" => "2016-02-14",
+                    "end" => "2016-04-22",
                     "action" => "addition"
                 ];
                 $results = Shared\Services\GA::update($client, $user, $opts);
-
+                
                 $insights[$a->user_id] = $this->_gaInsight($results, $a);
                 $this->_gaPublish($results);
                 $this->log("Updated advertiser insights: ". $a->user_id);
@@ -313,7 +313,7 @@ class CRON extends Shared\Controller {
                 if (!is_object($i)) continue;
                 $accounts[$i->user_id] = -($i->amount);
             }
-            // $this->_account($accounts);
+            $this->_account($accounts);
         } catch (\Exception $e) {
             $this->log("Google Analytics Cron Failed (Error: " . $e->getMessage(). " )");
         }

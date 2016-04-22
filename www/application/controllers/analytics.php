@@ -215,12 +215,11 @@ class Analytics extends Manage {
         $collection = Registry::get("MongoDB")->clicks;
 
         $cursor = $collection->find($query);
-        foreach ($cursor as $id => $result) {
-            $u = null;
+        foreach ($cursor as $result) {
             $u = User::first(array("id = ?" => $result["user_id"], "live = ?" => true), array("id"));
             if ($u) {
                 $cpcs = CPC::first(array("item_id = ?" => $result["item_id"]), array("value"));
-                $cpc = json_decode($rpms->value, true);
+                $cpc = json_decode($cpcs->value, true);
                 $code = $result["country"];
                 $total_click += $result["click"];
                 if (array_key_exists($code, $cpc)) {
@@ -283,13 +282,18 @@ class Analytics extends Manage {
         exit;
     }
 
-    protected static function _records($user_id, $opts) {
-        $advert = Advert::first(["user_id = ?" => $user_id]); $token = $advert->gatoken;
-        $user = ArrayMethods::toObject(['id' => $user_id]);
+    protected static function _records($users, $opts) {
+        $results = [];
+        foreach ($users as $key => $value) {
+            $advert = Advert::first(["user_id = ?" => $key], ["gatoken"]);
+            if (!$advert || !$advert->gatoken) continue;
+            $user = ArrayMethods::toObject(['id' => $key]);
 
-        $client = Shared\Services\GA::client($token);
-        $records = Shared\Services\GA::update($client, $user, $opts);
-        return $records;
+            $client = Shared\Services\GA::client($advert->gatoken);
+            $r = Shared\Services\GA::update($client, $user, $opts);
+            $results = array_merge($r, $results);
+        }
+        return $results;   
     }
 
     /**
@@ -312,10 +316,14 @@ class Analytics extends Manage {
                 'filters' => 'ga:source=~'.$user_id,
                 'returnResults' => true
             ];
-            $record_1 = $this->_records(1, $opts);
-            $record_2 = $this->_records(725, $opts);
-            $records = array_merge($record_1, $record_2);
 
+            $links = Link::all(["user_id = ?" => $user_id], ["DISTINCT item_id"]);
+            $users = [];
+            foreach ($links as $l) {
+                $item = Item::first(["id = ?" => $l->item_id], ["user_id"]);
+                $users[$item->user_id] = $item->user_id;
+            }
+            $records = $this->_records($users, $opts);
             $start_time = strtotime($start); $end_time = strtotime($end);
             for ($i = 0; $start_time < $end_time; $i++) {
                 $start_time = strtotime($start . " +{$i} day");
@@ -330,7 +338,7 @@ class Analytics extends Manage {
             foreach ($records as $r) {
                 $result[] = ArrayMethods::toObject($r);
                 $count++;
-            }    
+            }
         }
         
         $view->set("records", $result)

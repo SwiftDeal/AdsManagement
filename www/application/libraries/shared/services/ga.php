@@ -22,7 +22,8 @@ class GA {
 		foreach ($profiles as $p) {
 			$d = $ga->get('ga:' . $p->getId(), $start, $end, "ga:pageviews, ga:sessions, ga:newUsers, ga:bounceRate", [
 					"dimensions" => "ga:source, ga:medium, ga:countryIsoCode",
-					"filters" => $filters
+					"filters" => $filters,
+					"max-results" => 50000
 				]);
 
 			$columns = self::_columnHeaders($d);
@@ -162,36 +163,67 @@ class GA {
 		        $newFields = array_merge($data, $search);
 
 		        $results[] = $newFields;
-		        $record = $ga_stats->findOne($search); $action = isset($opts['action']) ? $opts['action'] : "update";
-		        if (isset($record)) {
-		        	if ($action == "addition") {
-		        		$data = self::_update($record, $data);
-		        	}
-		        	$ga_stats->update($search, ['$set' => $data]);
-		        } else {
-		            $ga_stats->insert($newFields);
-		        }
 		    }
 		}
+		self::_filterResults($results, $opts);
 		return $results;
 	}
 
-	protected static function _update($record, $fields) {
-		$doc = [];
-		foreach ($fields as $key => $value) {
-			switch ($key) {
-				case 'pageviews':
-				case 'sessions':
-				case 'newUsers':
-					$val = (int) $record[$key] + (int) $value;
-					break;
-				
-				default:
-					$val = $value;
+	protected static function _filterResults($results, $opts) {
+		$users = [];
+		foreach ($results as $r) {
+			$key = $r['source']; $website = $r['website_id'];
+
+			if (array_key_exists($key, $users) && array_key_exists($website, $users[$key])) {
+				$d = array_merge($users[$key][$website], [$r]);
+			} else {
+				$d = [$r];
 			}
-			$doc[$key] = $val;
+
+			$users[$key][$website] = $d;
 		}
-		return $doc;
+
+		foreach ($users as $id => $website) { // foreach user
+			// user data foreach website
+			foreach ($website as $_id => $data) {
+				$d = new \stdClass();
+				// add the data for the website
+				$d->sessions = 0; $d->pageviews = 0; $d->newUsers = 0;
+				$d->bounceRate = 0.0; $count = 0; $d->views = [];
+				foreach ($data as $r) {
+					$d->views[] = $r['view-id'];
+					$d->sessions += $r['sessions'];
+					$d->pageviews += $r['pageviews'];
+					$d->newUsers += $r['newUsers'];
+					$d->bounceRate += (float) $r['bounceRate'];
+					$count++;
+				}
+				if ($count == 0) $count = 1;
+				$bounceRate = $bounceRate / $count;
+
+				// now search for the website record in mongodb
+				self::_update(['user' => (int) $id, 'website' => (int) $_id, 'data' => $d], $opts);
+			}
+		}
+	}
+
+	protected static function _update($search, $opts) {
+		$ga_stats = Registry::get("MongoDB")->ga_stats;
+
+		$action = isset($opts['action']) ? $opts['action'] : "update";
+		$data = (array) $search['data']; unset($search['data']);
+
+		$record = $ga_stats->findOne($search);
+		if ($record) {
+			$views = $search['data']['views']; unset($search['data']['views']);
+			if ($action == "addition") {
+				$data['sessions'] += $r['sessions']; $data['newUsers'] += $r['newUsers'];
+				$data['pageviews'] += $r['pageviews'];
+			}
+			$ga->update($search, ['$set' => $data]);
+		} else {
+			$ga_stats->insert(array_merge($search, $data));
+		}
 	}
 
 	public static function update($client, $user, $opts = []) {
