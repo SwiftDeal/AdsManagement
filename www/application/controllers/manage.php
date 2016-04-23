@@ -82,7 +82,7 @@ class Manage extends Admin {
             $view->set("message", "News Saved Successfully");
         }
         
-        $allnews = Meta::all(array("property = ?" => "news"));
+        $allnews = Meta::all(array("property = ?" => "news"), array("*"), "created", "desc");
             
         $view->set("allnews", $allnews);
     }

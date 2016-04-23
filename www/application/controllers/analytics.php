@@ -71,10 +71,9 @@ class Analytics extends Manage {
         
         $currency = ($this->user->currency) ? $this->user->currency : "inr";
         // $view->set("earning", Shared\Markup::nice_number($result["earning"], ["currency" => $currency]));
-        $view->set("earning", $result["earning"]);
+        $view->set("earning", $this->user->convert($result["earning"]));
         $view->set("click", $result["click"]);
-        // $view->set("rpm", Shared\Markup::nice_number($result["rpm"], ["currency" => $currency]));
-        $view->set("rpm", $result["rpm"]);
+        $view->set("rpm", $this->user->convert($result["rpm"]));
         $view->set("analytics", $result["analytics"]);
         $view->set("link", $link);
     }

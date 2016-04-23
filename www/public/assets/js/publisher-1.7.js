@@ -136,7 +136,7 @@ $(document).ready(function() {
             action: "analytics/link",
             data: {link: link},
             callback: function(data) {
-                item.html('RPM : <i class="fa fa-inr"></i> '+ data.rpm +', Sessions : '+ data.click +', Earning : <i class="fa fa-inr"></i> '+ data.earning);
+                item.html('RPM : '+ data.rpm +', Sessions : '+ data.click +', Earning : '+ data.earning);
             }
         });
     });

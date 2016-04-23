@@ -93,12 +93,10 @@ class Publisher extends Advertiser {
      */
     public function topearners() {
         $this->seo(array("title" => "Top Earners", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-        $today = strftime("%Y-%m-%d", strtotime('now'));
+        $view = $this->getActionView();$today = strftime("%Y-%m-%d", strtotime('now'));
         
         $collection = Registry::get("MongoDB")->clicks;
-        $stats = array();$stat = array();$rank = 0;
-
+        $stats = array();$stat = array();
         $cursor = $collection->find(array('created' => $today));
         if ($cursor) {
             foreach ($cursor as $key => $record) {
@@ -116,14 +114,16 @@ class Publisher extends Advertiser {
                     "user_id" => $key,
                     "count" => $value
                 ));
-                if ($count > 15) {
+                if ($count > 8) {
                     break;
                 }
                 $count++;
             }
             $view->set("today", $stat);
-            $view->set("rank", $rank);
         }
+
+        $allnews = Meta::all(array("property = ?" => "news", "live = ?" => true), array("*"), "created", "desc", 5, 1);
+        $view->set("allnews", $allnews);
     }
     
     /**
