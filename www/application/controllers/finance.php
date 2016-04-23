@@ -283,17 +283,31 @@ class Finance extends Admin {
         $this->JSONview();
         $view = $this->getActionView();
 
-        $payout = Payout::first(array("user_id = ?" => $this->user->id));
-        if (isset($payout)) {
-            $payout->live = true;
-        } else {
+        $payout = Payout::first(array("user_id = ?" => $this->user->id, "live = ?" => true));
+        if (!isset($payout)) {
             $payout = new Payout(array(
                 "user_id" => $this->user->id,
                 "live" => 1
             ));
+            $payout->save();
         }
-        $payout->save();
         $view->set("payout", $payout);
+    }
+
+    public function stats() {
+        $this->JSONview();
+        $view = $this->getActionView();
+
+        $database = Registry::get("database");
+        $startdate = date('Y-m-d', strtotime("-6 day"));
+        $enddate = date('Y-m-d', strtotime("-1 day"));
+        $diff = date_diff(date_create($startdate), date_create($enddate));
+        for ($i = 0; $i <= $diff->format("%a"); $i++) {
+            $date = date('Y-m-d', strtotime($startdate . " +{$i} day"));
+            $earn = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 0)->where("created LIKE ?", "%{$date}%")->all();
+            $obj[] = array('y' => $date, 'a' => $this->user->convert(round($earn[0]["earn"], 2), false));
+        }
+        $view->set("data", \Framework\ArrayMethods::toObject($obj));
     }
     
 }

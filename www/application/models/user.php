@@ -79,14 +79,14 @@ class User extends Shared\Model {
     */
     protected $_currency = "INR";
 
-    public function convert($n) {
+    public function convert($n, $p=true) {
         // first strip any formatting;
         $n = (0+str_replace(",", "", $n));
         // is this a number?
         if (!is_numeric($n)) return false;
         switch (strtolower($this->currency)) {
             case 'usd':
-                $n = (float) ($n / 66);
+                $n = (float) ($n / 63);
                 $prefix = '<i class="fa fa-usd"></i> ';
                 break;
             
@@ -109,7 +109,7 @@ class User extends Shared\Model {
         if (is_float($n)) $n = number_format($n, 2);
         else $n = number_format($n);
 
-        if ($prefix !== false) {
+        if ($p !== false) {
             return $prefix . $n;
         }
         return $n;

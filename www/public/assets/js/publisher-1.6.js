@@ -213,12 +213,13 @@ function today () {
 }
 
 function stats() {
+    //loading visitors map
     request.read({
         action: "analytics/stats/" + today(),
         callback: function(data) {
             $('#today_click').html(data.stats.click);
-            $('#today_rpm').html('<i class="fa fa-inr"></i> '+ data.stats.rpm);
-            $('#today_earning').html('<i class="fa fa-inr"></i> '+ data.stats.earning);
+            $('#today_rpm').html(data.stats.rpm);
+            $('#today_earning').html(data.stats.earning);
 
             var gdpData = data.stats.analytics;
             $('#world-map').vectorMap({
@@ -240,10 +241,35 @@ function stats() {
             });
         }
     });
+
+    //finance stats
+    $('#finstats').html('<p class="text-center"><i class="fa fa-spinner fa-spin fa-5x"></i></p>');
+    request.read({
+        action: "finance/stats",
+        callback: function (data) {
+            $('#finstats').html('');
+            if (data.data) {
+                Morris.Bar({
+                    element: 'finstats',
+                    data: toArray(data.data),
+                    xkey: 'y',
+                    ykeys: ['a'],
+                    labels: ['Total']
+                });
+            }
+        }
+    });
 }
 
 function ouvre(fichier) {
     ff=window.open(fichier,"popup","width=600px,height=300px,left=50%,top=50%");
+}
+
+function toArray(object) {
+    var array = $.map(object, function (value, index) {
+        return [value];
+    });
+    return array;
 }
 
 //Google Analytics

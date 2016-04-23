@@ -171,8 +171,8 @@ class Analytics extends Manage {
         if ($total_click > 0) {
             $return = array(
                 "click" => round($total_click),
-                "rpm" => round($earning*1000/$total_click, 2),
-                "earning" => round($earning, 2),
+                "rpm" => $this->user->convert(round($earning*1000/$total_click, 2)),
+                "earning" => $this->user->convert(round($earning, 2)),
                 "analytics" => $analytics,
                 "publishers" => $rank
             );

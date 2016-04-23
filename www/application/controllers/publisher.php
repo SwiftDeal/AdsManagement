@@ -28,7 +28,7 @@ class Publisher extends Advertiser {
         $earn = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 0)->all();
         $account = Account::first(array("user_id = ?" => $this->user->id), array("balance"));
         $ticket = Ticket::first(array("user_id = ?" => $this->user->id, "live = ?" => 1), array("subject", "id"), "created", "desc");
-        $links = Link::all(array("user_id = ?" => $this->user->id, "live = ?" => true), array("id", "item_id", "short"), "created", "desc", 5, 1);
+        $links = Link::all(array("user_id = ?" => $this->user->id, "live = ?" => true), array("id", "item_id", "short"), "created", "desc", 6, 1);
         
         $total = $database->query()->from("stats", array("SUM(amount)" => "earn", "SUM(click)" => "click"))->where("user_id=?", $this->user->id)->all();
     
@@ -137,10 +137,10 @@ class Publisher extends Advertiser {
         switch (RequestMethods::post("action")) {
             case 'saveUser':
                 $user = User::first(array("id = ?" => $this->user->id));
-
                 $user->phone = RequestMethods::post("phone");
                 $user->name = RequestMethods::post("name");
                 $user->username = RequestMethods::post("username");
+                $user->currency = RequestMethods::post("currency");
                 if ($user->validate()) {
                     $view->set("message", "Saved <strong>Successfully!</strong>");
                     $user->save();
