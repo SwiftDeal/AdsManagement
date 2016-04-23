@@ -184,40 +184,39 @@ class GA {
 		}
 
 		foreach ($users as $id => $website) { // foreach user
-			// user data foreach website
-			foreach ($website as $_id => $data) {
-				$d = new \stdClass();
-				// add the data for the website
+			foreach ($website as $_id => $data) { // foreach website
+				$d = new \stdClass(); // add the data for the website
 				$d->sessions = 0; $d->pageviews = 0; $d->newUsers = 0;
-				$d->bounceRate = 0.0; $count = 0; $d->views = [];
 				foreach ($data as $r) {
 					$d->views[] = $r['view-id'];
 					$d->sessions += $r['sessions'];
 					$d->pageviews += $r['pageviews'];
 					$d->newUsers += $r['newUsers'];
-					$d->bounceRate += (float) $r['bounceRate'];
-					$count++;
 				}
-				if ($count == 0) $count = 1;
-				$bounceRate = $bounceRate / $count;
+				$d->views = array_unique($d->views);
 
 				// now search for the website record in mongodb
-				self::_update(['user' => (int) $id, 'website' => (int) $_id, 'data' => $d], $opts);
+				self::_update(['user' => (int) $id, 'website' => (int) $_id], (array) $d, $opts);
 			}
 		}
 	}
 
-	protected static function _update($search, $opts) {
+	protected static function _update($search, $data, $opts) {
 		$ga_stats = Registry::get("MongoDB")->ga_stats;
 
 		$action = isset($opts['action']) ? $opts['action'] : "update";
-		$data = (array) $search['data']; unset($search['data']);
+		$data['created'] = new \MongoDate();
 
 		$record = $ga_stats->findOne($search);
 		if ($record) {
-			$views = $search['data']['views']; unset($search['data']['views']);
+			// check for duplicacy
+			if (date('Y-m-d', $record['created']->sec) == date('Y-m-d')) return;
+
+			$views = array_merge($data['views'], $r['views']);
+			$data['views'] = array_unique($views);
 			if ($action == "addition") {
-				$data['sessions'] += $r['sessions']; $data['newUsers'] += $r['newUsers'];
+				$data['sessions'] += $r['sessions'];
+				$data['newUsers'] += $r['newUsers'];
 				$data['pageviews'] += $r['pageviews'];
 			}
 			$ga->update($search, ['$set' => $data]);

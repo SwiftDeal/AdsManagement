@@ -285,11 +285,10 @@ class CRON extends Shared\Controller {
     public function _ga() {
         $insights = [];
         try {
-            $advertiser = Advert::all(["user_id = ?" => 1]);
+            $advertiser = Advert::all(["live = ?" => 1]);
             foreach ($advertiser as $a) {
-                if (!$a->gatoken) {
-                    continue;
-                }
+                if (!$a->gatoken) continue;
+                
                 $client = Shared\Services\GA::client($a->gatoken);
 
                 $user = Framework\ArrayMethods::toObject([
@@ -301,6 +300,7 @@ class CRON extends Shared\Controller {
                     "action" => "addition"
                 ];
                 $results = Shared\Services\GA::update($client, $user, $opts);
+                if (empty($results)) continue;
                 
                 $insights[$a->user_id] = $this->_gaInsight($results, $a);
                 $this->_gaPublish($results);
