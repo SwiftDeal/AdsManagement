@@ -22,7 +22,7 @@
                         <tr>
                             <td>{$t->id}</td>
                             <td>{$t->ref}</td>
-                            <td><i class="fa fa-inr"></i> {$t->amount}</td>
+                            <td>{echo $user->convert($t->amount)}</td>
                             <td>
                                 {if($t->live)}
                                 <span class="label label-success">Transferred</span>

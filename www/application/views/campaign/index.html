@@ -13,7 +13,9 @@
         </form>
     </div>
     <div class="row">
-        {foreach $item in $items}
+        {script $i=0}
+        {foreach $item in $items} {script $i++}
+        {if(!is_float($i/3))}<div class="row">{/if}
         <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="panel panel-default">
                 <a href="{echo $item->url}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}" class="img-responsive" alt="{echo $item->title}" height="240"></a>
@@ -34,7 +36,7 @@
                 </table>
             </div>
         </div>
-        
+        {if(!is_float($i/3))}</div>{/if}
         {/foreach}
     </div>
     <div class="text-center">

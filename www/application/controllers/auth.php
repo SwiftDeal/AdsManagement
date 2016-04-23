@@ -89,7 +89,7 @@ class Auth extends Controller {
             }
             $this->setUser($user);
             $session->set("team", $team);
-            $this->redirect("/manage/index.html");
+            $this->redirect("/admin/index.html");
         }
 
         //setting publisher
@@ -261,7 +261,7 @@ class Auth extends Controller {
 
         $team = $session->get("team");
         if ($team) {
-            $this->redirect("/manage/index.html");
+            $this->redirect("/admin/index.html");
         }
 
         $publish = $session->get("publish");

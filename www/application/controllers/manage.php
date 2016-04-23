@@ -7,14 +7,6 @@ use Framework\Registry as Registry;
 
 class Manage extends Admin {
 
-    /**
-     * @before _secure, changeLayout, _admin
-     */
-    public function index() {
-        $this->seo(array("title" => "Management Dashboard", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-    }
-
 	/**
      * @before _secure, changeLayout, _admin
      */

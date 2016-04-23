@@ -12,8 +12,6 @@
         {/if}
     </div>
 </div>
-{script $currency = $user->currency}
-{if !$currency} {script $currency = "inr"} {/if}
 <div class="row">
     <div class="col-lg-6 col-md-6">
         <div class="row">
@@ -28,8 +26,8 @@
                             <a href="/analytics/reports" class="btn btn-xs badge" download="" data-toggle="tooltip" data-placement="top" title="Your Complete Earning Report"><i class="fa fa-download"></i> Report</a>
                         </li>
                         <li class="list-group-item">Sessions <span class="badge">{echo Shared\Markup::nice_number(round($total[0]["click"], 2))}</span></li>
-                        <li class="list-group-item">Average RPM <span class="badge"> {echo Shared\Markup::nice_number(round($total[0]["earn"]*1000/$total[0]["click"], 2), ["currency" => $currency])}</span></li>
-                        <li class="list-group-item">Earnings <span class="badge"> {echo Shared\Markup::nice_number(round($total[0]["earn"], 2), ["currency" => $currency])}</span></li>
+                        <li class="list-group-item">Average RPM <span class="badge"> {echo $user->convert(round($total[0]["earn"]*1000/$total[0]["click"], 2))}</span></li>
+                        <li class="list-group-item">Earnings <span class="badge"> {echo $user->convert(round($total[0]["earn"], 2))}</span></li>
                     </ul>
                 </div>
             </div>
@@ -45,9 +43,9 @@
                             <button class="btn btn-xs badge" id="payout" data-toggle="tooltip" data-placement="top" title="Transfer to Bank"><i class="fa fa-bank"></i> Request Payout</button>
                             {/if}
                         </li>
-                        <li class="list-group-item">Total <span class="badge"> {echo Shared\Markup::nice_number($earn, ["currency" => $currency])}</span></li>
-                        <li class="list-group-item">Paid <span class="badge"> {echo Shared\Markup::nice_number($paid, ["currency" => $currency])}</span></li>
-                        <li class="list-group-item">Balance <span class="badge"> {echo Shared\Markup::nice_number($account->balance, ["currency" => $currency])}</span></li>
+                        <li class="list-group-item">Total <span class="badge"> {echo $user->convert($earn)}</span></li>
+                        <li class="list-group-item">Paid <span class="badge"> {echo $user->convert($paid)}</span></li>
+                        <li class="list-group-item">Balance <span class="badge"> {echo $user->convert($account->balance)}</span></li>
                     </ul>
                 </div>
             </div>

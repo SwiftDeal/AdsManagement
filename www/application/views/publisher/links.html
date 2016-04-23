@@ -48,7 +48,7 @@
                             </td>
                             <td class="linkstat" data-link="{echo $link->id}">
                                 {if($stat)}
-                                RPM :  <i class="fa fa-inr"></i> {echo $stat->rpm}, Sessions : {echo $stat->click}, Earning :  <i class="fa fa-inr"></i> {echo $stat->amount}
+                                RPM : {echo $user->convert($stat->rpm)}, Sessions : {echo $stat->click}, Earning : {echo $user->convert($stat->amount)}
                                 {/if} {else}
                                 <span class="label label-success">View</span>
                                 {/else}
