@@ -104,11 +104,11 @@ $(function () {
 
 $(document).ready(function () {
 
-    //initialize beautiful datetime picker
-    $("input[type=date]").datepicker();
-    $("input[type=date]").datepicker("option", "dateFormat", "yy-mm-dd");
-    var dateFormat = $("input[type=date]").datepicker( "option", "dateFormat" );
-    $("input[type=date]").datepicker( "option", "dateFormat", "yy-mm-dd" );
+    //initialize beautiful date picker
+    $.fn.datepicker.defaults.format = "yyyy-mm-dd";
+    $("input[type=date]").datepicker({
+        format: 'yyyy-mm-dd'
+    });
 
     $('#created_stats').submit(function (e) {
         $('#stats').html('<p class="text-center"><i class="fa fa-spinner fa-spin fa-5x"></i></p>');
@@ -192,7 +192,7 @@ $(document).ready(function () {
             action: "analytics/link",
             data: {link: link},
             callback: function(data) {
-                item.html('RPM : <i class="fa fa-inr"></i> '+ data.rpm +', Sessions : '+ data.click +', Earning : <i class="fa fa-inr"></i> '+ data.earning);
+                item.html('RPM : '+ data.rpm +', Sessions : '+ data.click +', Earning : '+ data.earning);
             }
         });
     });
@@ -211,8 +211,8 @@ function stats(date) {
         action: "analytics/stats/" + date + "/0",
         callback: function(data) {
             $('#today_click').html(data.stats.click);
-            $('#today_rpm').html('<i class="fa fa-inr"></i> '+ data.stats.rpm);
-            $('#today_earning').html('<i class="fa fa-inr"></i> '+ data.stats.earning);
+            $('#today_rpm').html(data.stats.rpm);
+            $('#today_earning').html(data.stats.earning);
             $.each(data.stats.publishers, function(i, publishers) {
                 $("#clicks-publishers").append('<tr><td><a href="/admin/info/user/'+publishers.user_id+'" target="_blank">'+publishers.user_id+'</a></td><td>'+publishers.clicks+'</td></tr>');
             });

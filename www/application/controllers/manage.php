@@ -58,17 +58,6 @@ class Manage extends Admin {
 	/**
      * @before _secure, changeLayout, _admin
      */
-    public function verify($user_id) {
-        $this->seo(array("title" => "Fraud Links", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
-        $stats = Stat::all(array("user_id = ?" => $user_id), array("link_id", "click", "amount", "rpm"));
-        $view->set("stats", $stats);
-    }
-
-	/**
-     * @before _secure, changeLayout, _admin
-     */
     public function news() {
         $this->seo(array("title" => "Member News", "view" => $this->getLayoutView()));
         $view = $this->getActionView();

@@ -25,7 +25,6 @@
                         <tr>
                             <th>Id</th>
                             <th>Name</th>
-                            <th>Account</th>
                             <th>Modified</th>
                             <th>Action</th>
                         </tr>
@@ -34,30 +33,30 @@
                         {foreach $advert in $advertisers}
                         {script $user= User::first(array("id = ?" => $advert->user_id), array("id","name", "modified", "live"))}
                         <tr>
-                            <td>{echo $user->id}</td>
-                            <td><a href="/admin/update/user/{$user->id}">{echo $user->name}</a></td>
                             <td>
-                                {if($advert->live)}
-                                    <span class="label label-success">Active</span>
-                                {/if}
-                                {else}
-                                    <span class="label label-warning">InActive</span>
+                                {if($user->live)}
+                                <span class="text-success">{$user->id}</span>
+                                {/if} {else}
+                                <span class="text-danger">{$user->id}</span>
                                 {/else}
                             </td>
-                            <td>{echo $user->modified}</td>
+                            <td><a href="/admin/update/user/{$user->id}">{echo $user->name}</a></td>
+                            <td><small>{echo Framework\StringMethods::datetime_to_text($user->modified)}</small></td>
                             <td>
-                                {if($advert->live == 0)}
-                                    <a href="/manage/validity/advert/{$user->id}/1" class="btn btn-primary btn-xs"><i class="fa fa-check"></i></a>&nbsp;
-                                {/if}
-                                {else}
-                                    <a href="/manage/validity/advert/{$user->id}/0" class="btn btn-warning btn-xs"><i class="fa fa-ban"></i></a>&nbsp;
-                                {/else}
-                                <a href="/manage/delete/{$user->id}" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
-                                <a href="/admin/update/advert/{$advert->id}" class="btn btn-info btn-xs"><i class="fa fa-edit"></i></a>
-                                <a href="/finance/pending.html?user_id={$user->id}" class="btn btn-success btn-xs" target="_blank"><i class="fa fa-credit-card-alt"></i></a>&nbsp;
-                                <a href="/support/manageticket.html?property=user_id&amp;value={$user->id}" class="btn btn-primary btn-xs"><i class="fa fa-support"></i></a>&nbsp;
-                                <a href="/analytics/verify/{$user->id}" class="btn btn-default btn-xs"><i class="fa fa-link"></i></a>
-                                <a href="/auth/loginas/{$user->id}" class="btn btn-default btn-xs"><i class="fa fa-sign-in"></i> Login As</a>
+                                <small>
+                                    {if($advert->live == 0)}
+                                        <a href="/manage/validity/advert/{$user->id}/1" class="btn btn-primary btn-xs"><i class="fa fa-check"></i></a>&nbsp;
+                                    {/if}
+                                    {else}
+                                        <a href="/manage/validity/advert/{$user->id}/0" class="btn btn-warning btn-xs"><i class="fa fa-ban"></i></a>&nbsp;
+                                    {/else}
+                                    <a href="/manage/delete/{$user->id}" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
+                                    <a href="/admin/update/advert/{$advert->id}" class="btn btn-info btn-xs"><i class="fa fa-edit"></i></a>
+                                    <a href="/admin/search.html?model=platform&amp;key=user_id&amp;sign=equal&amp;value={$user->id}" class="btn btn-default btn-xs"><i class="fa fa-tablet"></i> Platforms</a>
+                                    <a href="/finance/pending.html?user_id={$user->id}" class="btn btn-success btn-xs" target="_blank"><i class="fa fa-credit-card-alt"></i> Transactions</a>&nbsp;
+                                    <a href="/support/manageticket.html?property=user_id&amp;value={$user->id}" class="btn btn-primary btn-xs"><i class="fa fa-support"></i> Support</a>&nbsp;
+                                    <a href="/auth/loginas/{$user->id}" class="btn btn-default btn-xs"><i class="fa fa-sign-in"></i> Login As</a>
+                                </small>
                             </td>
                         </tr>
                         {/foreach}
