@@ -128,7 +128,8 @@ class Advertiser extends Analytics {
             $client = Shared\Services\GA::client($token);
             try {
                 Shared\Services\GA::update($client, $this->user, [
-                    'action' => 'update',
+                    'db' => 'mongo',
+                    'case' => 'countryWise',
                     'start' => array_shift($start),
                     'end' => date('Y-m-d', strtotime("-1 day"))
                 ]);

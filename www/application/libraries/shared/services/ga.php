@@ -134,74 +134,43 @@ class GA {
 		    $totalsForAllResults = $profile['totalsForAllResults'];
 		    unset($profile['totalsForAllResults']);
 
-		    if (isset($opts['returnResults'])) {
-		    	if (count($profile) < 1) continue;
-		    	$data = [
-		    		'source' => (string) $user->id,
-		    		'medium' => 'Clicks99',
-		    		'user_id' => (int) $user->id,
-		    		'website_id' => $website->id
-		    	];
-		    	foreach ($totalsForAllResults as $key => $value) {
-		    		$k = str_replace('ga:', '', $key);
-		    		$data[$k] = $value;
-		    	}
-		    	$results[] = $data;
-		    	continue;
-		    }
+		    switch ($opts['case']) {
+		    	case 'countryWise':
+		    		$r = GAData::countryWise($profile, $about, ['user' => $user, 'website' => $website]);
+		    		$results = array_merge($r, $results);
+		    		break;
 
-		    foreach ($profile as $key => $value) {
-		        $search = [
-		            'source' => $value[0],
-		            'medium' => $value[1],
-		            'user_id' => (int) $user->id,
-		            'website_id' => (int) $website->id,
-		            'countryIsoCode' => $value[2],
-		            'view-id' => $about['id']
-		        ];
-		        $data = self::fields($value);
-		        $newFields = array_merge($data, $search);
-
-		        $results[] = $newFields;
+		    	case 'total':
+		    		$results[] = GAData::total($profile, $totalsForAllResults, ['user' => $user, 'website' => $website]);
+		    		break;
+		    	
+		    	default:
+		    		$r = GAData::countryWise($profile, $about, ['user' => $user, 'website' => $website]);
+		    		$results = array_merge($r, $results);
+		    		break;
 		    }
 		}
-		self::_filterResults($results, $opts);
+		
+		if (isset($opts['db'])) {
+			self::_publisherWise($results, $opts);
+		}
 		return $results;
 	}
 
-	protected static function _filterResults($results, $opts) {
-		$users = [];
-		foreach ($results as $r) {
-			$key = $r['source']; $website = $r['website_id'];
-
-			if (array_key_exists($key, $users) && array_key_exists($website, $users[$key])) {
-				$d = array_merge($users[$key][$website], [$r]);
-			} else {
-				$d = [$r];
-			}
-
-			$users[$key][$website] = $d;
-		}
-
+	public static function _publisherWise($results, $opts) {
+		$users = GAData::publisherWise($results);
+		
 		foreach ($users as $id => $website) { // foreach user
 			foreach ($website as $_id => $data) { // foreach website
-				$d = new \stdClass(); // add the data for the website
-				$d->sessions = 0; $d->pageviews = 0; $d->newUsers = 0;
-				foreach ($data as $r) {
-					$d->views[] = $r['view-id'];
-					$d->sessions += $r['sessions'];
-					$d->pageviews += $r['pageviews'];
-					$d->newUsers += $r['newUsers'];
-				}
-				$d->views = array_unique($d->views);
-
-				// now search for the website record in mongodb
-				self::_update(['user' => (int) $id, 'website' => (int) $_id], (array) $d, $opts);
+				self::_update(['user' => (int) $id, 'website' => (int) $_id], $data, $opts);
 			}
 		}
+		return $users;
 	}
 
 	protected static function _update($search, $data, $opts) {
+		$db = (isset($opts['db'])) ? $opts['db'] : false;
+		if ($db !== 'mongo') return;
 		$ga_stats = Registry::get("MongoDB")->ga_stats;
 
 		$action = isset($opts['action']) ? $opts['action'] : "update";
@@ -212,14 +181,14 @@ class GA {
 			// check for duplicacy
 			if (date('Y-m-d', $record['created']->sec) == date('Y-m-d')) return;
 
-			$views = array_merge($data['views'], $r['views']);
+			$views = array_merge($data['views'], $record['views']);
 			$data['views'] = array_unique($views);
 			if ($action == "addition") {
-				$data['sessions'] += $r['sessions'];
-				$data['newUsers'] += $r['newUsers'];
-				$data['pageviews'] += $r['pageviews'];
+				$data['sessions'] += $record['sessions'];
+				$data['newUsers'] += $record['newUsers'];
+				$data['pageviews'] += $record['pageviews'];
 			}
-			$ga->update($search, ['$set' => $data]);
+			$ga_stats->update($search, ['$set' => $data]);
 		} else {
 			$ga_stats->insert(array_merge($search, $data));
 		}

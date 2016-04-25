@@ -283,6 +283,7 @@ class Analytics extends Manage {
 
     protected static function _records($users, $opts) {
         $results = [];
+
         foreach ($users as $key => $value) {
             $advert = Advert::first(["user_id = ?" => $key], ["gatoken"]);
             if (!$advert || !$advert->gatoken) continue;
@@ -290,6 +291,8 @@ class Analytics extends Manage {
 
             $client = Shared\Services\GA::client($advert->gatoken);
             $r = Shared\Services\GA::update($client, $user, $opts);
+
+            if (empty($r)) continue;
             $results = array_merge($r, $results);
         }
         return $results;   
@@ -300,29 +303,40 @@ class Analytics extends Manage {
      */
     public function publisher() {
         $this->seo(array("title" => "Platform GA Stats", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
+        $view = $this->getActionView(); $view->set("all_data", false);
         $user_id = RequestMethods::get("user");
+        $start = RequestMethods::get("startdate");
+        $end = RequestMethods::get("enddate");
 
         $result = []; $count = 0;
         $clicks = Registry::get("MongoDB")->clicks; $totalClicks = 0;
-        if ($user_id) {
-            $start = RequestMethods::get("startdate", date('Y-m-d', strtotime("-7 day")));
-            $end = RequestMethods::get("enddate", date('Y-m-d'));
-            
+        if ($start && $end) {            
             $opts = [
-                'start' => $start,
-                'end' => $end,
-                'filters' => 'ga:source=~'.$user_id,
-                'returnResults' => true
+                'start' => $start, 'end' => $end,
+                'case' => 'total'
             ];
 
-            $links = Link::all(["user_id = ?" => $user_id], ["DISTINCT item_id"]);
             $users = [];
-            foreach ($links as $l) {
-                $item = Item::first(["id = ?" => $l->item_id], ["user_id"]);
-                $users[$item->user_id] = $item->user_id;
+            if ($user_id) {
+                $opts['filters'] = 'ga:source=~'.$user_id;
+                $links = Link::all(["user_id = ?" => $user_id], ["DISTINCT item_id"]);
+                foreach ($links as $l) {
+                    $item = Item::first(["id = ?" => $l->item_id], ["user_id"]);
+                    $users[$item->user_id] = $item->user_id;
+                }
+                $records = $this->_records($users, $opts);   
+            } else {
+                $opts['case'] = 'countryWise';
+                $items = Advert::all(["live = ?" => true], ["DISTINCT user_id"]);
+                foreach ($items as $i) {
+                    $users[$i->user_id] = $i->user_id;
+                }
+                $records = $this->_records($users, $opts);
+                $publisherWise = Shared\Services\GAData::publisherWise($records);
+                $view->set("all_data", true)
+                    ->set("publishers", $publisherWise);
             }
-            $records = $this->_records($users, $opts);
+
             $start_time = strtotime($start); $end_time = strtotime($end);
             for ($i = 0; $start_time < $end_time; $i++) {
                 $start_time = strtotime($start . " +{$i} day");

@@ -251,28 +251,12 @@ class CRON extends Shared\Controller {
      * @param array $results
      */
     protected function _gaPublish($results) {
-        $users = [];
-        foreach ($results as $r) {
-            $key = $r['source']; unset($r['_id']);
-            if (array_key_exists($key, $users)) {
-                $d = array_merge($users[$key], [$r]);
-            } else {
-                $d = [$r];
-            }
-            $users[$key] = $d;
-        }
+        $users = Shared\Services\GAData::publisherBounceR($results);
 
         foreach ($users as $key => $value) {
             $publish = Publish::first(["user_id = ?" => $key]);
             if (!$publish) continue;
-
-            $bounceRate = 0.0; $c = 0;
-            foreach ($value as $v) {
-                $bounceRate += (float) $v['bounceRate'];
-                $c++;
-            }
-            if ($c == 0) $c = 1; // Error checking
-            $publish->bouncerate = $bounceRate / $c;
+            $publish->bouncerate = $value;
             $publish->save();
             $this->log("Updated publisher: ". $publish->user_id);
             usleep(1000);
@@ -296,8 +280,9 @@ class CRON extends Shared\Controller {
                 ]);
                 $opts = [
                     "start" => "2016-02-14",
-                    "end" => "2016-04-22",
-                    "action" => "addition"
+                    "end" => "2016-04-24",
+                    "case" => "countryWise",
+                    "db" => "mongo"
                 ];
                 $results = Shared\Services\GA::update($client, $user, $opts);
                 if (empty($results)) continue;
@@ -313,7 +298,7 @@ class CRON extends Shared\Controller {
                 if (!is_object($i)) continue;
                 $accounts[$i->user_id] = -($i->amount);
             }
-            $this->_account($accounts);
+            // $this->_account($accounts);
         } catch (\Exception $e) {
             $this->log("Google Analytics Cron Failed (Error: " . $e->getMessage(). " )");
         }

@@ -28,6 +28,9 @@
             <hr>
             <div class="panel panel-default">
                 <table class="table">
+                    {script $tpageviews = 0} {script $tsessions = 0}
+                    {script $tbounceRate = 0} {script $count = 0}
+                    {if !$all_data}
                     <thead>
                         <tr>
                             <th>Website</th>
@@ -38,9 +41,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {script $pageviews = 0} {script $sessions = 0}
-                        {script $bounceRate = 0} {script $count = 0} {script $websites = []}
+                        {script $websites = []}
                         {foreach $r in $records}
+                        {if !property_exists($r, 'website_id')} {script continue} {/if}
                         {script $website = Website::first(["id = ?" => $r->website_id], ["name", "url"])}
                         <tr>
                             {if array_key_exists($r->website_id, $websites)}
@@ -53,26 +56,50 @@
                             <td>{echo $r->sessions}</td>
                             <td>{echo $r->bounceRate}</td>
                             <td>{echo $r->pageviews}</td>
-                            {script $pageviews += (int) $r->pageviews}
-                            {script $sessions += (int) $r->sessions}
-                            {script $bounceRate += round($r->bounceRate)}
+                            {script $tpagaeviews += (int) $r->pageviews}
+                            {script $tsessions += (int) $r->sessions}
+                            {script $tbounceRate += round($r->bounceRate)}
                             {script $count++}
                         </tr>
                         {/foreach}
+                    {/if} {else}
+                    <thead>
                         <tr>
-                            <th></th>
+                            <th>Publisher</th>
+                            <th>Sessions</th>
+                            <th>Pageviews</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $users in $publishers}
+                        {script $sessions = 0} {script $pageviews = 0}
+                            {foreach $u in $users}
+                            {script $sessions += $u['sessions']} {script $pageviews += $u['pageviews']}
+                            {/foreach}
+                        <tr>
+                            <td>{echo $users_i}</td>
+                            <td>{echo $sessions}</td>
+                            <td>{echo $pageviews}</td>
+                        </tr>
+                        {script $tsessions += $sessions} {script $tpageviews += $pageviews}
+                        {/foreach}
+                    {/else}
+                        <tr>
                             <th>Platform Clicks</th>
                             <th>Total Sessions</th>
+                            {if !$all_data}
                             <th>Average BounceRate</th>
+                            {/if}
                             <th>Total PageViews</th>
                         </tr>
                         <tr>
-                            <td></td>
                             <td>{echo $totalClicks}</td>
-                            <td>{echo $sessions}</td>
+                            <td>{echo $tsessions}</td>
                             {if $count == 0} {script $count = 1} {/if}
-                            <td>{echo $bounceRate / $count}</td>
-                            <td>{echo $pageviews}</td>
+                            {if !$all_data}
+                            <td>{echo $tbounceRate / $count}</td>
+                            {/if}
+                            <td>{echo $tpageviews}</td>
                         </tr>
                     </tbody>
                 </table>
