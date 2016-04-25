@@ -7,6 +7,7 @@ use Framework\Registry as Registry;
 use Framework\ArrayMethods as ArrayMethods;
 
 class Website extends Shared\Model {
+
     /**
      * @column
      * @readwrite
@@ -41,6 +42,14 @@ class Website extends Shared\Model {
      * @label url
      */
     protected $_url;
+
+    /**
+     * @column
+     * @readwrite
+     * @type integer
+     * @index
+     */
+    protected $_advert_id;
 
     public function campaign() {
         $collection = Registry::get("MongoDB")->ga_stats;

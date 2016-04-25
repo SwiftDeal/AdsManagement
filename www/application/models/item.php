@@ -17,6 +17,22 @@ class Item extends Shared\Model {
     /**
      * @column
      * @readwrite
+     * @type integer
+     * @index
+     */
+    protected $_advert_id;
+
+    /**
+     * @column
+     * @readwrite
+     * @type integer
+     * @index
+     */
+    protected $_website_id;
+
+    /**
+     * @column
+     * @readwrite
      * @type text
      * @length 3
      * @index
