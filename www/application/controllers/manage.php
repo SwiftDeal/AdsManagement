@@ -138,9 +138,24 @@ class Manage extends Admin {
             $platform->delete();
         }
 
+        $access = Access::all(array("user_id = ?" => $user_id));
+        foreach ($access as $a) {
+            $a->delete();
+        }
+
         $account = Account::first(array("user_id = ?" => $user_id));
         if ($account) {
             $account->delete();
+        }
+
+        $advert = Advert::first(array("user_id = ?" => $user_id));
+        if ($advert) {
+            $advert->delete();
+        }
+
+        $publish = Publish::first(array("user_id = ?" => $user_id));
+        if ($publish) {
+            $publish->delete();
         }
 
         $transactions = Transaction::all(array("user_id = ?" => $user_id));

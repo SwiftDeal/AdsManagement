@@ -32,9 +32,19 @@ class Item extends Shared\Model {
      * @type text
      *
      * @validate required, min(3)
-     * @label target url
+     * @label url
      */
     protected $_url;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     *
+     * @validate required, min(3)
+     * @label target
+     */
+    protected $_target;
     
     /**
      * @column

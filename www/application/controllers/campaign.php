@@ -196,7 +196,7 @@ class Campaign extends Publisher {
             $where = array("{$property} = ?" => $value);
         }
 
-        $contents = Item::all($where, array("id", "title", "created", "image", "url", "live", "user_id"), "created", "desc", $limit, $page);
+        $contents = Item::all($where, array("id", "title", "modified", "image", "visibility", "url", "live", "user_id"), "modified", "desc", $limit, $page);
         $count = Item::count($where);
 
         $view->set("contents", $contents);

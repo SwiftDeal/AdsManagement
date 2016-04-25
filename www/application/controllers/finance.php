@@ -300,7 +300,7 @@ class Finance extends Admin {
 
         $database = Registry::get("database");
         $startdate = date('Y-m-d', strtotime("-6 day"));
-        $enddate = date('Y-m-d', strtotime("-1 day"));
+        $enddate = date('Y-m-d', strtotime("now"));
         $diff = date_diff(date_create($startdate), date_create($enddate));
         for ($i = 0; $i <= $diff->format("%a"); $i++) {
             $date = date('Y-m-d', strtotime($startdate . " +{$i} day"));
