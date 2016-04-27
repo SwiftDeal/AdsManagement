@@ -147,6 +147,7 @@ class Auth extends Controller {
             "password" => sha1($pass),
             "phone" => RequestMethods::post("phone"),
             "country" => $this->country(),
+            "currency" => "INR",
             "live" => 1
         ));
         if (RequestMethods::post("action") == "fblogin") {
@@ -174,6 +175,7 @@ class Auth extends Controller {
             "user_id" => $user->id,
             "bouncerate" => 0,
             "account" => "basic",
+            "balance" => 0,
             "live" => 1
         ));
         if ($publish->validate()) {
@@ -201,6 +203,7 @@ class Auth extends Controller {
             "password" => sha1($pass),
             "phone" => RequestMethods::post("phone"),
             "country" => $this->country(),
+            "currency" => "INR",
             "live" => 0
         ));
         if ($user->validate()) {
@@ -226,6 +229,7 @@ class Auth extends Controller {
             "account" => "basic",
             "cpc" => "",
             "gatoken" => "",
+            "balance" => 0,
             "live" => 0
         ));
         if ($advert->validate()) {

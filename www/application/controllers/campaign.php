@@ -82,7 +82,6 @@ class Campaign extends Publisher {
                 "description" => RequestMethods::post("description", ""),
                 "live" => 0
             ));
-            echo "<pre>", print_r($item), "</pre>";
             if ($item->validate()) {
                 $item->save();
                 $rpm = new RPM(array(
