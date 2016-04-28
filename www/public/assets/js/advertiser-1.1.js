@@ -277,8 +277,8 @@ function campaigns() {
         action: "analytics/campaign/" + today(),
         callback: function(data) {
             $('#today_click').html(data.stats.click);
-            $('#today_rpm').html('<i class="fa fa-inr"></i> '+ data.stats.rpm);
-            $('#today_earning').html('<i class="fa fa-inr"></i> '+ data.stats.earning);
+            $('#today_cpc').html(data.stats.cpc);
+            $('#today_spent').html(data.stats.spent);
 
             var gdpData = data.stats.analytics;
             $('#world-map').vectorMap({
@@ -300,6 +300,31 @@ function campaigns() {
             });
         }
     });
+
+    //finance stats
+    $('#finstats').html('<p class="text-center"><i class="fa fa-spinner fa-spin fa-5x"></i></p>');
+    request.read({
+        action: "finance/stats/1",
+        callback: function (data) {
+            $('#finstats').html('');
+            if (data.data) {
+                Morris.Bar({
+                    element: 'finstats',
+                    data: toArray(data.data),
+                    xkey: 'y',
+                    ykeys: ['a'],
+                    labels: ['Total']
+                });
+            }
+        }
+    });
+}
+
+function toArray(object) {
+    var array = $.map(object, function (value, index) {
+        return [value];
+    });
+    return array;
 }
 
 //Google Analytics

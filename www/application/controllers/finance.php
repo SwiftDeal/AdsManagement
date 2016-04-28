@@ -294,7 +294,7 @@ class Finance extends Admin {
         $view->set("payout", $payout);
     }
 
-    public function stats() {
+    public function stats($live=0) {
         $this->JSONview();
         $view = $this->getActionView();
 
@@ -304,8 +304,8 @@ class Finance extends Admin {
         $diff = date_diff(date_create($startdate), date_create($enddate));
         for ($i = 0; $i <= $diff->format("%a"); $i++) {
             $date = date('Y-m-d', strtotime($startdate . " +{$i} day"));
-            $earn = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 0)->where("created LIKE ?", "%{$date}%")->all();
-            $obj[] = array('y' => $date, 'a' => $this->user->convert(round($earn[0]["earn"], 2), false));
+            $earn = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", $live)->where("created LIKE ?", "%{$date}%")->all();
+            $obj[] = array('y' => $date, 'a' => $this->user->convert(abs(round($earn[0]["earn"], 2)), false));
         }
         $view->set("data", \Framework\ArrayMethods::toObject($obj));
     }

@@ -79,13 +79,7 @@ class Google extends Manage {
 				$properties = $i->getWebProperties(); // properties
 				foreach ($properties as $prop) {
 					$d = $this->_data($analytics, $prop->getProfiles(), $opts);
-					$results[$key][] = [
-						'id' => $prop->getId(),
-						'name' => $prop->getName(),
-						'level' => $prop->getLevel(),
-						'website' => $prop->getWebsiteUrl(),
-						'profiles' => $d // views
-					];
+					$results[$key][] = array_merge(['id' => $prop->getId()], ['name' => $prop->getName()], ['website' => $prop->getWebsiteUrl()], $d);
 				}
 			}
 			return $results;
@@ -114,12 +108,12 @@ class Google extends Manage {
 			$columns = $this->_columnHeaders($d);
 			$about = $this->_profile($p);
 			$rows = (is_array($d->getRows())) ? $d->getRows() : [];
-			$results[$p->getId()] = array_merge(['about' => $about], $columns, ['totalsForAllResults' => $d->getTotalsForAllResults()], $rows);
+			$results[$p->getId()] = array_merge(['about' => $about], $columns, ['totalsForAllResults' => $d->getTotalsForAllResults()], ['rows' => $rows]);
 		}
 		return $results;
 	}
 
-	protected static function _profile($profile) {
+	protected function _profile($profile) {
 		return [
 			'kind' => $profile->getKind(),
 			'id' => $profile->getId(),
@@ -128,7 +122,7 @@ class Google extends Manage {
 		];
 	}
 
-	protected static function _columnHeaders($data) {
+	protected function _columnHeaders($data) {
 		$headers = $data->getColumnHeaders();
 		$results = [];
 		foreach ($headers as $h) {
@@ -136,3 +130,4 @@ class Google extends Manage {
 		}
 		return ['columns' => $results];
 	}
+}

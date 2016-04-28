@@ -237,8 +237,8 @@ class Analytics extends Manage {
         if ($total_click > 0) {
             $return = array(
                 "click" => round($total_click),
-                "cpc" => round($spent*1000/$total_click, 2),
-                "spent" => round($spent, 2),
+                "cpc" => $this->user->convert(round($spent*1000/$total_click, 2)),
+                "spent" => $this->user->convert(round($spent, 2)),
                 "analytics" => $analytics
             );
         }
