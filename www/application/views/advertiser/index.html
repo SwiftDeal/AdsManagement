@@ -2,13 +2,55 @@
 <link rel="stylesheet" href="/public/assets/css/jquery-jvectormap-2.0.3.css" type="text/css" media="screen" />
 <div class="row no-margin-bottom">
     <div class="col-sm-6 col-xs-12">
-        <div class="card primary">
-            <div class="card-jumbotron no-padding">
-                <div class="text-center" id="world-map" style="max-width: 1200px; height: 270px"></div>
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="card primary">
+                    <div class="card-jumbotron no-padding">
+                        <div class="text-center" id="world-map" style="max-width: 1200px; height: 270px"></div>
+                    </div>
+                    <div class="card-body half-padding">
+                        <h4 class="float-left no-margin font-weight-300">Visitors</h4>
+                        <div class="clear-both"></div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body half-padding">
-                <h4 class="float-left no-margin font-weight-300">Visitors</h4>
-                <div class="clear-both"></div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="card card-success">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <div class="title">
+                                <i class="fa fa-bullhorn"></i> Active Campaigns
+                            </div>
+                        </div>
+                        <div class="pull-right card-action">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <a href="/campaign/manage.html" class="btn btn-success">View all campaigns <i class="fa fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+                        <div class="clear-both"></div>
+                    </div>
+                    <div class="card-body no-padding">
+                        <table class="table table-responsive">
+                            <tr>
+                                <th>Campaign</th>
+                                <th>Realtime</th>
+                            </tr>
+                            {foreach $item in $items}
+                            <tr>
+                                <td>
+                                    <a href="/public/assets/uploads/images/{$item->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}/50/50"> {echo $item->title}</a><br>
+                                    <small>{echo Framework\StringMethods::datetime_to_text($item->created)}</small>
+                                </td>
+                                <td class="campaignstat" data-campaign="{echo $item->id}">
+                                    <span class="label label-success">View</span>
+                                </td>
+                            </tr>
+                            {/foreach}
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -57,44 +99,6 @@
                         <div id="finstats"></div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-12">
-        <div class="card card-success">
-            <div class="card-header">
-                <div class="card-title">
-                    <div class="title">
-                        <i class="fa fa-bullhorn"></i> Active Campaigns
-                    </div>
-                </div>
-                <div class="clear-both"></div>
-            </div>
-            <div class="card-body no-padding">
-                <table class="table table-responsive">
-                    <tr>
-                        <th>Id</th>
-                        <th>Campaign</th>
-                        <th>Realtime</th>
-                    </tr>
-                    {foreach $item in $items}
-                    <tr>
-                        <td>{echo $item->id}</td>
-                        <td>
-                            <a href="/public/assets/uploads/images/{$item->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}/50/50">{echo $item->title}</a><br>
-                            <small>{echo Framework\StringMethods::datetime_to_text($item->created)}</small>
-                        </td>
-                        <td class="campaignstat" data-campaign="{echo $item->id}">
-                            <span class="label label-success">View</span>
-                        </td>
-                    </tr>
-                    {/foreach}
-                </table>
-                <p class="pull-right">
-                    <a href="/campaign/manage.html">View all campaigns</a>
-                </p>
             </div>
         </div>
     </div>

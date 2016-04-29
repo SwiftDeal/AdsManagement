@@ -65,6 +65,11 @@ class Campaign extends Publisher {
             return;
         }
         if (RequestMethods::post("action") == "content") {
+            $exist = Item::first(array("url = ?" => RequestMethods::post("url")), array("id"));
+            if ($exist) {
+                $view->set("message", "Campaign already exist you can edit it from <a href='/campaign/update/{$exist->id}.html'>here</a>");
+                return;
+            }
             if (RequestMethods::post("image_url")) {
                 $image = $this->urls3upload(RequestMethods::post("image_url"));
             } else {
@@ -72,8 +77,11 @@ class Campaign extends Publisher {
             }
             $item = new Item(array(
                 "user_id" => $this->user->id,
+                "advert_id" => $this->advert->id,
+                "website_id" => "0",
                 "model" => "cpc",
                 "url" =>  RequestMethods::post("url"),
+                "target" =>  RequestMethods::post("url"),
                 "title" => RequestMethods::post("title"),
                 "image" => $image,
                 "budget" => RequestMethods::post("budget", 2500),
