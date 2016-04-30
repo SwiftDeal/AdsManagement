@@ -81,7 +81,8 @@ class Publisher extends Advertiser {
             $longURL = RequestMethods::get("domain", $domains[$k]) . '/' . base64_encode($link->id);
         }
 
-        $link->short = $this->_bitly($longURL);
+        //$link->short = $this->_bitly($longURL);
+        $link->short = $longURL;
         $link->save();
 
         $view->set("shortURL", $link->short);

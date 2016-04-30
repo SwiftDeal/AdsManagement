@@ -9,27 +9,6 @@ use Framework\ArrayMethods as ArrayMethods;
 use \Curl\Curl;
 
 class Analytics extends Manage {
-    
-    /**
-     * @before _secure, changeLayout, _admin
-     */
-    public function googl() {
-        //$this->JSONview();
-        $this->noview();
-        $view = $this->getActionView();
-        
-        if (RequestMethods::get("link")) {
-            $link_id = RequestMethods::get("link");
-            $link = Link::first(array("id = ?" => $link_id), array("id", "short", "item_id", "user_id"));
-            if ($link->googl()) {
-                $googl = Registry::get("googl");
-                $object = $googl->analyticsFull($link->short);
-                $view->set("googl", $object);
-                echo "<pre>", print_r($object), "</pre>";
-            }
-            $view->set("link", $link);
-        }
-    }
 
     /**
      * @before _secure, changeLayout, _admin

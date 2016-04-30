@@ -32,9 +32,9 @@ class Google extends Manage {
             foreach ($accounts as $properties) {
                 foreach ($properties as $p) {
                     echo "<pre>", print_r($p), "</pre>";
+                    echo "end<hr>";
                 }
             }
-            echo "<hr>";
             break;
         }
     }

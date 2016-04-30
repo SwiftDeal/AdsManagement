@@ -119,7 +119,7 @@ class Admin extends Auth {
             }
 
             $array_values = array_values($item);
-            fputcsv($output, $array_values);            
+            fputcsv($output, $array_values);
         }
     }
 
