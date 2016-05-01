@@ -31,12 +31,45 @@ class Google extends Manage {
             $results = [];
             foreach ($accounts as $properties) {
                 foreach ($properties as $p) {
+                	$this->_insights($p, $a);
                     echo "<pre>", print_r($p), "</pre>";
                     echo "end<hr>";
                 }
             }
             break;
         }
+    }
+
+    protected function _insights($p, $advert) {
+    	if ($p[0]["totalsForAllResults"]["ga:sessions"] > 1) {
+    		switch ($p[0]["about"]["type"]) {
+    			case 'WEB':
+    				$website = Website::first(array("url = ?" => $p["website"]));
+			    	if (!$website) {
+			    		$website = new Website(array(
+			    			"name" => $p["name"],
+			    			"gaid" => $p[0]["about"]["id"],
+			    			"url" => $p["website"],
+			    			"advert_id" => $advert->id
+			    		));
+			    		$website->save();
+			    	}
+			    	$gainsight = new GAInsight(array(
+			    		"user_id" => $advert->user_id,
+			    		"advert_id" => $advert->id,
+			    		"website_id" => $website->id,
+			    		"sessions" => $p[0]["totalsForAllResults"]["ga:sessions"],
+			    		"pageviews" => ,
+			    		"amount" => ,
+			    		"cpc" => ,
+			    		"bouncerate" => 
+			    	));
+			    	$gainsight->save();
+    				break;
+    			case 'APP':
+    				break;
+    		}
+    	}
     }
 
    	protected function client($token, $type = 'offline') {

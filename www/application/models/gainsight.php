@@ -3,7 +3,7 @@
 /**
  * @author Faizan Ayubi
  */
-class Insight extends Shared\Model {
+class GAInsight extends Shared\Model {
 
     /**
      * @column
@@ -28,13 +28,27 @@ class Insight extends Shared\Model {
      * @index
      */
     protected $_website_id;
+
+    /**
+     * @column
+     * @readwrite
+     * @type integer
+     */
+    protected $_clicks;
     
     /**
      * @column
      * @readwrite
      * @type integer
      */
-    protected $_click;
+    protected $_sessions;
+
+    /**
+     * @column
+     * @readwrite
+     * @type integer
+     */
+    protected $_pageviews;
 
     /**
      * @column
@@ -55,7 +69,8 @@ class Insight extends Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type date
+     * @type decimal
+     * @length 10,2
      */
-    protected $_created;
+    protected $_bouncerate;
 }
