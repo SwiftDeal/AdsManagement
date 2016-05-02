@@ -175,7 +175,9 @@ class Analytics extends Manage {
         $view = $this->getActionView();
         $total_click = 0;$spent = 0;$analytics = array();$query = array();$i = array();
         $return = array("click" => 0, "cpc" => 0, "spent" => 0, "analytics" => array());
-
+        
+        $advert = Advert::first(["user_id = ?" => $this->user->id], ["cpc"]);
+        $cpc = json_decode($advert->cpc, true);
         if ($this->validateDate($created)) {
             $query['created'] = $created;
         }
@@ -191,13 +193,10 @@ class Analytics extends Manage {
         }
         
         $collection = Registry::get("MongoDB")->clicks;
-
         $cursor = $collection->find($query);
         foreach ($cursor as $result) {
             $u = User::first(array("id = ?" => $result["user_id"], "live = ?" => true), array("id"));
             if ($u) {
-                $cpcs = CPC::first(array("item_id = ?" => $result["item_id"]), array("value"));
-                $cpc = json_decode($cpcs->value, true);
                 $code = $result["country"];
                 $total_click += $result["click"];
                 if (array_key_exists($code, $cpc)) {

@@ -196,7 +196,7 @@ $(document).ready(function() {
         request.read({
             action: "analytics/campaign/0/" + campaign,
             callback: function(data) {
-                item.html('RPM : <i class="fa fa-inr"></i> '+ data.stats.cpc +', Sessions : '+ data.stats.click +', Spent : <i class="fa fa-inr"></i> '+ data.stats.spent);
+                item.html('CPC : '+ data.stats.cpc +', Sessions : '+ data.stats.click +', Spent : '+ data.stats.spent);
             }
         });
     });

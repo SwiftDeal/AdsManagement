@@ -31,9 +31,8 @@ class Google extends Manage {
             $results = [];
             foreach ($accounts as $properties) {
                 foreach ($properties as $p) {
-                	$this->_insights($p, $a);
-                    echo "<pre>", print_r($p), "</pre>";
-                    echo "end<hr>";
+                	//$this->_insights($p, $a);
+                    sleep(10);
                 }
             }
             break;
@@ -54,15 +53,17 @@ class Google extends Manage {
 			    		));
 			    		$website->save();
 			    	}
+			    	$data = $website->analytics();
 			    	$gainsight = new GAInsight(array(
 			    		"user_id" => $advert->user_id,
 			    		"advert_id" => $advert->id,
 			    		"website_id" => $website->id,
+			    		"clicks" => $data["click"],
 			    		"sessions" => $p[0]["totalsForAllResults"]["ga:sessions"],
-			    		"pageviews" => ,
-			    		"amount" => ,
-			    		"cpc" => ,
-			    		"bouncerate" => 
+			    		"pageviews" => $p[0]["totalsForAllResults"]["ga:pageviews"],
+			    		"amount" => $data["spent"],
+			    		"cpc" => $data["cpc"],
+			    		"bouncerate" => $p[0]["totalsForAllResults"]["ga:bounceRate"]
 			    	));
 			    	$gainsight->save();
     				break;

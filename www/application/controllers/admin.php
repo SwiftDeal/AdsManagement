@@ -1,8 +1,6 @@
 <?php
 
 /**
- * Description of admin
- *
  * @author Faizan Ayubi
  */
 use Framework\RequestMethods as RequestMethods;
