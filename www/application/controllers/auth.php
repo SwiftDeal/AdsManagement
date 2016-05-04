@@ -315,45 +315,4 @@ class Auth extends Controller {
         $record = $reader->country(Shared\Markup::get_client_ip());
         return $record->country->isoCode;
     }
-
-    public function contact() {
-        $this->seo(array("title" => "Contact Us", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-        if ($this->user) {
-            $this->redirect("/support/tickets.html");
-        }
-
-        if (RequestMethods::post("message")) {
-            $email = RequestMethods::post("email");
-            $user = User::first(array("email = ?" => $email), array("id"));
-            if (!isset($user)) {
-                $name = RequestMethods::post("name");
-                $user = new User(array(
-                    "username" => $name,
-                    "name" => $name,
-                    "email" => $email,
-                    "password" => sha1($this->randomPassword()),
-                    "phone" => "",
-                    "admin" => 0,
-                    "live" => 0
-                ));
-                $user->save();
-            }
-            $ticket = new Ticket(array(
-                "user_id" => $user->id,
-                "subject" => RequestMethods::post("subject"),
-                "type" => "contact",
-                "live" => true
-            ));
-            $ticket->save();
-            $conversation = new Conversation(array(
-                "user_id" => $user->id,
-                "ticket_id" => $ticket->id,
-                "message" => RequestMethods::post("message"),
-                "file" => "",
-            ));
-            $conversation->save();
-            $view->set("message", "Submitted Successfully");
-        }
-    }
 }

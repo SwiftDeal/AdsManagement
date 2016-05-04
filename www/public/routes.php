@@ -45,7 +45,7 @@ $routes = array(
     ),
     array(
         "pattern" => "contact",
-        "controller" => "auth",
+        "controller" => "home",
         "action" => "contact"
     ),
     array(
