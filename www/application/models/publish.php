@@ -27,12 +27,12 @@ class Publish extends Shared\Model {
     * @column
     * @readwrite
     * @type text
-    * @length 32
+    * @length 255
     *
-    * @validate required, alpha, min(3), max(32)
-    * @label account
+    * @validate required, min(3), max(32)
+    * @label rpm
     */
-    protected $_account = "basic";
+    protected $_rpm;
 
     /**
      * @column

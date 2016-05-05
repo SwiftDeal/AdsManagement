@@ -12,10 +12,10 @@ class Campaign extends Publisher {
 
     protected $rpm = array(
         "IN" => 140,
-        "US" => 200,
-        "CA" => 200,
-        "AU" => 200,
-        "GB" => 200,
+        "US" => 140,
+        "CA" => 140,
+        "AU" => 140,
+        "GB" => 140,
         "NONE" => 80
     );
 

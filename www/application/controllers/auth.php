@@ -171,10 +171,12 @@ class Auth extends Controller {
             return $platform->getErrors();
         }
 
+        $rpm = Meta::first(array("property = ?" => "rpm"));
+
         $publish = new Publish(array(
             "user_id" => $user->id,
             "bouncerate" => 0,
-            "account" => "basic",
+            "rpm" => $rpm->value,
             "balance" => 0,
             "live" => 1
         ));

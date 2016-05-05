@@ -23,7 +23,7 @@ class Google extends Manage {
             $client = $this->client($a->gatoken);
             $opts = [
                 "start" => "2016-02-14",
-                "end" => "2016-04-25",
+                "end" => "2016-05-4",
                 "case" => "countryWise"
             ];
 
