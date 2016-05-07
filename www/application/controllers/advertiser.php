@@ -49,12 +49,10 @@ class Advertiser extends Analytics {
         $database = Registry::get("database");
         $paid = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 1)->all();
         $earn = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 0)->all();
-        $account = Account::first(array("user_id = ?" => $this->user->id), array("balance"));
 
         $items = Item::all(array("user_id = ?" => $this->user->id), array("id", "title", "created", "image", "url", "live", "visibility"), "created", "desc", 4, 1);
         
         $view->set("items", $items);
-        $view->set("account", $account);
         $view->set("paid", round($paid[0]["earn"], 2));
         $view->set("earn", round($earn[0]["earn"], 2));
     }

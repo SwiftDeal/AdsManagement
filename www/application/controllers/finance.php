@@ -13,32 +13,29 @@ use Snappy\Pdf;
 class Finance extends Admin {
 
     /**
-     * All earnings records of persons
-     * 1 - paid, 0 - unpaid
+     * All requested payouts records of persons
      * 
      * @before _secure, changeLayout, _admin
      */
-    public function pending() {
-        $this->seo(array("title" => "Records Finance", "view" => $this->getLayoutView()));
+    public function payouts() {
+        $this->seo(array("title" => "Payouts Finance", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-        $database = Registry::get("database");$where = array();$today = date('Y-m-d', strtotime("now"));
-        $live = RequestMethods::get("live", 0);
+        $today = strftime("%Y-%m-%d", strtotime('now'));
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
-        $user_id = RequestMethods::get("user_id");
-        if ($user_id) {
-            $where = array("user_id = ?" => RequestMethods::get("user_id"));
-        }
+        $property = RequestMethods::get("property", "live");
+        $value = RequestMethods::get("value", 0);
+        $where = array("{$property} = ?" => $value);
         
-        $accounts = Account::all($where, array("user_id", "balance"), "balance", "desc", $limit, $page);
+        $payouts = Payout::all($where, ["*"], "created", "asc", $limit, $page);
         
-        $view->set("accounts", $accounts);
-        $view->set("count", Account::count($where));
+        $view->set("payouts", $payouts);
+        $view->set("count", Payout::count($where));
         $view->set("page", $page);
         $view->set("limit", $limit);
-        $view->set("live", $live);
-        $view->set("user_id", $user_id);
         $view->set("today", $today);
+        $view->set("property", $property);
+        $view->set("value", $value);
     }
 
     /**
@@ -48,14 +45,9 @@ class Finance extends Admin {
         $this->seo(array("title" => "Make Payment", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         $payee = User::first(array("id = ?" => $user_id), array("id", "name", "email", "phone"));
-        $account = Account::first(array("user_id = ?" => $user_id));
-        if (!$account) {
-            $account = new Account(array(
-                "user_id" => $user_id,
-                "balance" => 0,
-                "live" => 1
-            ));
-            $account->save();
+        $publisher = Publish::first(array("user_id = ?" => $user_id));
+        if (!$publisher) {
+            die('Not a valid account');
         }
         $bank = Bank::first(array("user_id = ?" => $user_id), array("*"), "created", "desc");
         $paypal = Paypal::first(array("user_id = ?" => $user_id), array("*"), "created", "desc");
@@ -70,7 +62,7 @@ class Finance extends Admin {
                         "ref" => RequestMethods::post("ref"),
                         "live" => 0
                     ));
-                    $account->balance += RequestMethods::post("amount");
+                    $publisher->balance += RequestMethods::post("amount");
                     $this->notify(array(
                         "template" => "accountCredited",
                         "subject" => "Payment Received",
@@ -86,7 +78,7 @@ class Finance extends Admin {
                         "ref" => RequestMethods::post("ref"),
                         "live" => 1
                     ));
-                    $account->balance -= RequestMethods::post("amount");
+                    $publisher->balance -= RequestMethods::post("amount");
                     $this->notify(array(
                         "template" => "accountDebited",
                         "subject" => "Payments From Clicks99 Team",
@@ -102,7 +94,7 @@ class Finance extends Admin {
                         "ref" => RequestMethods::post("ref"),
                         "live" => 1
                     ));
-                    $account->balance -= RequestMethods::post("amount");
+                    $publisher->balance -= RequestMethods::post("amount");
                     $this->notify(array(
                         "template" => "accountDeducted",
                         "subject" => "Amount Deducted From Clicks99 Account",
@@ -112,13 +104,13 @@ class Finance extends Admin {
                     break;
             }
             $transaction->save();
-            $account->save();
+            $publisher->save();
 
             $this->redirect("/finance/transactions.html?property=user_id&value={$payee->id}");
         }
 
         $view->set("payee", $payee);
-        $view->set("account", $account);
+        $view->set("publisher", $publisher);
         $view->set("bank", $bank);
         $view->set("paytm", $paytm);
         $view->set("paypal", $paypal);
@@ -251,18 +243,10 @@ class Finance extends Admin {
                 ));
                 $transaction->save();
 
-                $account = Account::first(array("user_id = ?" => $user_id));
-                if (!$account) {
-                    $account = new Account(array(
-                        "user_id" => $instamojo->user_id,
-                        "balance" => 0,
-                        "live" => 1
-                    ));
-                    $account->save();
-                }
+                $advertiser = Advert::first(array("user_id = ?" => $user_id));
 
-                $account->balance += $instamojo->amount;
-                $account->save();
+                $advertiser->balance += $instamojo->amount;
+                $advertiser->save();
 
                 $this->notify(array(
                     "template" => "accountCredited",

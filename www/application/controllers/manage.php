@@ -20,7 +20,7 @@ class Manage extends Admin {
         $value = RequestMethods::get("value", 0);
 
         $where = array("{$property} = ?" => $value);
-        $publishers = Publish::all($where, array("id","user_id", "modified", "live"), "created", "desc", $limit, $page);
+        $publishers = Publish::all($where, array("id","user_id", "modified", "live", "balance"), "created", "desc", $limit, $page);
         $count = Publish::count($where);
 
         $view->set("publishers", $publishers);
@@ -44,7 +44,7 @@ class Manage extends Admin {
         $value = RequestMethods::get("value", 0);
 
         $where = array("{$property} = ?" => $value);
-        $advertisers = Advert::all($where, array("id","user_id", "modified", "live"), "created", "desc", $limit, $page);
+        $advertisers = Advert::all($where, array("id","user_id", "modified", "live", "balance"), "created", "desc", $limit, $page);
         $count = Advert::count($where);
 
         $view->set("advertisers", $advertisers);
@@ -141,11 +141,6 @@ class Manage extends Admin {
         $access = Access::all(array("user_id = ?" => $user_id));
         foreach ($access as $a) {
             $a->delete();
-        }
-
-        $account = Account::first(array("user_id = ?" => $user_id));
-        if ($account) {
-            $account->delete();
         }
 
         $advert = Advert::first(array("user_id = ?" => $user_id));

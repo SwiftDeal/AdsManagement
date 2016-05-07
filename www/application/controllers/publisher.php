@@ -20,13 +20,10 @@ class Publisher extends Advertiser {
     public function index() {
         $this->seo(array("title" => "Dashboard", "description" => "Stats for your Data", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-        $news = Meta::first(array("property = ?" => "news", "live = ?" => 1));
-        $yesterday = strftime("%Y-%m-%d", strtotime('-1 day'));
         
         $database = Registry::get("database");
         $paid = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 1)->all();
         $earn = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 0)->all();
-        $account = Account::first(array("user_id = ?" => $this->user->id), array("balance"));
         $ticket = Ticket::first(array("user_id = ?" => $this->user->id, "live = ?" => 1), array("subject", "id"), "created", "desc");
         $links = Link::all(array("user_id = ?" => $this->user->id, "live = ?" => true), array("id", "item_id", "short"), "created", "desc", 6, 1);
         
@@ -36,10 +33,8 @@ class Publisher extends Advertiser {
         $view->set("paid", abs(round($paid[0]["earn"], 2)));
         $view->set("earn", round($earn[0]["earn"], 2));
         $view->set("links", $links);
-        $view->set("news", $news);
-        $view->set("account", $account);
         $view->set("ticket", $ticket)
-            ->set("payout", Payout::first(array("user_id = ?" => $this->user->id, "live = ?" => true)))
+            ->set("payout", Payout::first(array("user_id = ?" => $this->user->id, "live = ?" => 0)))
             ->set("fb", RequestMethods::get("fb", false));
     }
     
@@ -133,7 +128,6 @@ class Publisher extends Advertiser {
     public function profile() {
         $this->seo(array("title" => "Profile", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-        $account = Account::first(array("user_id = ?" => $this->user->id));
 
         switch (RequestMethods::post("action")) {
             case 'saveUser':
@@ -198,7 +192,6 @@ class Publisher extends Advertiser {
         $paypals = Paypal::all(array("user_id = ?" => $this->user->id), array("email"));
         $paytms = Paytm::all(array("user_id = ?" => $this->user->id), array("phone"));
         
-        $view->set("account", $account);
         $view->set("banks", $banks);
         $view->set("paypals", $paypals);
         $view->set("paytms", $paytms);

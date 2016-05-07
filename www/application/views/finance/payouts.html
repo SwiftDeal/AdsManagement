@@ -1,13 +1,21 @@
 <div id="page-wrapper">
     <div class="row col-lg-12">
-        <h3 class="page-header text-center">Finance Records</h3>
+        <h3 class="page-header text-center">Payouts Requested</h3>
         <form class="form-inline text-center" role="form" method="get" action="">
             <div class="form-group">
                 <div class="input-group">
-                    <input type="text" style="width: 150px" name="user_id" class="form-control" placeholder="Enter User Id" value="{$user_id}" />
+                    <select name="property" class="form-control" value="{$property}">
+                        <option value="user_id">UserId</option>
+                        <option value="live">Live</option>
+                    </select>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Find</button>
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="text" name="value" class="form-control" placeholder="Enter value" value="{$value}" />
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
         </form>
         <hr>
         <div class="panel panel-default">
@@ -18,14 +26,13 @@
                         <th>Name</th>
                         <th>Balance</th>
                         <th>Total</th>
-                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                {foreach $account in $accounts}
-                    {script $u = User::first(array("id = ?" => $account->user_id), array("name", "id", "live"))}
-                    {script $payout = Payout::first(array("user_id = ?" => $u->id))}
+                {foreach $payout in $payouts}
+                    {script $u = User::first(array("id = ?" => $payout->user_id), array("name", "id", "live"))}
+                    {script $p = Publish::first(array("user_id = ?" => $payout->user_id), array("balance", "id", "live"))}
                     <tr>
                         <td>
                             {if($u->live)}
@@ -35,13 +42,8 @@
                             {/else}
                         </td>
                         <td><a href="/admin/info/user/{$u->id}">{echo $u->name}</a></td>
-                        <td>{echo $user->convert($account->balance)}</td>
-                        <td>{echo $user->convert($account->total())}</td>
-                        <td>
-                            {if($payout)}
-                            <small class="label label-success">Payout Requested</small>
-                            {/if}
-                        </td>
+                        <td>{echo $user->convert($p->balance)}</td>
+                        <td></td>
                         <td>
                             <a href="/finance/transactions.html?property=user_id&value={$u->id}" class="btn btn-primary btn-xs" target="_blank"><i class="fa fa-bank"></i> Transaction </a>
                             <a href="/finance/makepayment/{$u->id}" class="btn btn-warning btn-xs"><i class="fa fa-inr"></i> Make Payment </a>&nbsp;

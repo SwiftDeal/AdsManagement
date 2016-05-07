@@ -144,17 +144,12 @@ class CRON extends Shared\Controller {
 
     protected function _account($accounts, $ref="linkstracking") {
         foreach ($accounts as $key => $value) {
-            $account = Account::first(array("user_id = ?" => $key));
-            if (!$account) {
-                $account = new Account(array(
-                    "user_id" => $key,
-                    "balance" => $value,
-                    "live" => 1
-                ));
-                $account->save();
+            $publish = Publish::first(array("user_id = ?" => $key));
+            if ($publish) {
+                $publish->balance += $value;
+                $publish->save();
             } else {
-                $account->balance += $value;
-                $account->save();
+                $this->log("Error: Publisher not found for user - ".$key);
             }
             $transaction = new Transaction(array(
                 "user_id" => $key,

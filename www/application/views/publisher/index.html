@@ -26,13 +26,13 @@
                         <li class="list-group-item">Links Tracked <span class="badge">{echo Shared\Markup::nice_number(Stat::count(array("user_id = ?" => $user->id)))}</span></li>
                         <li class="list-group-item">Platforms Added <span class="badge">{echo Shared\Markup::nice_number(Platform::count(array("user_id = ?" => $user->id)))}</span></li>
                         <li class="list-group-item list-group-item-info text-center"><b><i class="fa fa-money"></i> Finace</b>
-                            {if($account->balance > 999 && !$payout)}
+                            {if($publish->balance > 1499 && !$payout)}
                             <button class="btn btn-xs badge" id="payout" data-toggle="tooltip" data-placement="top" title="Transfer to Bank"><i class="fa fa-bank"></i> Request Payout</button>
                             {/if}
                         </li>
                         <li class="list-group-item">Total <span class="badge"> {echo $user->convert($earn)}</span></li>
                         <li class="list-group-item">Paid <span class="badge"> {echo $user->convert($paid)}</span></li>
-                        <li class="list-group-item">Balance <span class="badge"> {echo $user->convert($account->balance)}</span></li>
+                        <li class="list-group-item">Balance <span class="badge"> {echo $user->convert($publish->balance)}</span></li>
                     </ul>
                 </div>
             </div>

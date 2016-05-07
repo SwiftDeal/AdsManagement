@@ -26,6 +26,7 @@
                             <th>Id</th>
                             <th>Name</th>
                             <th>Modified</th>
+                            <th>Balance</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -42,6 +43,7 @@
                             </td>
                             <td><a href="/admin/update/user/{$user->id}">{echo $user->name}</a></td>
                             <td><small>{echo Framework\StringMethods::datetime_to_text($user->modified)}</small></td>
+                            <td>{echo $user->convert($advert->balance)}</td>
                             <td>
                                 <small>
                                     {if($advert->live == 0)}
