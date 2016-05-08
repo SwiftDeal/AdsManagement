@@ -79,6 +79,41 @@ class Manage extends Admin {
     /**
      * @before _secure, changeLayout, _admin
      */
+    public function rates() {
+        $this->seo(array("title" => "Rates", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+
+        $rpm = Meta::first(["property = ?" => "rpm"]);
+        $r = json_decode($rpm->value);
+        foreach ($r as $key => $value) {
+            $rpms[] = array("country" => $key,"charge" => $value);
+        }
+
+        $cpc = Meta::first(["property = ?" => "cpc"]);
+        $c = json_decode($cpc->value);
+        foreach ($c as $key => $value) {
+            $cpcs[] = array("country" => $key,"charge" => $value);
+        }
+
+        switch (RequestMethods::post("action")) {
+            case 'rpm':
+                $rpm->value = json_encode(RequestMethods::post("rpm"));
+                $rpm->save();
+                break;
+            
+            case 'cpc':
+                $cpc->value = json_encode(RequestMethods::post("cpc"));
+                $cpc->save();
+                break;
+        }
+
+        $view->set("rpms", $rpms);
+        $view->set("cpcs", $cpcs);
+    }
+
+    /**
+     * @before _secure, changeLayout, _admin
+     */
     public function domains() {
         $this->seo(array("title" => "All Domains", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
@@ -119,6 +154,21 @@ class Manage extends Admin {
      */
     public function delete($user_id) {
         $this->noview();
+        $access = Access::all(array("user_id = ?" => $user_id));
+        foreach ($access as $a) {
+            $a->delete();
+        }
+
+        $advert = Advert::first(array("user_id = ?" => $user_id));
+        if ($advert) {
+            $advert->delete();
+        }
+
+        $banks = Bank::all(array("user_id = ?" => $user_id));
+        foreach ($banks as $b) {
+            $b->delete();
+        }
+
         $stats = Stat::first(array("user_id = ?" => $user_id));
         foreach ($stats as $stat) {
             $stat->delete();
@@ -136,16 +186,6 @@ class Manage extends Admin {
         $platforms = Platform::all(array("user_id = ?" => $user_id));
         foreach ($platforms as $platform) {
             $platform->delete();
-        }
-
-        $access = Access::all(array("user_id = ?" => $user_id));
-        foreach ($access as $a) {
-            $a->delete();
-        }
-
-        $advert = Advert::first(array("user_id = ?" => $user_id));
-        if ($advert) {
-            $advert->delete();
         }
 
         $publish = Publish::first(array("user_id = ?" => $user_id));

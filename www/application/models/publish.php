@@ -29,7 +29,7 @@ class Publish extends Shared\Model {
     * @type text
     * @length 255
     *
-    * @validate required, min(3), max(32)
+    * @validate required
     * @label rpm
     */
     protected $_rpm;
