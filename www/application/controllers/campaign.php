@@ -344,17 +344,12 @@ class Campaign extends Publisher {
     }
 
     public function serve() {
-        $this->JSONView();
-        $view = $this->getActionView();
-
-        $headers = [
-            'X-Api' => RequestMethods::server('HTTP_X_API'),
-            'X-Api-JSON' => RequestMethods::server('HTTP_X_API_JSON')
-        ];
-        $pass = (isset($headers['X-Api']) && $headers['X-Api'] == 'ServeAds') && (isset($headers['X-Api-JSON']) && $headers['X-Api-JSON'] == 'C99');
+        $this->noview();
+        $pass = RequestMethods::get('xapi');
+        $callback = RequestMethods::get("callback");
         
         // serve 1 random content
-        if ($pass) {
+        if ($pass == 'c99ads' && $callback) {
             $items = Item::all(["live = ?" => true]);
 
             $key = array_rand($items);
@@ -362,7 +357,10 @@ class Campaign extends Publisher {
             $item = $items[$key];
             $image = base64_encode($item->image);
             $item->image = 'http://' . $_SERVER['HTTP_HOST'] . '/campaign/resize/'. $image . '/130/100';
-            $view->set("item", $item);
+            
+            $response = $item->getJsonData();
+            
+            echo $callback . '(' . json_encode($response) . ')';
         } else {
             $this->redirect("/404");
         }

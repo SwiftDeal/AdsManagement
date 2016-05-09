@@ -120,8 +120,8 @@ class Advertiser extends Analytics {
             $url = $client->createAuthUrl();
             $view->set("url", $url);
         } elseif ($token && !$access) {
-            $start = explode(" ", $advert->created);
             $msg = "All analytics stats for Clicks99 have been stored!!";
+            /*$start = explode(" ", $advert->created);
 
             $client = Shared\Services\GA::client($token);
             try {
@@ -134,7 +134,7 @@ class Advertiser extends Analytics {
             } catch (\Exception $e) {
                 $msg = $e->getMessage();
             }
-            $access = Access::all(array("user_id = ?" => $this->user->id, "property = ?" => "website"));
+            $access = Access::all(array("user_id = ?" => $this->user->id, "property = ?" => "website"));*/
             
             $view->set("message", $msg);
         }
