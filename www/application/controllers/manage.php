@@ -169,9 +169,14 @@ class Manage extends Admin {
             $b->delete();
         }
 
-        $stats = Stat::first(array("user_id = ?" => $user_id));
-        foreach ($stats as $stat) {
-            $stat->delete();
+        $fbpages = FBPage::all(array("user_id = ?" => $user_id));
+        foreach ($fbpages as $fbp) {
+            $fbp->delete();
+        }
+
+        $fbposts = FBPost::all(array("user_id = ?" => $user_id));
+        foreach ($fbposts as $fp) {
+            $fp->delete();
         }
 
         $links = Link::all(array("user_id = ?" => $user_id));
@@ -181,6 +186,11 @@ class Manage extends Admin {
                 $stat->delete();
             }
             $link->delete();
+        }
+
+        $stats = Stat::first(array("user_id = ?" => $user_id));
+        foreach ($stats as $stat) {
+            $stat->delete();
         }
         
         $platforms = Platform::all(array("user_id = ?" => $user_id));

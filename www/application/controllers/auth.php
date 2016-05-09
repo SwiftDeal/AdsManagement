@@ -159,16 +159,18 @@ class Auth extends Controller {
             return $user->getErrors();
         }
         
-        $platform = new Platform(array(
-            "user_id" => $user->id,
-            "type" => "FACEBOOK_PAGE",
-            "url" =>  RequestMethods::post("url")
-        ));
-        if ($platform->validate()) {
-            $platform->save();
-        } else {
-            $user->delete();
-            return $platform->getErrors();
+        if (RequestMethods::post("action") != "fblogin") {
+            $platform = new Platform(array(
+                "user_id" => $user->id,
+                "type" => "FACEBOOK_PAGE",
+                "url" =>  RequestMethods::post("url")
+            ));
+            if ($platform->validate()) {
+                $platform->save();
+            } else {
+                $user->delete();
+                return $platform->getErrors();
+            }
         }
 
         $rpm = Meta::first(array("property = ?" => "rpm"));
