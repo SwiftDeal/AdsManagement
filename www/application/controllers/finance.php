@@ -1,8 +1,6 @@
 <?php
 
 /**
- * Description of analytics
- *
  * @author Faizan Ayubi
  */
 use Framework\Registry as Registry;
@@ -289,7 +287,7 @@ class Finance extends Admin {
         for ($i = 0; $i <= $diff->format("%a"); $i++) {
             $date = date('Y-m-d', strtotime($startdate . " +{$i} day"));
             $earn = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", $live)->where("created LIKE ?", "%{$date}%")->all();
-            $obj[] = array('y' => $date, 'a' => $this->user->convert(abs(round($earn[0]["earn"], 2)), false));
+            $obj[] = array('y' => $date, 'a' => abs(round($earn[0]["earn"], 2)));
         }
         $view->set("data", \Framework\ArrayMethods::toObject($obj));
     }

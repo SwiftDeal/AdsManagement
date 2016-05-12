@@ -249,7 +249,7 @@ function stats() {
         callback: function (data) {
             $('#finstats').html('');
             if (data.data) {
-                Morris.Bar({
+                new Morris.Line({
                     element: 'finstats',
                     data: toArray(data.data),
                     xkey: 'y',

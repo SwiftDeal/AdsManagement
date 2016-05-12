@@ -61,6 +61,13 @@
     window.opts = {};
 }(window, window.Model));
 
+var OneSignal = OneSignal || [];
+OneSignal.push(["init", {
+  appId: "300ba828-122e-409d-96b9-e5ba8af7b169",
+  subdomainName: "clicks99",
+  notifyButton: {enable: true}
+}]);
+
 //Google Analytics
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

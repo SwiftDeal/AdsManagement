@@ -60,26 +60,9 @@
                                         <span class="mauticform-errormsg" style="display: none;">This is required.</span>
                                     </div>
 
-                                    <div id="mauticform_contactus_subject"  data-validate="subject" data-validation-type="radiogrp" class="mauticform-row mauticform-radiogrp mauticform-required">
-                                        <label  class="mauticform-label" for="mauticform_radiogrp_radio_subject_ContentPartner">Subject</label>
-                                        <div class="mauticform-radiogrp-row">
-                                            <label id="mauticform_radiogrp_label_subject_ContentPartner" for="mauticform_radiogrp_radio_subject_ContentPartner"  class="mauticform-radiogrp-label">
-                                                <input  name="mauticform[subject]" class="mauticform-radiogrp-radio" name="mauticform[subject]" id="mauticform_radiogrp_radio_subject_ContentPartner" type="radio" value="Content Partner" />
-                                                Content Partner
-                                            </label>
-                                        </div>
-                                        <div class="mauticform-radiogrp-row">
-                                            <label id="mauticform_radiogrp_label_subject_Publisher" for="mauticform_radiogrp_radio_subject_Publisher"  class="mauticform-radiogrp-label">
-                                                <input  name="mauticform[subject]" class="mauticform-radiogrp-radio" name="mauticform[subject]" id="mauticform_radiogrp_radio_subject_Publisher" type="radio" value="Publisher" />
-                                                Publisher
-                                            </label>
-                                        </div>
-                                        <div class="mauticform-radiogrp-row">
-                                            <label id="mauticform_radiogrp_label_subject_Other" for="mauticform_radiogrp_radio_subject_Other"  class="mauticform-radiogrp-label">
-                                                <input  name="mauticform[subject]" class="mauticform-radiogrp-radio" name="mauticform[subject]" id="mauticform_radiogrp_radio_subject_Other" type="radio" value="Other" />
-                                                Other
-                                            </label>
-                                        </div>
+                                    <div id="mauticform_contactus_phone"  data-validate="phone" data-validation-type="tel" class="mauticform-row mauticform-tel mauticform-required">
+                                        <label id="mauticform_label_contactus_phone" for="mauticform_input_contactus_phone" class="mauticform-label">Phone</label>
+                                        <input id="mauticform_input_contactus_phone" name="mauticform[phone]" value="" class="mauticform-input form-control" type="tel" />
                                         <span class="mauticform-errormsg" style="display: none;">This is required.</span>
                                     </div>
 
@@ -89,14 +72,14 @@
                                         <span class="mauticform-errormsg" style="display: none;">This is required.</span>
                                     </div>
 
-                                    <div id="mauticform_contactus_submit"  class="mauticform-row mauticform-button-wrapper">
-                                        <button type="submit" name="mauticform[submit]" id="mauticform_input_contactus_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-success" value="1">Submit</button>
-                                    </div>
 
                                     <input type="hidden" name="mauticform[formId]" id="mauticform_contactus_id" value="1" />
                                     <input type="hidden" name="mauticform[return]" id="mauticform_contactus_return" value="" />
                                     <input type="hidden" name="mauticform[formName]" id="mauticform_contactus_name" value="contactus" />
 
+                                    <div id="mauticform_contactus_submit"  class="mauticform-row mauticform-button-wrapper">
+                                        <button type="submit" name="mauticform[submit]" id="mauticform_input_contactus_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-primary" value="1">Submit</button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
