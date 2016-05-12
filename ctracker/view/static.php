@@ -20,6 +20,7 @@
     <meta name="twitter:url" content="<?php echo SITE;?>">
 
     <title>Clicks99</title>
+    <meta property="fb:app_id" content="583482395136457" />
 </head>
 
 <body>

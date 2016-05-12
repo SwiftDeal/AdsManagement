@@ -2,7 +2,6 @@
 <html>
 <head>
     <meta http-equiv="X-Frame-Options" content="deny">
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <meta property="og:locale" content="en_US">
@@ -20,6 +19,10 @@
     <meta name="twitter:url" content="<?php echo URL;?>">
 
     <title><?php echo $track->link->title;?></title>
+    <meta http-equiv="cache-control" content="max-age=0">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="pragma" content="no-cache">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 </head>
 <body>
