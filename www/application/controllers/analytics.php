@@ -188,8 +188,7 @@ class Analytics extends Manage {
             }
             $query['item_id'] = array('$in' => $i);
         } else {
-            $i = Item::first(array("id = ?" => $item_id, "user_id = ?" => $this->user->id));
-            $query['item_id'] = $i->id;
+            $query['item_id'] = $item_id;
         }
         
         $collection = Registry::get("MongoDB")->clicks;
