@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html>
-<head>
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
     <meta http-equiv="X-Frame-Options" content="deny">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <meta property="og:locale" content="en_US">
     <meta property="og:type" content="article">
     <meta property="og:title" content="<?php echo $track->link->title;?>" />
     <meta property="og:description" content="<?php echo $track->link->description;?>">
     <meta property="og:url" content="<?php echo URL;?>">
     <meta property="og:image" content="https://dh3fr73b75uve.cloudfront.net/images/resize/<?php $img = explode(".", $track->link->image); echo $img[0]."-560x292.".$img[1];?>">
-    <meta property="og:site_name" content="Clicks99">
+    <meta property="og:site_name" content="<?php $parse = parse_url($track->link->url); echo $parse["host"];?>">
     <meta property="article:section" content="Pictures" />
     
     <meta name="twitter:card" content="summary_large_image" />
@@ -19,13 +18,17 @@
     <meta name="twitter:url" content="<?php echo URL;?>">
 
     <title><?php echo $track->link->title;?></title>
-    <meta http-equiv="cache-control" content="max-age=0">
-    <meta http-equiv="cache-control" content="no-cache">
-    <meta http-equiv="expires" content="0">
-    <meta http-equiv="pragma" content="no-cache">
+    <meta property="fb:app_id" content="583482395136457" />
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <style type="text/css">
+        .data {
+            display: none;
+        }
+    </style>
 </head>
 <body>
+<h1 class="data"><?php echo $track->link->title;?></h1>
+<p class="data"><?php echo $track->link->description;?></p>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

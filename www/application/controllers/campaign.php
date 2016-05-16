@@ -312,7 +312,7 @@ class Campaign extends Publisher {
         $this->redirect($_SERVER["HTTP_REFERER"]);        
     }
 
-    public function resize($image, $width = 560, $height = 292) {
+    public function resize($image, $width = 600, $height = 315) {
         $path = APP_PATH . "/public/assets/uploads/images";$cdn = CLOUDFRONT;
         $image = base64_decode($image);
         if ($image) {
