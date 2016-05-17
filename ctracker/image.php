@@ -15,7 +15,7 @@ if (isset($_GET['file'])) {
 
 	header('Content-type: ' . $ctype);
 	$img = explode(".", $file);
-	readfile("/var/www/www/public/assets/uploads/images/resize/{$img[0]}-560x292.{$img[1]}");
+	readfile("/var/www/www/public/assets/uploads/images/resize/{$img[0]}-600x315.{$img[1]}");
 } else {
 	header('Content-type: image/png');
 	readfile("/var/www/ctracker/includes/logo.png");
