@@ -6,7 +6,7 @@
         css;
 
     css = '\
-        #bsaHolder{             right: 25px;position: absolute; top: 0; width: 345px;z-index: 10;}\
+        #bsaHolder{             right: 25px;position: absolute; bottom: 0; width: 345px;z-index: 10;}\
         #bsaHolder span{        text-shadow:1px 1px 0 #fff;}\
         #bsap_aplink,\
         #bsap_aplink:visited{   bottom: 10px;color: #aaa;font: 11px arial, sans-serif;position: absolute;right: 14px;border:none;}\
@@ -16,7 +16,7 @@
                                 -moz-border-radius: 0 0 4px 4px;-webkit-border-radius: 0 0 4px 4px;border-radius: 0 0 4px 4px;}\
         #bsaHolder img{         display:block;border:none;}\
         #bsa_closeAd{           width:15px;height:15px;overflow:hidden;position:absolute;top:10px;right:11px;border:none !important;z-index:1;\
-                                text-decoration:none !important;background:url("http://cdn.tutorialzine.com/misc/enhance/x_icon.png") no-repeat;}\
+                                text-decoration:none !important;background:url("http://adserve.clicks99.com/x_icon.png") no-repeat;}\
         #bsa_closeAd:hover{     background-position:left bottom;}\
         .one{position:relative}.one .bsa_it_ad{display:block;padding:15px;border:1px solid #e1e1e1;background:#f9f9f9;font-family:helvetica,arial,sans-serif;line-height:100%;position:relative}.one .bsa_it_ad a{text-decoration:none}.one .bsa_it_ad a:hover{text-decoration:none}.one .bsa_it_ad .bsa_it_t{display:block;font-size:12px;font-weight:bold;color:#212121;line-height:125%;padding:0 0 5px 0}.one .bsa_it_ad .bsa_it_d{display:block;color:#434343;font-size:12px;line-height:135%}.one .bsa_it_ad .bsa_it_i{float:left;margin:0 15px 10px 0}body .one .bsa_it_p{text-align:center;display:block !important}.one .bsa_it_p a{font-size:10px;color:#666;text-decoration:none}.one .bsa_it_ad .bsa_it_p a:hover{font-style:italic}\
     ';
