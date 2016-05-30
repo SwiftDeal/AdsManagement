@@ -4,7 +4,8 @@
 include("seo.php");
 
 $seo = new SEO(array(
-    "title" => "Clicks99 AdNetwork",
+    "title" => "vNative - Native advertising software for Publishers",
+    "description" => ""
     "photo" => CDN . "images/logo.png"
 ));
 

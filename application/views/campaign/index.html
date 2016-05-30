@@ -18,7 +18,7 @@
         {if(!is_float($i/3))}<div class="row">{/if}
         <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="panel panel-default">
-                {script $track = "?utm_source=". $user->id ."&amp;utm_medium=Clicks99&amp;utm_campaign=".$item->title."&amp;utm_term=".$user->id."&utm_content=".$item->title}
+                {script $track = "?utm_source=". $user->id ."&amp;utm_medium=vNative&amp;utm_campaign=".$item->title."&amp;utm_term=".$user->id."&utm_content=".$item->title}
                 <a href="{echo $item->url.$track}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}" class="img-responsive" alt="{echo $item->title}" height="240"></a>
                 <div class="panel-body">
                     <a href="{echo $item->url.$track}" target="_blank">{echo $item->title}</a>

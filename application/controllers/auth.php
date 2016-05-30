@@ -187,7 +187,7 @@ class Auth extends Controller {
 
             $this->notify(array(
                 "template" => "publisherRegister",
-                "subject" => "Welcome to Clicks99",
+                "subject" => "Welcome to vNative",
                 "user" => $user,
                 "pass" => $pass
             ));
@@ -241,7 +241,7 @@ class Auth extends Controller {
 
             $this->notify(array(
                 "template" => "advertiserRegister",
-                "subject" => "Welcome to Clicks99",
+                "subject" => "Welcome to vNative",
                 "user" => $user,
                 "pass" => $pass
             ));

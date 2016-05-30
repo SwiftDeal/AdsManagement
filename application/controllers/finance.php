@@ -79,7 +79,7 @@ class Finance extends Admin {
                     $publisher->balance -= RequestMethods::post("amount");
                     $this->notify(array(
                         "template" => "accountDebited",
-                        "subject" => "Payments From Clicks99 Team",
+                        "subject" => "Payments From vNative Team",
                         "user" => $payee,
                         "transaction" => $transaction,
                         "bank" => $bank
@@ -95,7 +95,7 @@ class Finance extends Admin {
                     $publisher->balance -= RequestMethods::post("amount");
                     $this->notify(array(
                         "template" => "accountDeducted",
-                        "subject" => "Amount Deducted From Clicks99 Account",
+                        "subject" => "Amount Deducted From vNative Account",
                         "user" => $payee,
                         "transaction" => $transaction
                     ));
@@ -186,7 +186,7 @@ class Finance extends Admin {
                 "buyer_name" => $this->user->name,
                 "email" => $this->user->email,
                 "phone" => $this->user->phone,
-                "redirect_url" => "http://clicks99.com/finance/success",
+                "redirect_url" => "http://vnative.com/finance/success",
                 "allow_repeated_payments" => false
             ));
 

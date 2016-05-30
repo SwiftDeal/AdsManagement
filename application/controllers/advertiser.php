@@ -120,7 +120,7 @@ class Advertiser extends Analytics {
             $url = $client->createAuthUrl();
             $view->set("url", $url);
         } elseif ($token && !$access) {
-            $msg = "All analytics stats for Clicks99 have been stored!!";
+            $msg = "All analytics stats for vNative have been stored!!";
             /*$start = explode(" ", $advert->created);
 
             $client = Shared\Services\GA::client($token);

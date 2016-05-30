@@ -1,15 +1,14 @@
-
 sftp-config.json
+application/configuration/aws.ini
 
-www/application/configuration/database.ini
+application/configuration/bitly.ini
 
-www/application/plugins/googl/googl.php
+application/configuration/database.ini
 
-www/application/configuration/mail.ini
-www/application/configuration/payment.ini
+application/configuration/fb.ini
 
-www/application/configuration/aws.ini
+application/configuration/google.ini
 
-www/application/configuration/google.ini
+application/configuration/mail.ini
 
-www/application/configuration/bitly.ini
+application/configuration/payment.ini
