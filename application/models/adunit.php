@@ -1,12 +1,8 @@
 <?php
 
 /**
- * Description of link
- *
  * @author Faizan Ayubi
  */
-use Framework\Registry as Registry;
-use \Curl\Curl;
 class AdUnit extends Shared\Model {
     /**
      * @column
@@ -32,15 +28,6 @@ class AdUnit extends Shared\Model {
      * @index
      */
     protected $_user_id;
-
-    public function googl() {
-        if (strpos($this->short, "goo.gl")) {
-            $googl = Framework\Registry::get("googl");
-            $object = $googl->analyticsFull($this->short);
-            return isset($object) ? $object : NULL;
-        }
-        return false;
-    }
 
     public function stat($date = NULL) {
         $total_click = 0;$earning = 0;$analytics = array();$publishers = array();
@@ -91,8 +78,8 @@ class AdUnit extends Shared\Model {
 
     public function bitly() {
         if (strpos($this->short, "bit.ly")) {
-            $conf = Registry::get("configuration")->parse("configuration/bitly");
-            $b = new Curl();
+            $conf = Framework\Registry::get("configuration")->parse("configuration/bitly");
+            $b = new \Curl\Curl();
             $b->get('https://api-ssl.bitly.com/v3/link/referrers?access_token='.$conf->bitly->accesstoken.'&link='.urlencode($this->short));
             $b->close();
 

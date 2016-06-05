@@ -22,9 +22,9 @@ class Bank extends \Shared\Model {
      * @length 255
      * 
      * @validate required, min(3), max(255)
-     * @label holder name
+     * @label account holder name
      */
-    protected $_name;
+    protected $_beneficiary;
     
     /**
      * @column
@@ -35,7 +35,7 @@ class Bank extends \Shared\Model {
      * @validate required, min(3), max(32)
      * @label bank name
      */
-    protected $_bank;
+    protected $_name;
     
     /**
      * @column

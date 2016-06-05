@@ -34,14 +34,4 @@ class Conversation extends \Shared\Model {
      * @label message
      */
     protected $_message;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * @length 255
-     *
-     * @label file
-     */
-    protected $_file;
 }

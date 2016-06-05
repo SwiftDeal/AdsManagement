@@ -25,6 +25,18 @@ class Platform extends Shared\Model{
      * @label name
      */
     protected $_type;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * @length 255
+     * @index
+     *
+     * @validate required, max(255)
+     * @label category
+     */
+    protected $_category;
     
     /**
      * @column

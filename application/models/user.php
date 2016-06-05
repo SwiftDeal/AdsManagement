@@ -62,14 +62,6 @@ class User extends Shared\Model {
      * @label phone number
      */
     protected $_phone;
-    
-    /**
-    * @column
-    * @readwrite
-    * @type text
-    * @length 5
-    */
-    protected $_country;
 
     /**
     * @column
