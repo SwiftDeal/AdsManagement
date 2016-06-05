@@ -13,4 +13,30 @@ class Customer extends Shared\Model {
      * @validate required
      */
     protected $_user_id;
+
+    /**
+    * @column
+    * @readwrite
+    * @type text
+    * @length 5
+    */
+    protected $_country;
+
+    /**
+     * @column
+     * @readwrite
+     * @type decimal
+     * @length 10,2
+     *
+     * @validate required
+     * @label balance
+     */
+    protected $_balance;
+
+    /**
+     * @column
+     * @readwrite
+     * @type integer
+     */
+    protected $_agent_id;
 }

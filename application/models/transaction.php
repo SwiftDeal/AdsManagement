@@ -40,7 +40,11 @@ class Transaction extends Shared\Model {
     * @column
     * @readwrite
     * @type text
-    * @length 3
+    * @length 6
+    * @index
+    *
+    * @validate required
+    * @label credit or debit
     */
-    protected $_currency = "INR";
+    protected $_type;
 }

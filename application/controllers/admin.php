@@ -11,7 +11,7 @@ class Admin extends Auth {
     /**
      * @readwrite
      */
-    protected $_team;
+    protected $_agent;
 
     /**
      * @before _secure, changeLayout, _admin
@@ -283,11 +283,11 @@ class Admin extends Auth {
 
     public function changeLayout() {
         $session = Registry::get("session");
-        $team = $session->get("team");
-        if (!isset($team)) {
+        $agent = $session->get("agent");
+        if (!isset($agent)) {
             $this->redirect("/index.html");
         } else {
-            $this->_team = $team;
+            $this->_agent = $agent;
         }
 
         $this->defaultLayout = "layouts/admin";
@@ -298,13 +298,13 @@ class Admin extends Auth {
      * @protected
      */
     public function render() {
-        if ($this->team) {
+        if ($this->agent) {
             if ($this->actionView) {
-                $this->actionView->set("team", $this->team);
+                $this->actionView->set("agent", $this->agent);
             }
 
             if ($this->layoutView) {
-                $this->layoutView->set("team", $this->team);
+                $this->layoutView->set("agent", $this->agent);
             }
         }    
         parent::render();

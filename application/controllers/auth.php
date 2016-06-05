@@ -15,12 +15,10 @@ class Auth extends Controller {
     public function login() {
         $this->seo(array("title" => "Login", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-        $fb = RequestMethods::get("fb", false);
         if (RequestMethods::post("action") == "login") {
             $message =  $this->_login();
             $view->set("message", $message);
         }
-        $view->set("fb", $fb);
     }
 
     /**
