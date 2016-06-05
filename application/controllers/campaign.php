@@ -342,27 +342,4 @@ class Campaign extends Publisher {
             $this->redirect("{$cdn}img/logo.png");
         }
     }
-
-    public function serve() {
-        $this->noview();
-        $pass = RequestMethods::get('xapi');
-        $callback = RequestMethods::get("callback");
-        
-        // serve 1 random content
-        if ($pass == 'c99ads' && $callback) {
-            $items = Item::all(["live = ?" => true]);
-
-            $key = array_rand($items);
-
-            $item = $items[$key];
-            $image = base64_encode($item->image);
-            $item->image = 'http://' . $_SERVER['HTTP_HOST'] . '/campaign/resize/'. $image . '/130/100';
-            
-            $response = $item->getJsonData();
-            
-            echo $callback . '(' . json_encode($response) . ')';
-        } else {
-            $this->redirect("/404");
-        }
-    }
 }

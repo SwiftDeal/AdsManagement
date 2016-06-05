@@ -27,20 +27,7 @@ class Home extends Controller {
     public function refundspolicy() {
         $this->seo(array("title" => "Refunds Policy", "view" => $this->getLayoutView()));
     }
-
-    public function pricing() {
-        $this->seo(array("title" => "Pricing", "view" => $this->getLayoutView()));
-    }
-
-    public function contact() {
-        $this->seo(array("title" => "Contact Us", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
-        if (RequestMethods::get("mauticMessage")) {
-            $view->set("message", RequestMethods::get("mauticMessage"));
-        }
-    }
-
+    
     public function seo($params = array()) {
         $seo = Framework\Registry::get("seo");
         foreach ($params as $key => $value) {

@@ -79,39 +79,26 @@ class Auth extends Controller {
 
     protected function authorize($user) {
         $session = Registry::get("session");
-        //setting team
-        $team = Team::first(array("user_id = ?" => $user->id));
-        if ($team) {
-            if ($team->live == 0) {
+        //setting agent
+        $agent = Agent::first(array("user_id = ?" => $user->id));
+        if ($agent) {
+            if ($agent->live == 0) {
                 return "Account Suspended";
             }
             $this->setUser($user);
-            $session->set("team", $team);
+            $session->set("agent", $agent);
             $this->redirect("/admin/index.html");
         }
 
-        //setting publisher
-        $publish = Publish::first(array("user_id = ?" => $user->id));
-        if ($publish) {
+        //setting customer
+        $customer = Customer::first(array("user_id = ?" => $user->id));
+        if ($customer) {
             $this->setUser($user);
-            //setting domains
-            $domains = Meta::all(array("property = ?" => "domain", "live = ?" => true));
-            $session->set("domains", $domains);
-            $session->set("publish", $publish);
-            if (RequestMethods::post("action") == "fblogin") {
-                return true;
-            } else {
-                $this->redirect("/publisher/index.html");
-            }
-        }
-
-        //setting advertiser
-        $advert = Advert::first(array("user_id = ?" => $user->id));
-        if ($advert) {
-            $this->setUser($user);
-            $session->set("advert", $advert);
+            $session->set("customer", $customer);
             $this->redirect("/advertiser/index.html");
         }
+
+        $this->redirect("/publisher/index.html");
     }
 
     protected function _resetPassword() {
@@ -144,44 +131,24 @@ class Auth extends Controller {
             "email" => RequestMethods::post("email"),
             "password" => sha1($pass),
             "phone" => RequestMethods::post("phone"),
-            "country" => $this->country(),
             "currency" => "INR",
             "live" => 1
         ));
-        if (RequestMethods::post("action") == "fblogin") {
-            $user->phone = "0";
-        }
         if ($user->validate()) {
             $user->save();
         } else {
             return $user->getErrors();
         }
         
-        if (RequestMethods::post("action") != "fblogin") {
-            $platform = new Platform(array(
-                "user_id" => $user->id,
-                "type" => "FACEBOOK_PAGE",
-                "url" =>  RequestMethods::post("url")
-            ));
-            if ($platform->validate()) {
-                $platform->save();
-            } else {
-                $user->delete();
-                return $platform->getErrors();
-            }
-        }
-
-        $rpm = Meta::first(array("property = ?" => "rpm"));
-
-        $publish = new Publish(array(
+        $customer = new Customer(array(
             "user_id" => $user->id,
-            "bouncerate" => 0,
-            "rpm" => $rpm->value,
+            "country" => $this->country(),
             "balance" => 0,
+            "agent_id" => 0,
             "live" => 1
         ));
-        if ($publish->validate()) {
-            $publish->save();
+        if ($customer->validate()) {
+            $customer->save();
 
             $this->notify(array(
                 "template" => "publisherRegister",
@@ -190,63 +157,9 @@ class Auth extends Controller {
                 "pass" => $pass
             ));
         } else {
-            $publish->delete();
+            $customer->delete();
             $user->delete();
-            return $publish->getErrors();
-        }
-    }
-
-    protected function _advertiserRegister() {
-        $pass = $this->randomPassword();
-        $user = new User(array(
-            "username" => RequestMethods::post("name"),
-            "name" => RequestMethods::post("name"),
-            "email" => RequestMethods::post("email"),
-            "password" => sha1($pass),
-            "phone" => RequestMethods::post("phone"),
-            "country" => $this->country(),
-            "currency" => "INR",
-            "live" => 0
-        ));
-        if ($user->validate()) {
-            $user->save();
-        } else {
-            return $user->getErrors();
-        }
-        
-        $platform = new Platform(array(
-            "user_id" => $user->id,
-            "type" => "WEBSITE",
-            "url" =>  RequestMethods::post("url")
-        ));
-        if ($platform->validate()) {
-            $platform->save();
-        } else {
-            $user->delete();
-            return $platform->getErrors();
-        }
-
-        $advert = new Advert(array(
-            "user_id" => $user->id,
-            "account" => "basic",
-            "cpc" => "",
-            "gatoken" => "",
-            "balance" => 0,
-            "live" => 0
-        ));
-        if ($advert->validate()) {
-            $advert->save();
-
-            $this->notify(array(
-                "template" => "advertiserRegister",
-                "subject" => "Welcome to vNative",
-                "user" => $user,
-                "pass" => $pass
-            ));
-        } else {
-            $user->delete();
-            $platform->delete();
-            return $advert->getErrors();
+            return $customer->getErrors();
         }
     }
 
