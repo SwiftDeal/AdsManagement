@@ -1,33 +1,47 @@
-<div class="container">
-    <div class="login-box">
-        {if(isset($message))}<div class="alert fresh-color alert-info" role="alert">{echo $message}</div>{/if}
-        <div>
-            <div class="login-form row">
-                <div class="col-sm-12 text-center login-header">
-                    <i class="login-logo fa fa-connectdevelop fa-5x"></i>
-                    <h4 class="login-title">vNative</h4>
-                </div>
-                <div class="col-sm-12">
-                    <div class="login-body">
-                        <form method="post" action="">
-                            <div class="control">
-                                <input type="email" name="email" class="form-control" placeholder="Email" required="" />
+<div class="container-fluid app-content-a" style="padding-top: 80px;">
+    <div class="side-body container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="text-center app-content-header">Your vNative Account Login</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                
+            </div>
+            <div class="col-md-6">
+                <div class="">
+                    {if(isset($message))}<div class="alert fresh-color alert-info" role="alert">{echo $message}</div>{/if}
+                    <div>
+                        <div class="login-form row">
+                            <div class="col-sm-12 text-center login-header">
+                                <i class="login-logo fa fa-connectdevelop fa-5x"></i>
+                                <h4 class="login-title">vNative</h4>
                             </div>
-                            <div class="control">
-                                <input type="password" name="password" class="form-control" placeholder="Password" required="" />
+                            <div class="col-sm-12">
+                                <div class="login-body">
+                                    <form method="post" action="">
+                                        <div class="control">
+                                            <input type="email" name="email" class="form-control" placeholder="Email" required="" />
+                                        </div>
+                                        <div class="control">
+                                            <input type="password" name="password" class="form-control" placeholder="Password" required="" />
+                                        </div>
+                                        <div class="login-button text-center">
+                                            <input type="hidden" name="action" value="login">
+                                            <input type="submit" class="btn btn-primary" value="Login">
+                                            {if($fb)}
+                                            <button type="button" data-action="login" data-target="/publisher/index.html" class="btn btn-success fb">Login with Facebook</button>
+                                            {/if}
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="login-footer">
+                                    <span class="pull-left"><a href="/publisher/register.html" class="color-white">Register</a></span>
+                                    <span class="text-right"><a href="/auth/forgotpassword.html" class="color-white">Forgot Password?</a></span>
+                                </div>
                             </div>
-                            <div class="login-button text-center">
-                                <input type="hidden" name="action" value="login">
-                                <input type="submit" class="btn btn-primary" value="Login">
-                                {if($fb)}
-                                <button type="button" data-action="login" data-target="/publisher/index.html" class="btn btn-success fb">Login with Facebook</button>
-                                {/if}
-                            </div>
-                        </form>
-                    </div>
-                    <div class="login-footer">
-                        <span class="pull-left"><a href="/publisher/register.html" class="color-white">Register</a></span>
-                        <span class="text-right"><a href="/auth/forgotpassword.html" class="color-white">Forgot Password?</a></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -35,9 +49,6 @@
     </div>
 </div>
 <script type="text/javascript">
-    $("body").addClass("login-page");
-    $("nav").remove();
-    $(document).ready(function() {
-        $("footer").remove();
-    });
+$("body").addClass("landing-page");
+$("nav").css("background-color", "#353d47");
 </script>

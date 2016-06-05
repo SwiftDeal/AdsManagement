@@ -7,7 +7,7 @@
  */
 use Framework\Registry as Registry;
 use \Curl\Curl;
-class Link extends Shared\Model {
+class AdUnit extends Shared\Model {
     /**
      * @column
      * @readwrite

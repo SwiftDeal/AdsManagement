@@ -4,7 +4,7 @@
  * @author Faizan Ayubi
  */
 use Framework\Registry as Registry;
-class Item extends Shared\Model {
+class Campaign extends Shared\Model {
 
     /**
      * @column
