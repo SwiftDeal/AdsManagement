@@ -17,9 +17,9 @@ class Advertiser extends Analytics {
         $paid = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 1)->all();
         $earn = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 0)->all();
 
-        $items = Item::all(array("user_id = ?" => $this->user->id), array("id", "title", "created", "image", "url", "live", "visibility"), "created", "desc", 4, 1);
+        $ads = Ad::all(array("user_id = ?" => $this->user->id), array("id", "title", "created", "image", "url", "live", "visibility"), "created", "desc", 4, 1);
         
-        $view->set("items", $items);
+        $view->set("ads", $ads);
         $view->set("paid", round($paid[0]["earn"], 2));
         $view->set("earn", round($earn[0]["earn"], 2));
     }

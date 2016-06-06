@@ -37,13 +37,13 @@
                                 <th>Campaign</th>
                                 <th>Realtime</th>
                             </tr>
-                            {foreach $item in $items}
+                            {foreach $ad in $ads}
                             <tr>
                                 <td>
-                                    <a href="/public/assets/uploads/images/{$item->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}/50/50"> {echo $item->title}</a><br>
-                                    <small>{echo Framework\StringMethods::datetime_to_text($item->created)}</small>
+                                    <a href="/public/assets/uploads/images/{$ad->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($ad->image)}/50/50"> {echo $ad->title}</a><br>
+                                    <small>{echo Framework\StringMethods::datetime_to_text($ad->created)}</small>
                                 </td>
-                                <td class="campaignstat" data-campaign="{echo $item->id}">
+                                <td class="campaignstat" data-campaign="{echo $ad->id}">
                                     <span class="label label-success">View</span>
                                 </td>
                             </tr>
@@ -77,14 +77,11 @@
                 <div class="panel panel-success">
                     <ul class="list-group">
                         <li class="list-group-item list-group-item-success text-center"><b><i class="fa fa-support"></i> Account</b></li>
-                        <li class="list-group-item">Total Links <span class="badge">{echo Shared\Markup::nice_number(Link::count(array("user_id = ?" => $user->id)))}</span></li>
-                        <li class="list-group-item">Links Tracked <span class="badge">{echo Shared\Markup::nice_number(Stat::count(array("user_id = ?" => $user->id)))}</span></li>
                         <li class="list-group-item">Platforms Added <span class="badge">{echo Shared\Markup::nice_number(Platform::count(array("user_id = ?" => $user->id)))}</span></li>
                         
                         <li class="list-group-item list-group-item-info text-center"><b><i class="fa fa-money"></i> Finace</b></li>
                         <li class="list-group-item">Total <span class="badge currency"> {echo $user->convert($earn)}</span></li>
                         <li class="list-group-item">Paid <span class="badge currency"> {echo $user->convert(abs($paid))}</span></li>
-                        <li class="list-group-item">Balance <span class="badge currency"> {echo $user->convert($advert->balance)}</span></li>
                     </ul>
                 </div>
             </div>
