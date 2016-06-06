@@ -1,8 +1,0 @@
-# basic password protection
-
-AuthUserFile /var/www/www/application/libraries/phpMemcachedAdmin/.htpasswd
-AuthName "Username and password required"
-AuthType Basic
-<Limit GET POST>
-	Require valid-user
-</Limit>
