@@ -269,8 +269,8 @@ namespace Shared {
             $body = $this->getBody($options);
             $emails = isset($options["email"]) ? array($options["email"]) : array($options["user"]->email);
             $mailgun = $this->mailgun();
-            $mailgun->sendMessage("clicks99.com",array(
-                'from'    => 'Clicks99 Team <info@clicks99.com>',
+            $mailgun->sendMessage("vnative.com",array(
+                'from'    => 'vNative Team <info@vnative.com>',
                 'to'      => $emails,
                 'subject' => $options["subject"],
                 'text'    => $body

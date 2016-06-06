@@ -182,7 +182,7 @@ class Auth extends Controller {
             $platform->save();
 
             $this->notify(array(
-                "template" => "publisherRegister",
+                "template" => "register",
                 "subject" => "Welcome to vNative",
                 "user" => $user,
                 "pass" => $pass
