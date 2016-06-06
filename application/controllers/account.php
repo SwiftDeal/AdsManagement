@@ -5,7 +5,7 @@
 use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
 
-class Account extends Analytics {
+class Account extends Auth {
 	
 	/**
      * @before _secure, _layout
@@ -41,5 +41,13 @@ class Account extends Analytics {
     public function settings() {
         $this->seo(array("title" => "Settings", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
+    }
+
+    /**
+     * @protected
+     */
+    public function _layout() {
+        $this->defaultLayout = "layouts/publisher";
+        $this->setLayout();
     }
 }

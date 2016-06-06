@@ -8,6 +8,27 @@ use Framework\Registry as Registry;
 use \Curl\Curl;
 
 class Auth extends Controller {
+
+    /**
+     * @before _session
+     */
+    public function register() {
+        $this->seo(array("title" => "Register as Publisher", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+
+        if (RequestMethods::post("action") == "register") {
+            $exist = User::first(array("email = ?" => RequestMethods::post("email")));
+            if ($exist) {
+                $view->set("message", 'User exists, <a href="/auth/login.html">login</a>');
+            } else {
+                $errors = $this->_register();
+                $view->set("errors", $errors);
+                if (empty($errors)) {
+                    $view->set("message", "Your account has been created, Check your email for password");
+                }
+            }
+        }
+    }
     
     /**
      * @before _session
@@ -123,7 +144,7 @@ class Auth extends Controller {
         }
     }
 
-    protected function _publisherRegister() {
+    protected function _register() {
         $pass = $this->randomPassword();
         $user = new User(array(
             "username" => RequestMethods::post("name"),
@@ -132,7 +153,7 @@ class Auth extends Controller {
             "password" => sha1($pass),
             "phone" => RequestMethods::post("phone"),
             "currency" => "INR",
-            "live" => 1
+            "live" => 0
         ));
         if ($user->validate()) {
             $user->save();
@@ -145,10 +166,20 @@ class Auth extends Controller {
             "country" => $this->country(),
             "balance" => 0,
             "agent_id" => 0,
-            "live" => 1
+            "type" => RequestMethods::post("type"),
+            "live" => 0
         ));
         if ($customer->validate()) {
             $customer->save();
+
+            $platform = new Platform(array(
+                "user_id" => $user->id,
+                "type" => "",
+                "category" => "",
+                "url" => RequestMethods::post("url"),
+                "live" => 0
+            ));
+            $platform->save();
 
             $this->notify(array(
                 "template" => "publisherRegister",

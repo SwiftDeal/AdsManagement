@@ -39,4 +39,12 @@ class Customer extends Shared\Model {
      * @type integer
      */
     protected $_agent_id;
+
+    /**
+    * @column
+    * @readwrite
+    * @type text
+    * @length 10
+    */
+    protected $_type;
 }

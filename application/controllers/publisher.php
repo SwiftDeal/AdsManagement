@@ -22,8 +22,8 @@ class Publisher extends Advertiser {
         $view = $this->getActionView();
         
         $database = Registry::get("database");
-        $paid = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 1)->all();
-        $earn = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 0)->all();
+        $paid = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("type=?", "debit")->all();
+        $earn = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("type=?", "credit")->all();
         $ticket = Ticket::first(array("user_id = ?" => $this->user->id, "live = ?" => 1), array("subject", "id"), "created", "desc");
         $links = Link::all(array("user_id = ?" => $this->user->id, "live = ?" => true), array("id", "item_id", "short"), "created", "desc", 6, 1);
         
@@ -264,65 +264,5 @@ class Publisher extends Advertiser {
         }
         
         return $alias;
-    }
-    
-    /**
-     * @protected
-     */
-    public function publisherLayout() {
-        $session = Registry::get("session");
-        
-        $publish = $session->get("publish");
-        if (isset($publish)) {
-            $this->_publish = $publish;
-        } else {
-            $user = $this->getUser();
-            $publish = Publish::first(array("user_id = ?" => $user->id));
-            if ($user && $publish) {
-                $session->set("publish", $publish);
-            } else {
-                $this->redirect("/index.html");
-            }
-        }
-
-        $this->defaultLayout = "layouts/publisher";
-        $this->setLayout();
-    }
-
-    /**
-     * @protected
-     */
-    public function render() {
-        if ($this->publish) {
-            if ($this->actionView) {
-                $this->actionView->set("publish", $this->publish);
-            }
-
-            if ($this->layoutView) {
-                $this->layoutView->set("publish", $this->publish);
-            }
-        }    
-        parent::render();
-    }
-
-    /**
-     * @before _session
-     */
-    public function register() {
-        $this->seo(array("title" => "Register as Publisher", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
-        if (RequestMethods::post("action") == "register") {
-            $exist = User::first(array("email = ?" => RequestMethods::post("email")));
-            if ($exist) {
-                $view->set("message", 'User exists, <a href="/auth/login.html">login</a>');
-            } else {
-                $errors = $this->_publisherRegister();
-                $view->set("errors", $errors);
-                if (empty($errors)) {
-                    $view->set("message", "Your account has been created, Check your email for password");
-                }
-            }
-        }
     }
 }

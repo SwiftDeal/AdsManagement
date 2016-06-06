@@ -14,6 +14,11 @@ $routes = array(
         "action" => "login"
     ),
     array(
+        "pattern" => "register",
+        "controller" => "auth",
+        "action" => "register"
+    ),
+    array(
         "pattern" => "index",
         "controller" => "home",
         "action" => "index"
@@ -57,6 +62,11 @@ $routes = array(
         "pattern" => "faqs",
         "controller" => "home",
         "action" => "faqs"
+    ),
+    array(
+        "pattern" => "request-demo",
+        "controller" => "home",
+        "action" => "requestdemo"
     )
 );
 

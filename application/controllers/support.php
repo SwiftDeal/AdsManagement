@@ -217,26 +217,4 @@ class Support extends Publisher {
         $ticket->live = $live;
         $ticket->save();
     }
-
-    public function _layout() {
-        $session = Registry::get("session");
-        
-        $publish = $session->get("publish");
-        if (isset($publish)) {
-            $this->_publish = $publish;
-            $this->defaultLayout = "layouts/publisher";
-            $this->setLayout();
-        }
-
-        $advert = $session->get("advert");
-        if (isset($advert)) {
-            $this->_advert = $advert;
-            $this->defaultLayout = "layouts/advertiser";
-            $this->setLayout();
-        }
-
-        if (!isset($publish) && !isset($advert)) {
-            $this->redirect("/index.html");
-        }
-    }
 }

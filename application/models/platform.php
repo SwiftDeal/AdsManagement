@@ -21,8 +21,7 @@ class Platform extends Shared\Model{
      * @type text
      * @length 100
      * 
-     * @validate required, min(3), max(32)
-     * @label name
+     * @label type - facebook, website, app
      */
     protected $_type;
 
@@ -33,7 +32,6 @@ class Platform extends Shared\Model{
      * @length 255
      * @index
      *
-     * @validate required, max(255)
      * @label category
      */
     protected $_category;
