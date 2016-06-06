@@ -116,10 +116,16 @@ class Auth extends Controller {
         if ($customer) {
             $this->setUser($user);
             $session->set("customer", $customer);
-            $this->redirect("/advertiser/index.html");
+            switch ($customer->type) {
+                case 'monetize':
+                    $this->redirect("/publisher/index.html");
+                    break;
+                
+                default:
+                    $this->redirect("/advertiser/index.html");
+                    break;
+            }
         }
-
-        $this->redirect("/publisher/index.html");
     }
 
     protected function _resetPassword() {
@@ -260,5 +266,13 @@ class Auth extends Controller {
         $reader = new GeoIp2\Database\Reader('/var/www/ctracker/includes/GeoLite2-Country.mmdb');
         $record = $reader->country(Shared\Markup::get_client_ip());
         return $record->country->isoCode;
+    }
+
+    /**
+     * @protected
+     */
+    public function _layout() {
+        $this->defaultLayout = "layouts/account";
+        $this->setLayout();
     }
 }

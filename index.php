@@ -1,6 +1,6 @@
 <?php
 ob_start();
-define("DEBUG", FALSE);
+define("DEBUG", TRUE);
 define("APP_PATH", str_replace(DIRECTORY_SEPARATOR, "/", dirname(__FILE__)));
 define("URL", "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
 define("CDN", "http://$_SERVER[HTTP_HOST]/public/assets/");
@@ -16,24 +16,6 @@ try {
         if (file_exists($file)) {
             require_once $file;
             return true;
-        }
-    });
-
-    // Google Library Autoloader
-    spl_autoload_register(function($className) {
-        $classPath = explode('_', $className);
-        if ($classPath[0] != 'Google') {
-            return;
-        }
-        // Drop 'Google', and maximum class file path depth in this project is 3.
-        $classPath = array_slice($classPath, 1, 3);
-
-        $filePath = APP_PATH . '/application/libraries/Google/' . implode('/', $classPath) . '.php';
-        if (file_exists($filePath)) {
-            require_once APP_PATH. '/application/libraries/GuzzleHttp/functions.php';
-            require_once APP_PATH. '/application/libraries/GuzzleHttp/Psr7/functions.php';
-            require_once APP_PATH. '/application/libraries/GuzzleHttp/Promise/functions.php';
-            require_once($filePath);
         }
     });
 

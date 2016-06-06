@@ -15,7 +15,7 @@ class Publisher extends Advertiser {
     protected $_publish;
 
     /**
-     * @before _secure, publisherLayout
+     * @before _secure, _layout
      */
     public function index() {
         $this->seo(array("title" => "Dashboard", "description" => "Stats for your Data", "view" => $this->getLayoutView()));
@@ -40,7 +40,7 @@ class Publisher extends Advertiser {
     
     /**
      * Shortens the url for publishers
-     * @before _secure, publisherLayout
+     * @before _secure, _layout
      */
     public function shortenURL() {
         $this->JSONview();
@@ -85,7 +85,7 @@ class Publisher extends Advertiser {
     }
     
     /**
-     * @before _secure, publisherLayout
+     * @before _secure, _layout
      */
     public function topearners() {
         $this->seo(array("title" => "Top Earners", "view" => $this->getLayoutView()));
@@ -123,7 +123,7 @@ class Publisher extends Advertiser {
     }
     
     /**
-     * @before _secure, publisherLayout
+     * @before _secure, _layout
      */
     public function profile() {
         $this->seo(array("title" => "Profile", "view" => $this->getLayoutView()));
@@ -198,7 +198,7 @@ class Publisher extends Advertiser {
     }
     
     /**
-     * @before _secure, publisherLayout
+     * @before _secure, _layout
      */
     public function payments() {
         $this->seo(array("title" => "Payments", "view" => $this->getLayoutView()));
@@ -216,7 +216,7 @@ class Publisher extends Advertiser {
     }
 
     /**
-     * @before _secure, publisherLayout
+     * @before _secure, _layout
      */
     public function platforms() {
         $this->seo(array("title" => "Platforms", "view" => $this->getLayoutView()));
@@ -229,7 +229,7 @@ class Publisher extends Advertiser {
     }
 
     /**
-     * @before _secure, publisherLayout
+     * @before _secure, _layout
      */
     public function links() {
         $this->seo(array("title" => "Stats Charts", "view" => $this->getLayoutView()));

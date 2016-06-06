@@ -42,12 +42,4 @@ class Account extends Auth {
         $this->seo(array("title" => "Settings", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
     }
-
-    /**
-     * @protected
-     */
-    public function _layout() {
-        $this->defaultLayout = "layouts/publisher";
-        $this->setLayout();
-    }
 }

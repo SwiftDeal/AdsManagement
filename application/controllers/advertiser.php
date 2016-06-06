@@ -8,7 +8,7 @@ use Framework\Registry as Registry;
 class Advertiser extends Analytics {
     
     /**
-     * @before _secure, advertiserLayout
+     * @before _secure, _layout
      */
     public function index() {
         $this->seo(array("title" => "Dashboard", "view" => $this->getLayoutView()));

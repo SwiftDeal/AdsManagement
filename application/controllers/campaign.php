@@ -20,7 +20,7 @@ class Campaign extends Publisher {
     );
 
     /**
-     * @before _secure, publisherLayout
+     * @before _secure, _layout
      */
     public function index() {
         $this->seo(array("title" => "Link Share Campaign", "description" => "All campaign sorted by newly added", "view" => $this->getLayoutView()));
@@ -53,7 +53,7 @@ class Campaign extends Publisher {
     }
     
     /**
-     * @before _secure, advertiserLayout
+     * @before _secure, _layout
      */
     public function create() {
         $this->seo(array("title" => "Create Content", "view" => $this->getLayoutView()));
@@ -106,7 +106,7 @@ class Campaign extends Publisher {
     }
 
     /**
-     * @before _secure, advertiserLayout
+     * @before _secure, _layout
      */
     public function update($id = NULL) {
         $this->seo(array("title" => "Edit Content", "view" => $this->getLayoutView()));
@@ -135,7 +135,7 @@ class Campaign extends Publisher {
     }
 
     /**
-     * @before _secure, advertiserLayout
+     * @before _secure, _layout
      */
     public function fetch() {
         $this->seo(array("title" => "Create Content", "view" => $this->getLayoutView()));
@@ -215,7 +215,7 @@ class Campaign extends Publisher {
     }
 
     /**
-     * @before _secure, advertiserLayout
+     * @before _secure, _layout
      */
     public function manage() {
         $this->seo(array("title" => "Manage Campaign", "view" => $this->getLayoutView()));
