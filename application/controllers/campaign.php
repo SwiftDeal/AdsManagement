@@ -277,41 +277,6 @@ class Campaign extends Publisher {
         $view->set("categories", explode(",", $item->category));
     }
 
-    /**
-     * @before _secure, changeLayout, _admin
-     */
-    public function delete($id = NULL) {
-        $this->noview();
-        $urls = Registry::get("MongoDB")->urls;
-        $clicks = Registry::get("MongoDB")->clicks;
-        $item = Item::first(array("id = ?" => $id));
-        if (isset($item)) {
-            $links = Link::all(array("item_id = ?" => $item->id));
-            foreach ($links as $link) {
-                $stat = Stat::all(array("link_id = ?" => $link->id));
-                $stat->delete();
-                $link->delete();
-            }
-            $urls->remove(array('item_id' => $item->id));
-
-            $stats = Stat::all(array("item_id = ?" => $item->id));
-            foreach ($stats as $stat) {
-                $stat->delete();
-            }
-            $clicks->remove(array('item_id' => $item->id));
-
-            $model = $item->model;
-
-            $campaign_models = $model::all(array("item_id = ?" => $item->id));
-            foreach ($campaign_models as $cm) {
-                $cm->delete();
-            }
-
-            $item->delete();
-        }
-        $this->redirect($_SERVER["HTTP_REFERER"]);        
-    }
-
     public function resize($image, $width = 600, $height = 315) {
         $path = APP_PATH . "/public/assets/uploads/images";$cdn = CLOUDFRONT;
         $image = base64_decode($image);

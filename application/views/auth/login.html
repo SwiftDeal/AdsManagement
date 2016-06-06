@@ -2,49 +2,39 @@
     <div class="side-body container">
         <div class="row">
             <div class="col-md-12">
-                <h2 class="text-center app-content-header">Your vNative Account Login</h2>
+                <h2 class="app-content-header">Sign In</h2>
             </div>
         </div>
         <div class="row">
+            <div class="col-md-3"></div>
             <div class="col-md-6">
-                
-            </div>
-            <div class="col-md-6">
-                <div class="">
-                    {if(isset($message))}<div class="alert fresh-color alert-info" role="alert">{echo $message}</div>{/if}
-                    <div>
-                        <div class="login-form row">
-                            <div class="col-sm-12 text-center login-header">
-                                <i class="login-logo fa fa-connectdevelop fa-5x"></i>
-                                <h4 class="login-title">vNative</h4>
+                {if(isset($message))}<div class="alert fresh-color alert-info" role="alert">{echo $message}</div>{/if}
+                <div class="login-form row">
+                    <div class="col-sm-12 text-center login-header">
+                        <i class="login-logo fa fa-connectdevelop fa-5x"></i>
+                        <h4 class="login-title">vNative</h4>
+                    </div>
+                    <div class="col-sm-12">
+                        <form method="post" action="">
+                            <div class="form-group">
+                                <input type="email" name="email" class="form-control" placeholder="Email" required="" />
                             </div>
-                            <div class="col-sm-12">
-                                <div class="login-body">
-                                    <form method="post" action="">
-                                        <div class="control">
-                                            <input type="email" name="email" class="form-control" placeholder="Email" required="" />
-                                        </div>
-                                        <div class="control">
-                                            <input type="password" name="password" class="form-control" placeholder="Password" required="" />
-                                        </div>
-                                        <div class="login-button text-center">
-                                            <input type="hidden" name="action" value="login">
-                                            <input type="submit" class="btn btn-primary" value="Login">
-                                            {if($fb)}
-                                            <button type="button" data-action="login" data-target="/publisher/index.html" class="btn btn-success fb">Login with Facebook</button>
-                                            {/if}
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="login-footer">
-                                    <span class="pull-left"><a href="/publisher/register.html" class="color-white">Register</a></span>
-                                    <span class="text-right"><a href="/auth/forgotpassword.html" class="color-white">Forgot Password?</a></span>
-                                </div>
+                            <div class="form-group">
+                                <input type="password" name="password" class="form-control" placeholder="Password" required="" />
                             </div>
+                            <div class="login-button text-center">
+                                <input type="hidden" name="action" value="login">
+                                <input type="submit" class="btn btn-primary btn-lg" value="Login">
+                            </div>
+                        </form>
+                        <div class="login-footer text-center">
+                            <p><a href="/auth/forgotpassword.html">Forgot your Password?</a></p>
+                            <p>Dont have account? <a href="/publisher/register.html">Sign up.</a></p>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="col-md-3"></div>
         </div>
     </div>
 </div>

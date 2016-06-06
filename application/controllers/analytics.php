@@ -11,30 +11,6 @@ use \Curl\Curl;
 class Analytics extends Manage {
 
     /**
-     * @before _secure, changeLayout, _admin
-     */
-    public function content($id='') {
-        $this->seo(array("title" => "Content Analytics", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
-        $item = Item::first(array("id = ?" => $id));
-
-        $earn = 0;
-        $stats = Stat::all(array("item_id = ?" => $item->id), array("amount"));
-        foreach ($stats as $stat) {
-            $earn += $stat->amount;
-        }
-
-        $links = Link::count(array("item_id = ?" => $item->id));
-        $rpm = RPM::count(array("item_id = ?" => $item->id));
-
-        $view->set("item", $item);
-        $view->set("earn", $earn);
-        $view->set("links", $links);
-        $view->set("rpm", $rpm);
-    }
-
-    /**
      * @before _secure
      */
     public function link($date = NULL) {
@@ -48,8 +24,6 @@ class Analytics extends Manage {
         }
         $result = $link->stat($date);
         
-        $currency = ($this->user->currency) ? $this->user->currency : "inr";
-        // $view->set("earning", Shared\Markup::nice_number($result["earning"], ["currency" => $currency]));
         $view->set("earning", $this->user->convert($result["earning"]));
         $view->set("click", $result["click"]);
         $view->set("rpm", $this->user->convert($result["rpm"]));
@@ -83,17 +57,6 @@ class Analytics extends Manage {
         }
         arsort($logs);
         $view->set("logs", $logs);
-    }
-
-    /**
-     * @before _secure, changeLayout, _admin
-     */
-    public function clicks() {
-        $this->seo(array("title" => "Clicks Stats", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
-        $now = strftime("%Y-%m-%d", strtotime('now'));
-        $view->set("now", $now);
     }
 
     /**
@@ -259,81 +222,4 @@ class Analytics extends Manage {
         exit;
     }
 
-    protected static function _records($users, $opts) {
-        $results = [];
-
-        foreach ($users as $key => $value) {
-            $advert = Advert::first(["user_id = ?" => $key], ["gatoken"]);
-            if (!$advert || !$advert->gatoken) continue;
-            $user = ArrayMethods::toObject(['id' => $key]);
-
-            $client = Shared\Services\GA::client($advert->gatoken);
-            $r = Shared\Services\GA::update($client, $user, $opts);
-
-            if (empty($r)) continue;
-            $results = array_merge($r, $results);
-        }
-        return $results;   
-    }
-
-    /**
-     * @before _secure, changeLayout, _admin
-     */
-    public function publisher() {
-        $this->seo(array("title" => "Platform GA Stats", "view" => $this->getLayoutView()));
-        $view = $this->getActionView(); $view->set("all_data", false);
-        $user_id = RequestMethods::get("user");
-        $start = RequestMethods::get("startdate");
-        $end = RequestMethods::get("enddate");
-
-        $result = []; $count = 0;
-        $clicks = Registry::get("MongoDB")->clicks; $totalClicks = 0;
-        if ($start && $end) {            
-            $opts = [
-                'start' => $start, 'end' => $end,
-                'case' => 'total'
-            ];
-
-            $users = [];
-            if ($user_id) {
-                $opts['filters'] = 'ga:source=~'.$user_id;
-                $links = Link::all(["user_id = ?" => $user_id], ["DISTINCT item_id"]);
-                foreach ($links as $l) {
-                    $item = Item::first(["id = ?" => $l->item_id], ["user_id"]);
-                    $users[$item->user_id] = $item->user_id;
-                }
-                $records = $this->_records($users, $opts);   
-            } else {
-                $opts['case'] = 'countryWise';
-                $items = Advert::all(["live = ?" => true], ["DISTINCT user_id"]);
-                foreach ($items as $i) {
-                    $users[$i->user_id] = $i->user_id;
-                }
-                $records = $this->_records($users, $opts);
-                $publisherWise = Shared\Services\GAData::publisherWise($records);
-                $view->set("all_data", true)
-                    ->set("publishers", $publisherWise);
-            }
-
-            $start_time = strtotime($start); $end_time = strtotime($end);
-            for ($i = 0; $start_time < $end_time; $i++) {
-                $start_time = strtotime($start . " +{$i} day");
-                $date = date('Y-m-d', $start_time);
-                $clicks_records = $clicks->find(['user_id' => $user_id, 'created' => $date], ['click' => true]);
-
-                foreach ($clicks_records as $c) {
-                    $totalClicks += $c['click'];
-                }
-            }
-            
-            foreach ($records as $r) {
-                $result[] = ArrayMethods::toObject($r);
-                $count++;
-            }
-        }
-        
-        $view->set("records", $result)
-            ->set("totalClicks", $totalClicks)
-            ->set("user_id", $user_id);
-    }
 }

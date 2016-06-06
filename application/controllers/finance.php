@@ -115,31 +115,6 @@ class Finance extends Admin {
     }
 
     /**
-     * Earning on a Content
-     * @before _secure, changeLayout, _admin
-     */
-    public function content($id='') {
-        $this->seo(array("title" => "Content Finance", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
-        $item = Item::first(array("id = ?" => $id));
-
-        $earn = 0;
-        $earnings = Earning::all(array("item_id = ?" => $item->id), array("amount"));
-        foreach ($earnings as $earning) {
-            $earn += $earning->amount;
-        }
-
-        $links = Link::count(array("item_id = ?" => $item->id));
-        $rpm = RPM::count(array("item_id = ?" => $item->id));
-
-        $view->set("item", $item);
-        $view->set("earn", $earn);
-        $view->set("links", $links);
-        $view->set("rpm", $rpm);
-    }
-
-    /**
      * @before _secure, changeLayout, _admin
      */
     public function transactions() {
@@ -275,21 +250,4 @@ class Finance extends Admin {
         }
         $view->set("payout", $payout);
     }
-
-    public function stats($live=0) {
-        $this->JSONview();
-        $view = $this->getActionView();
-
-        $database = Registry::get("database");
-        $startdate = date('Y-m-d', strtotime("-6 day"));
-        $enddate = date('Y-m-d', strtotime("now"));
-        $diff = date_diff(date_create($startdate), date_create($enddate));
-        for ($i = 0; $i <= $diff->format("%a"); $i++) {
-            $date = date('Y-m-d', strtotime($startdate . " +{$i} day"));
-            $earn = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", $live)->where("created LIKE ?", "%{$date}%")->all();
-            $obj[] = array('y' => $date, 'a' => abs(round($earn[0]["earn"], 2)));
-        }
-        $view->set("data", \Framework\ArrayMethods::toObject($obj));
-    }
-    
 }
