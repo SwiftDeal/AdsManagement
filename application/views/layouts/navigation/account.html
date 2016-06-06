@@ -18,18 +18,13 @@
             {if(isset($admin))}
             <li class="primary"><a href="/admin/index.html"><i class="fa fa-user-secret"></i> Admin</a></li>
             {/if}
-            <li class="primary"><a href="/campaign.html"><i class="fa fa-link"></i> Get Link</a></li>
-            <li class="primary"><a href="/support/create.html"><i class="fa fa-tag"></i> Create Ticket</a></li>
             <li class="dropdown info">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-user"></i> {echo $user->name} (ID: {echo $user->id})</a>
                 <ul class="dropdown-menu danger  animated fadeInDown">
                     <li>
                         <ul class="list-group notifications">
-                            <a href="/publisher/profile.html">
+                            <a href="/account/profile.html">
                                 <li class="list-group-item"><i class="fa fa-user icon"></i> Profile</li>
-                            </a>
-                            <a href="/publisher/platforms.html">
-                                <li class="list-group-item"><i class="fa fa-tablet icon"></i> Platforms</li>
                             </a>
                             <a href="/auth/logout.html">
                                 <li class="list-group-item"><i class="fa fa-power-off icon"></i> Logout</li>
@@ -45,37 +40,61 @@
     <nav class="navbar navbar-default" role="navigation">
         <div class="side-menu-container">
             <div class="navbar-header">
-                <a class="navbar-brand" href="/publisher/index.html">
+                <span class="navbar-brand">
                     <div class="icon fa fa-connectdevelop"></div>
                     <div class="title">vNative</div>
-                </a>
+                </span>
                 <button type="button" class="navbar-expand-toggle pull-right visible-xs">
                     <i class="fa fa-times icon"></i>
                 </button>
             </div>
             <ul class="nav navbar-nav">
-                <li><a href="/publisher/index.html"><span class="icon fa fa-money"></span><span class="title">Monetize</span></a></li>
-                <li><a href="/advertiser/index.html"><span class="icon fa fa-bullhorn"></span><span class="title">Advertise</span></a></li>
-                <li><a href="/publisher/links.html"><span class="icon fa fa-bar-chart-o"></span><span class="title">Link Stats</span></a></li>
                 <li class="panel panel-default dropdown">
-                    <a data-toggle="collapse" href="#dropdown-table">
-                        <span class="icon fa fa-table"></span><span class="title">Table</span>
+                    <a data-toggle="collapse" href="#dropdown-Monetize">
+                        <span class="icon fa fa-money"></span><span class="title">Monetize</span>
                     </a>
                     <!-- Dropdown level 1 -->
-                    <div id="dropdown-table" class="panel-collapse collapse">
+                    <div id="dropdown-Monetize" class="panel-collapse collapse">
                         <div class="panel-body">
                             <ul class="nav navbar-nav">
-                                <li><a href="table/table.html">Table</a>
-                                </li>
-                                <li><a href="table/datatable.html">Datatable</a>
-                                </li>
+                                <li><a href="/publisher/index.html">Dashboard</a></li>
+                                <li><a href="/publisher/adunits.html">Ad Units</a></li>
+                                <li><a href="/campaign.html">Campaigns</a></li>
                             </ul>
                         </div>
                     </div>
                 </li>
-                <li><a href="/campaign.html"><span class="icon fa fa-paper-plane-o"></span><span class="title">Campaigns</span></a></li>
-                <li><a href="/publisher/payments.html"><span class="icon fa fa-credit-card-alt"></span><span class="title">Payments</span></a></li>
-                <li><a href="/support/tickets.html"><span class="icon fa fa-support"></span><span class="title">Support</span></a></li>
+                <li class="panel panel-default dropdown">
+                    <a data-toggle="collapse" href="#dropdown-Advertise">
+                        <span class="icon fa fa-bullhorn"></span><span class="title">Advertise</span>
+                    </a>
+                    <!-- Dropdown level 1 -->
+                    <div id="dropdown-Advertise" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <ul class="nav navbar-nav">
+                                <li><a href="/advertiser/index.html">Dashboard</a></li>
+                                <li><a href="/campaign/manage.html">Manage Campaigns</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="panel panel-default dropdown">
+                    <a data-toggle="collapse" href="#dropdown-Account">
+                        <span class="icon fa fa-universal-access"></span><span class="title">Account</span>
+                    </a>
+                    <!-- Dropdown level 1 -->
+                    <div id="dropdown-Account" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <ul class="nav navbar-nav">
+                                <li><a href="/account/transactions.html">Transactions</a></li>
+                                <li><a href="/account/platforms.html">Platforms</a></li>
+                                <li><a href="/account/settings.html">Settings</a></li>
+                                <li><a href="/account/settings.html">Add Funds</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li><a href="/support/index.html"><span class="icon fa fa-support"></span><span class="title">Support</span></a></li>
                 <li><a href="https://www.facebook.com/groups/1542456012749189/" target="_blank"><span class="icon fa fa-facebook-square"></span><span class="title">Join Group</span></a></li>
             </ul>
         </div>
