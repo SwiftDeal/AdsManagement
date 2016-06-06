@@ -222,7 +222,6 @@ class Campaign extends Publisher {
         $view = $this->getActionView();
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
-        
         $title = RequestMethods::get("title", "");
         
         $where = array(
@@ -230,10 +229,10 @@ class Campaign extends Publisher {
             "user_id = ?" => $this->user->id
         );
         
-        $items = Item::all($where, array("id", "title", "created", "image", "url", "live", "visibility"), "created", "desc", $limit, $page);
-        $count = Item::count($where);
+        $ads = Ad::all($where, array("id", "title", "created", "image", "url", "live", "visibility"), "created", "desc", $limit, $page);
+        $count = Ad::count($where);
 
-        $view->set("items", $items);
+        $view->set("ads", $ads);
         $view->set("page", $page);
         $view->set("count", $count);
         $view->set("limit", $limit);

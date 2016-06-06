@@ -15,65 +15,60 @@ tinymce.init({
     relative_urls: false
 });
 </script>
-<div class="page-title">
-    <span class="title">{$ticket->subject}</span>
-    <div class="description">
-        <ol class="breadcrumb navbar-breadcrumb">
-            <li><a href="/support/tickets.html">Tickets</a></li>
-            <li class="active">Reply</li>
-        </ol>
-    </div>
-</div>
-<div class="row">
-    <div class="col-lg-12">{if isset($message)}
-        <div class="alert alert-success alert-dismissible fade in" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-            {$message}
+<div class="container-fluid app-content-a" style="padding-top: 80px;">
+    <div class="page-title">
+        <span class="title">{$ticket->subject}</span>
+        <div class="description">
+            <ol class="breadcrumb navbar-breadcrumb">
+                <li><a href="/support/tickets.html">Tickets</a></li>
+                <li class="active">Reply</li>
+            </ol>
         </div>
-        {/if}
-        {foreach $c in $conversations}
-        {script $u = User::first(array("id = ?" => $c->user_id), array("name"))}
-        <div class="card">
-            <div class="card-body">
-                <div class="text-indent row">
-                    <div class="col-sm-2">
-                        <img src="/public/assets/images/logo.png" width="50"><br>{$u->name}
-                    </div>
-                    <div class="col-sm-10">
-                        {$c->message}<br>
-                        <small class="pull-right">{echo Framework\StringMethods::datetime_to_text($c->created)}</small>
-                        {if($c->file)}
-                        <b><a href="{echo CDN}uploads/files/{echo $c->file}" target="_blank">Attachment</a></b>
-                        {/if}
+    </div>
+    <div class="row">
+        <div class="col-lg-12">{if isset($message)}
+            <div class="alert alert-success alert-dismissible fade in" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                {$message}
+            </div>
+            {/if}
+            {foreach $c in $conversations}
+            {script $u = User::first(array("id = ?" => $c->user_id), array("name"))}
+            <div class="card">
+                <div class="card-body">
+                    <div class="text-indent row">
+                        <div class="col-sm-2">
+                            <img src="/public/assets/images/logo.png" width="50"><br>{$u->name}
+                        </div>
+                        <div class="col-sm-10">
+                            {$c->message}<br>
+                            <small class="pull-right">{echo Framework\StringMethods::datetime_to_text($c->created)}</small>
+                            {if($c->file)}
+                            <b><a href="{echo CDN}uploads/files/{echo $c->file}" target="_blank">Attachment</a></b>
+                            {/if}
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div><br>
-        {/foreach}
-        <div class="card">
-            <div class="card-body">
-                <form class="form-horizontal" method="post" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Reply Message</label>
-                        <div class="col-sm-10">
-                        	<textarea class="form-control editor" name="message" rows="3" placeholder="Explain your problem"></textarea>
-                            <span class="help-block">{echo Shared\Markup::errors($errors, "message")}</span>
+            </div><br>
+            {/foreach}
+            <div class="card">
+                <div class="card-body">
+                    <form class="form-horizontal" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Reply Message</label>
+                            <div class="col-sm-10">
+                            	<textarea class="form-control editor" name="message" rows="3" placeholder="Explain your problem"></textarea>
+                                <span class="help-block">{echo Shared\Markup::errors($errors, "message")}</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Attach File(Optional)</label>
-                        <div class="col-sm-10">
-                        	<input type="file" name="file" class="form-control">
-                            <span class="help-block">{echo Shared\Markup::errors($errors, "file")}</span>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <input type="hidden" name="action" value="reply">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            <input type="hidden" name="action" value="reply">
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

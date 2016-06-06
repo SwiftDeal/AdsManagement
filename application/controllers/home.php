@@ -3,10 +3,9 @@
 /**
  * @author Faizan Ayubi
  */
-use Framework\Controller as Controller;
 use Framework\RequestMethods as RequestMethods;
 
-class Home extends Controller {
+class Home extends Auth {
 
     public function index() {
         $this->getLayoutView()->set("seo", Framework\Registry::get("seo"));
@@ -31,14 +30,4 @@ class Home extends Controller {
     public function contact() {
         $this->seo(array("title" => "Contact Us", "view" => $this->getLayoutView()));
     }
-    
-    public function seo($params = array()) {
-        $seo = Framework\Registry::get("seo");
-        foreach ($params as $key => $value) {
-            $property = "set" . ucfirst($key);
-            $seo->$property($value);
-        }
-        $params["view"]->set("seo", $seo);
-    }
-    
 }

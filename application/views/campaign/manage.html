@@ -34,19 +34,19 @@
                         <th>Realtime</th>
                         <th>Action</th>
                     </tr>
-                    {foreach $item in $items}
+                    {foreach $ad in $ads}
                     <tr>
-                        <td>{echo $item->id}</td>
+                        <td>{echo $ad->id}</td>
                         <td>
-                            <a href="/public/assets/uploads/images/{$item->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}/50/50"></a>
-                            {echo $item->title}<br>
-                            <small>{echo Framework\StringMethods::datetime_to_text($item->created)}</small>
+                            <a href="/public/assets/uploads/images/{$ad->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($ad->image)}/50/50"></a>
+                            {echo $ad->title}<br>
+                            <small>{echo Framework\StringMethods::datetime_to_text($ad->created)}</small>
                         </td>
-                        <td class="campaignstat" data-campaign="{echo $item->id}">
+                        <td class="campaignstat" data-campaign="{echo $ad->id}">
                             <span class="label label-success">View</span>
                         </td>
                         <td>
-                            <a href="/campaign/update/{$item->id}.html" class="btn btn-info btn-xs"><i class="fa fa-edit"></i></a>
+                            <a href="/campaign/update/{$ad->id}.html" class="btn btn-info btn-xs"><i class="fa fa-edit"></i></a>
                         </td>
                     </tr>
                     {/foreach}

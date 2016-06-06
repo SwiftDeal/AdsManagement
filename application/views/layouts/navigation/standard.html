@@ -17,8 +17,12 @@
                 <li><a href="/index.html">Home</a></li>
                 <li><a href="/support.html">Support</a></li>
                 <li><a href="/contact.html">Contact</a></li>
+                {if(isset($user))}
+                <li><a href="/account/profile.html">{echo $user->name}</a></li>
+                {/if} {else}
                 <li><a href="/register.html">Sign up</a></li>
                 <li><a href="/login.html">Sign In</a></li>
+                {/else}
             </ul>
         </div>
         <!--/.nav-collapse -->

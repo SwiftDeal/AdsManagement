@@ -12,19 +12,8 @@ class Support extends Publisher {
         $view = $this->getActionView();
 	}
 
-    /**
-     * @before _secure, advertiserLayout
-     */
-    public function advertiser() {
-        $this->seo(array("title" => "Support","view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
-        $access = Access::first(array("property_id = ?" => $this->advert->id, "property = ?" => "advert"));
-        $view->set("access", $access);
-    }
-
 	/**
-     * @before _secure, _layout
+     * @before _secure
      */
 	public function tickets() {
 		$this->seo(array("title" => "Support Tickets","view" => $this->getLayoutView()));
@@ -95,7 +84,7 @@ class Support extends Publisher {
     }
 
     /**
-     * @before _secure, _layout
+     * @before _secure
      */
     public function reply($ticket_id) {
         $this->seo(array("title" => "Conversation","view" => $this->getLayoutView()));
@@ -127,7 +116,7 @@ class Support extends Publisher {
     }
 
 	/**
-     * @before _secure, _layout
+     * @before _secure
      */
 	public function create() {
 		$this->seo(array("title" => "Create Ticket","view" => $this->getLayoutView()));
@@ -163,53 +152,8 @@ class Support extends Publisher {
         $view->set("tickets", $tickets);
 	}
 
-    public function receive() {
-        $this->JSONview();
-        $view = $this->getActionView();
-        $output = '<pre>'. print_r($_POST, true). '</pre>';
-        $this->log($output);
-
-        $email = substr(RequestMethods::post("From"), strpos(RequestMethods::post("From"), "<") + 1, -1);
-        if (strlen($email) > 3) {
-            $user = User::first(array("email = ?" => $email), array("id"));
-            if (!isset($user)) {
-                $name = substr(RequestMethods::post("From"), 0, strpos(RequestMethods::post("From"), "<"));
-                $user = new User(array(
-                    "username" => $name,
-                    "name" => $name,
-                    "email" => $email,
-                    "password" => sha1($this->randomPassword()),
-                    "phone" => "",
-                    "admin" => 0,
-                    "live" => 0
-                ));
-                $user->save();
-            }
-            $ticket = Ticket::first(array("subject = ?" => str_replace("Re: ", "", RequestMethods::post("Subject")), "user_id = ?" => $user->id));
-            if (!isset($ticket)) {
-                $ticket = new Ticket(array(
-                    "user_id" => $user->id,
-                    "subject" => RequestMethods::post("Subject"),
-                    "live" => true
-                ));
-                $ticket->save();
-            } else {
-                $ticket->live = 1;
-                $ticket->save();
-            }
-            $conversation = new Conversation(array(
-                "user_id" => $user->id,
-                "ticket_id" => $ticket->id,
-                "message" => RequestMethods::post("body-html"),
-                "file" => "",
-            ));
-            $conversation->save();
-            $view->set("success", true);
-        }
-    }
-
     /**
-     * @before _secure, _layout
+     * @before _secure
      */
     public function close($ticket_id, $live) {
         $this->noview();
