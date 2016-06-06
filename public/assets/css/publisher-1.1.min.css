@@ -3428,7 +3428,7 @@ body.login-page {
 }
 
 .landing-page .app-content-b.feature-2 {
-    background-image: url("http://vnative.com/public/assets/images/slide.jpg");
+    background-image: url("http://vnative.com/public/assets/images/nativebg.jpg");
     background-repeat: no-repeat;
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -3436,6 +3436,7 @@ body.login-page {
     background-size: cover;
     background-position: center;
     margin-bottom: 0;
+    height: 359px
 }
 
 body.login-page .login-box {
