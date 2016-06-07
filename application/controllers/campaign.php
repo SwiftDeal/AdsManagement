@@ -58,12 +58,10 @@ class Campaign extends Publisher {
     public function create() {
         $this->seo(array("title" => "Create Content", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
+
+        $view->set("meta", $this->_bot(RequestMethods::get("url")));
         
         $view->set("errors", array());
-        if (!empty($this->advert->cpc)) {
-            $view->set("message", "Account CPC not Set");
-            return;
-        }
         if (RequestMethods::post("action") == "content") {
             $exist = Item::first(array("url = ?" => RequestMethods::post("url")), array("id"));
             if ($exist) {
@@ -132,19 +130,6 @@ class Campaign extends Publisher {
             }
         }
         $view->set("item", $item);
-    }
-
-    /**
-     * @before _secure, _layout
-     */
-    public function fetch() {
-        $this->seo(array("title" => "Create Content", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-        
-        $view->set("errors", array());
-        if (RequestMethods::post("action") == "prefetch") {
-            $view->set("meta", $this->_bot(RequestMethods::post("url")));
-        }
     }
 
     protected function _bot($url) {

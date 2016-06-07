@@ -127,40 +127,6 @@ $(document).ready(function() {
         });
     });
 
-    $(".fetch").submit(function(e) {
-        e.preventDefault();
-        var self = $(this);
-        $(".fetch button").html('Fetching ...<i class="fa fa-spinner fa-pulse"></i>');
-        request.create({
-            action: "campaign/fetch",
-            data: self.serialize(),
-            callback: function(data) {
-                $(".fetch button").html('Done');console.log(data);
-
-                $('.meta_img').attr('src', data.meta.image);
-                $('#meta_title').html(data.meta.title);
-                $('#meta_url').html(data.meta.url);
-                $('textarea').val(data.meta.description);
-                $('#meta_description').html(data.meta.description);
-                $('input[name="title"]').val(data.meta.title);
-                $('input[name="url"]').val(data.meta.url);
-                $('input[name="image_url"]').val(data.meta.image);
-
-                $('#myTabs li:eq(0)').removeClass('active');
-                $('#myTabs li:eq(1)').removeClass('hidden');
-                $('#myTabs li:eq(1)').addClass('step-success');
-                $('#myTabs li:eq(1) a').tab('show');
-            }
-        });
-    });
-
-    $("#finalize").click(function(e) {
-        $('#myTabs li:eq(1)').removeClass('active');
-        $('#myTabs li:eq(2)').removeClass('hidden');
-        $('#myTabs li:eq(2)').addClass('step-success');
-        $('#myTabs li:eq(2) a').tab('show');
-    });
-
     $(".shortenURL").click(function(e) {
         e.preventDefault();
         var btn = $(this),
@@ -215,14 +181,6 @@ $(document).ready(function() {
         self.removeClass('disabled');
     });
 
-    $(".fbshare").click(function (e) {
-        e.preventDefault();
-        var self = $(this);
-        self.addClass('disabled');
-        ouvre("https://www.facebook.com/sharer/sharer.php?u=" + self.attr('href'));
-        self.removeClass('disabled');
-    });
-
     $("#payout").click(function (e) {
         e.preventDefault();
         var self = $(this);
@@ -233,28 +191,6 @@ $(document).ready(function() {
             action: "finance/payout",
             callback: function(data) {
                 self.html('Successfully Done!!!');
-            }
-        });
-    });
-
-    $(".fbLinkStat").on("click", function (e) {
-        e.preventDefault();
-        var el = $(this),
-        processing = el.data('processing');
-        el.html('<i class="fa fa-spinner fa-spin"></i> Fetching..');
-
-        if (processing) return;
-        el.data('processing', true);
-        window.request.create({
-            action: 'facebook/postStats',
-            data: { link_id: el.data('link'), action: 'showStats' },
-            callback: function (d) {
-                if (d.success) {
-                    el.html('Clicks: ' + d.clicks);
-                    el.removeData('processing');
-                } else {
-                    alert("Invalid request!!");
-                }
             }
         });
     });
