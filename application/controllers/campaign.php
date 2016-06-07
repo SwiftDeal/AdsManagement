@@ -59,8 +59,10 @@ class Campaign extends Publisher {
         $this->seo(array("title" => "Create Content", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
-        $view->set("meta", $this->_bot(RequestMethods::get("url")));
-        
+        if (RequestMethods::get("link")) {
+            $view->set("meta", $this->_bot(RequestMethods::get("link")));
+        }
+
         $view->set("errors", array());
         if (RequestMethods::post("action") == "content") {
             $exist = Item::first(array("url = ?" => RequestMethods::post("url")), array("id"));
