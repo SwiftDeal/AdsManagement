@@ -1,47 +1,61 @@
 {include layouts/modal/addCredit.html}
 <link rel="stylesheet" href="/public/assets/css/jquery-jvectormap-2.0.3.css" type="text/css" media="screen" />
 <div class="row">
-    <div class="col-sm-3 col-xs-12">
-        <div class="panel panel-default">
-            <ul class="list-group">
-                <li class="list-group-item list-group-item-danger text-center"><b><i class="fa fa-globe"></i> Realtime Today</b></li>
-                <li class="list-group-item">Sessions <span class="badge" id="today_click"><i class="fa fa-spinner fa-pulse"></i></span></li>
-                <li class="list-group-item">Average CPM <span class="badge" id="today_cpc"><i class="fa fa-spinner fa-pulse"></i></span></li>
-                <li class="list-group-item">Spent(INR) <span class="badge" id="today_spent"><i class="fa fa-spinner fa-pulse"></i></span></li>
-            </ul>
-        </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+        <a href="#">
+            <div class="card red summary-inline">
+                <div class="card-body">
+                    <i class="icon fa fa-check-circle fa-4x"></i>
+                    <div class="content">
+                        <div class="title">0</div>
+                        <div class="sub-title">Ads Active</div>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            </div>
+        </a>
     </div>
-    <div class="col-sm-3 col-xs-12">
-        <div class="panel panel-default">
-            <ul class="list-group">
-                <li class="list-group-item list-group-item-warning text-center"><b><i class="fa fa-check-circle"></i> Campaign Stats Total</b>
-                    <a href="#" class="btn btn-xs badge" download="" data-toggle="tooltip" data-placement="top" title="Your Complete Earning Report"><i class="fa fa-download"></i> Report</a>
-                </li>
-                <li class="list-group-item">Sessions <span class="badge">0</span></li>
-                <li class="list-group-item">Average RPM <span class="badge">0</span></li>
-                <li class="list-group-item">Earnings <span class="badge">0</span></li>
-            </ul>
-        </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+        <a href="#">
+            <div class="card yellow summary-inline">
+                <div class="card-body">
+                    <i class="icon fa fa-eye fa-4x"></i>
+                    <div class="content">
+                        <div class="title">0</div>
+                        <div class="sub-title">Impressions</div>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            </div>
+        </a>
     </div>
-    <div class="col-sm-3 col-xs-12">
-        <div class="panel panel-success">
-            <ul class="list-group">
-                <li class="list-group-item list-group-item-success text-center"><b><i class="fa fa-support"></i> Account</b></li>
-                <li class="list-group-item">Platforms Added <span class="badge">{echo Shared\Markup::nice_number(Platform::count(array("user_id = ?" => $user->id)))}</span></li>
-                <li class="list-group-item">Platforms Added <span class="badge">{echo Shared\Markup::nice_number(Platform::count(array("user_id = ?" => $user->id)))}</span></li>
-                <li class="list-group-item">Platforms Added <span class="badge">{echo Shared\Markup::nice_number(Platform::count(array("user_id = ?" => $user->id)))}</span></li>
-            </ul>
-        </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+        <a href="#">
+            <div class="card green summary-inline">
+                <div class="card-body">
+                    <i class="icon fa fa-hand-pointer-o fa-4x"></i>
+                    <div class="content">
+                        <div class="title">0</div>
+                        <div class="sub-title">Clicks</div>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            </div>
+        </a>
     </div>
-    <div class="col-sm-3 col-xs-12">
-        <div class="panel panel-success">
-            <ul class="list-group">
-                <li class="list-group-item list-group-item-info text-center"><b><i class="fa fa-money"></i> Finace</b></li>
-                <li class="list-group-item">Total <span class="badge currency"> {echo $user->convert($earn)}</span></li>
-                <li class="list-group-item">Paid <span class="badge currency"> {echo $user->convert(abs($paid))}</span></li>
-                <li class="list-group-item">Paid <span class="badge currency"> {echo $user->convert(abs($paid))}</span></li>
-            </ul>
-        </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+        <a href="#">
+            <div class="card blue summary-inline">
+                <div class="card-body">
+                    <i class="icon fa fa-money fa-4x"></i>
+                    <div class="content">
+                        <div class="title">0</div>
+                        <div class="sub-title">Funds</div>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            </div>
+        </a>
     </div>
 </div>
 <div class="row">
