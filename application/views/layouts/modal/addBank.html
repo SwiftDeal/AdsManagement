@@ -8,29 +8,30 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label>Bank Name</label>
-                    <select class="form-control" name="bank">
+                    <select class="form-control noselect2" name="meta['bank']">
                         {include auth/bank.html}
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Account Holder</label>
-                    <input type="text" name="name" class="form-control" placeholder="Name of Account Holder" required="">
+                    <input type="text" name="meta['owner']" class="form-control" placeholder="Name of Account Holder" required="">
                 </div>
                 <div class="form-group">
                     <label>Account Number</label>
-                    <input type="text" name="number" class="form-control" placeholder="Account Number" required="">
+                    <input type="text" name="account" class="form-control" placeholder="Account Number" required="">
                 </div>
                 <div class="form-group">
                     <label>IFSC Code</label>
-                    <input type="text" name="ifsc" class="form-control" placeholder="Bank IFSC Code" required="">
+                    <input type="text" name="meta['ifsc']" class="form-control" placeholder="Bank IFSC Code" required="">
                 </div>
                 <div class="form-group">
-                    <label>PAN (Or tax Registeration Number)</label>
-                    <input type="text" name="pan" class="form-control" placeholder="Permanent Account Number" required="">
+                    <label>PAN/Tax Registeration (Optional)</label>
+                    <input type="text" name="meta['pan']" class="form-control" placeholder="Permanent Account Number">
                 </div>
             </div>
             <div class="modal-footer">
             	<input type="hidden" name="action" value="addBank">
+                <input type="hidden" name="type" value="bank">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-primary">Save</button>
             </div>

@@ -19,18 +19,21 @@
             <table class="table table-bordered table-hover">
                 <thead>
                     <tr>
-                        <th>Id</th>
-                        <th>Website</th>
+                        <th>Type</th>
+                        <th>Resource</th>
+                        <th>Category</th>
                         <th>Status</th>
+                        <th>Created</th>
                     </tr>
                 </thead>
                 <tbody>
-                {foreach $a in $access}
-                {script $website = Website::first(["id = ?" => $a->property_id])}
+                {foreach $p in $platforms}
                     <tr>
-                        <td>{echo $website->gaid}</td>
-                        <td>{echo $website->url}</td>
-                        <td>{echo $website->campaign()}</td>
+                        <td>{echo $p->type}</td>
+                        <td><a href="{echo $p->url}">{echo $p->url}</a></td>
+                        <td>{echo $p->category}</td>
+                        <td>{echo $p->live}</td>
+                        <td><small>{echo Framework\StringMethods::only_date($p->created)}</small></td>
                     </tr>
                 {/foreach}
                 </tbody>

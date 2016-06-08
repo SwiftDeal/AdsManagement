@@ -96,6 +96,7 @@ $(function() {
 $(document).ready(function() {
 
     $('select').select2();
+    $('.noselect2').select2('destroy');
 
     $(".campaignstat").click(function(e) {
         e.preventDefault();

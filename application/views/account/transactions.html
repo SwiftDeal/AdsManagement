@@ -31,7 +31,7 @@
                                 <span class="label label-success">Credit</span>
                                 {/else}
                             </td>
-                            <td>{echo Framework\StringMethods::only_date($t->created)}</td>
+                            <td><small>{echo Framework\StringMethods::only_date($t->created)}</small></td>
                         </tr>
                         {/foreach}
                     </tbody>

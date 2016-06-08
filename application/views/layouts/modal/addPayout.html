@@ -1,4 +1,4 @@
-<div class="modal fade" id="addPaypal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="addPayout" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <form class="modal-content" method="post" action="">
             <div class="modal-header">
@@ -7,8 +7,17 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Paypal</label>
-                    <input type="email" name="email" class="form-control" placeholder="Your Paypal Email" required="">
+                    <label>Account</label>
+                    <input type="text" name="account" class="form-control" placeholder="Your Account" required="">
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select name="type" class="form-control noselect2">
+                        <option value="paypal">Paypal</option>
+                        <option value="paytm">Paytm</option>
+                        <option value="payoom">Payoom</option>
+                        <option value="skrill">Skrill</option>
+                    </select>
                 </div>
             </div>
             <div class="modal-footer">

@@ -1,13 +1,11 @@
 {include layouts/modal/addBank.html}
-{include layouts/modal/addPaypal.html}
-{include layouts/modal/addPaytm.html}
+{include layouts/modal/addPayout.html}
 <div class="page-title">
     <span class="title">
         Profile
         <span class="pull-right">
             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addBank"><i class="fa fa-bank"></i> Add Bank</button>
-            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addPaypal"><i class="fa fa-paypal"></i> Add Paypal</button>
-            <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#addPaytm"><i class="fa fa-paypal"></i> Add Paytm</button>
+            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addPayout"><i class="fa fa-paypal"></i> Add Paypal or others</button>
         </span>
     </span>
 </div>
@@ -118,46 +116,18 @@
                 </div>
             </div>
             <div class="card-body">
-            {if($banks)}
+            {if($payouts)}
             <table class="table">
                 <tr>
-                    <th>Bank</th>
-                    <th>Owner</th>
-                    <th>A/C Number</th>
-                    <th>IFSC</th>
-                    <th>PAN</th>
+                    <th>Account</th>
+                    <th>Type</th>
+                    <th>Meta</th>
                 </tr>
-                {foreach $b in $banks}
+                {foreach $p in $payouts}
                 <tr>
-                    <td>{echo $b->bank}</td>
-                    <td>{echo $b->name}</td>
-                    <td>{echo $b->number}</td>
-                    <td>{echo $b->ifsc}</td>
-                    <td>{echo $b->pan}</td>
-                </tr>
-                {/foreach}
-            </table>
-            {/if}
-            {if($paypals)}
-            <table class="table">
-                <tr>
-                    <th>Paypal Email</th>
-                </tr>
-                {foreach $p in $paypals}
-                <tr>
-                    <td>{echo $p->email}</td>
-                </tr>
-                {/foreach}
-            </table>
-            {/if}
-            {if($paytms)}
-            <table class="table">
-                <tr>
-                    <th>Paytm Number</th>
-                </tr>
-                {foreach $p in $paytms}
-                <tr>
-                    <td>{echo $p->phone}</td>
+                    <td>{echo $p->account}</td>
+                    <td>{echo $p->type}</td>
+                    <td>{echo $p->meta}</td>
                 </tr>
                 {/foreach}
             </table>
