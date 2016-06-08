@@ -61,6 +61,8 @@ class Campaign extends Publisher {
 
         if (RequestMethods::get("link")) {
             $view->set("meta", $this->_bot(RequestMethods::get("link")));
+        } else {
+            $this->redirect("/campaign/manage.html");
         }
 
         $view->set("errors", array());

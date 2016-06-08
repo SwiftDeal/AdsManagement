@@ -1,3 +1,4 @@
+<script type="text/javascript" src="{echo CDN}plugins/bootstrap/affix.js"></script>
 <div class="page-title">
     <span class="title">Create Campaign</span>
     <div class="description">
@@ -18,22 +19,23 @@
                     <div class="panel panel-default panel-body">
                         <div class="form-group">
                             <label>Original URL</label>
-                            <input type="url" class="form-control" name="url" required="" disabled="">
+                            <input type="url" class="form-control" name="url" required="" disabled="" value="{echo $meta['url']}">
                             <span class="help-block">{echo Shared\Markup::errors($errors, "url")}</span>
                         </div>
                         <div class="form-group">
                             <label>Title</label>
-                            <input type="text" name="title" class="form-control" maxlength="100" required="">
+                            <input type="text" name="title" class="form-control" maxlength="100" required="" value="{echo $meta['title']}">
                             <span class="help-block">{echo Shared\Markup::errors($errors, "title")}</span>
                         </div>
                         <div class="form-group">
                             <label>Description</label>
-                            <textarea class="form-control" name="description" rows="3"></textarea>
+                            <textarea class="form-control" name="description" rows="3">{echo $meta['description']}</textarea>
                             <span class="help-block">{echo Shared\Markup::errors($errors, "description")}</span>
                         </div>
                         <div class="form-group">
                             <label>Image</label>
                             <input type="file" class="form-control" name="image" required="">
+                            <img src="{echo $meta['image']}" class="img-thumbnail">
                             <span class="help-block">Image should be 650px X 315px for good reach on Social Media<br>{echo Shared\Markup::errors($errors, "image")}</span>
                         </div>
                         <div class="form-group">
@@ -59,6 +61,18 @@
         </div>
     </div>
     <div class="col-md-6">
-        
+        <div class="row well">
+            <div data-spy="affix" data-offset-top="60" data-offset-bottom="200">
+                <div class="row-fluid">
+                    <div class="col-sm-4">
+                        <img src="{echo $meta['image']}" class="img-responsive">
+                    </div>
+                    <div class="col-sm-8">
+                        <a href="{echo $meta['url']}"><b>{echo $meta['title']}</b></a>
+                        <p>{echo $meta['description']}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

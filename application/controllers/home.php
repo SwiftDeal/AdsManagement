@@ -30,4 +30,8 @@ class Home extends Auth {
     public function contact() {
         $this->seo(array("title" => "Contact Us", "view" => $this->getLayoutView()));
     }
+
+    public function livedemo() {
+        $this->seo(array("title" => "Live Demo", "view" => $this->getLayoutView()));
+    }
 }

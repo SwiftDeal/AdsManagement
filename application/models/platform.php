@@ -45,4 +45,13 @@ class Platform extends Shared\Model{
      * @label url
      */
     protected $_url;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     *
+     * @label meta of platform
+     */
+    protected $_meta;
 }
