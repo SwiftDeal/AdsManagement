@@ -284,7 +284,7 @@ class Campaign extends Publisher {
 
                     $string = file_get_contents("{$path}/resize/{$thumbnail}");
                     $result = $s3->putObject([
-                        'Bucket' => 's3.clicks99.com',
+                        'Bucket' => 's3.vnative.com',
                         'Key' => 'images/resize/' . $thumbnail,
                         'Body' => $string
                     ]);

@@ -38,8 +38,8 @@ a:hover {
     <article>
         <h1>Error 404 !</h1>
         <div>
-            <p>Something went wrong. If you need to you can always <a href="mailto:info@clicks99.com">contact us</a>! or <a href="/index.html">Home</a></p>
-            <p>&mdash; Clicks99 Team</p>
+            <p>Something went wrong. If you need to you can always <a href="mailto:info@vnative.com">contact us</a>! or <a href="/index.html">Home</a></p>
+            <p>&mdash; vNative Team</p>
         </div>
     </article>
     <?php if (DEBUG): ?>

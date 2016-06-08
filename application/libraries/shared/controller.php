@@ -194,7 +194,7 @@ namespace Shared {
 
                 $string = file_get_contents(APP_PATH. '/public/assets/uploads/'.$type.'/'.$filename);
                 $result = $s3->putObject([
-                    'Bucket'=> 's3.clicks99.com',
+                    'Bucket'=> 's3.vnative.com',
                     'Key'   => $type . '/' . $filename,
                     'Body'  => $string,
                     'ACL'   => 'public-read'
@@ -218,7 +218,7 @@ namespace Shared {
 
                     $string = file_get_contents(APP_PATH. '/public/assets/uploads/images/'.$filename);
                     $result = $s3->putObject([
-                        'Bucket'=> 's3.clicks99.com',
+                        'Bucket'=> 's3.vnative.com',
                         'Key'   => 'images/' . $filename,
                         'Body'  => $string,
                         'ACL'   => 'public-read'
@@ -301,8 +301,8 @@ namespace Shared {
             if (!$mongoDB) {
                 $configuration = Registry::get("configuration");
                 $parsed = $configuration->parse("configuration/database");
-                $mongo = new \MongoClient("mongodb://".$parsed->database->mongodb->dbuser.":".$parsed->database->mongodb->password."@ds025849-a0.mlab.com:25849,ds025849-a1.mlab.com:25849/clicks99?replicaSet=rs-ds025849");
-                $mongoDB = $mongo->selectDB("clicks99");
+                $mongo = new \MongoClient("mongodb://".$parsed->database->mongodb->dbuser.":".$parsed->database->mongodb->password."@ds025849-a0.mlab.com:25849,ds025849-a1.mlab.com:25849/vnative?replicaSet=rs-ds025849");
+                $mongoDB = $mongo->selectDB("vnative");
                 Registry::set("MongoDB", $mongoDB);
             }
 
