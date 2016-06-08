@@ -11,7 +11,7 @@ class Advertiser extends Analytics {
      * @before _secure, _layout
      */
     public function index() {
-        $this->seo(array("title" => "Dashboard", "view" => $this->getLayoutView()));
+        $this->seo(array("title" => "Advertize", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         $database = Registry::get("database");
         $paid = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 1)->all();

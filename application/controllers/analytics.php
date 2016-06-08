@@ -222,4 +222,50 @@ class Analytics extends Manage {
         exit;
     }
 
+    /**
+     * Shortens the url for publishers
+     * @before _secure, _layout
+     */
+    public function shortenURL() {
+        $this->JSONview();
+        $view = $this->getActionView();
+        $link = new Link(array(
+            "user_id" => $this->user->id,
+            "short" => "",
+            "item_id" => RequestMethods::get("item"),
+            "live" => 1
+        ));
+        $link->save();
+        
+        $item = Item::first(array("id = ?" => RequestMethods::get("item")), array("url", "title", "image", "description"));
+        $m = Registry::get("MongoDB")->urls;
+        $doc = array(
+            "link_id" => $link->id,
+            "item_id" => RequestMethods::get("item"),
+            "user_id" => $this->user->id,
+            "url" => $item->url,
+            "title" => $item->title,
+            "image" => $item->image,
+            "description" => $item->description,
+            "created" => date('Y-m-d', strtotime("now"))
+        );
+        $m->insert($doc);
+
+        $d = Meta::first(array("user_id = ?" => $this->user->id, "property = ?" => "domain"), array("value"));
+        if($d) {
+            $longURL = $d->value . '/' . base64_encode($link->id);
+        } else {
+            $domains = $this->target();
+            $k = array_rand($domains);
+            $longURL = RequestMethods::get("domain", $domains[$k]) . '/' . base64_encode($link->id);
+        }
+
+        //$link->short = $this->_bitly($longURL);
+        $link->short = $longURL;
+        $link->save();
+
+        $view->set("shortURL", $link->short);
+        $view->set("link", $link);
+    }
+
 }

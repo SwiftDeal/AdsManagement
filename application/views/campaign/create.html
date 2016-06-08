@@ -50,7 +50,7 @@
                             <select name="coverage[]" class="form-control" multiple="" data-live-search=true title="Choose a campaign category">
                                 {include auth/country.html}
                             </select>
-                            <span class="help-block">{echo Shared\Markup::errors($errors, "category")}</span>
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "coverage")}</span>
                         </div>
                         <span class="help-block">{echo Shared\Markup::errors($errors, "budget")}</span>
                         <input type="hidden" name="action" value="content">

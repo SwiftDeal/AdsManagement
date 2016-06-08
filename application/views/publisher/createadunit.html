@@ -1,0 +1,66 @@
+<script type="text/javascript" src="{echo CDN}plugins/bootstrap/affix.js"></script>
+<div class="page-title">
+    <span class="title">Create Ad unit</span>
+</div>
+<div class="row">
+    {if isset($message)}
+    <div class="alert alert-info alert-dismissible fade in" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        {echo $message}
+    </div>
+    {/if}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body no-padding">
+                <form method="post" action="">
+                    <div class="panel panel-default panel-body">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" name="name" class="form-control" maxlength="100" required="">
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "name")}</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Ad unit category</label><br>
+                            <label class="radio-inline">
+                                <input type="radio" name="category" value="native"> Native Ad
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="category" value="fbia"> Facebook Instant Articles
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="category" value="amp"> Google AMPs
+                            </label>
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "category")}</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Type</label>
+                            <select name="type[]" class="form-control" multiple="" data-live-search=true title="Choose ad type">
+                                <option value="text" selected="">Text</option>
+                                <option value="image" selected="">Image</option>
+                                <option value="video">Video</option>
+                            </select>
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "category")}</span>
+                        </div>
+                        <input type="hidden" name="action" value="content">
+                        <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Save and get code</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="row well">
+            <div data-spy="affix" data-offset-top="60" data-offset-bottom="200">
+                <div class="row-fluid">
+                    <div class="col-sm-4">
+                        <img src="" class="img-responsive">
+                    </div>
+                    <div class="col-sm-8">
+                        <a href=""><b>Ad unit</b></a>
+                        <p>ad unit desc</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
