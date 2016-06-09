@@ -261,7 +261,9 @@ namespace Framework {
          */
         public function getTable() {
             if (empty($this->_table)) {
-                $this->_table = strtolower(StringMethods::plural(get_class($this)));
+                $table = explode("\\", get_class($this));
+                $name = array_pop($table);
+                $this->_table = strtolower(StringMethods::plural($name));
             } return $this->_table;
         }
 

@@ -89,8 +89,26 @@ class Campaign extends Publisher {
                 "visibility" => "0",
                 "live" => 0
             ));
+
+            $mongoad = new \Models\Mongo\Ad();
+            $columns = $ad->getColumns();
+            foreach ($columns as $key => $value) {
+                $mongoad->$key = $ad->$key;
+            }
+
             if ($ad->validate()) {
                 $ad->save();
+                $mongoad->id = $ad->id;
+                $categories = json_decode($ad->category);
+                foreach ($categories as $key => $value) {
+                    $cat = new \Models\Mongo\AdCategory([
+                        'ad_id' => $ad->id,
+                        'category_id' => $value
+                    ]);
+                    $cat->save();
+                }
+
+                $mongoad->save();
                 $view->set("message", "Campaign Created Successfully now we will approve it within 24 hours and notify you");
             }  else {
                 $view->set("errors", $ad->getErrors());

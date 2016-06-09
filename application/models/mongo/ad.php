@@ -1,9 +1,11 @@
 <?php
 
 /**
- * @author Faizan Ayubi
+ * Ad Model
+ * @author Hemant Mann
  */
-class Ad extends \Shared\Model {
+namespace Models\Mongo;
+class Ad extends \Shared\MongoModel {
 
     /**
      * @column
@@ -12,6 +14,14 @@ class Ad extends \Shared\Model {
      * @index
      */
     protected $_user_id;
+
+    /**
+     * @column
+     * @readwrite
+     * @type integer
+     * @index
+     */
+    protected $_id;
 
     /**
      * @column

@@ -20,6 +20,7 @@
                         <div class="form-group">
                             <label>Original URL</label>
                             <input type="url" class="form-control" name="url" required="" disabled="" value="{echo $meta['url']}">
+                            <input type="hidden" name="url" value="{echo $meta['url']}">
                             <span class="help-block">{echo Shared\Markup::errors($errors, "url")}</span>
                         </div>
                         <div class="form-group">
@@ -34,8 +35,12 @@
                         </div>
                         <div class="form-group">
                             <label>Image</label>
-                            <input type="file" class="form-control" name="image" required="">
-                            <img src="{echo $meta['image']}" class="img-thumbnail">
+                            {script $im = $meta['image']}
+                            {if $im}
+                            <img src="{echo $im}" class="img-thumbnail">
+                            <input type="hidden" name="image_url" value="{echo $im}">
+                            {/if}
+                            <input type="file" class="form-control" name="image" {if !$im}required=""{/if}>
                             <span class="help-block">Image should be 650px X 315px for good reach on Social Media<br>{echo Shared\Markup::errors($errors, "image")}</span>
                         </div>
                         <div class="form-group">
@@ -52,7 +57,26 @@
                             </select>
                             <span class="help-block">{echo Shared\Markup::errors($errors, "coverage")}</span>
                         </div>
-                        <span class="help-block">{echo Shared\Markup::errors($errors, "budget")}</span>
+                        <div class="form-group">
+                            <label>Start</label>
+                            <input type="date" name="start" class="form-control" required="" value="">
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "start")}</span>
+                        </div>
+                        <div class="form-group">
+                            <label>End</label>
+                            <input type="date" name="end" class="form-control" required="" value="">
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "end")}</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Frequency</label>
+                            <input type="number" name="frequency" class="form-control" required="" value="">
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "frequency")}</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Budget</label>
+                            <input type="text" name="budget" class="form-control" required="" placeholder="Budget of AD">
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "budget")}</span>
+                        </div>
                         <input type="hidden" name="action" value="content">
                         <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Create</button>
                     </div>
