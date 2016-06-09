@@ -25,11 +25,52 @@ class Home extends Auth {
 
     public function requestdemo() {
         $this->seo(array("title" => "Request Demo", "view" => $this->getLayoutView()));
+ 
+        if(RequestMethods::post('name')){
+
+            $enquiry = new Enquiry(array(
+                'name' => RequestMethods::post('name'),
+                'c_website' => RequestMethods::post('url'),
+                'phone' => RequestMethods::post('phone'),
+                'email' => RequestMethods::post('email'),
+                'message' => RequestMethods::post('message'),
+                'type' => 2
+                ));
+
+            if($enquiry->validate()){
+
+                $enquiry->save();
+            }else{
+                $enquiry->getErrors();
+            }
+
+        }
     }
 
     public function contact() {
         $this->seo(array("title" => "Contact Us", "view" => $this->getLayoutView()));
+
+        if(RequestMethods::post('name')){
+
+            $enquiry = new Enquiry(array(
+                'name' => RequestMethods::post('name'),
+                'phone' => RequestMethods::post('phone'),
+                'email' => RequestMethods::post('email'),
+                'message' => RequestMethods::post('message'),
+                'type' => 1
+                ));
+
+            if($enquiry->validate()){
+
+                $enquiry->save();
+            }else{
+                $enquiry->getErrors();
+            }
+
+        }
+        
     }
+
 
     public function livedemo() {
         $this->seo(array("title" => "Live Demo", "view" => $this->getLayoutView()));
