@@ -38,10 +38,10 @@ class Publisher extends Advertiser {
         $short = RequestMethods::get("short", "");
         $where = array("user_id = ?" => $this->user->id);
 
-        $links = AdUnit::all($where, array("id", "name", "type", "live", "created"), "created", "desc", $limit, $page);
+        $adunits = AdUnit::all($where, array("id", "name", "type", "live", "created"), "created", "desc", $limit, $page);
         $count = AdUnit::count($where);
 
-        $view->set("links", $links);
+        $view->set("adunits", $adunits);
         $view->set("limit", $limit);
         $view->set("page", $page);
         $view->set("count", $count);
@@ -53,6 +53,15 @@ class Publisher extends Advertiser {
     public function createadunit() {
         $this->seo(array("title" => "Create Ad unit", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
+
+        if (RequestMethods::post("action") == "adunit") {
+            $adunit = new AdUnit(array(
+                "user_id" => $this->user->id,
+                "name" => RequestMethods::post("name"),
+                "type" => RequestMethods::post("type")
+            ));
+            $adunit->save();
+        }
     }
 
     /**
@@ -61,5 +70,7 @@ class Publisher extends Advertiser {
     public function allowandblockads() {
         $this->seo(array("title" => "Allow and Block Ads", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
+
+        
     }  
 }
