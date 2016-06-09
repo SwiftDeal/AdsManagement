@@ -36,20 +36,15 @@ class Publisher extends Advertiser {
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
         $short = RequestMethods::get("short", "");
-        $where = array(
-            "short LIKE ?" => "%{$short}%",
-            "user_id = ?" => $this->user->id,
-            "live = ?" => true
-        );
+        $where = array("user_id = ?" => $this->user->id);
 
-        $links = AdUnit::all($where, array("id", "item_id", "short", "created"), "created", "desc", $limit, $page);
+        $links = AdUnit::all($where, array("id", "name", "type", "live", "created"), "created", "desc", $limit, $page);
         $count = AdUnit::count($where);
 
         $view->set("links", $links);
         $view->set("limit", $limit);
         $view->set("page", $page);
-        $view->set("count", $count)
-            ->set("fb", RequestMethods::get("fb"));
+        $view->set("count", $count);
     }
 
     /**

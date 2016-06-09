@@ -28,14 +28,5 @@ class AdUnit extends Shared\Model {
      * @length 255
      * @index
      */
-    protected $_category;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * @length 255
-     * @index
-     */
     protected $_type;
 }

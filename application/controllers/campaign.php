@@ -67,42 +67,33 @@ class Campaign extends Publisher {
 
         $view->set("errors", array());
         if (RequestMethods::post("action") == "content") {
-            $exist = Item::first(array("url = ?" => RequestMethods::post("url")), array("id"));
-            if ($exist) {
-                $view->set("message", "Campaign already exist you can edit it from <a href='/campaign/update/{$exist->id}.html'>here</a>");
-                return;
-            }
             if (RequestMethods::post("image_url")) {
                 $image = $this->urls3upload(RequestMethods::post("image_url"));
             } else {
                 $image = $this->s3upload("image", "images");
             }
-            $item = new Item(array(
+            $ad = new Ad(array(
                 "user_id" => $this->user->id,
-                "advert_id" => $this->advert->id,
-                "website_id" => "0",
-                "model" => "cpc",
                 "url" =>  RequestMethods::post("url"),
                 "target" =>  RequestMethods::post("url"),
                 "title" => RequestMethods::post("title"),
-                "image" => $image,
-                "budget" => RequestMethods::post("budget", 2500),
-                "visibility" => "0",
-                "category" => implode(",", RequestMethods::post("category", "news")),
                 "description" => RequestMethods::post("description", ""),
+                "image" => $image,
+                "category" => json_encode(RequestMethods::post("category")),
+                "coverage" => json_encode(RequestMethods::post("coverage", "IN")),
+                "budget" => RequestMethods::post("budget"),
+                "frequency" => RequestMethods::post("frequency"),
+                "start" => RequestMethods::post("start"),
+                "end" => RequestMethods::post("end"),
+                "cpc" => RequestMethods::post("cpc", 200),
+                "visibility" => "0",
                 "live" => 0
             ));
-            if ($item->validate()) {
-                $item->save();
-                $rpm = new RPM(array(
-                    "item_id" => $item->id,
-                    "value" => json_encode($this->rpm),
-                ));
-                $rpm->save();
+            if ($ad->validate()) {
+                $ad->save();
                 $view->set("message", "Campaign Created Successfully now we will approve it within 24 hours and notify you");
             }  else {
-                $view->set("errors", $item->getErrors());
-                echo "<pre>", print_r($item->getErrors()), "</pre>";
+                $view->set("errors", $ad->getErrors());
             }
         }
     }
