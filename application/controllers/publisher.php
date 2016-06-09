@@ -55,12 +55,16 @@ class Publisher extends Advertiser {
         $view = $this->getActionView();
 
         if (RequestMethods::post("action") == "adunit") {
-            $adunit = new AdUnit(array(
+            $adunit = new \AdUnit(array(
                 "user_id" => $this->user->id,
                 "name" => RequestMethods::post("name"),
+                "category" => RequestMethods::post("category"),
                 "type" => json_encode(RequestMethods::post("type"))
             ));
             $adunit->save();
+
+            $mongoad = new \Models\Mongo\AdUnit();
+            $mongoad->duplicate($adunit);
         }
     }
 

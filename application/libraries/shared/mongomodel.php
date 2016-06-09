@@ -188,5 +188,24 @@ namespace Shared {
             $count = $collection->count($query);
             return $count;
         }
+
+        /**
+         * @param \Shared\Model $model A SQL model
+         * @param array $exclude Fields to be excluded from duplicating (optional)
+         * Duplicates a SQL Model in MongoDB
+         */
+        public function duplicate(\Shared\Model $model, $exclude = []) {
+            $fields = $model->getColumns();
+            if (!empty($exclude)) {
+                foreach ($exclude as $key => $value) {
+                    unset($fields[$value]);
+                }
+            }
+
+            foreach ($fields as $key => $value) {
+                $this->$key = $model->$key;
+            }
+            $this->save();
+        }
     }
 }
