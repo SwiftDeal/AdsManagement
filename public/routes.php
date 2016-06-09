@@ -67,6 +67,11 @@ $routes = array(
         "pattern" => "request-demo",
         "controller" => "home",
         "action" => "requestdemo"
+    ),
+    array(
+        "pattern" => "live-demo",
+        "controller" => "home",
+        "action" => "livedemo"
     )
 );
 

@@ -58,7 +58,7 @@ class Publisher extends Advertiser {
             $adunit = new AdUnit(array(
                 "user_id" => $this->user->id,
                 "name" => RequestMethods::post("name"),
-                "type" => RequestMethods::post("type")
+                "type" => json_encode(RequestMethods::post("type"))
             ));
             $adunit->save();
         }
