@@ -4,7 +4,7 @@ define("DEBUG", TRUE);
 define("APP_PATH", str_replace(DIRECTORY_SEPARATOR, "/", dirname(__FILE__)));
 define("URL", "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
 define("CDN", "http://$_SERVER[HTTP_HOST]/public/assets/");
-define("CLOUDFRONT", "https://dh3fr73b75uve.cloudfront.net/");
+define("CLOUDFRONT", CDN . "uploads/");
 date_default_timezone_set('Asia/Kolkata');
 try {
     

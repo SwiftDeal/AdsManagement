@@ -91,14 +91,11 @@ class Campaign extends Publisher {
             ));
 
             $mongoad = new \Models\Mongo\Ad();
-            $columns = $ad->getColumns();
-            foreach ($columns as $key => $value) {
-                $mongoad->$key = $ad->$key;
-            }
 
             if ($ad->validate()) {
                 $ad->save();
-                $mongoad->id = $ad->id;
+                $mongoad->duplicate($ad);
+                
                 $categories = json_decode($ad->category);
                 foreach ($categories as $key => $value) {
                     $cat = new \Models\Mongo\AdCategory([
@@ -108,7 +105,6 @@ class Campaign extends Publisher {
                     $cat->save();
                 }
 
-                $mongoad->save();
                 $view->set("message", "Campaign Created Successfully now we will approve it within 24 hours and notify you");
             }  else {
                 $view->set("errors", $ad->getErrors());
@@ -289,14 +285,14 @@ class Campaign extends Publisher {
                     $mode = Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
                     $imagine->open("{$path}/{$image}")->thumbnail($size, $mode)->save("{$path}/resize/{$thumbnail}");
 
-                    $s3 = $this->_s3();
+                    /*$s3 = $this->_s3();
 
                     $string = file_get_contents("{$path}/resize/{$thumbnail}");
                     $result = $s3->putObject([
                         'Bucket' => 's3.vnative.com',
                         'Key' => 'images/resize/' . $thumbnail,
                         'Body' => $string
-                    ]);
+                    ]);*/
                 }
                 $this->redirect("{$cdn}images/resize/{$thumbnail}");
             }
