@@ -156,6 +156,10 @@ namespace Framework {
                                         }
                                         break;
                                     case 'array':
+                                        if (empty($values)) {
+                                            $obj[$keys] = array();
+                                            break;
+                                        }
                                         foreach ($values as $key => $value) {
                                             if (gettype($value) == "object") {
                                                 if (get_class($value) == "stdClass") {
