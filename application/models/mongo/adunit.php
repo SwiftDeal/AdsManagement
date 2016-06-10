@@ -18,14 +18,6 @@ class AdUnit extends \Shared\MongoModel {
     /**
      * @column
      * @readwrite
-     * @type integer
-     * @index
-     */
-    protected $_id;
-
-    /**
-     * @column
-     * @readwrite
      * @type text
      * @length 255
      * @index

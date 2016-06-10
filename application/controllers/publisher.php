@@ -55,7 +55,7 @@ class Publisher extends Advertiser {
         $view = $this->getActionView();
 
         if (RequestMethods::post("action") == "adunit") {
-            $adunit = new \AdUnit(array(
+            $adunit = new \Models\Mongo\AdUnit(array(
                 "user_id" => $this->user->id,
                 "name" => RequestMethods::post("name"),
                 "category" => RequestMethods::post("category"),
@@ -63,8 +63,19 @@ class Publisher extends Advertiser {
             ));
             $adunit->save();
 
-            $mongoad = new \Models\Mongo\AdUnit();
-            $mongoad->duplicate($adunit);
+            if ($adunit->category == "native") {
+                $code = '<script>(function (we, a, r, e, vnative){we["vNativeObject"]=vnative;we[vnative]=we[vnative]||function(){(i[vnative].q=i[r].q || []).push(arguments)};var x,y;x=a.createElement(r),y=a.getElementsByTagName(r)[0];x.async=true;x.src=e;y.parentNode.insertBefore(x, y);}(window,document,"script","//serve.vnative.com/native.js","vn"));
+                </script>';
+                $code .= '<ins class="byvnative"
+                            data-client="ca-pub-"'. $this->user->id. '
+                            data-slot="'. $adunit->_id .'"
+                            data-format="all"></ins>';
+
+                $view->set('code', $code);
+            }
+
+            $view->set('adunit', $adunit);
+            $view->set('message', "AdUnit was created Successfully!! Go to <a href='/publisher/adunits.html'>AdUnits</a>");
         }
     }
 

@@ -49,3 +49,21 @@
         </div>
     </div>
 </div>
+
+{if isset($code)}
+<div class="row">
+    <div class="col-md-offset-3 col-md-6">
+        <div class="row well">
+            <div data-spy="affix" data-offset-top="60" data-offset-bottom="200">
+                <div class="row-fluid">
+                    <div class="col-sm-8">
+                        <code>
+                            {echo htmlentities($code)}
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/if}
