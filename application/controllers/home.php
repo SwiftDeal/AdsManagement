@@ -66,12 +66,10 @@ class Home extends Auth {
     public function livedemo() {
         $this->willRenderLayoutView = false;
         $this->willRenderActionView = true;
-        $view = $this->getActionView();
-        $view->set("link", RequestMethods::get("link"));
 
         WebBot\Core\Bot::$logging = false;
         $bot = new Bot(array(
-            'url' => 'http://titusandco.com'
+            'url' => RequestMethods::get("link")
         ));
 
         // execute
@@ -84,7 +82,7 @@ class Home extends Auth {
             $xmlPageDom = new \DomDocument(); // Instantiating a new DomDocument object
             @$xmlPageDom->loadHTML($body);
             //$xmlPageDom->createElement('script', 'alert("HI")');
-            echo $xmlPageDom;
+            echo $xmlPageDom->saveHTML();
         }
     }
 }
