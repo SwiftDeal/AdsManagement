@@ -100,14 +100,14 @@ class Auth extends Controller {
 
     protected function authorize($user) {
         $session = Registry::get("session");
-        //setting agent
-        $agent = Agent::first(array("user_id = ?" => $user->id));
-        if ($agent) {
-            if ($agent->live == 0) {
+        //setting staff
+        $staff = Staff::first(array("user_id = ?" => $user->id));
+        if ($staff) {
+            if ($staff->live == 0) {
                 return "Account Suspended";
             }
             $this->setUser($user);
-            $session->set("agent", $agent);
+            $session->set("staff", $staff);
             $this->redirect("/admin/index.html");
         }
 
@@ -171,7 +171,7 @@ class Auth extends Controller {
             "user_id" => $user->id,
             "country" => $this->country(),
             "balance" => 0,
-            "agent_id" => 0,
+            "staff_id" => 0,
             "type" => RequestMethods::post("type"),
             "live" => 0
         ));
@@ -224,8 +224,8 @@ class Auth extends Controller {
         $this->noview();
         $session = Registry::get("session");
 
-        $team = $session->get("team");
-        if ($team) {
+        $staff = $session->get("staff");
+        if ($staff) {
             $this->redirect("/admin/index.html");
         }
 

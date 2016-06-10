@@ -3,7 +3,7 @@
 /**
  * @author Faizan Ayubi
  */
-class Agent extends \Shared\Model {
+class Staff extends \Shared\Model {
     
     /**
      * @column

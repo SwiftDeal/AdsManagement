@@ -34,8 +34,8 @@ namespace Shared {
          */
         public function _admin() {
             $session = Registry::get("session");
-            $agent = $session->get("agent");
-            if (!$agent) {
+            $staff = $session->get("staff");
+            if (!$staff) {
                 $this->logout();
             }
         }

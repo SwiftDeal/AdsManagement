@@ -38,7 +38,7 @@ class Customer extends Shared\Model {
      * @readwrite
      * @type integer
      */
-    protected $_agent_id;
+    protected $_staff_id;
 
     /**
     * @column
