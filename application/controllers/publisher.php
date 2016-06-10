@@ -75,6 +75,15 @@ class Publisher extends Advertiser {
         $this->seo(array("title" => "Allow and Block Ads", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
-        
-    }  
+        $adunits = \Models\Mongo\AdsBlocked(array("user_id" => $this->user->id));
+
+        if (RequestMethods::post("action") == "abads") {
+            $adunit = new \Models\Mongo\AdsBlocked(array(
+                "user_id" => $this->user->id,
+                "url" => RequestMethods::post('link')
+            ));
+            $adunit->save();
+            $view->set("message", "Saved Successfully");
+        }
+    }
 }

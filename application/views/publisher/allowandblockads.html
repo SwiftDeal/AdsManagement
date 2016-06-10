@@ -1,7 +1,7 @@
 <div class="page-title">
     <span class="title">Allow and Block Ads</span>
     <div class="description">
-        Use this page to block ads leading to specific URLs from appearing on your site by entering URLs in the box below. 
+        Use this page to block ads leading to specific URLs from appearing on your site by entering URLs in the box below.<br>
         <span class="pull-right">
             <form class="form-inline" role="form" method="get" action="">
                 <div class="form-group">
@@ -10,6 +10,16 @@
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </span>
+        <span class="pull-left">
+            <form class="form-inline" role="form" method="get" action="">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="url" style="width: 200px" name="short" class="form-control" required="" placeholder="Enter url to be blocked on your platform" />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Block</button>
             </form>
         </span>
     </div>
@@ -31,38 +41,10 @@
                             <th></th>
                             <th>Link</th>
                             <th>Stats</th>
-                            {if ($fb)}
-                            <th>FB Stats</th>
-                            {/if}
                         </tr>
                     </thead>
                     <tbody>
-                        {foreach $link in $links}
-                        {script $item = Item::first(array("id = ?" => $link->item_id), array("title", "url", "image"))}
-                        {script $stat = Stat::first(array("link_id = ?" => $link->id), array("amount", "click", "rpm", "modified"))}
-                        <tr>
-                            <td>
-                                <a href="/public/assets/uploads/images/{$item->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($item->image)}/50/50"></a><br>
-                            </td>
-                            <td>
-                                <a href="{$item->url}" target="_blank">{$item->title}</a><br>
-                                <a href="{$link->short}" class="fbshare">{$link->short}</a><br>
-                                <small>{echo Framework\StringMethods::datetime_to_text($link->created)}</small>
-                            </td>
-                            <td class="linkstat" data-link="{echo $link->id}">
-                                {if($stat)}
-                                RPM : {echo $user->convert($stat->rpm)}, Sessions : {echo $stat->click}, Earning : {echo $user->convert($stat->amount)}
-                                {/if} {else}
-                                <span class="label label-success">View</span>
-                                {/else}
-                            </td>
-                            {if ($fb)}
-                            <td class="fbLinkStat" data-link="{echo $link->id}">
-                                <span class="label label-primary">View</span>
-                            </td>
-                            {/if}
-                        </tr>
-                        {/foreach}
+                        
                     </tbody>
                 </table>
             </div>

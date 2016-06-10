@@ -48,8 +48,7 @@ class Campaign extends Publisher {
         $view->set("count", $count);
         $view->set("items", $items);
         $view->set("category", $category);
-        $view->set("domains", $this->target())
-            ->set("fb", RequestMethods::get("fb"));
+        $view->set("domains", $this->target());
     }
     
     /**
