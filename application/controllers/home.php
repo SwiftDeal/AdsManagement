@@ -64,25 +64,31 @@ class Home extends Auth {
     }
 
     public function livedemo() {
-        $this->willRenderLayoutView = false;
-        $this->willRenderActionView = true;
+        if (RequestMethods::get("link")) {
+            $this->willRenderLayoutView = false;
+            $this->willRenderActionView = true;
+            $view = $this->getActionView();
+            $view->set("link", RequestMethods::get("link"));
 
-        WebBot\Core\Bot::$logging = false;
-        $bot = new Bot(array(
-            'url' => RequestMethods::get("link")
-        ));
+            WebBot\Core\Bot::$logging = false;
+            $bot = new Bot(array(
+                'url' => RequestMethods::get("link")
+            ));
 
-        // execute
-        $bot->execute();
+            // execute
+            $bot->execute();
 
-        $documents = $bot->getDocuments();
-        foreach ($documents as $doc) {
-            $body = $doc->getBody(); // will return whole html as string
+            $documents = $bot->getDocuments();
+            foreach ($documents as $doc) {
+                $body = $doc->getBody(); // will return whole html as string
 
-            $xmlPageDom = new \DomDocument(); // Instantiating a new DomDocument object
-            @$xmlPageDom->loadHTML($body);
-            //$xmlPageDom->createElement('script', 'alert("HI")');
-            echo $xmlPageDom->saveHTML();
+                $xmlPageDom = new \DomDocument(); // Instantiating a new DomDocument object
+                @$xmlPageDom->loadHTML($body);
+                //$xmlPageDom->createElement('script', 'alert("HI")');
+                echo $xmlPageDom->saveHTML();
+            }
+        } else {
+            $this->seo(array("title" => "Live Demo", "view" => $this->getLayoutView()));
         }
     }
 }
