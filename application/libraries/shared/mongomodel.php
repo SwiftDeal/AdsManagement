@@ -29,7 +29,7 @@ namespace Shared {
          * @type boolean
          * @index
          */
-        protected $_live = true;
+        protected $_live = null;
 
         /**
          * @column
@@ -58,7 +58,9 @@ namespace Shared {
 
             $doc = [];
             foreach ($columns as $key => $value) {
-                $doc[$key] = $this->$value['raw'];
+                if (isset($this->$value['raw'])) {
+                    $doc[$key] = $this->_convertToType($this->$value['raw'], $value['type']);
+                }
             }
             if (isset($doc['_id'])) {
                 unset($doc['_id']);
@@ -74,10 +76,53 @@ namespace Shared {
             }
         }
 
+        /**
+         * Specific types are needed for MongoDB
+         */
+        protected function _convertToType($value, $type) {
+            switch ($type) {
+                case 'text':
+                    $value = (string) $value;
+                    break;
+
+                case 'integer':
+                    $value = (int) $value;
+                    break;
+
+                case 'boolean':
+                    $value = (boolean) $value;
+                    break;
+
+                case 'decimal':
+                    $value = (float) $value;
+                    break;
+
+                case 'datetime':
+                case 'date':
+                    $value = new \MongoDate($value);
+                    break;
+                
+                default:
+                    $value = (string) $value;
+                    break;
+            }
+            return $value;
+        }
+
         public function getTable() {
             $table = parent::getTable();
             $collection = Registry::get("MongoDB")->$table;
             return $collection;
+        }
+
+        protected function _updateQuery($where) {
+            $columns = $this->getColumns();
+
+            $query = [];
+            foreach ($where as $key => $value) {
+                $query[$key] = $this->_convertToType($value, $columns[$key]['type']);
+            }
+            return $query;
         }
 
         /**
@@ -90,6 +135,7 @@ namespace Shared {
          */
         public static function all($where = array(), $fields = array(), $order = null, $direction = null, $limit = null, $page = null) {
             $model = new static();
+            $where = $model->_updateQuery($where);
             return $model->_all($where, $fields, $order, $direction, $limit, $page);
         }
 
@@ -131,6 +177,7 @@ namespace Shared {
          */
         public static function first($where = array(), $fields = array()) {
             $model = new static();
+            $where = $model->_updateQuery($where);
             return $model->_first($where, $fields);
         }
 
@@ -169,6 +216,7 @@ namespace Shared {
 
         public static function deleteAll($query = []) {
             $instance = new static();
+            $where = $instance->_updateQuery($query);
             $collection = $instance->getTable();
 
             $return = $collection->remove($query);
@@ -179,6 +227,7 @@ namespace Shared {
 
         public static function count($query = []) {
             $model = new static();
+            $where = $model->_updateQuery($query);
             return $model->_count($query);
         }
 

@@ -32,17 +32,19 @@
                             <th>Name</th>
                             <th>Type</th>
                             <th>Stats</th>
+                            <th>Created</th>
                         </tr>
                     </thead>
                     <tbody>
                         {foreach $a in $adunits}
                         <tr>
                             <td>{$a->name}</td>
-                            <td>{$a->type}</td>
-                            <td>{$a->live}</td>
+                            <td>{echo implode(",", json_decode($a->type))}</td>
                             <td class="fbLinkStat" data-link="{echo $link->id}">
                                 <span class="label label-primary">View</span>
                             </td>
+                            {script $date = date('Y-m-d H:i:s', $a->created->sec)}
+                            <td>{echo Framework\StringMethods::only_date($date)}</td>
                             {/if}
                         </tr>
                         {/foreach}

@@ -36,10 +36,10 @@ class Publisher extends Advertiser {
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
         $short = RequestMethods::get("short", "");
-        $where = array("user_id = ?" => $this->user->id);
+        $where = array("user_id" => $this->user->id);
 
-        $adunits = AdUnit::all($where, array("id", "name", "type", "live", "created"), "created", "desc", $limit, $page);
-        $count = AdUnit::count($where);
+        $adunits = \Models\Mongo\AdUnit::all($where, array("name", "type", "live", "created"), "created", -1, $limit, $page);
+        $count = \Models\Mongo\AdUnit::count($where);
 
         $view->set("adunits", $adunits);
         $view->set("limit", $limit);
@@ -67,7 +67,7 @@ class Publisher extends Advertiser {
                 $code = '<script>(function (we, a, r, e, vnative){we["vNativeObject"]=vnative;we[vnative]=we[vnative]||function(){(i[vnative].q=i[r].q || []).push(arguments)};var x,y;x=a.createElement(r),y=a.getElementsByTagName(r)[0];x.async=true;x.src=e;y.parentNode.insertBefore(x, y);}(window,document,"script","//serve.vnative.com/native.js","vn"));
                 </script>';
                 $code .= '<ins class="byvnative"
-                            data-client="ca-pub-"'. $this->user->id. '
+                            data-client="pub-'. $this->user->id. '"
                             data-slot="'. $adunit->_id .'"
                             data-format="all"></ins>';
 
@@ -86,7 +86,7 @@ class Publisher extends Advertiser {
         $this->seo(array("title" => "Allow and Block Ads", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
-        $adunits = \Models\Mongo\AdsBlocked(array("user_id" => $this->user->id));
+        $adunits = \Models\Mongo\AdsBlocked::all(array("user_id" => $this->user->id));
 
         if (RequestMethods::post("action") == "abads") {
             $adunit = new \Models\Mongo\AdsBlocked(array(
