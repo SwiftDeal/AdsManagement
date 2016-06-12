@@ -10,6 +10,36 @@ use \Curl\Curl;
 
 class Analytics extends Manage {
 
+    public function advertiser($user_id) {
+        $this->JSONview();$impressions = []; $i = [];$total_impression = 0;$total_click = 0;
+        $return = array("clicks" => 0, "impressions" => 0, "analytics" => array());
+        $ads = \Models\Mongo\Ad::all(array("user_id" => $user_id));
+        foreach ($ads as $ad) {
+            $i[] = $ad->id;
+        }
+        $impressions['cid'] = array('$in' => $i);
+        $impr = Registry::get("MongoDB")->impressions;
+
+        $icursor = $impr->find($impressions);
+        foreach ($icursor as $id => $result) {
+            $code = $result["country"];
+            $total_impression += $result["hits"];
+            if (array_key_exists($code, $analytics)) {
+                $analytics[$code] += $result["hits"];
+            } else {
+                $analytics[$code] = $result["hits"];
+            }
+        }
+        
+        if ($total_impression > 0) {
+            $return = array(
+                "clicks" => $total_click,
+                "impressions" => $total_impression,
+                "analytics" => $analytics
+            );
+        }
+    }
+
     /**
      * Today Stats of user
      * @return array earnings, clicks, rpm, analytics

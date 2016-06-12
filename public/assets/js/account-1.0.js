@@ -98,6 +98,12 @@ $(document).ready(function() {
     $('select').select2();
     $('.noselect2').select2('destroy');
 
+    //initialize beautiful date picker
+    $.fn.datepicker.defaults.format = "yyyy-mm-dd";
+    $("input[type=date]").datepicker({
+        format: 'yyyy-mm-dd'
+    });
+
     $(".campaignstat").click(function(e) {
         e.preventDefault();
         var item = $(this),

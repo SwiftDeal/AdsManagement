@@ -19,7 +19,7 @@ class Auth extends Controller {
         if (RequestMethods::post("action") == "register") {
             $exist = User::first(array("email = ?" => RequestMethods::post("email")));
             if ($exist) {
-                $view->set("message", 'User exists, <a href="/auth/login.html">login</a>');
+                $view->set("message", 'User exists, <a href="/login.html">login</a>');
             } else {
                 $errors = $this->_register();
                 $view->set("errors", $errors);
@@ -94,7 +94,7 @@ class Auth extends Controller {
             }
             
         } else {
-            return 'User doesnot exist. Please signup <a href="/publisher/register.html">here</a>';
+            return 'User doesnot exist. Please signup <a href="/register.html">here</a>';
         }
     }
 
