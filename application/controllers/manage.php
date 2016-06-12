@@ -7,6 +7,34 @@ use Framework\Registry as Registry;
 
 class Manage extends Admin {
 
+    /**
+     * @before _secure, changeLayout
+     */
+    public function logs($action = "", $name = "") {
+        $this->seo(array("title" => "Activity Logs", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+
+        if ($action == "unlink") {
+            $file = APP_PATH ."/logs/". $name . ".txt";
+            @unlink($file);
+            $this->redirect("/analytics/logs");
+        }
+
+        $logs = array();
+        $path = APP_PATH . "/logs";
+        $iterator = new DirectoryIterator($path);
+
+        foreach ($iterator as $item) {
+            if (!$item->isDot()) {
+                if (substr($item->getFilename(), 0, 1) != ".") {
+                    array_push($logs, $item->getFilename());
+                }
+            }
+        }
+        arsort($logs);
+        $view->set("logs", $logs);
+    }
+
 	/**
      * @before _secure, changeLayout, _admin
      */

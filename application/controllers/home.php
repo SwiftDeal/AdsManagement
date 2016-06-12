@@ -70,6 +70,18 @@ class Home extends Auth {
             $view = $this->getActionView();
             $view->set("link", RequestMethods::get("link"));
 
+            if (!Cookie\Cookie::Exists("vtarck")) {
+                $cookie = uniqid();
+                Cookie\Cookie::Set('vtarck', $cookie, Cookie\Cookie::Lifetime, '/', '.vnative.com');
+
+                $demo = new \Models\Mongo\Demo(array(
+                    "url" => RequestMethods::get("link"),
+                    "ip" => $this->get_client_ip(),
+                    "cookie" => $cookie
+                ));
+                $demo->save();
+            }
+
             WebBot\Core\Bot::$logging = false;
             $bot = new Bot(array(
                 'url' => RequestMethods::get("link")
@@ -90,5 +102,25 @@ class Home extends Auth {
         } else {
             $this->seo(array("title" => "Live Demo", "view" => $this->getLayoutView()));
         }
+    }
+
+    protected function get_client_ip() {
+        $ipaddress = '';
+        if (isset($_SERVER['HTTP_CLIENT_IP']))
+            $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+        else if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        else if(isset($_SERVER['HTTP_X_FORWARDED']))
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+        else if(isset($_SERVER['HTTP_FORWARDED_FOR']))
+            $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+        else if(isset($_SERVER['HTTP_FORWARDED']))
+            $ipaddress = $_SERVER['HTTP_FORWARDED'];
+        else if(isset($_SERVER['REMOTE_ADDR']))
+            $ipaddress = $_SERVER['REMOTE_ADDR'];
+        else
+            $ipaddress = 'UNKNOWN';
+        $ip = explode(",", $ipaddress);
+        return $ip[0];
     }
 }

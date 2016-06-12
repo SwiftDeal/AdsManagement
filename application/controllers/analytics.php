@@ -11,55 +11,6 @@ use \Curl\Curl;
 class Analytics extends Manage {
 
     /**
-     * @before _secure
-     */
-    public function link($date = NULL) {
-        $this->JSONview();
-        $view = $this->getActionView();
-
-        $link_id = RequestMethods::get("link");
-        $link = Link::first(array("id = ?" => $link_id), array("item_id", "id", "user_id"));
-        if (!$link || $link->user_id != $this->user->id) {
-            $this->redirect("/404");
-        }
-        $result = $link->stat($date);
-        
-        $view->set("earning", $this->user->convert($result["earning"]));
-        $view->set("click", $result["click"]);
-        $view->set("rpm", $this->user->convert($result["rpm"]));
-        $view->set("analytics", $result["analytics"]);
-        $view->set("link", $link);
-    }
-
-    /**
-     * @before _secure, changeLayout
-     */
-    public function logs($action = "", $name = "") {
-        $this->seo(array("title" => "Activity Logs", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
-        if ($action == "unlink") {
-            $file = APP_PATH ."/logs/". $name . ".txt";
-            @unlink($file);
-            $this->redirect("/analytics/logs");
-        }
-
-        $logs = array();
-        $path = APP_PATH . "/logs";
-        $iterator = new DirectoryIterator($path);
-
-        foreach ($iterator as $item) {
-            if (!$item->isDot()) {
-                if (substr($item->getFilename(), 0, 1) != ".") {
-                    array_push($logs, $item->getFilename());
-                }
-            }
-        }
-        arsort($logs);
-        $view->set("logs", $logs);
-    }
-
-    /**
      * Today Stats of user
      * @return array earnings, clicks, rpm, analytics
      * @before _secure
@@ -221,51 +172,4 @@ class Analytics extends Manage {
         $done = fclose($output);
         exit;
     }
-
-    /**
-     * Shortens the url for publishers
-     * @before _secure, _layout
-     */
-    public function shortenURL() {
-        $this->JSONview();
-        $view = $this->getActionView();
-        $link = new Link(array(
-            "user_id" => $this->user->id,
-            "short" => "",
-            "item_id" => RequestMethods::get("item"),
-            "live" => 1
-        ));
-        $link->save();
-        
-        $item = Item::first(array("id = ?" => RequestMethods::get("item")), array("url", "title", "image", "description"));
-        $m = Registry::get("MongoDB")->urls;
-        $doc = array(
-            "link_id" => $link->id,
-            "item_id" => RequestMethods::get("item"),
-            "user_id" => $this->user->id,
-            "url" => $item->url,
-            "title" => $item->title,
-            "image" => $item->image,
-            "description" => $item->description,
-            "created" => date('Y-m-d', strtotime("now"))
-        );
-        $m->insert($doc);
-
-        $d = Meta::first(array("user_id = ?" => $this->user->id, "property = ?" => "domain"), array("value"));
-        if($d) {
-            $longURL = $d->value . '/' . base64_encode($link->id);
-        } else {
-            $domains = $this->target();
-            $k = array_rand($domains);
-            $longURL = RequestMethods::get("domain", $domains[$k]) . '/' . base64_encode($link->id);
-        }
-
-        //$link->short = $this->_bitly($longURL);
-        $link->short = $longURL;
-        $link->save();
-
-        $view->set("shortURL", $link->short);
-        $view->set("link", $link);
-    }
-
 }
