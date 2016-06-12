@@ -84,51 +84,33 @@ class Analytics extends Manage {
      * @return array earnings, clicks, cpc, analytics
      * @before _secure
      */
-    public function campaign($created = NULL, $item_id = NULL) {
-        $this->seo(array("title" => "Stats", "view" => $this->getLayoutView()));
+    public function ad($id, $created = NULL) {
+        $this->seo(array("title" => "Ad Stats", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         $total_click = 0;$spent = 0;$analytics = array();$query = array();$i = array();
-        $return = array("click" => 0, "cpc" => 0, "spent" => 0, "analytics" => array());
+        $return = array("click" => 0, "spent" => 0, "analytics" => array());
         
-        $advert = Advert::first(["user_id = ?" => $this->user->id], ["cpc"]);
-        $cpc = json_decode($advert->cpc, true);
+        $ad = Ad::first(["id = ?" => $id], ["cpc"]);
         if ($this->validateDate($created)) {
             $query['created'] = $created;
         }
-        if (is_null($item_id)) {
-            $items = Item::all(array("user_id = ?" => $this->user->id), array("id"));
-            foreach ($items as $item) {
-                $i[] = $item->id;
-            }
-            $query['item_id'] = array('$in' => $i);
-        } else {
-            $query['item_id'] = $item_id;
-        }
+        $query["cid"] = (int) $id;
         
-        $collection = Registry::get("MongoDB")->clicks;
+        $collection = Registry::get("MongoDB")->clicktracks;
         $cursor = $collection->find($query);
         foreach ($cursor as $result) {
-            $u = User::first(array("id = ?" => $result["user_id"], "live = ?" => true), array("id"));
-            if ($u) {
-                $code = $result["country"];
-                $total_click += $result["click"];
-                if (array_key_exists($code, $cpc)) {
-                    $spent += ($cpc[$code])*($result["click"])/1000;
-                } else {
-                    $spent += ($cpc["NONE"])*($result["click"])/1000;
-                }
-                if (array_key_exists($code, $analytics)) {
-                    $analytics[$code] += $result["click"];
-                } else {
-                    $analytics[$code] = $result["click"];
-                }
+            $code = $result["country"];
+            $total_click++;
+            if (array_key_exists($code, $analytics)) {
+                $analytics[$code] += $result["click"];
+            } else {
+                $analytics[$code] = $result["click"];
             }
         }
 
         if ($total_click > 0) {
             $return = array(
                 "click" => round($total_click),
-                "cpc" => $this->user->convert(round($spent*1000/$total_click, 2)),
                 "spent" => $this->user->convert(round($spent, 2)),
                 "analytics" => $analytics
             );
@@ -137,39 +119,5 @@ class Analytics extends Manage {
         $view->set("stats", $return);
         $view->set("query", $query);
         $view->set("cpc", $cpc);
-    }
-
-    /**
-     * @before _secure, changeLayout
-     */
-    public function reports() {
-        $this->noview();
-        $date = date('Y-m-d', strtotime("now"));
-        $yesterday = date('Y-m-d', strtotime("-1 Day"));
-        $output = fopen('php://output', 'w');
-
-        fputcsv($output, array('Link', 'Clicks', 'Amount', 'RPM', 'Earning'));
-        $m = Registry::get("MongoDB")->urls;
-        $links = $m->find(array('user_id' => $this->user->id, "created < ?" => $now));
-        foreach ($links as $key => $value) {
-            $link = Link::first(array("id = ?" => $value["link_id"]), array("short", "id", "item_id"));
-            $stat = Stat::first(array("link_id = ?" => $value["link_id"]), array("click", "amount", "rpm"));
-            if (isset($stat)) {
-                fputcsv($output, array($link->short, $stat->click, $stat->amount, $stat->rpm, "Added"));
-            } else {
-                if ($link) {
-                    $data = $link->stat($yesterday);
-                    fputcsv($output, array($link->short, $data["click"], $data["amount"], $data["rpm"], "Not Added, Sessions less than 10"));
-                }
-            }
-        }
-        header('Content-Description: File Transfer');
-        header("Content-Type: text/csv; charset=utf-8");
-        header("Content-Disposition: attachment; filename=report{$this->user->id}_{$yesterday}.csv");
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-        header('Pragma: public');
-        $done = fclose($output);
-        exit;
     }
 }
