@@ -271,15 +271,14 @@ function stats() {
 }
 
 
-function campaigns() {
+function advertiser() {
     request.read({
-        action: "analytics/campaign/" + today(),
+        action: 'analytics/campaigns',
         callback: function(data) {
-            $('#today_click').html(data.stats.click);
-            $('#today_cpc').html(data.stats.cpc);
-            $('#today_spent').html(data.stats.spent);
+            $('#impressions').html(data.impressions);
+            $('#clicks').html(data.clicks);
 
-            var gdpData = data.stats.analytics;
+            var gdpData = data.ianalytics;
             $('#world-map').vectorMap({
                 map: 'world_mill_en',
                 series: {
@@ -291,30 +290,13 @@ function campaigns() {
                 },
                 onRegionTipShow: function(e, el, code) {
                     if (gdpData.hasOwnProperty(code)) {
+                        $("#topcountry").append('<li class="list-group-item">'+code+' <span class="badge">'+gdpData[code]+'</span></li>');
                         el.html(el.html() + ' (Sessions - ' + gdpData[code] + ')');
                     } else{
                         el.html(el.html() + ' (Sessions - 0)');
                     };
                 }
             });
-        }
-    });
-
-    //finance stats
-    $('#finstats').html('<p class="text-center"><i class="fa fa-spinner fa-spin fa-5x"></i></p>');
-    request.read({
-        action: "finance/stats/1",
-        callback: function (data) {
-            $('#finstats').html('');
-            if (data.data) {
-                Morris.Bar({
-                    element: 'finstats',
-                    data: toArray(data.data),
-                    xkey: 'y',
-                    ykeys: ['a'],
-                    labels: ['Total']
-                });
-            }
         }
     });
 }

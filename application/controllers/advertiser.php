@@ -12,18 +12,12 @@ class Advertiser extends Analytics {
      */
     public function index() {
         $this->seo(array("title" => "Advertize", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
+        $view = $this->getActionView();$session = Registry::get("session");
         $now = strftime("%Y-%m-%d", strtotime('now'));
-        $database = Registry::get("database");
-        $paid = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 1)->all();
-        $earn = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("live=?", 0)->all();
-
-        $ads = Ad::all(array("user_id = ?" => $this->user->id), array("id", "title", "created", "image", "url", "live", "visibility"), "created", "desc", 4, 1);
+        $customer = $session->get("customer");
         
-        $view->set("ads", $ads);
-        $view->set("paid", round($paid[0]["earn"], 2));
-        $view->set("earn", round($earn[0]["earn"], 2));
         $view->set("now", $now);
+        $view->set("customer", $customer);
     }
 
     /**

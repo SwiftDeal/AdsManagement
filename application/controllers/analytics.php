@@ -10,104 +10,52 @@ use \Curl\Curl;
 
 class Analytics extends Manage {
 
-    public function advertiser($user_id) {
-        $this->JSONview();$impressions = []; $i = [];$total_impression = 0;$total_click = 0;
-        $return = array("clicks" => 0, "impressions" => 0, "analytics" => array());
+    public function campaigns() {
+        $this->JSONview();$impressions = [];$clicks = [];$i = [];$total_impression = 0;$total_click = 0;
+        $user_id = RequestMethods::get("user_id");$start = RequestMethods::get("start");$end = RequestMethods::get("end");
+        $view = $this->getActionView();
         $ads = \Models\Mongo\Ad::all(array("user_id" => $user_id));
         foreach ($ads as $ad) {
             $i[] = $ad->id;
         }
+        
         $impressions['cid'] = array('$in' => $i);
+        $impressions['modified'] = array('$gte' => new MongoDate(strtotime($start)), '$lte' => new MongoDate(strtotime($end)));
         $impr = Registry::get("MongoDB")->impressions;
-
         $icursor = $impr->find($impressions);
         foreach ($icursor as $id => $result) {
             $code = $result["country"];
             $total_impression += $result["hits"];
-            if (array_key_exists($code, $analytics)) {
-                $analytics[$code] += $result["hits"];
+            if (array_key_exists($code, $ianalytics)) {
+                $ianalytics[$code] += $result["hits"];
             } else {
-                $analytics[$code] = $result["hits"];
+                $ianalytics[$code] = $result["hits"];
             }
         }
-        
-        if ($total_impression > 0) {
-            $return = array(
-                "clicks" => $total_click,
-                "impressions" => $total_impression,
-                "analytics" => $analytics
-            );
-        }
-    }
 
-    /**
-     * Today Stats of user
-     * @return array earnings, clicks, rpm, analytics
-     * @before _secure
-     */
-    public function stats($created = NULL, $auth = 1, $user_id = NULL, $item_id = NULL) {
-        $this->seo(array("title" => "Stats", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-        $total_click = 0;$earning = 0;$analytics = array();$query = array();$publishers = array();
-        $rpm = array("IN" => 135, "US" => 220, "CA" => 220, "AU" => 220, "GB" => 220, "NONE" => 80);
-        $return = array("click" => 0, "rpm" => 0, "earning" => 0, "analytics" => array());
-
-        is_null($created) ? NULL : $query['created'] = $created;
-        is_null($item_id) ? NULL : $query['item_id'] = $item_id;
-        if ($auth) {
-            $query['user_id'] = (is_null($user_id) ? $this->user->id : $user_id);
-        }
-
-        $collection = Registry::get("MongoDB")->clicks;
-
-        $cursor = $collection->find($query);
+        $clicks['cid'] = array('$in' => $i);
+        $clicks['created'] = array('$gte' => new MongoDate(strtotime($start)), '$lte' => new MongoDate(strtotime($end)));
+        $clk = Registry::get("MongoDB")->clicktracks;
+        $cursor = $clk->find($clicks);
         foreach ($cursor as $id => $result) {
-            $code = $result["country"];
-            $total_click += $result["click"];
-            if (array_key_exists($code, $rpm)) {
-                $earning += ($rpm[$code])*($result["click"])/1000;
+            $code = $result["country"];$total_click++;
+            if (array_key_exists($code, $canalytics)) {
+                $canalytics[$code] += 1;
             } else {
-                $earning += ($rpm["NONE"])*($result["click"])/1000;
+                $canalytics[$code] = 1;
             }
-            if (array_key_exists($code, $analytics)) {
-                $analytics[$code] += $result["click"];
-            } else {
-                $analytics[$code] = $result["click"];
-            }
-            if (array_key_exists($result["user_id"], $publishers)) {
-                $publishers[$result["user_id"]] += $result["click"];
-            } else {
-                $publishers[$result["user_id"]] = $result["click"];
-            }
-        }
-        $publishers = $this->array_sort($publishers, 'click', SORT_DESC);$rank = array();
-        foreach ($publishers as $key => $value) {
-            array_push($rank, array(
-                "user_id" => $key,
-                "clicks" => $value
-            ));
-        }
-        arsort($analytics);
-        arsort($publishers);
-
-        if ($total_click > 0) {
-            $return = array(
-                "click" => round($total_click),
-                "rpm" => $this->user->convert(round($earning*1000/$total_click, 2)),
-                "earning" => $this->user->convert(round($earning, 2)),
-                "analytics" => $analytics,
-                "publishers" => $rank
-            );
         }
 
-        $view->set("stats", $return);
+        $view->set("clicks", $total_click);
+        $view->set("impressions", $total_impression);
+        $view->set("ianalytics", $ianalytics);
+        $view->set("canalytics", $canalytics);
     }
 
     protected function validateDate($date) {
         $d = DateTime::createFromFormat('Y-m-d', $date);
         return $d && $d->format('Y-m-d') == $date;
     }
-
 
     /**
      * Analytics of Single Campaign Datewise
