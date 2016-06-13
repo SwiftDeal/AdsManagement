@@ -81,7 +81,7 @@ class Campaign extends Publisher {
                 "category" => json_encode(RequestMethods::post("category")),
                 "coverage" => json_encode(RequestMethods::post("coverage", "IN")),
                 "budget" => RequestMethods::post("budget"),
-                "frequency" => RequestMethods::post("frequency"),
+                "frequency" => RequestMethods::post("frequency", 2),
                 "start" => RequestMethods::post("start"),
                 "end" => RequestMethods::post("end"),
                 "cpc" => RequestMethods::post("cpc", 200),
@@ -103,8 +103,7 @@ class Campaign extends Publisher {
                     ]);
                     $cat->save();
                 }
-
-                $view->set("message", "Campaign Created Successfully now we will approve it within 24 hours and notify you");
+                $view->set("message", "Campaign Created Successfully, will be approved within 24 hours.<a href='/campaign/manage.html'>Manage Campaigns</a>");
             }  else {
                 $view->set("errors", $ad->getErrors());
             }
