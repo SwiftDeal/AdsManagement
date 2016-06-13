@@ -12,7 +12,9 @@ class SEO {
     
     protected $_title;
     protected $_photo;
-
+    protected $_keywords;
+    protected $_description;
+    
     public function __construct($options) {
         if (!isset($options["title"])) {
             throw new Exception("Title not set");
@@ -20,6 +22,8 @@ class SEO {
 
         $this->_title       = $options["title"];
         $this->_photo       = $options["photo"];
+        $this->_keywords       = $options["keywords"];
+        $this->_description       = $options["description"];
     }
 
     public function __call($name, $arguments) {
