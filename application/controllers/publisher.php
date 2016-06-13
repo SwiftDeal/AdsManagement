@@ -96,7 +96,7 @@ class Publisher extends Advertiser {
                 # code...
                 break;
         }
-        return $code;
+        return htmlentities($code);
     }
 
     /**
