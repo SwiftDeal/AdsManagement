@@ -9,25 +9,25 @@
         {echo $message}
     </div>
     {/if}
-    <div class="col-md-offset-3 col-md-6">
-        {if isset($code)}
-        <div class="row">
-            <div class="col-md-offset-3 col-md-6">
-                <p>Insert following code at the end of the web page before ending body tag.</p>
-                <div class="row well">
-                    <div data-spy="affix" data-offset-top="60" data-offset-bottom="200">
-                        <div class="row-fluid">
-                            <div class="col-sm-8">
-                                <code>
-                                    {echo htmlentities($code)}
-                                </code>
-                            </div>
-                        </div>
+    {if isset($code)}
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <p>Insert following code at the end of the web page before ending body tag.</p>
+            <div class="row well">
+                <div class="row-fluid">
+                    <div class="col-sm-8">
+                        <code>
+                            {echo htmlentities($code)}
+                        </code>
                     </div>
                 </div>
             </div>
         </div>
-        {/if}
+        <div class="col-md-3"></div>
+    </div>
+    {/if}
+    <div class="col-md-offset-3 col-md-6">
 
         <div class="card">
             <div class="card-body no-padding">
@@ -41,13 +41,16 @@
                         <div class="form-group">
                             <label>Ad unit category</label><br>
                             <label class="radio-inline">
-                                <input type="radio" name="category" value="native"> Native Ad
+                                <input type="radio" name="category" value="native" checked=""> Native Ad
                             </label>
                             <label class="radio-inline">
                                 <input type="radio" name="category" value="fbia"> Facebook Instant Articles
                             </label>
                             <label class="radio-inline">
                                 <input type="radio" name="category" value="amp"> Google AMPs
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="category" value="notify"> Notify
                             </label>
                             <span class="help-block">{echo Shared\Markup::errors($errors, "category")}</span>
                         </div>
@@ -61,7 +64,7 @@
                             <span class="help-block">{echo Shared\Markup::errors($errors, "category")}</span>
                         </div>
                         <input type="hidden" name="action" value="adunit">
-                        <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Save and get code</button>
+                        <p class="text-center"><button type="submit" class="btn btn-primary"><i class="fa fa-check-circle"></i> Save and get code</button></p>
                     </div>
                 </form>
             </div>

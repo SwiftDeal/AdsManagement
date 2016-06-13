@@ -33,7 +33,7 @@ class Publisher extends Advertiser {
         $limit = RequestMethods::get("limit", 10);
         $where = array("user_id" => $this->user->id);
 
-        $adunits = \Models\Mongo\AdUnit::all($where, array("name", "type", "live", "created"), "created", -1, $limit, $page);
+        $adunits = \Models\Mongo\AdUnit::all($where, array("name", "category", "live", "created"), "created", -1, $limit, $page);
         $count = \Models\Mongo\AdUnit::count($where);
 
         $view->set("adunits", $adunits);
@@ -58,20 +58,45 @@ class Publisher extends Advertiser {
             ));
             $adunit->save();
 
-            if ($adunit->category == "native") {
-                $code = '<script>(function (we, a, r, e, vnative){we["vNativeObject"]=vnative;we[vnative]=we[vnative]||function(){(i[vnative].q=i[r].q || []).push(arguments)};var x,y;x=a.createElement(r),y=a.getElementsByTagName(r)[0];x.async=true;x.src=e;y.parentNode.insertBefore(x, y);}(window,document,"script","//serve.vnative.com/native.js","vn"));
+            $view->set('code', $this->_code($adunit));
+            $view->set('adunit', $adunit);
+            $view->set('message', "AdUnit was created Successfully!! Go to <a href='/publisher/adunits.html'>AdUnits</a>");
+        }
+    }
+
+    public function aucode() {
+        $this->JSONview();
+        $view = $this->getActionView();
+
+        $adunit = \Models\Mongo\AdUnit::first(array("_id" => RequestMethods::get("auid")));
+        $view->set('code', $this->_code($adunit));
+        $view->set('adunit', $adunit);
+    }
+
+    protected function _code($adunit) {
+        switch ($adunit->category) {
+            case 'native':
+                $code = '<script>(function (we, a, r, e, vnative){we["vNativeObject"]=vnative;we[vnative]=we[vnative]||function(){(i[vnative].q=i[r].q || []).push(arguments)};var x,y;x=a.createElement(r),y=a.getElementsByTagName(r)[0];x.async=true;x.src=e;y.parentNode.insertBefore(x, y);}(window,document,"script","//serve.vnative.com/js/native.js","vn"));
                 </script>';
                 $code .= '<ins class="byvnative"
                             data-client="pub-'. $this->user->id. '"
                             data-slot="'. $adunit->_id .'"
                             data-format="all"></ins>';
+                break;
+            
+            case 'fbia':
+                # code...
+                break;
 
-                $view->set('code', $code);
-            }
+            case 'amp':
+                # code...
+                break;
 
-            $view->set('adunit', $adunit);
-            $view->set('message', "AdUnit was created Successfully!! Go to <a href='/publisher/adunits.html'>AdUnits</a>");
+            case 'notify':
+                # code...
+                break;
         }
+        return $code;
     }
 
     /**

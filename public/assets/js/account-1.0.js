@@ -191,6 +191,21 @@ $(document).ready(function() {
         self.removeClass('disabled');
     });
 
+    $(".code").click(function (e) {
+        e.preventDefault();
+        $('#code').html('');
+        var btn = $(this),
+            auid = btn.data('auid');
+        request.read({
+            action: "publisher/aucode",
+            data: {auid: auid},
+            callback: function (data) {
+                $('#code').html(data.code);
+                $("#getCode").modal("show");
+            }
+        });
+    });
+
     $("#payout").click(function (e) {
         e.preventDefault();
         var self = $(this);

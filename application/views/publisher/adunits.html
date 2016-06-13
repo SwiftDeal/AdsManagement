@@ -1,3 +1,4 @@
+{include layouts/modal/getcode.html}
 <div class="page-title">
     <span class="title">Ad units</span>
     <div class="description">
@@ -24,22 +25,27 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Type</th>
+                            <th>Category</th>
                             <th>Stats</th>
                             <th>Created</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {foreach $a in $adunits}
                         <tr>
                             <td>{$a->name}</td>
-                            <td>{echo implode(",", json_decode($a->type))}</td>
+                            <td>{echo $a->category}</td>
                             <td class="fbLinkStat" data-link="{echo $link->id}">
                                 <span class="label label-primary">View</span>
                             </td>
-                            {script $date = date('Y-m-d H:i:s', $a->created->sec)}
-                            <td>{echo Framework\StringMethods::only_date($date)}</td>
-                            {/if}
+                            <td>
+                                {script $date = date('Y-m-d H:i:s', $a->created->sec)}
+                                <small>{echo Framework\StringMethods::only_date($date)}</small>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-xs code" data-auid="{$a->_id}"><i class="fa fa-code"></i> Code</button>
+                            </td>
                         </tr>
                         {/foreach}
                     </tbody>
