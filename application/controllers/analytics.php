@@ -52,9 +52,46 @@ class Analytics extends Manage {
         $view->set("canalytics", $canalytics);
     }
 
-    protected function validateDate($date) {
-        $d = DateTime::createFromFormat('Y-m-d', $date);
-        return $d && $d->format('Y-m-d') == $date;
+    public function platforms() {
+        $this->JSONview();$impressions = [];$clicks = [];$i = [];$total_impression = 0;$total_click = 0;
+        $user_id = RequestMethods::get("user_id");$start = RequestMethods::get("start");$end = RequestMethods::get("end");
+        $view = $this->getActionView();
+        $adunits = \Models\Mongo\AdUnit::all(array("user_id" => $user_id));
+        foreach ($adunits as $au) {
+            $i[] = $au->id;
+        }
+        
+        $impressions['aduid'] = array('$in' => $i);
+        $impressions['modified'] = array('$gte' => new MongoDate(strtotime($start)), '$lte' => new MongoDate(strtotime($end)));
+        $impr = Registry::get("MongoDB")->impressions;
+        $icursor = $impr->find($impressions);
+        foreach ($icursor as $id => $result) {
+            $code = $result["country"];
+            $total_impression += $result["hits"];
+            if (array_key_exists($code, $ianalytics)) {
+                $ianalytics[$code] += $result["hits"];
+            } else {
+                $ianalytics[$code] = $result["hits"];
+            }
+        }
+
+        $clicks['aduid'] = array('$in' => $i);
+        $clicks['created'] = array('$gte' => new MongoDate(strtotime($start)), '$lte' => new MongoDate(strtotime($end)));
+        $clk = Registry::get("MongoDB")->clicktracks;
+        $cursor = $clk->find($clicks);
+        foreach ($cursor as $id => $result) {
+            $code = $result["country"];$total_click++;
+            if (array_key_exists($code, $canalytics)) {
+                $canalytics[$code] += 1;
+            } else {
+                $canalytics[$code] = 1;
+            }
+        }
+
+        $view->set("clicks", $total_click);
+        $view->set("impressions", $total_impression);
+        $view->set("ianalytics", $ianalytics);
+        $view->set("canalytics", $canalytics);
     }
 
     /**

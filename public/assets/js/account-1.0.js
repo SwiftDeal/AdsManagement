@@ -104,6 +104,9 @@ $(document).ready(function() {
         format: 'yyyy-mm-dd'
     });
 
+    //initialize tooltip
+    $('[data-toggle="tooltip"]').tooltip();
+
     $(".campaignstat").click(function(e) {
         e.preventDefault();
         var item = $(this),
@@ -221,16 +224,14 @@ function today () {
     return today;
 }
 
-function stats() {
-    //loading visitors map
+function publisher() {
     request.read({
-        action: "analytics/stats/" + today(),
+        action: "analytics/platforms",
         callback: function(data) {
-            $('#today_click').html(data.stats.click);
-            $('#today_rpm').html(data.stats.rpm);
-            $('#today_earning').html(data.stats.earning);
+            $('#impressions').html(data.impressions);
+            $('#clicks').html(data.clicks);
 
-            var gdpData = data.stats.analytics;
+            var gdpData = data.ianalytics;
             $('#world-map').vectorMap({
                 map: 'world_mill_en',
                 series: {

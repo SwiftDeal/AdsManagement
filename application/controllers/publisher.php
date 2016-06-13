@@ -14,16 +14,12 @@ class Publisher extends Advertiser {
      */
     public function index() {
         $this->seo(array("title" => "Monetize", "description" => "Stats for your Data", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
+        $view = $this->getActionView();$session = Registry::get("session");
+        $now = strftime("%Y-%m-%d", strtotime('now'));
+        $customer = $session->get("customer");
         
-        $database = Registry::get("database");
-        $paid = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("type=?", "debit")->all();
-        $earn = $database->query()->from("transactions", array("SUM(amount)" => "earn"))->where("user_id=?", $this->user->id)->where("type=?", "credit")->all();
-        $ticket = Ticket::first(array("user_id = ?" => $this->user->id, "live = ?" => 1), array("subject", "id"), "created", "desc");
-    
-        $view->set("total", "");
-        $view->set("paid", abs(round($paid[0]["earn"], 2)));
-        $view->set("earn", round($earn[0]["earn"], 2));
+        $view->set("now", $now);
+        $view->set("customer", $customer);
     }
 
     /**
