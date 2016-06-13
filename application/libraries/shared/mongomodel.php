@@ -21,7 +21,7 @@ namespace Shared {
          * @primary
          * @type autonumber
          */
-        protected $__id = false;
+        protected $__id = null;
 
         /**
          * @column
@@ -36,14 +36,14 @@ namespace Shared {
          * @readwrite
          * @type datetime
          */
-        protected $_created;
+        protected $_created = null;
 
         /**
          * @column
          * @readwrite
          * @type datetime
          */
-        protected $_modified;
+        protected $_modified = null;
 
         /**
          * Every time a row is created these fields should be populated with default values.
@@ -51,12 +51,9 @@ namespace Shared {
         public function save() {
             $primary = $this->getPrimaryColumn();
             $raw = $primary["raw"];
-            $columns = $this->getColumns();
-            $this->_modified = new \MongoDate();
-
             $collection = $this->getTable();
 
-            $doc = [];
+            $doc = []; $columns = $this->getColumns();
             foreach ($columns as $key => $value) {
                 if (isset($this->$value['raw'])) {
                     $doc[$key] = $this->_convertToType($this->$value['raw'], $value['type']);
@@ -70,9 +67,10 @@ namespace Shared {
                 $doc['created'] = new \MongoDate();
 
                 $collection->insert($doc);
-                $this->_id = $doc['_id'];
-            } else {                
-                $collection->update(['_id' => $this->_id], ['$set' => $doc]);
+                $this->__id = $doc['_id'];
+            } else {
+                $doc['modified'] = new \MongoDate();
+                $collection->update(['_id' => $this->__id], ['$set' => $doc]);
             }
         }
 
@@ -99,7 +97,11 @@ namespace Shared {
 
                 case 'datetime':
                 case 'date':
-                    $value = new \MongoDate($value);
+                    $value = new \MongoDate(strtotime($value));
+                    break;
+
+                case 'autonumber':
+                    $value = new \MongoId($value);
                     break;
                 
                 default:
@@ -200,7 +202,7 @@ namespace Shared {
             $class = get_class($this);
             $c = new $class();
             foreach ($columns as $key => $value) {
-                $c->$key = $record[$key];
+                $c->$value['raw'] = $record[$key];
             }
             return $c;
         }
