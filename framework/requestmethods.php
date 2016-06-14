@@ -21,14 +21,14 @@ namespace Framework {
         
         public static function get($key, $default = "") {
             if (!empty($_GET[$key])) {
-                return $_GET[$key];
+                return htmlentities($_GET[$key]);
             }
             return $default;
         }
 
         public static function post($key, $default = "") {
             if (!empty($_POST[$key])) {
-                return $_POST[$key];
+                return htmlentities($_POST[$key]);
             } return $default;
         }
 

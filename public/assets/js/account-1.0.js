@@ -242,6 +242,7 @@ function today () {
 function publisher() {
     request.read({
         action: "analytics/platforms",
+        data: $('#range').serialize(),
         callback: function(data) {
             $('#impressions').html(data.impressions);
             $('#clicks').html(data.clicks);
@@ -258,6 +259,7 @@ function publisher() {
                 },
                 onRegionTipShow: function(e, el, code) {
                     if (gdpData.hasOwnProperty(code)) {
+                        $("#topcountry").append('<li class="list-group-item">'+code+' <span class="badge">'+gdpData[code]+'</span></li>');
                         el.html(el.html() + ' (Sessions - ' + gdpData[code] + ')');
                     } else{
                         el.html(el.html() + ' (Sessions - 0)');
@@ -290,6 +292,7 @@ function publisher() {
 function advertiser() {
     request.read({
         action: 'analytics/campaigns',
+        data: $('#range').serialize(),
         callback: function(data) {
             $('#impressions').html(data.impressions);
             $('#clicks').html(data.clicks);

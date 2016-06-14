@@ -18,7 +18,6 @@ class Analytics extends Manage {
         foreach ($ads as $ad) {
             $i[] = $ad->id;
         }
-        
         $impressions['cid'] = array('$in' => $i);
         $impressions['modified'] = array('$gte' => new MongoDate(strtotime($start)), '$lte' => new MongoDate(strtotime($end)));
         $impr = Registry::get("MongoDB")->impressions;
@@ -58,9 +57,8 @@ class Analytics extends Manage {
         $view = $this->getActionView();
         $adunits = \Models\Mongo\AdUnit::all(array("user_id" => $user_id));
         foreach ($adunits as $au) {
-            $i[] = $au->id;
+            $i[] = $au->_id;
         }
-        
         $impressions['aduid'] = array('$in' => $i);
         $impressions['modified'] = array('$gte' => new MongoDate(strtotime($start)), '$lte' => new MongoDate(strtotime($end)));
         $impr = Registry::get("MongoDB")->impressions;
