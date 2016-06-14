@@ -4,7 +4,7 @@
  * @author Hemant Mann, Faizan Ayubi
  */
 namespace Models\Mongo;
-class AdsBlocked extends \Shared\MongoModel {
+class BlockedUrl extends \Shared\MongoModel {
 
     /**
      * @column

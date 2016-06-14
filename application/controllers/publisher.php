@@ -109,10 +109,10 @@ class Publisher extends Advertiser {
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
         $where = array("user_id" => $this->user->id);
-        $abas = \Models\Mongo\AdsBlocked::all($where, array("*"), "created", -1, $limit, $page);
+        $abas = \Models\Mongo\BlockedUrl::all($where, array("*"), "created", -1, $limit, $page);
 
         if (RequestMethods::post("action") == "abads") {
-            $adunit = new \Models\Mongo\AdsBlocked(array(
+            $adunit = new \Models\Mongo\BlockedUrl(array(
                 "user_id" => $this->user->id,
                 "url" => RequestMethods::post('link')
             ));
@@ -120,7 +120,7 @@ class Publisher extends Advertiser {
             $view->set("message", "Saved Successfully");
         }
 
-        $count = \Models\Mongo\AdsBlocked::count($where);
+        $count = \Models\Mongo\BlockedUrl::count($where);
 
         $view->set("abas", $abas);
         $view->set("limit", $limit);
