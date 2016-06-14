@@ -15,10 +15,12 @@ class Publisher extends Advertiser {
     public function index() {
         $this->seo(array("title" => "Monetize", "description" => "Stats for your Data", "view" => $this->getLayoutView()));
         $view = $this->getActionView();$session = Registry::get("session");
-        $now = strftime("%Y-%m-%d", strtotime('now'));
+        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('now')));
+        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
         $customer = $session->get("customer");
         
-        $view->set("now", $now);
+        $view->set("start", $start);
+        $view->set("end", $end);
         $view->set("customer", $customer);
     }
 

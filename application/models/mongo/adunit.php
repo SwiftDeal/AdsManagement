@@ -12,6 +12,8 @@ class AdUnit extends \Shared\MongoModel {
      * @readwrite
      * @type integer
      * @index
+     *
+     * @validate required
      */
     protected $_user_id;
 
@@ -21,6 +23,8 @@ class AdUnit extends \Shared\MongoModel {
      * @type text
      * @length 255
      * @index
+     *
+     * @validate required
      */
     protected $_category;
 
@@ -38,6 +42,8 @@ class AdUnit extends \Shared\MongoModel {
      * @type text
      * @length 255
      * @index
+     *
+     * @validate required
      */
     protected $_type;
 }
