@@ -51,7 +51,7 @@ class Manage extends Admin {
         $customers = Customer::all($where, array("id","user_id", "modified", "live", "balance"), "created", "desc", $limit, $page);
         $count = Customer::count($where);
 
-        $view->set("publishers", $publishers);
+        $view->set("customers", $customers);
         $view->set("page", $page);
         $view->set("count", $count);
         $view->set("limit", $limit);

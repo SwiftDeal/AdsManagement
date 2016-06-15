@@ -71,7 +71,7 @@ class Campaign extends Publisher {
             } else {
                 $image = $this->s3upload("image", "images");
             }
-            $ad = new Ad(array(
+            $ad = new \Models\Mongo\Ad(array(
                 "user_id" => $this->user->id,
                 "url" =>  RequestMethods::post("url"),
                 "target" =>  RequestMethods::post("url"),
@@ -89,11 +89,8 @@ class Campaign extends Publisher {
                 "live" => 0
             ));
 
-            $mongoad = new \Models\Mongo\Ad();
-
             if ($ad->validate()) {
                 $ad->save();
-                $mongoad->duplicate($ad);
                 
                 $categories = json_decode($ad->category);
                 foreach ($categories as $key => $value) {

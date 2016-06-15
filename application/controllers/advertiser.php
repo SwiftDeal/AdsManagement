@@ -19,15 +19,4 @@ class Advertiser extends Analytics {
         $view->set("now", $now);
         $view->set("customer", $customer);
     }
-
-    /**
-     * @before _secure, _layout
-     */
-    public function stats() {
-        $this->seo(array("title" => "Platforms", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
-        $insights = Insight::all(array("user_id = ?" => $this->user->id));
-        $view->set("insights", $insights);
-    }
 }
