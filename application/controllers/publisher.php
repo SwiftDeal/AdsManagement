@@ -87,7 +87,9 @@ class Publisher extends Advertiser {
                 break;
             
             case 'fbia':
-                # code...
+                $code = '<figure class="op-ad">
+                              <iframe src="//serve.vnative.com/public/assets/images/320x50.png" height="60" width="320"></iframe>
+                        </figure>';
                 break;
 
             case 'amp':

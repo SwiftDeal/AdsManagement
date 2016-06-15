@@ -28,46 +28,41 @@
     </div>
     {/if}
     <div class="col-md-offset-3 col-md-6">
-
-        <div class="card">
-            <div class="card-body no-padding">
-                <form method="post" action="">
-                    <div class="panel panel-default panel-body">
-                        <div class="form-group">
-                            <label>Name</label>
-                            <input type="text" name="name" class="form-control" maxlength="100" required="" value="Native">
-                            <span class="help-block">{echo Shared\Markup::errors($errors, "name")}</span>
-                        </div>
-                        <div class="form-group">
-                            <label>Ad unit category</label><br>
-                            <label class="radio-inline">
-                                <input type="radio" name="category" value="native" checked=""> Native Ad
-                            </label>
-                            <label class="radio-inline">
-                                <input type="radio" name="category" value="fbia"> Facebook Instant Articles
-                            </label>
-                            <label class="radio-inline">
-                                <input type="radio" name="category" value="amp"> Google AMPs
-                            </label>
-                            <label class="radio-inline">
-                                <input type="radio" name="category" value="notify"> Notify
-                            </label>
-                            <span class="help-block">{echo Shared\Markup::errors($errors, "category")}</span>
-                        </div>
-                        <div class="form-group">
-                            <label>Type</label>
-                            <select name="type[]" class="form-control" multiple="" data-live-search=true title="Choose ad type">
-                                <option value="text" selected="">Text</option>
-                                <option value="image" selected="">Image</option>
-                                <option value="video">Video</option>
-                            </select>
-                            <span class="help-block">{echo Shared\Markup::errors($errors, "category")}</span>
-                        </div>
-                        <input type="hidden" name="action" value="adunit">
-                        <p class="text-center"><button type="submit" class="btn btn-primary"><i class="fa fa-check-circle"></i> Save and get code</button></p>
-                    </div>
-                </form>
+        <form method="post" action="">
+            <div class="panel panel-default panel-body">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" name="name" class="form-control" maxlength="100" required="" value="Native">
+                    <span class="help-block">{echo Shared\Markup::errors($errors, "name")}</span>
+                </div>
+                <div class="form-group">
+                    <label>Ad unit category</label><br>
+                    <label class="radio-inline">
+                        <input type="radio" name="category" value="native" checked=""> Native Ad
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="category" value="fbia" disabled=""> Facebook Instant Articles
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="category" value="amp" disabled=""> Google AMPs
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="category" value="notify" disabled=""> Notify
+                    </label>
+                    <span class="help-block">{echo Shared\Markup::errors($errors, "category")}</span>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select name="type[]" class="form-control" multiple="" data-live-search=true title="Choose ad type">
+                        <option value="text" selected="">Text</option>
+                        <option value="image" selected="">Image</option>
+                        <option value="video">Video</option>
+                    </select>
+                    <span class="help-block">{echo Shared\Markup::errors($errors, "category")}</span>
+                </div>
+                <input type="hidden" name="action" value="adunit">
+                <p class="text-center"><button type="submit" class="btn btn-primary"><i class="fa fa-check-circle"></i> Save and get code</button></p>
             </div>
-        </div>
+        </form>
     </div>
 </div>

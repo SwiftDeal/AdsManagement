@@ -91,46 +91,4 @@ class Analytics extends Manage {
         $view->set("ianalytics", $ianalytics);
         $view->set("canalytics", $canalytics);
     }
-
-    /**
-     * Analytics of Single Campaign Datewise
-     * @return array earnings, clicks, cpc, analytics
-     * @before _secure
-     */
-    public function ad($id, $created = NULL) {
-        $this->seo(array("title" => "Ad Stats", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-        $total_click = 0;$spent = 0;$analytics = array();$query = array();$i = array();
-        $return = array("click" => 0, "spent" => 0, "analytics" => array());
-        
-        $ad = Ad::first(["id = ?" => $id], ["cpc"]);
-        if ($this->validateDate($created)) {
-            $query['created'] = $created;
-        }
-        $query["cid"] = (int) $id;
-        
-        $collection = Registry::get("MongoDB")->clicktracks;
-        $cursor = $collection->find($query);
-        foreach ($cursor as $result) {
-            $code = $result["country"];
-            $total_click++;
-            if (array_key_exists($code, $analytics)) {
-                $analytics[$code] += $result["click"];
-            } else {
-                $analytics[$code] = $result["click"];
-            }
-        }
-
-        if ($total_click > 0) {
-            $return = array(
-                "click" => round($total_click),
-                "spent" => $this->user->convert(round($spent, 2)),
-                "analytics" => $analytics
-            );
-        }
-
-        $view->set("stats", $return);
-        $view->set("query", $query);
-        $view->set("cpc", $cpc);
-    }
 }

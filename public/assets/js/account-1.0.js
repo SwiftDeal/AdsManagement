@@ -301,24 +301,6 @@ function publisher() {
             });
         }
     });
-
-    //finance stats
-    $('#finstats').html('<p class="text-center"><i class="fa fa-spinner fa-spin fa-5x"></i></p>');
-    request.read({
-        action: "finance/stats",
-        callback: function (data) {
-            $('#finstats').html('');
-            if (data.data) {
-                new Morris.Line({
-                    element: 'finstats',
-                    data: toArray(data.data),
-                    xkey: 'y',
-                    ykeys: ['a'],
-                    labels: ['Total']
-                });
-            }
-        }
-    });
 }
 
 
@@ -330,8 +312,43 @@ function advertiser() {
             $('#impressions').html(data.impressions);
             $('#clicks').html(data.clicks);
 
-            var gdpData = data.ianalytics;
-            $('#world-map').vectorMap({
+            var icount = 1;
+            $.each(data.ianalytics, function(i, val) {
+                icount++;
+                if(icount < 6) {
+                    $("#itopcountry").append('<li class="list-group-item">'+i+' <span class="badge">'+val+'</span></li>');
+                }
+            });
+
+            var igdpData = data.ianalytics;
+            $('#imp-world-map').vectorMap({
+                map: 'world_mill_en',
+                series: {
+                    regions: [{
+                        values: igdpData,
+                        scale: ['#C8EEFF', '#0071A4'],
+                        normalizeFunction: 'polynomial'
+                    }]
+                },
+                onRegionTipShow: function(e, el, code) {
+                    if (igdpData.hasOwnProperty(code)) {
+                        el.html(el.html() + ' (Impressions - ' + igdpData[code] + ')');
+                    } else{
+                        el.html(el.html() + ' (Impressions - 0)');
+                    };
+                }
+            });
+
+            var ccount = 1;
+            $.each(data.canalytics, function(i, val) {
+                ccount++;
+                if(ccount < 6) {
+                    $("#ctopcountry").append('<li class="list-group-item">'+i+' <span class="badge">'+val+'</span></li>');
+                }
+            });
+
+            var gdpData = data.canalytics;
+            $('#clk-world-map').vectorMap({
                 map: 'world_mill_en',
                 series: {
                     regions: [{
@@ -342,7 +359,6 @@ function advertiser() {
                 },
                 onRegionTipShow: function(e, el, code) {
                     if (gdpData.hasOwnProperty(code)) {
-                        $("#topcountry").append('<li class="list-group-item">'+code+' <span class="badge">'+gdpData[code]+'</span></li>');
                         el.html(el.html() + ' (Sessions - ' + gdpData[code] + ')');
                     } else{
                         el.html(el.html() + ' (Sessions - 0)');

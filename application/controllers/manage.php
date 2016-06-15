@@ -38,8 +38,8 @@ class Manage extends Admin {
 	/**
      * @before _secure, changeLayout, _admin
      */
-    public function publishers() {
-        $this->seo(array("title" => "Publishers Manage", "view" => $this->getLayoutView()));
+    public function customers() {
+        $this->seo(array("title" => "Customers Manage", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
@@ -48,8 +48,8 @@ class Manage extends Admin {
         $value = RequestMethods::get("value", 0);
 
         $where = array("{$property} = ?" => $value);
-        $publishers = Publish::all($where, array("id","user_id", "modified", "live", "balance"), "created", "desc", $limit, $page);
-        $count = Publish::count($where);
+        $customers = Customer::all($where, array("id","user_id", "modified", "live", "balance"), "created", "desc", $limit, $page);
+        $count = Customer::count($where);
 
         $view->set("publishers", $publishers);
         $view->set("page", $page);
@@ -57,124 +57,6 @@ class Manage extends Admin {
         $view->set("limit", $limit);
         $view->set("property", $property);
         $view->set("value", $value);
-    }
-
-    /**
-     * @before _secure, changeLayout, _admin
-     */
-    public function advertisers() {
-        $this->seo(array("title" => "Advertisers Manage", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-        $page = RequestMethods::get("page", 1);
-        $limit = RequestMethods::get("limit", 10);
-        
-        $property = RequestMethods::get("property", "live");
-        $value = RequestMethods::get("value", 0);
-
-        $where = array("{$property} = ?" => $value);
-        $advertisers = Advert::all($where, array("id","user_id", "modified", "live", "balance"), "created", "desc", $limit, $page);
-        $count = Advert::count($where);
-
-        $view->set("advertisers", $advertisers);
-        $view->set("page", $page);
-        $view->set("count", $count);
-        $view->set("limit", $limit);
-        $view->set("property", $property);
-        $view->set("value", $value);
-    }
-
-	/**
-     * @before _secure, changeLayout, _admin
-     */
-    public function news() {
-        $this->seo(array("title" => "Member News", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-        if (RequestMethods::post("news")) {
-            $news = new Meta(array(
-                "user_id" => $this->user->id,
-                "property" => "news",
-                "value" => RequestMethods::post("news")
-            ));
-            $news->save();
-            $view->set("message", "News Saved Successfully");
-        }
-        
-        $allnews = Meta::all(array("property = ?" => "news"), array("*"), "created", "desc");
-            
-        $view->set("allnews", $allnews);
-    }
-
-    /**
-     * @before _secure, changeLayout, _admin
-     */
-    public function rates() {
-        $this->seo(array("title" => "Rates", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
-        $rpm = Meta::first(["property = ?" => "rpm"]);
-        $r = json_decode($rpm->value);
-        foreach ($r as $key => $value) {
-            $rpms[] = array("country" => $key,"charge" => $value);
-        }
-
-        $cpc = Meta::first(["property = ?" => "cpc"]);
-        $c = json_decode($cpc->value);
-        foreach ($c as $key => $value) {
-            $cpcs[] = array("country" => $key,"charge" => $value);
-        }
-
-        switch (RequestMethods::post("action")) {
-            case 'rpm':
-                $rpm->value = json_encode(RequestMethods::post("rpm"));
-                $rpm->save();
-                break;
-            
-            case 'cpc':
-                $cpc->value = json_encode(RequestMethods::post("cpc"));
-                $cpc->save();
-                break;
-        }
-
-        $view->set("rpms", $rpms);
-        $view->set("cpcs", $cpcs);
-    }
-
-    /**
-     * @before _secure, changeLayout, _admin
-     */
-    public function domains() {
-        $this->seo(array("title" => "All Domains", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-        switch (RequestMethods::post("action")) {
-            case 'addDomain':
-                $exist = Meta::first(array("property" => "domain", "value = ?" => RequestMethods::post("domain")));
-                if($exist) {
-                    $view->set("message", "Domain Exists");
-                } else {
-                    $domain = new Meta(array(
-                        "user_id" => $this->user->id,
-                        "property" => "domain",
-                        "value" => RequestMethods::post("domain")
-                    ));
-                    $domain->save();
-                    $view->set("message", "Domain Added Successfully");
-                }
-                break;
-            
-            case 'assignDomain':
-                $domain = new Meta(array(
-                    "user_id" => RequestMethods::post("user_id"),
-                    "property" => "domain",
-                    "value" => RequestMethods::post("domain"),
-                    "live" => 1
-                ));
-                $domain->save();
-                $view->set("message", "Domain Added Successfully");
-                break;
-        }
-
-        $domains = Meta::all(array("property = ?" => "domain"));
-        $view->set("domains", $domains);
     }
 
     /**
