@@ -16,7 +16,7 @@ class Analytics extends Manage {
         $view = $this->getActionView();
         $ads = \Models\Mongo\Ad::all(array("user_id" => $user_id));
         foreach ($ads as $ad) {
-            $i[] = $ad->id;
+            $i[] = $ad->_id;
         }
         $impressions['cid'] = array('$in' => $i);
         $impressions['modified'] = array('$gte' => new MongoDate(strtotime($this->changeDate($start, -1))), '$lte' => new MongoDate(strtotime($this->changeDate($end, +1))));

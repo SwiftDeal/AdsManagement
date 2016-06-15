@@ -26,19 +26,25 @@ class Home extends Auth {
 
     public function requestdemo() {
         $this->seo(array("title" => "Request Demo", "view" => $this->getLayoutView()));
-
+        $view = $this->getActionView();
         if(RequestMethods::post('name')){
             $enquiry = new Enquiry(array(
                 'name' => RequestMethods::post('name'),
                 'c_website' => RequestMethods::post('url'),
                 'phone' => RequestMethods::post('phone'),
                 'email' => RequestMethods::post('email'),
-                'message' => RequestMethods::post('message'),
+                'message' => RequestMethods::post('message', ''),
                 'type' => 2
              ));
 
             if($enquiry->validate()){
                 $enquiry->save();
+                $view->set("message", 'Request Submitted Successfully!!!');
+                $this->notify(array(
+                    "template" => "requestDemo",
+                    "subject" => "Response: Demo Request",
+                    "user" => $enquiry
+                ));
             }else{
                 $enquiry->getErrors();
             }
@@ -47,6 +53,7 @@ class Home extends Auth {
 
     public function contact() {
         $this->seo(array("title" => "Contact Us", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
         if(RequestMethods::post('name')){
             $enquiry = new Enquiry(array(
                 'name' => RequestMethods::post('name'),
@@ -57,6 +64,7 @@ class Home extends Auth {
             ));
             if($enquiry->validate()){
                 $enquiry->save();
+                $view->set("message", 'Request Submitted Successfully!!!');
             }else{
                 $enquiry->getErrors();
             }
