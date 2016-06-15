@@ -1,17 +1,11 @@
-<script type="text/javascript" src="{echo CDN}plugins/bootstrap/affix.js"></script>
-<div class="page-title">
-    <span class="title">Create Ad unit</span>
-</div>
-<div class="row">
-    {if isset($message)}
-    <div class="alert alert-info alert-dismissible fade in" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-        {echo $message}
-    </div>
-    {/if}
-    <div class="col-md-offset-3 col-md-6">
-        <form method="post" action="">
-            <div class="panel panel-default panel-body">
+<div class="modal fade" id="createAdUnit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <form class="modal-content" method="get" action="/publisher/createadunit.html">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">URL of Content</h4>
+            </div>
+            <div class="modal-body">
                 <div class="form-group">
                     <label>Name</label>
                     <input type="text" name="name" class="form-control" maxlength="100" required="" value="Native">
@@ -42,8 +36,11 @@
                     </select>
                     <span class="help-block">{echo Shared\Markup::errors($errors, "category")}</span>
                 </div>
+            </div>
+            <div class="modal-footer">
                 <input type="hidden" name="action" value="adunit">
-                <p class="text-center"><button type="submit" class="btn btn-primary"><i class="fa fa-check-circle"></i> Save and get code</button></p>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary"><i class="fa fa-check-circle"></i> Save and get code</button>
             </div>
         </form>
     </div>

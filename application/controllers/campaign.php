@@ -186,17 +186,10 @@ class Campaign extends Publisher {
         
         $property = RequestMethods::get("property", "live");
         $value = RequestMethods::get("value", 0);
+        $where = array("{$property}" => $value);
 
-        if (in_array($property, array("url", "title", "category"))) {
-            $where = array(
-                "{$property} LIKE ?" => "%{$value}%"
-            );
-        } else {
-            $where = array("{$property} = ?" => $value);
-        }
-
-        $contents = Item::all($where, array("id", "title", "modified", "image", "visibility", "url", "live", "user_id"), "modified", "desc", $limit, $page);
-        $count = Item::count($where);
+        $contents = \Models\Mongo\Ad::all($where, array("id", "title", "modified", "image", "visibility", "url", "live", "user_id"), "created", -1, $limit, $page);
+        $count = \Models\Mongo\Ad::count($where);
 
         $view->set("contents", $contents);
         $view->set("property", $property);

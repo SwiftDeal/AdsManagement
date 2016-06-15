@@ -200,15 +200,6 @@ class Auth extends Controller {
         }
     }
 
-    public function randomtext() {
-        $this->JSONview();
-        $view = $this->getActionView();
-        $pass = $this->randomPassword();
-
-        $view->set("random", $pass);
-        $view->set("hash", sha1($pass));
-    }
-
     protected function randomPassword() { 
         $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
         $pass = array(); //remember to declare $pass as an array

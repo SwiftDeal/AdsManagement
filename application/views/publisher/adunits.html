@@ -1,11 +1,12 @@
 {include layouts/modal/getcode.html}
+{include layouts/modal/createAdUnit.html}
 <div class="page-title">
     <span class="title">Ad units</span>
     <div class="description">
         Manage all your ad units from here, edit and disable.
         <span class="pull-right">
             <form class="form-inline" role="form" method="get" action="">
-                <a href="/publisher/createadunit.html" class="btn btn-info"><i class="fa fa-bullhorn"></i> New Adunit</a>
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#createAdUnit"><i class="fa fa-bullhorn"></i> New Adunit</button>
                 <div class="form-group">
                     <div class="input-group">
                         <input type="url" style="width: 200px" name="short" class="form-control" required="" placeholder="filter ad units" />
