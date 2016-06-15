@@ -19,7 +19,7 @@ class Analytics extends Manage {
             $i[] = $ad->id;
         }
         $impressions['cid'] = array('$in' => $i);
-        $impressions['modified'] = array('$gte' => new MongoDate(strtotime($start)), '$lte' => new MongoDate(strtotime($end)));
+        $impressions['modified'] = array('$gte' => new MongoDate(strtotime($this->changeDate($start, -1))), '$lte' => new MongoDate(strtotime($this->changeDate($end, +1))));
         $impr = Registry::get("MongoDB")->impressions;
         $icursor = $impr->find($impressions);
         foreach ($icursor as $id => $result) {
@@ -33,7 +33,7 @@ class Analytics extends Manage {
         }
 
         $clicks['cid'] = array('$in' => $i);
-        $clicks['created'] = array('$gte' => new MongoDate(strtotime($start)), '$lte' => new MongoDate(strtotime($end)));
+        $clicks['created'] = array('$gte' => new MongoDate(strtotime($this->changeDate($start, -1))), '$lte' => new MongoDate(strtotime($this->changeDate($end, +1))));
         $clk = Registry::get("MongoDB")->clicktracks;
         $cursor = $clk->find($clicks);
         foreach ($cursor as $id => $result) {
@@ -60,7 +60,7 @@ class Analytics extends Manage {
             $i[] = $au->_id;
         }
         $impressions['aduid'] = array('$in' => $i);
-        $impressions['modified'] = array('$gte' => new MongoDate(strtotime($start)), '$lte' => new MongoDate(strtotime($end)));
+        $impressions['modified'] = array('$gte' => new MongoDate(strtotime($this->changeDate($start, -1))), '$lte' => new MongoDate(strtotime($this->changeDate($end, +1))));
         $impr = Registry::get("MongoDB")->impressions;
         $icursor = $impr->find($impressions);
         foreach ($icursor as $id => $result) {
@@ -74,7 +74,7 @@ class Analytics extends Manage {
         }
 
         $clicks['aduid'] = array('$in' => $i);
-        $clicks['created'] = array('$gte' => new MongoDate(strtotime($start)), '$lte' => new MongoDate(strtotime($end)));
+        $clicks['created'] = array('$gte' => new MongoDate(strtotime($this->changeDate($start, -1))), '$lte' => new MongoDate(strtotime($this->changeDate($end, +1))));
         $clk = Registry::get("MongoDB")->clicktracks;
         $cursor = $clk->find($clicks);
         foreach ($cursor as $id => $result) {

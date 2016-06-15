@@ -10,11 +10,9 @@
                             <a class="list-group-item active text-center">
                                 <i class="fa fa-line-chart"></i> Data
                             </a>
-                            
-                            <a href="/manage/advertisers.html" class="list-group-item"><i class="fa fa-bullhorn fa-2x"></i>  Advertisers <span class="badge">{}</span></a>
-                            <a href="/campaign/all.html" class="list-group-item"><i class="fa fa-file fa-2x"></i> Campaigns <span class="badge">{}</span></a>
-                            <a href="/admin/search.html?model=link&amp;key=live&amp;sign=equal&amp;value=1" class="list-group-item"><i class="fa fa-link fa-2x"></i>  Links <span class="badge">{}</span></a>
-                            <a href="/admin/search.html?model=stat&amp;key=created&amp;sign=like&amp;value={echo $now}" class="list-group-item"><i class="fa fa-check-circle-o fa-2x"></i>  Verified Clicks <span class="badge">{}</span></a>
+                            <a href="/manage/advertisers.html" class="list-group-item"><i class="fa fa-bullhorn fa-2x"></i>  Customers <span class="badge">{echo Customer::count()}</span></a>
+                            <a href="/campaign/all.html" class="list-group-item"><i class="fa fa-file fa-2x"></i> Campaigns <span class="badge">{echo Shared\Markup::nice_number(\Models\Mongo\Ad::count())}</span></a>
+                            <a href="/admin/search.html?model=link&amp;key=live&amp;sign=equal&amp;value=1" class="list-group-item"><i class="fa fa-link fa-2x"></i>  AdUnits <span class="badge">{echo Shared\Markup::nice_number(\Models\Mongo\AdUnit::count())}</span></a>
                         </div>
                     </div>
 
@@ -24,7 +22,6 @@
                                 <i class="fa fa-money"></i> Finance
                             </a>
                             <a href="/admin/search.html?model=payment&amp;key=live&amp;sign=like&amp;value=1" class="list-group-item"><i class="fa fa-money fa-2x"></i>  Payment Done <span class="badge"> {}</span></a>
-                            <a href="/finance/earnings.html" class="list-group-item"><i class="fa fa-exchange fa-2x"></i>  Earnings <span class="badge">{}</span></a>
                             <a href="#" class="list-group-item"><i class="fa fa-exchange fa-2x"></i>  Payments Received <span class="badge">{}</span></a>
                             <a href="/finance/payouts.html" class="list-group-item"><i class="fa fa-bank fa-2x"></i>  Payouts <span class="badge"> {}</span></a>
                         </div>
@@ -35,9 +32,7 @@
                             <a class="list-group-item active text-center">
                                 <i class="fa fa-pie-chart"></i> Monitor
                             </a>
-                            <a href="/admin/search.html?model=stat&amp;key=modified&amp;sign=like&amp;value={echo $now}" class="list-group-item"><i class="fa fa-location-arrow fa-2x"></i>  Links Tracking <span class="badge">{}</span></a>
-                            <a href="/admin/search.html?model=stat&amp;key=created&amp;sign=like&amp;value={echo $now}" class="list-group-item"><i class="fa fa-database fa-2x"></i>  Stats <span class="badge">{}</span></a>
-                            <a href="/admin/search.html?model=team&amp;key=live&amp;sign=equal&amp;value=1" class="list-group-item"><i class="fa fa-user-secret fa-2x"></i>  Admins <span class="badge">{}</span></a>
+                            <a href="/admin/search.html?model=team&amp;key=live&amp;sign=equal&amp;value=1" class="list-group-item"><i class="fa fa-user-secret fa-2x"></i>  Admins <span class="badge">{echo Staff::count()}</span></a>
                             <a href="/support/manageticket.html" class="list-group-item"><i class="fa fa-tags fa-2x"></i>  Tickets <span class="badge">{echo Ticket::count(array("live = ?" => true))}</span></a>
                         </div>
                     </div>

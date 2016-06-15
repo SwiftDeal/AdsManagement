@@ -60,9 +60,7 @@ class Publisher extends Advertiser {
             ));
             $adunit->save();
 
-            $view->set('code', $this->_code($adunit));
-            $view->set('adunit', $adunit);
-            $view->set('message', "AdUnit was created Successfully!! Go to <a href='/publisher/adunits.html'>AdUnits</a>");
+            $this->redirect("/publisher/adunits.html");
         }
     }
 
