@@ -14,6 +14,7 @@
                     <p><img src="{echo CDN}images/native-ads.png"></p>
                 </div>
                 <div class="col-md-6">
+                    {if(isset($message))}<div class="alert fresh-color alert-info" role="alert">{echo $message}</div>{/if}
                     <form method="post">
                         <div class="form-group">
                             <label>Full Name<sup>*</sup></label>

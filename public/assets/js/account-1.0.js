@@ -169,16 +169,16 @@ $(document).ready(function() {
         $(this)[0].select();
     });
 
-    $(".linkstat").click(function(e) {
+    $(".adunitstat").click(function(e) {
         e.preventDefault();
         var item = $(this),
-            link = item.data('link');
+            adunit = item.data('adunit');
         item.html('<i class="fa fa-spinner fa-pulse"></i>');
         request.read({
-            action: "analytics/link",
-            data: {link: link},
+            action: "analytics/cunit",
+            data: {id: adunit},
             callback: function(data) {
-                item.html('RPM : '+ data.rpm +', Sessions : '+ data.click +', Earning : '+ data.earning);
+                item.html('Clicks : '+ data.clicks +', Impressions : '+ data.impressions);
             }
         });
     });
@@ -293,9 +293,9 @@ function publisher() {
                 },
                 onRegionTipShow: function(e, el, code) {
                     if (gdpData.hasOwnProperty(code)) {
-                        el.html(el.html() + ' (Sessions - ' + gdpData[code] + ')');
+                        el.html(el.html() + ' (Clicks - ' + gdpData[code] + ')');
                     } else{
-                        el.html(el.html() + ' (Sessions - 0)');
+                        el.html(el.html() + ' (Clicks - 0)');
                     };
                 }
             });

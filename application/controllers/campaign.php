@@ -206,13 +206,10 @@ class Campaign extends Publisher {
         $limit = RequestMethods::get("limit", 10);
         $title = RequestMethods::get("title", "");
         
-        $where = array(
-            "title LIKE ?" => "%{$title}%",
-            "user_id = ?" => $this->user->id
-        );
+        $where = array("user_id" => $this->user->id);
         
-        $ads = Ad::all($where, array("id", "title", "created", "image", "url", "live", "visibility"), "created", "desc", $limit, $page);
-        $count = Ad::count($where);
+        $ads = \Models\Mongo\Ad::all($where, array("title", "created", "image", "url", "live", "visibility"), "created", "desc", $limit, $page);
+        $count = \Models\Mongo\Ad::count($where);
 
         $view->set("ads", $ads);
         $view->set("page", $page);
