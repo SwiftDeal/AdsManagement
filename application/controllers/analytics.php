@@ -148,9 +148,9 @@ class Analytics extends Manage {
     public function impressions() {
         $this->seo(array("title" => "Impressions", "view" => $this->getLayoutView()));
         $view = $this->getActionView();$impressions = [];$total_impression = 0;
+        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-1 day')));$end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
         
         if (RequestMethods::get("action") == "readImpr") {
-            $start = RequestMethods::get("start");$end = RequestMethods::get("end");
             $impressions['modified'] = array('$gte' => new MongoDate(strtotime($this->changeDate($start, -1))), '$lte' => new MongoDate(strtotime($this->changeDate($end, +1))));
             $impr = Registry::get("MongoDB")->impressions;
             $icursor = $impr->find($impressions);
@@ -167,6 +167,9 @@ class Analytics extends Manage {
             $view->set("impressions", $total_impression);
             $view->set("ianalytics", $ianalytics);
         }
+
+        $view->set("start", $start);
+        $view->set("end", $end);
     }
 
     /**

@@ -206,18 +206,41 @@ function toArray(object) {
     return array;
 }
 
-function stats(date) {
+function clicks() {
     request.read({
-        action: "analytics/stats/" + date + "/0",
+        action: "analytics/clicks",
+        data: $('#range').serialize(),
         callback: function(data) {
-            $('#today_click').html(data.stats.click);
-            $('#today_rpm').html(data.stats.rpm);
-            $('#today_earning').html(data.stats.earning);
-            $.each(data.stats.publishers, function(i, publishers) {
-                $("#clicks-publishers").append('<tr><td><a href="/admin/info/user/'+publishers.user_id+'" target="_blank">'+publishers.user_id+'</a></td><td>'+publishers.clicks+'</td></tr>');
+            $("#total_click").html(data.clicks);
+            var gdpData = data.canalytics;
+            $('#world-map').vectorMap({
+                map: 'world_mill_en',
+                series: {
+                    regions: [{
+                        values: gdpData,
+                        scale: ['#C8EEFF', '#0071A4'],
+                        normalizeFunction: 'polynomial'
+                    }]
+                },
+                onRegionTipShow: function(e, el, code) {
+                    if (gdpData.hasOwnProperty(code)) {
+                        el.html(el.html() + ' (Clicks - ' + gdpData[code] + ')');
+                    } else{
+                        el.html(el.html() + ' (Clicks - 0)');
+                    };
+                }
             });
+        }
+    });
+}
 
-            var gdpData = data.stats.analytics;
+function impressions() {
+    request.read({
+        action: "analytics/impressions",
+        data: $('#range').serialize(),
+        callback: function(data) {
+            $("#total_impression").html(data.impressions);
+            var gdpData = data.ianalytics;
             $('#world-map').vectorMap({
                 map: 'world_mill_en',
                 series: {
