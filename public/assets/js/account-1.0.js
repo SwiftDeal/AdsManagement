@@ -246,12 +246,13 @@ function publisher() {
         callback: function(data) {
             $('#impressions').html(data.impressions);
             $('#clicks').html(data.clicks);
-            var icount = 1;
+            var ia = [];
             $.each(data.ianalytics, function(i, val) {
-                icount++;
-                if(icount < 6) {
-                    $("#itopcountry").append('<li class="list-group-item">'+i+' <span class="badge">'+val+'</span></li>');
-                }
+                ia.push({label: i, value: val})
+            });
+            Morris.Donut({
+                element: 'itopcountry',
+                data: ia
             });
 
             var igdpData = data.ianalytics;
@@ -273,14 +274,15 @@ function publisher() {
                 }
             });
 
-            var ccount = 1;
+            var ca = [];
             $.each(data.canalytics, function(i, val) {
-                ccount++;
-                if(ccount < 6) {
-                    $("#ctopcountry").append('<li class="list-group-item">'+i+' <span class="badge">'+val+'</span></li>');
-                }
+                ca.push({label: i, value: val})
             });
-
+            Morris.Donut({
+                element: 'ctopcountry',
+                data: ca
+            });
+            
             var gdpData = data.canalytics;
             $('#clk-world-map').vectorMap({
                 map: 'world_mill_en',
@@ -312,12 +314,13 @@ function advertiser() {
             $('#impressions').html(data.impressions);
             $('#clicks').html(data.clicks);
 
-            var icount = 1;
+            var ia = [];
             $.each(data.ianalytics, function(i, val) {
-                icount++;
-                if(icount < 6) {
-                    $("#itopcountry").append('<li class="list-group-item">'+i+' <span class="badge">'+val+'</span></li>');
-                }
+                ia.push({label: i, value: val})
+            });
+            Morris.Donut({
+                element: 'itopcountry',
+                data: ia
             });
 
             var igdpData = data.ianalytics;
@@ -339,12 +342,13 @@ function advertiser() {
                 }
             });
 
-            var ccount = 1;
+            var ca = [];
             $.each(data.canalytics, function(i, val) {
-                ccount++;
-                if(ccount < 6) {
-                    $("#ctopcountry").append('<li class="list-group-item">'+i+' <span class="badge">'+val+'</span></li>');
-                }
+                ca.push({label: i, value: val})
+            });
+            Morris.Donut({
+                element: 'ctopcountry',
+                data: ca
             });
 
             var gdpData = data.canalytics;

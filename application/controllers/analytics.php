@@ -197,4 +197,24 @@ class Analytics extends Manage {
         $view->set("start", $start);
         $view->set("end", $end);
     }
+
+    /**
+     * @before _secure, changeLayout, _admin
+     */
+    public function demos() {
+        $this->seo(array("title" => "Platform Demos", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+        $page = RequestMethods::get("page", 1);
+        $limit = RequestMethods::get("limit", 10);
+        
+        $where = array("user_id" => $this->user->id);
+        
+        $ads = \Models\Mongo\Demo::all($where, array("*"), "created", -1, $limit, $page);
+        $count = \Models\Mongo\Demo::count($where);
+
+        $view->set("ads", $ads);
+        $view->set("page", $page);
+        $view->set("count", $count);
+        $view->set("limit", $limit);
+    }
 }
