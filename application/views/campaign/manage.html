@@ -29,20 +29,18 @@
             <div class="card-body no-padding">
                 <table class="table table-responsive">
                     <tr>
-                        <th>Id</th>
                         <th>Campaign</th>
                         <th>Realtime</th>
                         <th>Action</th>
                     </tr>
                     {foreach $ad in $ads}
                     <tr>
-                        <td>{echo $ad->id}</td>
                         <td>
                             <a href="/public/assets/uploads/images/{$ad->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($ad->image)}/50/50"></a>
                             {echo $ad->title}<br>
                             <small>{echo Framework\StringMethods::datetime_to_text($ad->created)}</small>
                         </td>
-                        <td class="campaignstat" data-campaign="{echo $ad->id}">
+                        <td class="cstat" data-campaign="{echo $ad->_id}">
                             <span class="label label-success">View</span>
                         </td>
                         <td>

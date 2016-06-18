@@ -54,7 +54,7 @@
                                 </td>
                                 <td>
                                     <a href="/public/assets/uploads/images/{$content->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($content->image)}/50/50"></a>
-                                    <a href="/campaign/edit/{$content->id}" target="_blank">{echo $content->title}</a>
+                                    {echo $content->title}
                                 </td>
                                 <td><a href="/admin/info/user/{$content->user_id}" target="_blank">{echo $content->user_id}</a></td>
                                 <td><small>{echo Framework\StringMethods::datetime_to_text($content->modified)}</small></td>

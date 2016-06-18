@@ -143,6 +143,50 @@ class Analytics extends Manage {
     }
 
     /**
+     * @before _secure
+     */
+    public function campaign() {
+        $this->JSONview();$impressions = [];$clicks = [];$i = [];$total_impression = 0;$total_click = 0;
+        $id = RequestMethods::get("id");$view = $this->getActionView();
+
+        $ad = \Models\Mongo\Ad::first(array("_id" => $id), array("_id", "created"));
+        $start = RequestMethods::get("start", $ad->created);$end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        
+        $impressions['cid'] = $ad->_id;
+        $impressions['modified'] = array('$gte' => new MongoDate(strtotime($this->changeDate($start, -1))), '$lte' => new MongoDate(strtotime($this->changeDate($end, +1))));
+        
+        $impr = Registry::get("MongoDB")->impressions;
+        $icursor = $impr->find($impressions);
+        foreach ($icursor as $id => $result) {
+            $code = $result["country"];
+            $total_impression += $result["hits"];
+            if (array_key_exists($code, $ianalytics)) {
+                $ianalytics[$code] += $result["hits"];
+            } else {
+                $ianalytics[$code] = $result["hits"];
+            }
+        }
+
+        $clicks['cid'] = $ad->_id;
+        $clicks['created'] = array('$gte' => new MongoDate(strtotime($this->changeDate($start, -1))), '$lte' => new MongoDate(strtotime($this->changeDate($end, +1))));
+        $clk = Registry::get("MongoDB")->clicktracks;
+        $cursor = $clk->find($clicks);
+        foreach ($cursor as $id => $result) {
+            $code = $result["country"];$total_click++;
+            if (array_key_exists($code, $canalytics)) {
+                $canalytics[$code] += 1;
+            } else {
+                $canalytics[$code] = 1;
+            }
+        }
+
+        $view->set("clicks", $total_click);
+        $view->set("impressions", $total_impression);
+        $view->set("ianalytics", $ianalytics);
+        $view->set("canalytics", $canalytics);
+    }
+
+    /**
      * @before _secure, changeLayout, _admin
      */
     public function impressions() {

@@ -9,47 +9,6 @@ use WebBot\Core\Bot as Bot;
 use \Curl\Curl;
 
 class Campaign extends Publisher {
-
-    protected $rpm = array(
-        "IN" => 140,
-        "US" => 140,
-        "CA" => 140,
-        "AU" => 140,
-        "GB" => 140,
-        "NONE" => 80
-    );
-
-    /**
-     * @before _secure, _layout
-     */
-    public function index() {
-        $this->seo(array("title" => "Link Share Campaign", "description" => "All campaign sorted by newly added", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-        if (!$this->publish->live) {
-            return;
-        }
-        
-        $title = RequestMethods::get("title", "");
-        $category = RequestMethods::get("category", "");
-        $page = RequestMethods::get("page", 1);
-        $limit = RequestMethods::get("limit", 12);
-
-        $where = array(
-            "title LIKE ?" => "%{$title}%",
-            "live = ?" => true
-        );
-        
-        $items = Item::all($where, array("id", "title", "image", "url", "description"), "created", "desc", $limit, $page);
-        $count = Item::count($where);
-
-        $view->set("limit", $limit);
-        $view->set("title", $title);
-        $view->set("page", $page);
-        $view->set("count", $count);
-        $view->set("items", $items);
-        $view->set("category", $category);
-        $view->set("domains", $this->target());
-    }
     
     /**
      * @before _secure, _layout
@@ -105,35 +64,38 @@ class Campaign extends Publisher {
                 $view->set("errors", $ad->getErrors());
             }
         }
+
+        $view->set("start", strftime("%Y-%m-%d", strtotime('now')));
+        $view->set("end", strftime("%Y-%m-%d", strtotime('+29 day')));
     }
 
     /**
      * @before _secure, _layout
      */
-    public function update($id = NULL) {
-        $this->seo(array("title" => "Edit Content", "view" => $this->getLayoutView()));
+    public function edit($id = NULL) {
+        $this->seo(array("title" => "Edit Ad", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-        $item = Item::first(array("id = ?" => $id, "user_id = ?" => $this->user->id));
-        if (!$item) {
-            $this->redirect("/advertiser/index.html");
+        $ad = \Models\Mongo\Ad::first(array("id = ?" => $id, "user_id = ?" => $this->user->id));
+        if (!$ad) {
+            $this->redirect("/campaign/manage.html");
         }
         
         if (RequestMethods::post("action") == "update") {
-            $item->title = RequestMethods::post("title");
-            $item->url = RequestMethods::post("url");
-            $item->description = RequestMethods::post("description");
-            $item->live = 0;
-            if ($item->validate()) {
+            $ad->title = RequestMethods::post("title");
+            $ad->url = RequestMethods::post("url");
+            $ad->description = RequestMethods::post("description");
+            $ad->live = 0;
+            if ($ad->validate()) {
                 if (is_uploaded_file($_FILES['image']['tmp_name'])) {
-                    $item->image = $this->s3upload("image", "images");
+                    $ad->image = $this->s3upload("image", "images");
                 }
-                $item->save();
+                $ad->save();
                 $view->set("message", "Campaign Updated Successfully");
             }  else {
-                $view->set("errors", $item->getErrors());
+                $view->set("errors", $ad->getErrors());
             }
         }
-        $view->set("item", $item);
+        $view->set("ad", $ad);
     }
 
     protected function _bot($url) {
@@ -215,44 +177,6 @@ class Campaign extends Publisher {
         $view->set("page", $page);
         $view->set("count", $count);
         $view->set("limit", $limit);
-    }
-    
-    /**
-     * @before _secure, changeLayout, _admin
-     */
-    public function edit($id = NULL) {
-        $this->seo(array("title" => "Edit Content", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-        $item = Item::first(array("id = ?" => $id));
-        $rpm = RPM::first(array("item_id = ?" => $item->id));
-
-        $rpms = array();
-        foreach (json_decode($rpm->value, true) as $key => $value) {
-            array_push($rpms, array(
-                "country" => $key,
-                "value" => $value
-            ));
-        }
-        
-        if (RequestMethods::post("action") == "update") {
-            $item->model = RequestMethods::post("model");
-            $item->url = RequestMethods::post("url");
-            $item->title = RequestMethods::post("title");
-            $item->visibility = RequestMethods::post("visibility");
-            $item->category = implode(",", RequestMethods::post("category"));
-            $item->description = RequestMethods::post("description");
-            $item->live = RequestMethods::post("live", 0);
-            $item->save();
-
-            $rpm->value = json_encode(RequestMethods::post("rpm"));
-            $rpm->save();
-
-            $view->set("success", true);
-            $view->set("errors", $item->getErrors());
-        }
-        $view->set("item", $item);
-        $view->set("rpms", $rpms);
-        $view->set("categories", explode(",", $item->category));
     }
 
     public function resize($image, $width = 600, $height = 315) {

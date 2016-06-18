@@ -107,19 +107,6 @@ $(document).ready(function() {
     //initialize tooltip
     $('[data-toggle="tooltip"]').tooltip();
 
-    $(".campaignstat").click(function(e) {
-        e.preventDefault();
-        var item = $(this),
-            campaign = item.data('campaign');
-        item.html('<i class="fa fa-spinner fa-pulse"></i>');
-        request.read({
-            action: "analytics/campaign/0/" + campaign,
-            callback: function(data) {
-                item.html('CPC : '+ data.stats.cpc +', Sessions : '+ data.stats.click +', Spent : '+ data.stats.spent);
-            }
-        });
-    });
-
     $("#addmoney").submit(function(e) {
         e.preventDefault();
         var self = $(this);
@@ -137,34 +124,6 @@ $(document).ready(function() {
         });
     });
 
-    $(".shortenURL").click(function(e) {
-        e.preventDefault();
-        var btn = $(this),
-            title = btn.data('title'),
-            item = btn.data('item'),
-            link_data = $('#link_data');
-
-        btn.addClass('disabled');
-        request.read({
-            action: "publisher/shortenURL",
-            data: {item: item},
-            callback: function(data) {
-                var uri = data.shortURL;
-                btn.removeClass('disabled');
-                btn.closest('div').find('.shorturl').val(data.shortURL);
-                btn.closest('div').find('.shorturl').focus();
-                link_data.val(title + "\n" + uri);
-                link_data.data('uri', uri);
-                link_data.data('link_id', data.link._id);
-                
-                $('#link_modal').modal('show');
-                $('#link_modal_fb').attr('href', 'https://www.facebook.com/sharer/sharer.php?u='+data.shortURL);
-                document.execCommand('SelectAll');
-                document.execCommand("Copy", false, null);
-            }
-        });
-    });
-
     $('#link_data').mouseup(function() {
         $(this)[0].select();
     });
@@ -177,6 +136,20 @@ $(document).ready(function() {
         request.read({
             action: "analytics/cunit",
             data: {id: adunit},
+            callback: function(data) {
+                item.html('Clicks : '+ data.clicks +', Impressions : '+ data.impressions);
+            }
+        });
+    });
+
+    $(".cstat").click(function(e) {
+        e.preventDefault();
+        var item = $(this),
+            campaign = item.data('campaign');
+        item.html('<i class="fa fa-spinner fa-pulse"></i>');
+        request.read({
+            action: "analytics/campaign",
+            data: {id: campaign},
             callback: function(data) {
                 item.html('Clicks : '+ data.clicks +', Impressions : '+ data.impressions);
             }

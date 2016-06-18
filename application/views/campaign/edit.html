@@ -1,112 +1,46 @@
-<div id="page-wrapper">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header text-center">{echo $item->title}</h1> {if isset($success)}
-                <div class="alert alert-success alert-dismissible fade in" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-                    Content Updated <strong>Successfully!</strong>
-                </div>
-                {/if}
-                <form class="panel panel-default text-center" method="post" action="">
-                    <table class="table">
-                        <tbody>
-                            <tr>
-                                <td><b>Id</b></td>
-                                <td>{echo $item->id}</td>
-                            </tr>
-                            <tr>
-                                <td><b>Model</b></td>
-                                <td>
-                                    <select name="model" class="form-control" value="{echo $item->model}">
-                                        <option value="cpa">CPA</option>
-                                        <option value="cpc">CPC</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><b>Title</b></td>
-                                <td>
-                                    <input type="text" class="form-control" name="title" value="{echo $item->title}">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><b>URL</b></td>
-                                <td>
-                                    <input type="text" class="form-control" name="url" value="{echo $item->url}">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><b>Live</b></td>
-                                <td>
-                                    <label class="radio-inline">
-                                        <input type="radio" name="live" value="1" {if($item->live == "1")}checked{/if}> Enable
-                                    </label>
-                                    <label class="radio-inline">
-                                        <input type="radio" name="live" value="0" {if($item->live == "0")}checked{/if}> Disable
-                                    </label>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><b>Visibility</b></td>
-                                <td>
-                                    <label class="radio-inline">
-                                        <input type="radio" name="visibility" value="1" {if($item->visibility == "1")}checked{/if}> Enable
-                                    </label>
-                                    <label class="radio-inline">
-                                        <input type="radio" name="visibility" value="0" {if($item->visibility == "0")}checked{/if}> Disable
-                                    </label>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><b>Category</b></td>
-                                <td>
-                                    <select name="category[]" class="form-control" multiple="">
-                                        <option {if(in_array("bollywood", $categories))}selected{/if} value="bollywood">Bollywood</option>
-                                        <option {if(in_array("sports", $categories))}selected{/if} value="sports">Sports</option>
-                                        <option {if(in_array("entertainment", $categories))}selected{/if} value="entertainment">Entertainment</option>
-                                        <option {if(in_array("vehicle", $categories))}selected{/if} value="vehicle">Bike / Cars</option>
-                                        <option {if(in_array("tollywood", $categories))}selected{/if} value="tollywood">Tollywood</option>
-                                        <option {if(in_array("tv", $categories))}selected{/if} value="tv">TV Soap</option>
-                                        <option {if(in_array("videos", $categories))}selected{/if} value="videos">Videos</option>
-                                        <option {if(in_array("hollywood", $categories))}selected{/if} value="hollywood">Hollywood</option>
-                                        <option {if(in_array("wwe", $categories))}selected{/if} value="wwe">WWE</option>
-                                        <option {if(in_array("fashion", $categories))}selected{/if} value="fashion">Fashion</option>
-                                        <option {if(in_array("news", $categories))}selected{/if} value="news">Breaking News</option>
-                                        <option {if(in_array("celebrities", $categories))}selected{/if} value="celebrities">Celebrities</option>
-                                        <option {if(in_array("politics", $categories))}selected{/if} value="politics">Politics</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><b>Details</b></td>
-                                <td>
-                                    <textarea class="form-control" name="description">{echo $item->description}</textarea>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><b>RPM</b></td>
-                                <td class="form-inline">
-                                    {foreach $rpm in $rpms}
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <div class="input-group-addon">{echo $rpm['country']}</div>
-                                            <input type="number" class="form-control" style="width: 70px;" name="rpm[{echo $rpm['country']}]" required="" value="{echo $rpm['value']}">
-                                        </div>
-                                    </div>
-                                    {/foreach}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="hidden" name="action" value="update">
-                                </td>
-                                <td>
-                                    <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Update</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+<div class="page-title">
+    <span class="title">Update Campaign</span>
+    <div class="description">
+        After edit your campaign become inactive for again approval by admin within 12 hours
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        {if isset($message)}
+        <div class="alert alert-info alert-dismissible fade in" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+            {echo $message}
+        </div>
+        {/if}
+        <div class="card">
+            <div class="card-body no-padding">
+                <form method="post" action="" enctype="multipart/form-data">
+                    <div class="panel panel-default panel-body">
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" name="title" class="form-control" maxlength="100" required="" value="{$item->title}">
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "title")}</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Original URL</label>
+                            <input type="url" class="form-control" name="url" required="" value="{$item->url}">
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "url")}</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea class="form-control" name="description" rows="3">{$item->description}</textarea>
+                            <span class="help-block">{echo Shared\Markup::errors($errors, "description")}</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Image</label>
+                            <input type="file" class="form-control" name="image">
+                            <span class="help-block">Image should be 650px X 315px for good reach on Social Media<br>{echo Shared\Markup::errors($errors, "image")}</span>
+                            <img src="/campaign/resize/{echo base64_encode($item->image)}" class="img-responsive" alt="{echo $item->title}">
+                        </div>
+                        <hr>
+                        <input type="hidden" name="action" value="update">
+                        <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Update</button>
+                    </div>
                 </form>
             </div>
         </div>
