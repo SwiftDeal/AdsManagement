@@ -208,7 +208,7 @@ class Campaign extends Publisher {
         
         $where = array("user_id" => $this->user->id);
         
-        $ads = \Models\Mongo\Ad::all($where, array("title", "created", "image", "url", "live", "visibility"), "created", "desc", $limit, $page);
+        $ads = \Models\Mongo\Ad::all($where, array("title", "created", "image", "url", "live", "visibility"), "created", -1, $limit, $page);
         $count = \Models\Mongo\Ad::count($where);
 
         $view->set("ads", $ads);
