@@ -10,6 +10,9 @@ use \Curl\Curl;
 
 class Analytics extends Manage {
 
+    /**
+     * @before _secure
+     */
     public function campaigns() {
         $this->JSONview();$impressions = [];$clicks = [];$i = [];$total_impression = 0;$total_click = 0;
         $user_id = RequestMethods::get("user_id");$start = RequestMethods::get("start");$end = RequestMethods::get("end");
@@ -51,6 +54,9 @@ class Analytics extends Manage {
         $view->set("canalytics", $canalytics);
     }
 
+    /**
+     * @before _secure
+     */
     public function platforms() {
         $this->JSONview();$impressions = [];$clicks = [];$i = [];$total_impression = 0;$total_click = 0;
         $user_id = RequestMethods::get("user_id");$start = RequestMethods::get("start");$end = RequestMethods::get("end");
@@ -92,6 +98,9 @@ class Analytics extends Manage {
         $view->set("canalytics", $canalytics);
     }
 
+    /**
+     * @before _secure
+     */
     public function cunit() {
         $this->JSONview();$impressions = [];$clicks = [];$i = [];$total_impression = 0;$total_click = 0;
         $id = RequestMethods::get("id");$view = $this->getActionView();
@@ -131,5 +140,61 @@ class Analytics extends Manage {
         $view->set("impressions", $total_impression);
         $view->set("ianalytics", $ianalytics);
         $view->set("canalytics", $canalytics);
+    }
+
+    /**
+     * @before _secure, changeLayout, _admin
+     */
+    public function impressions() {
+        $this->seo(array("title" => "Impressions", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();$impressions = [];$total_impression = 0;
+        
+        if (RequestMethods::get("action") == "readImpr") {
+            $start = RequestMethods::get("start");$end = RequestMethods::get("end");
+            $impressions['modified'] = array('$gte' => new MongoDate(strtotime($this->changeDate($start, -1))), '$lte' => new MongoDate(strtotime($this->changeDate($end, +1))));
+            $impr = Registry::get("MongoDB")->impressions;
+            $icursor = $impr->find($impressions);
+            foreach ($icursor as $id => $result) {
+                $code = $result["country"];
+                $total_impression += $result["hits"];
+                if (array_key_exists($code, $ianalytics)) {
+                    $ianalytics[$code] += $result["hits"];
+                } else {
+                    $ianalytics[$code] = $result["hits"];
+                }
+            }
+
+            $view->set("impressions", $total_impression);
+            $view->set("ianalytics", $ianalytics);
+        }
+    }
+
+    /**
+     * @before _secure, changeLayout, _admin
+     */
+    public function clicks() {
+        $this->seo(array("title" => "Clicks", "view" => $this->getLayoutView()));
+        $view = $this->getActionView();$impressions = [];$total_impression = 0;
+        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-1 day')));$end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        
+        if (RequestMethods::get("action") == "readClk") {
+            $clicks['created'] = array('$gte' => new MongoDate(strtotime($this->changeDate($start, -1))), '$lte' => new MongoDate(strtotime($this->changeDate($end, +1))));
+            $clk = Registry::get("MongoDB")->clicktracks;
+            $cursor = $clk->find($clicks);
+            foreach ($cursor as $id => $result) {
+                $code = $result["country"];$total_click++;
+                if (array_key_exists($code, $canalytics)) {
+                    $canalytics[$code] += 1;
+                } else {
+                    $canalytics[$code] = 1;
+                }
+            }
+
+            $view->set("clicks", $total_click);
+            $view->set("canalytics", $canalytics);
+        }
+
+        $view->set("start", $start);
+        $view->set("end", $end);
     }
 }
