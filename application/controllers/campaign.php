@@ -75,7 +75,7 @@ class Campaign extends Publisher {
     public function edit($id = NULL) {
         $this->seo(array("title" => "Edit Ad", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-        $ad = \Models\Mongo\Ad::first(array("id = ?" => $id, "user_id = ?" => $this->user->id));
+        $ad = \Models\Mongo\Ad::first(array("_id" => $id, "user_id" => $this->user->id));
         if (!$ad) {
             $this->redirect("/campaign/manage.html");
         }
