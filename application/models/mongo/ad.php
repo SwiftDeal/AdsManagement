@@ -80,6 +80,17 @@ class Ad extends \Shared\MongoModel {
      * @readwrite
      * @type text
      * @length 255
+     *
+     * @validate required, min(4)
+     * @label text or video
+     */
+    protected $_type = "text";
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * @length 255
      * @index
      *
      * @validate required, max(255)
