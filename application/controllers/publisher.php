@@ -100,33 +100,4 @@ class Publisher extends Advertiser {
         }
         return htmlentities($code);
     }
-
-    /**
-     * @before _secure, _layout
-     */
-    public function allowandblockads() {
-        $this->seo(array("title" => "Allow and Block Ads", "view" => $this->getLayoutView()));
-        $view = $this->getActionView();
-
-        $page = RequestMethods::get("page", 1);
-        $limit = RequestMethods::get("limit", 10);
-        $where = array("user_id" => $this->user->id);
-        $abas = \Models\Mongo\BlockedUrl::all($where, array("*"), "created", -1, $limit, $page);
-
-        if (RequestMethods::post("action") == "abads") {
-            $adunit = new \Models\Mongo\BlockedUrl(array(
-                "user_id" => $this->user->id,
-                "url" => RequestMethods::post('link')
-            ));
-            $adunit->save();
-            $view->set("message", "Saved Successfully");
-        }
-
-        $count = \Models\Mongo\BlockedUrl::count($where);
-
-        $view->set("abas", $abas);
-        $view->set("limit", $limit);
-        $view->set("page", $page);
-        $view->set("count", $count);
-    }
 }
