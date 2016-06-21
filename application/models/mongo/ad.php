@@ -71,9 +71,21 @@ class Ad extends \Shared\MongoModel {
      * @length 255
      *
      * @validate required, min(4)
-     * @label image
+     * @label image file name
      */
     protected $_image;
+
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * @length 255
+     *
+     * @validate required, min(4)
+     * @label video file name
+     */
+    protected $_video = null;
 
     /**
      * @column

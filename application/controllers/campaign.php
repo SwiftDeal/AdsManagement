@@ -30,6 +30,12 @@ class Campaign extends Publisher {
             } else {
                 $image = $this->s3upload("image", "images");
             }
+            if (strpos(RequestMethods::post("url"), "www.youtube.com")) {
+                //save video
+                $video = "";
+            } else {
+                $video = null;
+            }
             $ad = new \Models\Mongo\Ad(array(
                 "user_id" => $this->user->id,
                 "url" =>  RequestMethods::post("url"),
@@ -37,6 +43,7 @@ class Campaign extends Publisher {
                 "title" => RequestMethods::post("title"),
                 "description" => RequestMethods::post("description", ""),
                 "image" => $image,
+                "video" => $video,
                 "category" => json_encode(RequestMethods::post("category")),
                 "coverage" => json_encode(RequestMethods::post("coverage", "IN")),
                 "budget" => RequestMethods::post("budget"),
