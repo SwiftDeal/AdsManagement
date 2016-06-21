@@ -13,7 +13,7 @@ namespace Shared {
         /**
          * @read
          */
-        protected $_types = array("autonumber", "text", "integer", "decimal", "boolean", "datetime", "date", "time", "mongoid");
+        protected $_types = array("autonumber", "text", "integer", "decimal", "boolean", "datetime", "date", "time", "mongoid", "array");
 
         /**
          * @column
@@ -102,6 +102,10 @@ namespace Shared {
 
                 case 'autonumber':
                     $value = new \MongoId($value);
+                    break;
+
+                case 'array':
+                    $value = (array) $value;
                     break;
                 
                 default:

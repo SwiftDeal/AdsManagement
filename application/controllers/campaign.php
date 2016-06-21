@@ -7,6 +7,7 @@ use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
 use WebBot\Core\Bot as Bot;
 use \Curl\Curl;
+use YTDownloader\Service\Download as Downloader;
 
 class Campaign extends Publisher {
     
@@ -23,19 +24,28 @@ class Campaign extends Publisher {
             $this->redirect("/campaign/manage.html");
         }
 
-        $view->set("errors", array());
+        $view->set("errors", array())
+            ->set("start", strftime("%Y-%m-%d", strtotime('now')))
+            ->set("end", strftime("%Y-%m-%d", strtotime('+29 day')));
         if (RequestMethods::post("action") == "content") {
+            $vid_url = RequestMethods::post("video");
+            try {
+                if ($vid_url) {
+                    $video = $this->_uploadVideo($vid_url);
+                } else {
+                    $video = null;
+                }
+            } catch (\Exception $e) {
+                $view->set("errors", ["video" => [$e->getMessage()]]);
+                return;
+            }
+
             if (RequestMethods::post("image_url")) {
                 $image = $this->urls3upload(RequestMethods::post("image_url"));
             } else {
                 $image = $this->s3upload("image", "images");
             }
-            if (strpos(RequestMethods::post("url"), "www.youtube.com")) {
-                //save video
-                $video = "";
-            } else {
-                $video = null;
-            }
+
             $ad = new \Models\Mongo\Ad(array(
                 "user_id" => $this->user->id,
                 "url" =>  RequestMethods::post("url"),
@@ -43,7 +53,6 @@ class Campaign extends Publisher {
                 "title" => RequestMethods::post("title"),
                 "description" => RequestMethods::post("description", ""),
                 "image" => $image,
-                "video" => $video,
                 "category" => json_encode(RequestMethods::post("category")),
                 "coverage" => json_encode(RequestMethods::post("coverage", "IN")),
                 "budget" => RequestMethods::post("budget"),
@@ -54,6 +63,10 @@ class Campaign extends Publisher {
                 "visibility" => "0",
                 "live" => 0
             ));
+
+            if ($video) {
+                $ad->video = $video;
+            }
 
             if ($ad->validate()) {
                 $ad->save();
@@ -71,9 +84,6 @@ class Campaign extends Publisher {
                 $view->set("errors", $ad->getErrors());
             }
         }
-
-        $view->set("start", strftime("%Y-%m-%d", strtotime('now')));
-        $view->set("end", strftime("%Y-%m-%d", strtotime('+29 day')));
     }
 
     /**
@@ -215,5 +225,17 @@ class Campaign extends Publisher {
         } else {
             $this->redirect("{$cdn}img/logo.png");
         }
+    }
+
+    protected function _uploadVideo($url) {
+        $ytdl = new Downloader($url);
+        Downloader::setDownloadPath(APP_PATH. '/public/assets/uploads/videos/');
+
+        // $format = 17 (144p), 36 (240p), 18 (360p)
+        $file = [];
+        $file[] = $ytdl->download(17, 'mp4');
+        $file[] = $ytdl->download(36, 'mp4');
+        
+        return $file;
     }
 }

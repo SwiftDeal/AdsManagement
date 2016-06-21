@@ -79,11 +79,11 @@ class Ad extends \Shared\MongoModel {
     /**
      * @column
      * @readwrite
-     * @type text
+     * @type array
      * @length 255
      *
-     * @validate required, min(4)
      * @label video file name
+     * @value Array of File Name
      */
     protected $_video = null;
 
