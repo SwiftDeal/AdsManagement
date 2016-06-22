@@ -60,12 +60,13 @@ class Campaign extends Publisher {
                 "start" => RequestMethods::post("start"),
                 "end" => RequestMethods::post("end"),
                 "cpc" => RequestMethods::post("cpc", 200),
-                "visibility" => "0",
+                "visibility" => 0,
                 "live" => 0
             ));
 
             if ($video) {
                 $ad->video = $video;
+                $ad->type = "video";
             }
 
             if ($ad->validate()) {
@@ -74,7 +75,7 @@ class Campaign extends Publisher {
                 $categories = json_decode($ad->category);
                 foreach ($categories as $key => $value) {
                     $cat = new \Models\Mongo\AdCategory([
-                        'ad_id' => $ad->id,
+                        'ad_id' => $ad->_id,
                         'category_id' => $value
                     ]);
                     $cat->save();

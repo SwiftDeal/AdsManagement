@@ -101,6 +101,7 @@ namespace Shared {
                     break;
 
                 case 'autonumber':
+                case 'mongoid':
                     $value = new \MongoId($value);
                     break;
 
@@ -214,7 +215,8 @@ namespace Shared {
         public function delete() {
             $collection = $this->getTable();
 
-            $return = $collection->remove(['_id' => $this->_id], ['justOne' => true]);
+            $query = $this->_updateQuery(['_id' => $this->__id]);
+            $return = $collection->remove($query, ['justOne' => true]);
             if ($return !== true) {
                 throw new \Exception("Error Deleting the record");
             }
@@ -222,7 +224,7 @@ namespace Shared {
 
         public static function deleteAll($query = []) {
             $instance = new static();
-            $where = $instance->_updateQuery($query);
+            $query = $instance->_updateQuery($query);
             $collection = $instance->getTable();
 
             $return = $collection->remove($query);

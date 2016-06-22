@@ -10,7 +10,7 @@ class AdCategory extends \Shared\MongoModel {
     /**
      * @column
      * @readwrite
-     * @type integer
+     * @type mongoid
      * @index
      */
     protected $_ad_id;
