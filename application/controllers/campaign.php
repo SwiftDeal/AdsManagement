@@ -75,7 +75,7 @@ class Campaign extends Publisher {
                 $categories = json_decode($ad->category);
                 foreach ($categories as $key => $value) {
                     $cat = new \Models\Mongo\AdCategory([
-                        'ad_id' => $ad->_id,
+                        'ad_id' => $ad->_id->{'$id'},
                         'category_id' => $value
                     ]);
                     $cat->save();
@@ -228,14 +228,32 @@ class Campaign extends Publisher {
         }
     }
 
+    /**
+     * Download the video and convert it to mp4
+     * Store in uploads dir
+     */
     protected function _uploadVideo($url) {
         $ytdl = new Downloader($url);
         Downloader::setDownloadPath(APP_PATH. '/public/assets/uploads/videos/');
 
-        // $format = 17 (144p), 36 (240p), 18 (360p)
+        // $format = 36 (240p), 18 (360p)
         $file = [];
-        $file[] = $ytdl->download(17, 'mp4');
-        $file[] = $ytdl->download(36, 'mp4');
+        $dwnld = $ytdl->download(36, '3gp');
+        // $file[] = $ytdl->download(18, 'mp4');
+        
+        // need to convert it to mp4
+        $infile = Downloader::getDownloadPath() . $dwnld;
+        $name = (array_shift(explode(".", $dwnld))) . '.mp4';
+        $outfile = Downloader::getDownloadPath() . $name;
+
+        $cmd = 'ffmpeg -i '. $infile .' -acodec libmp3lame -ar 44100 ' . $outfile;
+        exec($cmd, $output, $return);
+        if ($return != 0) {
+            throw new \Exception("Error Converting Video to MP4", 1);
+        }
+
+        unlink($infile);
+        $file[] = $name;
         
         return $file;
     }

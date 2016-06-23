@@ -188,6 +188,7 @@ class Ad extends \Shared\MongoModel {
      * @index
      *
      * @validate required
+     * @value "private" | "public"
      */
     protected $_privacy = "private";
 }

@@ -55,6 +55,7 @@ class AdUnit extends \Shared\MongoModel {
      * @index
      *
      * @validate required
+     * @value "global" | "local"
      */
-    protected $_privacy = "private";
+    protected $_privacy = "global";
 }
