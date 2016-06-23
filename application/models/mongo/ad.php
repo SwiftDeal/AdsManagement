@@ -179,4 +179,15 @@ class Ad extends \Shared\MongoModel {
      * @label visibility of campaign
      */
     protected $_visibility = 0;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * @length 50
+     * @index
+     *
+     * @validate required
+     */
+    protected $_privacy = "private";
 }

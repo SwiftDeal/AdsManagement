@@ -46,4 +46,15 @@ class AdUnit extends \Shared\MongoModel {
      * @validate required
      */
     protected $_type;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * @length 50
+     * @index
+     *
+     * @validate required
+     */
+    protected $_privacy = "private";
 }

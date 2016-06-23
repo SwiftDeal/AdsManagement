@@ -38,7 +38,8 @@
                         <td>
                             <a href="/public/assets/uploads/images/{$ad->image}" target="_blank"><img src="/campaign/resize/{echo base64_encode($ad->image)}/50/50"></a>
                             {echo $ad->title}<br>
-                            <small>{echo Framework\StringMethods::datetime_to_text($ad->created)}</small>
+                            {script $date = date('Y-m-d H:i:s', $ad->created->sec)}
+                            <small>{echo Framework\StringMethods::datetime_to_text($date)}</small>
                         </td>
                         <td class="cstat" data-campaign="{echo $ad->_id}">
                             <span class="label label-success">View</span>
