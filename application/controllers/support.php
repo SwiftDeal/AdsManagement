@@ -76,7 +76,7 @@ class Support extends Publisher {
             }
         }
 
-        $conversations = Conversation::all(array("ticket_id = ?" => $ticket_id), array("user_id", "message", "created", "file"), "created", "asc");
+        $conversations = Conversation::all(array("ticket_id = ?" => $ticket_id), array("user_id", "message", "created", "file"), "created", 1);
         
         $view->set("conversations", $conversations);
         $view->set("ticket", $ticket);
@@ -108,7 +108,7 @@ class Support extends Publisher {
                 $view->set("message", "Thank You, we will reply within 24 hours.");
             }
         }
-        $conversations = Conversation::all(array("ticket_id = ?" => $ticket_id), array("user_id", "message", "created", "file"), "created", "asc");
+        $conversations = Conversation::all(array("ticket_id = ?" => $ticket_id), array("user_id", "message", "created", "file"), "created", 1);
         
         $view->set("conversations", $conversations);
         $view->set("ticket", $ticket)

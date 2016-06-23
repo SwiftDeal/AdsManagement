@@ -46,15 +46,15 @@ class Campaign extends Publisher {
                 $image = $this->s3upload("image", "images");
             }
 
-            $ad = new \Models\Mongo\Ad(array(
+            $ad = new \Ad(array(
                 "user_id" => $this->user->_id,
                 "url" =>  RequestMethods::post("url"),
                 "target" =>  RequestMethods::post("url"),
                 "title" => RequestMethods::post("title"),
                 "description" => RequestMethods::post("description", ""),
                 "image" => $image,
-                "category" => RequestMethods::post("category"),
-                "coverage" => RequestMethods::post("coverage", "IN"),
+                "category" => $_POST['category'],
+                "coverage" => $_POST['coverage'],
                 "budget" => RequestMethods::post("budget", 100),
                 "frequency" => RequestMethods::post("frequency", 2),
                 "start" => RequestMethods::post("start"),
@@ -72,10 +72,10 @@ class Campaign extends Publisher {
             if ($ad->validate()) {
                 $ad->save();
                 
-                $categories = RequestMethods::post("category");
+                $categories = $ad->category;
                 foreach ($categories as $key => $value) {
-                    $cat = new \Models\Mongo\AdCategory([
-                        'ad_id' => $ad->_id->{'$id'},
+                    $cat = new \AdCategory([
+                        'ad_id' => $ad->_id,
                         'category_id' => $value
                     ]);
                     $cat->save();
@@ -188,8 +188,8 @@ class Campaign extends Publisher {
         
         $where = array("user_id" => $this->user->_id);
         
-        $ads = \Models\Mongo\Ad::all($where, array("title", "created", "image", "url", "live", "visibility"), "created", -1, $limit, $page);
-        $count = \Models\Mongo\Ad::count($where);
+        $ads = \Ad::all($where, array("_id", "title", "created", "image", "url", "live", "visibility"), "created", -1, $limit, $page);
+        $count = \Ad::count($where);
 
         $view->set("ads", $ads);
         $view->set("page", $page);

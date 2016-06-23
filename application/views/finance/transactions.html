@@ -42,8 +42,8 @@
                     {foreach $t in $transactions}
                     {script $user = User::first(array("id = ?" => $t->user_id), array("id", "name"))}
                     <tr>
-                        <td>{$t->id}</td>
-                        <td>{$user->id}</td>
+                        <td>{$t->_id}</td>
+                        <td>{$user->_id}</td>
                         <td>{$user->name}</td>
                         <td>
                             {if($t->live)}

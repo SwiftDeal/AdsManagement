@@ -11,6 +11,7 @@ namespace Shared {
     use Framework\Events as Events;
     use Framework\Router as Router;
     use Framework\Registry as Registry;
+    use Framework\ArrayMethods as ArrayMethods;
     use Aws\S3\S3Client;
 
     class Controller extends \Framework\Controller {
@@ -69,7 +70,7 @@ namespace Shared {
         public function setUser($user) {
             $session = Registry::get("session");
             if ($user) {
-                $session->set("user", $user->id);
+                $session->set("user", $user->_id);
             } else {
                 $session->erase("user");
             }

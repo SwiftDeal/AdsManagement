@@ -38,7 +38,7 @@ class Customer extends \Shared\MongoModel {
      * @readwrite
      * @type mongoid
      */
-    protected $_staff_id;
+    protected $_staff_id = null;
 
     /**
     * @column

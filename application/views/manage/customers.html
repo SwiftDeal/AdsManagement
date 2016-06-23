@@ -36,12 +36,12 @@
                         <tr>
                             <td>
                                 {if($user->live)}
-                                <span class="text-success">{$user->id}</span>
+                                <span class="text-success">{$user->_id}</span>
                                 {/if} {else}
-                                <span class="text-danger">{$user->id}</span>
+                                <span class="text-danger">{$user->_id}</span>
                                 {/else}
                             </td>
-                            <td><a href="/admin/update/user/{$user->id}">{echo $user->name}</a></td>
+                            <td><a href="/admin/update/user/{$user->_id}">{echo $user->name}</a></td>
                             <td><small>{echo Framework\StringMethods::datetime_to_text($user->modified)}</small></td>
                             <td>{echo $user->convert($customer->balance)}</td>
                             <td>
@@ -52,8 +52,8 @@
                                     <a href="#" class="btn btn-warning btn-xs"><i class="fa fa-ban"></i></a>&nbsp;
                                 {/else}
                                 <a href="#" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
-                                <a href="/support/manageticket.html?property=user_id&amp;value={$user->id}" class="btn btn-primary btn-xs"><i class="fa fa-support"></i></a>&nbsp;
-                                <a href="/auth/loginas/{$user->id}" class="btn btn-default btn-xs"><i class="fa fa-sign-in"></i> Login As</a>
+                                <a href="/support/manageticket.html?property=user_id&amp;value={$user->_id}" class="btn btn-primary btn-xs"><i class="fa fa-support"></i></a>&nbsp;
+                                <a href="/auth/loginas/{$user->_id}" class="btn btn-default btn-xs"><i class="fa fa-sign-in"></i> Login As</a>
                             </td>
                         </tr>
                         {/foreach}

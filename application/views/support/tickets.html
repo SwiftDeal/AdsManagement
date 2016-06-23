@@ -10,11 +10,11 @@
         <div class="row">
             <div class="col-lg-12">
         		{foreach $tkt in $tickets}
-        		{script $c = Conversation::first(array("ticket_id = ?" => $tkt->id), array("message", "created"), "created", "desc")}
+        		{script $c = Conversation::first(array("ticket_id = ?" => $tkt->_id), array("message", "created"), "created", "desc")}
         		<div class="card">
         		    <div class="card-header">
         		        <div class="card-title">
-        		            <a href="/support/reply/{$tkt->id}">
+        		            <a href="/support/reply/{$tkt->_id}">
         		            	<div class="title">
         		            		{echo $tkt->subject}
         		            		{if($tkt->live)}
@@ -27,7 +27,7 @@
         		        </div>
         		        <div class="pull-right card-action">
                             <div class="btn-group" role="group" aria-label="">
-                                <a href="/support/reply/{$tkt->id}" class="btn btn-sm btn-info"><i class="fa fa-comment"></i> Conversation</a>
+                                <a href="/support/reply/{$tkt->_id}" class="btn btn-sm btn-info"><i class="fa fa-comment"></i> Conversation</a>
                             </div>
                         </div>
         		    </div>

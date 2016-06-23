@@ -102,10 +102,8 @@ namespace Shared {
 
                 case 'autonumber':
                 case 'mongoid':
-                    if (is_object($value)) {
-                        if (!is_a($value, 'MongoId')) {
-                            $value = new \MongoId($value);
-                        }
+                    if (is_object($value) && is_a($value, 'MongoId')) {
+                        break;
                     } else {
                         $value = new \MongoId($value);
                     }
@@ -126,6 +124,13 @@ namespace Shared {
             $table = parent::getTable();
             $collection = Registry::get("MongoDB")->$table;
             return $collection;
+        }
+
+        public function getId() {
+            if (property_exists($this, '_id')) {
+                return $this->_id;
+            }
+            return $this->__id;
         }
 
         protected function _updateQuery($where) {

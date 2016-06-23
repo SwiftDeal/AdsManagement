@@ -1,10 +1,9 @@
 <?php
 
 /**
- * Ad Model
+ * AdCategory Model
  * @author Hemant Mann
  */
-namespace Models\Mongo;
 class AdCategory extends \Shared\MongoModel {
 
     /**

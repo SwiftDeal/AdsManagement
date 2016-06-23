@@ -30,6 +30,15 @@ class Conversation extends \Shared\MongoModel {
      * @readwrite
      * @type text
      *
+     * @label Attachment File
+     */
+    protected $_file;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     *
      * @validate required, min(3)
      * @label message
      */

@@ -171,7 +171,6 @@ class Auth extends Controller {
             "user_id" => $user->_id,
             "country" => $this->country(),
             "balance" => 0,
-            "staff_id" => 0,
             "type" => RequestMethods::post("type"),
             "live" => 0
         ));
@@ -198,6 +197,7 @@ class Auth extends Controller {
             $user->delete();
             return $customer->getErrors();
         }
+
     }
 
     protected function randomPassword() { 
