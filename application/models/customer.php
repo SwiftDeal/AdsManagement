@@ -3,12 +3,12 @@
 /**
  * @author Faizan Ayubi
  */
-class Customer extends Shared\Model {
+class Customer extends \Shared\MongoModel {
 
     /**
      * @column
      * @readwrite
-     * @type integer
+     * @type mongoid
      * @index
      * @validate required
      */
@@ -36,7 +36,7 @@ class Customer extends Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type integer
+     * @type mongoid
      */
     protected $_staff_id;
 

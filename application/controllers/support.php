@@ -19,7 +19,7 @@ class Support extends Publisher {
 		$this->seo(array("title" => "Support Tickets","view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
-        $tickets = Ticket::all(array("user_id = ?" => $this->user->id));
+        $tickets = Ticket::all(array("user_id = ?" => $this->user->_id));
         $view->set("tickets", $tickets);
 	}
 
@@ -36,7 +36,7 @@ class Support extends Publisher {
         $value = RequestMethods::get("value", 1);
         $where = array("{$property} = ?" => $value);
 
-        $tickets = Ticket::all($where, array("user_id", "subject", "modified", "live", "id"), "modified", "desc", $limit, $page);
+        $tickets = Ticket::all($where, array("user_id", "subject", "modified", "live", "id"), "modified", -1, $limit, $page);
         $count = Ticket::count($where);
         
         $view->set("tickets", $tickets);
@@ -59,8 +59,8 @@ class Support extends Publisher {
 
         if (RequestMethods::post("action") == "reply") {
             $conversation = new Conversation(array(
-                "user_id" => $this->user->id,
-                "ticket_id" => $ticket->id,
+                "user_id" => $this->user->_id,
+                "ticket_id" => $ticket->_id,
                 "message" => RequestMethods::post("message"),
                 "file" => $this->_upload("file", "files")
             ));
@@ -90,14 +90,14 @@ class Support extends Publisher {
         $this->seo(array("title" => "Conversation","view" => $this->getLayoutView()));
         $view = $this->getActionView();
         
-        $ticket = Ticket::first(array("id = ?" => $ticket_id, "user_id = ?" => $this->user->id));
+        $ticket = Ticket::first(array("id = ?" => $ticket_id, "user_id = ?" => $this->user->_id));
         if (!$ticket) {
             $this->redirect("/publisher/index.html");
         }
         if (RequestMethods::post("action") == "reply") {
             $conversation = new Conversation(array(
-                "user_id" => $this->user->id,
-                "ticket_id" => $ticket->id,
+                "user_id" => $this->user->_id,
+                "ticket_id" => $ticket->_id,
                 "message" => RequestMethods::post("message"),
                 "file" => $this->_upload("file", "files")
             ));
@@ -125,15 +125,15 @@ class Support extends Publisher {
         $view->set("errors", array());
         if (RequestMethods::post("action") == "ticket") {
         	$ticket = new Ticket(array(
-        		"user_id" => $this->user->id,
+        		"user_id" => $this->user->_id,
         		"subject" => RequestMethods::post("subject"),
         		"live" => true
         	));
         	if($ticket->validate()) {
         		$ticket->save();
         		$conversation = new Conversation(array(
-        			"user_id" => $this->user->id,
-        			"ticket_id" => $ticket->id,
+        			"user_id" => $this->user->_id,
+        			"ticket_id" => $ticket->_id,
         			"message" => RequestMethods::post("message"),
         			"file" => $this->_upload("file", "files"),
         		));

@@ -5,12 +5,12 @@
  *
  * @author Faizan Ayubi
  */
-class Payout extends \Shared\Model {
+class Payout extends \Shared\MongoModel {
     
     /**
      * @column
      * @readwrite
-     * @type integer
+     * @type mongoid
      * @index
      */
     protected $_user_id;

@@ -47,7 +47,7 @@ class Campaign extends Publisher {
             }
 
             $ad = new \Models\Mongo\Ad(array(
-                "user_id" => $this->user->id,
+                "user_id" => $this->user->_id,
                 "url" =>  RequestMethods::post("url"),
                 "target" =>  RequestMethods::post("url"),
                 "title" => RequestMethods::post("title"),
@@ -93,7 +93,7 @@ class Campaign extends Publisher {
     public function edit($id = NULL) {
         $this->seo(array("title" => "Edit Ad", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-        $ad = \Models\Mongo\Ad::first(array("_id" => $id, "user_id" => $this->user->id));
+        $ad = \Models\Mongo\Ad::first(array("_id" => $id, "user_id" => $this->user->_id));
         if (!$ad) {
             $this->redirect("/campaign/manage.html");
         }
@@ -186,7 +186,7 @@ class Campaign extends Publisher {
         $limit = RequestMethods::get("limit", 10);
         $title = RequestMethods::get("title", "");
         
-        $where = array("user_id" => $this->user->id);
+        $where = array("user_id" => $this->user->_id);
         
         $ads = \Models\Mongo\Ad::all($where, array("title", "created", "image", "url", "live", "visibility"), "created", -1, $limit, $page);
         $count = \Models\Mongo\Ad::count($where);

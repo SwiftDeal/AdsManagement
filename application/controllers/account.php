@@ -16,9 +16,9 @@ class Account extends Auth {
 
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
-        $where = array("user_id = ?" => $this->user->id);
+        $where = array("user_id = ?" => $this->user->_id);
 
-        $transactions = Transaction::all($where, array("id", "ref", "amount", "live", "created"), "created", "desc", $limit, $page);
+        $transactions = Transaction::all($where, array("id", "ref", "amount", "live", "created"), "created", -1, $limit, $page);
         $count = Transaction::count($where);
         
         $view->set("transactions", $transactions);
@@ -36,9 +36,9 @@ class Account extends Auth {
 
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
-        $where = array("user_id = ?" => $this->user->id);
+        $where = array("user_id = ?" => $this->user->_id);
 
-        $platforms = Platform::all($where, array("url", "type", "category", "live", "created"), "created", "desc", $limit, $page);
+        $platforms = Platform::all($where, array("url", "type", "category", "live", "created"), "created", -1, $limit, $page);
         $count = Platform::count($where);
         
         $view->set("platforms", $platforms);
@@ -54,8 +54,8 @@ class Account extends Auth {
         $this->seo(array("title" => "Profile", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
-        $user = User::first(array("id = ?" => $this->user->id));
-        $payouts = Payout::all(array("user_id = ?" => $this->user->id));
+        $user = User::first(array("id = ?" => $this->user->_id));
+        $payouts = Payout::all(array("user_id = ?" => $this->user->_id));
 
         switch (RequestMethods::post("action")) {
             case 'saveUser':
@@ -84,7 +84,7 @@ class Account extends Auth {
                 break;
             case 'payout':
                 $payout = new Payout(array(
-                    "user_id" => $this->user->id,
+                    "user_id" => $this->user->_id,
                     "type" => RequestMethods::post("type"),
                     "account" => RequestMethods::post("account"),
                     "meta" => json_encode(RequestMethods::post("meta", ""))

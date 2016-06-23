@@ -101,7 +101,7 @@ class Auth extends Controller {
     protected function authorize($user) {
         $session = Registry::get("session");
         //setting staff
-        $staff = Staff::first(array("user_id = ?" => $user->id));
+        $staff = Staff::first(array("user_id = ?" => $user->_id));
         if ($staff) {
             if ($staff->live == 0) {
                 return "Account Suspended";
@@ -112,7 +112,7 @@ class Auth extends Controller {
         }
 
         //setting customer
-        $customer = Customer::first(array("user_id = ?" => $user->id));
+        $customer = Customer::first(array("user_id = ?" => $user->_id));
         if ($customer) {
             $this->setUser($user);
             $session->set("customer", $customer);
@@ -132,7 +132,7 @@ class Auth extends Controller {
         $exist = User::first(array("email = ?" => RequestMethods::post("email")), array("id", "email", "name"));
         if ($exist) {
             $meta = new Meta(array(
-                "user_id" => $exist->id,
+                "user_id" => $exist->_id,
                 "property" => "resetpass",
                 "value" => uniqid()
             ));
@@ -168,7 +168,7 @@ class Auth extends Controller {
         }
         
         $customer = new Customer(array(
-            "user_id" => $user->id,
+            "user_id" => $user->_id,
             "country" => $this->country(),
             "balance" => 0,
             "staff_id" => 0,
@@ -179,7 +179,7 @@ class Auth extends Controller {
             $customer->save();
 
             $platform = new Platform(array(
-                "user_id" => $user->id,
+                "user_id" => $user->_id,
                 "type" => "",
                 "category" => "",
                 "url" => RequestMethods::post("url"),

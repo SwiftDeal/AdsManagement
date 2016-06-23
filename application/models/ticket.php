@@ -3,12 +3,12 @@
 /**
  * @author Faizan Ayubi
  */
-class Ticket extends \Shared\Model {
+class Ticket extends \Shared\MongoModel {
     
     /**
      * @column
      * @readwrite
-     * @type integer
+     * @type mongoid
      * @index
      */
     protected $_user_id;

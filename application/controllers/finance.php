@@ -23,7 +23,7 @@ class Finance extends Admin {
         $value = RequestMethods::get("value", 0);
 
         $where = array("{$property} = ?" => $value);
-        $transactions = Transaction::all($where, array("*"), "created", "desc", $limit, $page);
+        $transactions = Transaction::all($where, array("*"), "created", -1, $limit, $page);
         $count = Transaction::count($where);
 
         $view->set("transactions", $transactions);
@@ -64,8 +64,8 @@ class Finance extends Admin {
             $payment = $curl->response;
             if ($payment->success == "true") {
                 $instamojo = new Instamojo(array(
-                    "user_id" => $this->user->id,
-                    "payment_request_id" => $payment->payment_request->id,
+                    "user_id" => $this->user->_id,
+                    "payment_request_id" => $payment->payment_request->_id,
                     "amount" => $payment->payment_request->amount,
                     "status" => $payment->payment_request->status,
                     "longurl" => $payment->payment_request->longurl,

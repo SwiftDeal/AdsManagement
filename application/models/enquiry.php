@@ -3,7 +3,7 @@
 /**
  * @author Shreyansh Goel
  */
-class Enquiry extends Shared\Model {
+class Enquiry extends \Shared\MongoModel {
 
     /**
      * @column

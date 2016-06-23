@@ -102,7 +102,13 @@ namespace Shared {
 
                 case 'autonumber':
                 case 'mongoid':
-                    $value = new \MongoId($value);
+                    if (is_object($value)) {
+                        if (!is_a($value, 'MongoId')) {
+                            $value = new \MongoId($value);
+                        }
+                    } else {
+                        $value = new \MongoId($value);
+                    }
                     break;
 
                 case 'array':
@@ -127,9 +133,29 @@ namespace Shared {
 
             $query = [];
             foreach ($where as $key => $value) {
+                $key = str_replace('=', '', $key);
+                $key = str_replace('?', '', $key);
+                $key = preg_replace("/\s+/", '', $key);
+
+                if ($key == "id") {
+                    $key = "_id";
+                }
                 $query[$key] = $this->_convertToType($value, $columns[$key]['type']);
             }
             return $query;
+        }
+
+        protected function _updateFields($fields) {
+            $f = [];
+            foreach ($fields as $key => $value) {
+                if ($value == "*") {
+                    continue;
+                }
+
+                if ($value == "id") {
+                    $f[] = "_id";
+                }
+            }
         }
 
         /**
@@ -185,6 +211,7 @@ namespace Shared {
         public static function first($where = array(), $fields = array()) {
             $model = new static();
             $where = $model->_updateQuery($where);
+            $fields = $model->_updateFields($fields);
             return $model->_first($where, $fields);
         }
 

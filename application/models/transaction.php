@@ -4,12 +4,12 @@
  * for live = 0 credit, live = 1 debit
  * @author Faizan Ayubi
  */
-class Transaction extends Shared\Model {
+class Transaction extends \Shared\MongoModel {
 
     /**
      * @column
      * @readwrite
-     * @type integer
+     * @type mongoid
      * @index
      */
     protected $_user_id;

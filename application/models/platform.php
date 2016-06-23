@@ -5,12 +5,12 @@
  *
  * @author Faizan Ayubi
  */
-class Platform extends Shared\Model{
+class Platform extends \Shared\MongoModel{
     
     /**
      * @column
      * @readwrite
-     * @type integer
+     * @type mongoid
      * @validate required
      */
     protected $_user_id;

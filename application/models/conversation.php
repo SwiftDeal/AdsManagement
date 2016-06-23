@@ -3,12 +3,12 @@
 /**
  * @author Faizan Ayubi
  */
-class Conversation extends \Shared\Model {
+class Conversation extends \Shared\MongoModel {
     
     /**
      * @column
      * @readwrite
-     * @type integer
+     * @type mongoid
      * @index
      *
      * @validate required
@@ -18,7 +18,7 @@ class Conversation extends \Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type integer
+     * @type mongoid
      * @index
      *
      * @validate required

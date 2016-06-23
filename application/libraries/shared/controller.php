@@ -293,15 +293,11 @@ namespace Shared {
         public function __construct($options = array()) {
             parent::__construct($options);
 
-            // connect to database
-            $database = Registry::get("database");
-            $database->connect();
-
             $mongoDB = Registry::get("MongoDB");
             if (!$mongoDB) {
                 $configuration = Registry::get("configuration");
                 $parsed = $configuration->parse("configuration/database");
-                $mongo = new \MongoClient("mongodb://".$parsed->database->mongodb->dbuser.":".$parsed->database->mongodb->password."@ds025849-a0.mlab.com:25849,ds025849-a1.mlab.com:25849/vnative?replicaSet=rs-ds025849");
+                $mongo = new \MongoClient("mongodb://".$parsed->database->mongodb->dbuser.":".$parsed->database->mongodb->password."@". $parsed->database->mongodb->url."/vnative?replicaSet=rs-ds025849");
                 $mongoDB = $mongo->selectDB("vnative");
                 Registry::set("MongoDB", $mongoDB);
             }
@@ -311,8 +307,11 @@ namespace Shared {
                 $session = Registry::get("session");
                 $controller = Registry::get("controller");
                 $user = $session->get("user");
+
+                $users = Registry::get("MongoDB")->users;
                 if ($user) {
-                    $controller->user = \User::first(array("id = ?" => $user));
+                    $record = $users->findOne(['_id' => $user]);
+                    $controller->user = ArrayMethods::toObject($record);
                 }
             });
 
@@ -321,14 +320,8 @@ namespace Shared {
                 $session = Registry::get("session");
                 $controller = Registry::get("controller");
                 if ($controller->user) {
-                    $session->set("user", $controller->user->id);
+                    $session->set("user", $controller->user->_id);
                 }
-            });
-
-            // schedule: disconnect from database
-            Events::add("framework.controller.destruct.after", function($name) {
-                $database = Registry::get("database");
-                $database->disconnect();
             });
         }
 

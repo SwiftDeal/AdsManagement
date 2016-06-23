@@ -48,7 +48,7 @@ class Admin extends Auth {
         $limit = RequestMethods::get("limit", $limit);
         $sign = RequestMethods::get("sign", "equal");
         $order = RequestMethods::get("order", "created");
-        $sort = RequestMethods::get("sort", "DESC");
+        $sort = RequestMethods::get("sort", -1);
 
         $view->set("items", array());
         $view->set("values", array());

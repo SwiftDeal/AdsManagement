@@ -5,12 +5,12 @@
  *
  * @author Faizan Ayubi
  */
-class Instamojo extends Shared\Model {
+class Instamojo extends \Shared\MongoModel {
     
     /**
      * @column
      * @readwrite
-     * @type integer
+     * @type mongoid
      * @index
      */
     protected $_user_id;

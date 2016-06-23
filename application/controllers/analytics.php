@@ -270,7 +270,7 @@ class Analytics extends Manage {
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 10);
         
-        $where = array("user_id" => $this->user->id);
+        $where = array("user_id" => $this->user->_id);
         
         $ads = \Models\Mongo\Demo::all($where, array("*"), "created", -1, $limit, $page);
         $count = \Models\Mongo\Demo::count($where);

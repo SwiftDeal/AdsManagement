@@ -3,7 +3,7 @@
 /**
  * @author Faizan Ayubi
  */
-class Staff extends \Shared\Model {
+class Staff extends \Shared\MongoModel {
     
     /**
      * @column
@@ -20,7 +20,7 @@ class Staff extends \Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type integer
+     * @type mongoid
      * @index
      * 
      * @validate required, numeric

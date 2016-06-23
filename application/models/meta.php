@@ -5,12 +5,12 @@
  *
  * @author Faizan Ayubi
  */
-class Meta extends Shared\Model {
+class Meta extends \Shared\MongoModel {
     
     /**
      * @column
      * @readwrite
-     * @type integer
+     * @type mongoid
      * @index
      */
     protected $_user_id;

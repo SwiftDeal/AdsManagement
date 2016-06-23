@@ -48,7 +48,7 @@ class Manage extends Admin {
         $value = RequestMethods::get("value", 0);
 
         $where = array("{$property} = ?" => $value);
-        $customers = Customer::all($where, array("id","user_id", "modified", "live", "balance"), "created", "desc", $limit, $page);
+        $customers = Customer::all($where, array("id","user_id", "modified", "live", "balance"), "created", -1, $limit, $page);
         $count = Customer::count($where);
 
         $view->set("customers", $customers);
@@ -91,7 +91,7 @@ class Manage extends Admin {
 
         $links = Link::all(array("user_id = ?" => $user_id));
         foreach ($links as $link) {
-            $stat = Stat::first(array("link_id = ?" => $link->id));
+            $stat = Stat::first(array("link_id = ?" => $link->_id));
             if ($stat) {
                 $stat->delete();
             }
@@ -120,7 +120,7 @@ class Manage extends Admin {
 
         $tickets = Ticket::all(array("user_id = ?" => $user_id));
         foreach ($tickets as $ticket) {
-        	$conversations = Conversation::all(array("ticket_id = ?" => $ticket->id));
+        	$conversations = Conversation::all(array("ticket_id = ?" => $ticket->_id));
         	foreach ($conversations as $c) {
         		$c->delete();
         	}
@@ -147,7 +147,7 @@ class Manage extends Admin {
 
             switch ($model) {
                 case 'publish':
-                    $publish = Publish::first(array("user_id = ?" => $user->id));
+                    $publish = Publish::first(array("user_id = ?" => $user->_id));
                     if ($publish) {
                         $publish->live = $live;
                         $publish->save();
@@ -172,7 +172,7 @@ class Manage extends Admin {
                     break;
                 
                 case 'advert':
-                    $advert = Advert::first(array("user_id = ?" => $user->id));
+                    $advert = Advert::first(array("user_id = ?" => $user->_id));
                     if ($advert) {
                         $advert->live = $live;
                         $advert->save();
