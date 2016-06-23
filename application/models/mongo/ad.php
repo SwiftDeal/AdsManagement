@@ -101,7 +101,7 @@ class Ad extends \Shared\MongoModel {
     /**
      * @column
      * @readwrite
-     * @type text
+     * @type array
      * @length 255
      * @index
      *
@@ -114,7 +114,7 @@ class Ad extends \Shared\MongoModel {
     /**
      * @column
      * @readwrite
-     * @type text
+     * @type array
      * @length 255
      * @index
      *

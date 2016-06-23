@@ -53,8 +53,8 @@ class Campaign extends Publisher {
                 "title" => RequestMethods::post("title"),
                 "description" => RequestMethods::post("description", ""),
                 "image" => $image,
-                "category" => json_encode(RequestMethods::post("category")),
-                "coverage" => json_encode(RequestMethods::post("coverage", "IN")),
+                "category" => RequestMethods::post("category"),
+                "coverage" => RequestMethods::post("coverage", "IN"),
                 "budget" => RequestMethods::post("budget", 100),
                 "frequency" => RequestMethods::post("frequency", 2),
                 "start" => RequestMethods::post("start"),
@@ -72,7 +72,7 @@ class Campaign extends Publisher {
             if ($ad->validate()) {
                 $ad->save();
                 
-                $categories = json_decode($ad->category);
+                $categories = RequestMethods::post("category");
                 foreach ($categories as $key => $value) {
                     $cat = new \Models\Mongo\AdCategory([
                         'ad_id' => $ad->_id->{'$id'},
