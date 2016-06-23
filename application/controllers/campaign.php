@@ -93,7 +93,7 @@ class Campaign extends Publisher {
     public function edit($id = NULL) {
         $this->seo(array("title" => "Edit Ad", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-        $ad = \Models\Mongo\Ad::first(array("_id" => $id, "user_id" => $this->user->_id));
+        $ad = \Ad::first(array("_id" => $id, "user_id" => $this->user->_id));
         if (!$ad) {
             $this->redirect("/campaign/manage.html");
         }
@@ -165,8 +165,8 @@ class Campaign extends Publisher {
         $value = RequestMethods::get("value", 0);
         $where = array("{$property}" => $value);
 
-        $contents = \Models\Mongo\Ad::all($where, array("id", "title", "modified", "image", "visibility", "url", "live", "user_id"), "created", -1, $limit, $page);
-        $count = \Models\Mongo\Ad::count($where);
+        $contents = \Ad::all($where, array("id", "title", "modified", "image", "visibility", "url", "live", "user_id"), "created", -1, $limit, $page);
+        $count = \Ad::count($where);
 
         $view->set("contents", $contents);
         $view->set("property", $property);

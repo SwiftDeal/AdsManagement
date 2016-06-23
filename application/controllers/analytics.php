@@ -17,7 +17,7 @@ class Analytics extends Manage {
         $this->JSONview();$impressions = [];$clicks = [];$i = [];$ccampaigns = [];$icampaigns = [];$total_impression = 0;$total_click = 0;$spent = 0;
         $user_id = RequestMethods::get("user_id");$start = RequestMethods::get("start");$end = RequestMethods::get("end");
         $view = $this->getActionView();
-        $ads = \Models\Mongo\Ad::all(array("user_id" => $user_id));
+        $ads = \Ad::all(array("user_id" => $user_id));
         foreach ($ads as $ad) {
             $i[] = $ad->_id;
         }
@@ -77,7 +77,7 @@ class Analytics extends Manage {
         $this->JSONview();$impressions = [];$clicks = [];$i = [];$total_impression = 0;$total_click = 0;
         $user_id = RequestMethods::get("user_id");$start = RequestMethods::get("start");$end = RequestMethods::get("end");
         $view = $this->getActionView();
-        $adunits = \Models\Mongo\AdUnit::all(array("user_id" => $user_id));
+        $adunits = \AdUnit::all(array("user_id" => $user_id));
         foreach ($adunits as $au) {
             $i[] = $au->_id;
         }
@@ -121,7 +121,7 @@ class Analytics extends Manage {
         $this->JSONview();$impressions = [];$clicks = [];$i = [];$total_impression = 0;$total_click = 0;
         $id = RequestMethods::get("id");$view = $this->getActionView();
 
-        $adunit = \Models\Mongo\AdUnit::first(array("_id" => $id), array("_id", "created"));
+        $adunit = \AdUnit::first(array("_id" => $id), array("_id", "created"));
         $start = RequestMethods::get("start", $adunit->created);$end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
         
         $impressions['aduid'] = $adunit->_id;
@@ -165,7 +165,7 @@ class Analytics extends Manage {
         $this->JSONview();$impressions = [];$clicks = [];$i = [];$total_impression = 0;$total_click = 0;
         $id = RequestMethods::get("id");$view = $this->getActionView();
 
-        $ad = \Models\Mongo\Ad::first(array("_id" => $id), array("_id", "created"));
+        $ad = \Ad::first(array("_id" => $id), array("_id", "created"));
         $start = RequestMethods::get("start", $ad->created);$end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
         
         $impressions['cid'] = $ad->_id;
@@ -272,8 +272,8 @@ class Analytics extends Manage {
         
         $where = array("user_id" => $this->user->_id);
         
-        $ads = \Models\Mongo\Demo::all($where, array("*"), "created", -1, $limit, $page);
-        $count = \Models\Mongo\Demo::count($where);
+        $ads = \Demo::all($where, array("*"), "created", -1, $limit, $page);
+        $count = \Demo::count($where);
 
         $view->set("ads", $ads);
         $view->set("page", $page);

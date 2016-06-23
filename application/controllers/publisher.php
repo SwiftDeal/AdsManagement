@@ -35,8 +35,8 @@ class Publisher extends Advertiser {
         $limit = RequestMethods::get("limit", 10);
         $where = array("user_id" => $this->user->_id);
 
-        $adunits = \Models\Mongo\AdUnit::all($where, array("name", "category", "live", "created"), "created", -1, $limit, $page);
-        $count = \Models\Mongo\AdUnit::count($where);
+        $adunits = \AdUnit::all($where, array("name", "category", "live", "created"), "created", -1, $limit, $page);
+        $count = \AdUnit::count($where);
 
         $view->set("adunits", $adunits);
         $view->set("limit", $limit);
@@ -52,7 +52,7 @@ class Publisher extends Advertiser {
         $view = $this->getActionView();
 
         if (RequestMethods::post("action") == "adunit") {
-            $adunit = new \Models\Mongo\AdUnit(array(
+            $adunit = new \AdUnit(array(
                 "user_id" => $this->user->_id,
                 "name" => RequestMethods::post("name"),
                 "category" => RequestMethods::post("category"),
@@ -68,7 +68,7 @@ class Publisher extends Advertiser {
         $this->JSONview();
         $view = $this->getActionView();
 
-        $adunit = \Models\Mongo\AdUnit::first(array("_id" => RequestMethods::get("auid")));
+        $adunit = \AdUnit::first(array("_id" => RequestMethods::get("auid")));
         $view->set('code', $this->_code($adunit));
         $view->set('adunit', $adunit);
     }

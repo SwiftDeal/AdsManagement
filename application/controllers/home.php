@@ -86,7 +86,7 @@ class Home extends Auth {
                 $cookie = uniqid();
                 Cookie\Cookie::Set('vtarck', $cookie, Cookie\Cookie::Lifetime, '/', '.vnative.com');
 
-                $demo = new \Models\Mongo\Demo(array(
+                $demo = new \Demo(array(
                     "url" => RequestMethods::get("link"),
                     "ip" => $this->get_client_ip(),
                     "cookie" => $cookie
