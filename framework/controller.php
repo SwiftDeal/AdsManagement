@@ -91,7 +91,8 @@ namespace Framework {
             Events::fire("framework.controller.construct.after", array($this->name));
         }
 
-        protected function setLayout() {
+        protected function setLayout($layout = "layouts/standard") {
+            $this->defaultLayout = $layout;
             if ($this->willRenderLayoutView) {
                 $defaultPath = $this->defaultPath;
                 $defaultLayout = $this->defaultLayout;
@@ -128,6 +129,51 @@ namespace Framework {
             return new Exception\Implementation("{$method} method not implemented");
         }
 
+        protected function _renderJSONFields($data) {
+            $obj = array();
+            foreach ($data as $keys => $values) {
+                switch (gettype($values)) {
+                    case 'object':
+                        if (get_class($values) == "stdClass") {
+                            $obj[$keys] = $values;
+                        } elseif (is_a($values, 'Framework\Model')) {
+                            $obj[$keys] = $values->getJsonData();
+                        } else {
+                            $obj[$keys] = $values;
+                        }
+                        break;
+                    case 'array':
+                        if (empty($values)) {
+                            $obj[$keys] = array();
+                            break;
+                        }
+                        foreach ($values as $key => $value) {
+                            if (gettype($value) == "object") {
+                                if (get_class($value) == "stdClass") {
+                                    $obj[$keys][] = $value;
+                                } elseif (is_a($value, 'Framework\Model')) {
+                                    $obj[$keys][] = $value->getJsonData();
+                                } else {
+                                    $obj[$keys][] = $value;
+                                }
+                            } else{
+                                $obj[$keys] = $values;
+                            }
+                        }
+                        break;
+                    case 'string':
+                    case 'integer':
+                        $obj[$keys] = $values;
+                        break;
+
+                    default:
+                        break;
+
+                }
+            }
+            return $obj;
+        }
+
         public function render() {
             Events::fire("framework.controller.render.before", array($this->name));
 
@@ -142,41 +188,10 @@ namespace Framework {
                     $view = $this->actionView;
 
                     if ($this->defaultExtension == "json") {
-                        $obj = array();
                         $data = $view->data;
 
                         if ($data) {
-                            foreach ($data as $keys => $values) {
-                                switch (gettype($values)) {
-                                    case 'object':
-                                        if (get_class($values) == "stdClass") {
-                                            $obj[$keys] = $values;
-                                        } elseif (is_a($values, 'Framework\Model')) {
-                                            $obj[$keys] = $values->getJsonData();
-                                        }
-                                        break;
-                                    case 'array':
-                                        if (empty($values)) {
-                                            $obj[$keys] = array();
-                                            break;
-                                        }
-                                        foreach ($values as $key => $value) {
-                                            if (gettype($value) == "object") {
-                                                if (get_class($value) == "stdClass") {
-                                                    $obj[$keys][] = $value;
-                                                } elseif (is_a($value, 'Framework\Model')) {
-                                                    $obj[$keys][] = $value->getJsonData();
-                                                }
-                                            } else{
-                                                $obj[$keys] = $values;
-                                            }
-                                        }
-                                        break;
-                                    default :
-                                        $obj[$keys] = $values;
-                                        break;
-                                }
-                            }
+                            $obj = $this->_renderJSONFields($data);
                         }
                         echo json_encode($obj, JSON_PRETTY_PRINT);
                     }

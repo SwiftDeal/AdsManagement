@@ -39,13 +39,13 @@ class AdUnit extends \Shared\MongoModel {
     /**
      * @column
      * @readwrite
-     * @type text
+     * @type array
      * @length 255
      * @index
      *
      * @validate required
      */
-    protected $_type;
+    protected $_type = [];
 
     /**
      * @column

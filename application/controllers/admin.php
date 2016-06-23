@@ -65,7 +65,7 @@ class Admin extends Auth {
 
         if ($model) {
             if ($sign == "like") {
-                $where = array("{$property} LIKE ?" => "%{$val}%");
+                $where = array("{$property}" => new MongoRegex("/$val/i"));
             } else {
                 $where = array("{$property} = ?" => $val);
             }
@@ -244,7 +244,7 @@ class Admin extends Auth {
             $diff = date_diff(date_create($startdate), date_create($enddate));
             for ($i = 0; $i < $diff->format("%a"); $i++) {
                 $date = date('Y-m-d', strtotime($startdate . " +{$i} day"));
-                $count = $model::count(array("created LIKE ?" => "%{$date}%"));
+                $count = $model::count(array("created" => new MongoRegex("/$date/i")));
                 $obj[] = array('y' => $date, 'a' => $count);
             }
             $view->set("data", \Framework\ArrayMethods::toObject($obj));
@@ -285,8 +285,7 @@ class Admin extends Auth {
             $this->_staff = $staff;
         }
 
-        $this->defaultLayout = "layouts/admin";
-        $this->setLayout();
+        $this->setLayout("layouts/admin");
     }
 
     /**

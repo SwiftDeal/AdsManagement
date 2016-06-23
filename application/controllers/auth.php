@@ -263,7 +263,6 @@ class Auth extends Controller {
      * @protected
      */
     public function _layout() {
-        $this->defaultLayout = "layouts/account";
-        $this->setLayout();
+        $this->setLayout("layouts/account");
     }
 }

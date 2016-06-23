@@ -35,7 +35,7 @@ class Publisher extends Advertiser {
         $limit = RequestMethods::get("limit", 10);
         $where = array("user_id" => $this->user->_id);
 
-        $adunits = \AdUnit::all($where, array("name", "category", "live", "created"), "created", -1, $limit, $page);
+        $adunits = \AdUnit::all($where, array("name", "category", "live", "created"), "created", "desc", $limit, $page);
         $count = \AdUnit::count($where);
 
         $view->set("adunits", $adunits);
@@ -56,7 +56,7 @@ class Publisher extends Advertiser {
                 "user_id" => $this->user->_id,
                 "name" => RequestMethods::post("name"),
                 "category" => RequestMethods::post("category"),
-                "type" => json_encode(RequestMethods::post("type"))
+                "type" => (RequestMethods::post("type"))
             ));
             $adunit->save();
 

@@ -78,6 +78,10 @@ namespace Shared {
          * Specific types are needed for MongoDB
          */
         protected function _convertToType($value, $type) {
+            if (is_object($value) && is_a($value, 'MongoRegex')) {
+                return $value;
+            }
+
             switch ($type) {
                 case 'text':
                     $value = (string) $value;
@@ -142,7 +146,8 @@ namespace Shared {
                 $key = str_replace('?', '', $key);
                 $key = preg_replace("/\s+/", '', $key);
 
-                if ($key == "id") {
+                // because $this->id equivalent to $this->_id
+                if ($key == "id" && !property_exists($this, '_id')) {
                     $key = "_id";
                 }
                 $query[$key] = $this->_convertToType($value, $columns[$key]['type']);
@@ -187,6 +192,19 @@ namespace Shared {
             }
             
             if ($order && $direction) {
+                if ($direction) {
+                    switch ($direction) {
+                        case 'desc':
+                        case 'DESC':
+                            $direction = -1;
+                            break;
+                        
+                        case 'asc':
+                        case 'ASC':
+                            $direction = 1;
+                            break;
+                    }
+                }
                 $cursor->sort([$order => $direction]);
             }
 

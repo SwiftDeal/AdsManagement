@@ -18,7 +18,7 @@ class Account extends Auth {
         $limit = RequestMethods::get("limit", 10);
         $where = array("user_id = ?" => $this->user->_id);
 
-        $transactions = Transaction::all($where, array("id", "ref", "amount", "live", "created"), "created", -1, $limit, $page);
+        $transactions = Transaction::all($where, array("id", "ref", "amount", "live", "created"), "created", "desc", $limit, $page);
         $count = Transaction::count($where);
         
         $view->set("transactions", $transactions);
@@ -38,7 +38,7 @@ class Account extends Auth {
         $limit = RequestMethods::get("limit", 10);
         $where = array("user_id = ?" => $this->user->_id);
 
-        $platforms = Platform::all($where, array("url", "type", "category", "live", "created"), "created", -1, $limit, $page);
+        $platforms = Platform::all($where, array("url", "type", "category", "live", "created"), "created", "desc", $limit, $page);
         $count = Platform::count($where);
         
         $view->set("platforms", $platforms);
