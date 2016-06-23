@@ -286,6 +286,7 @@ function advertiser() {
         callback: function(data) {
             $('#impressions').html(data.impressions);
             $('#clicks').html(data.clicks);
+            $('#spent').html(data.spent);
 
             var ia = [];
             $.each(data.ianalytics, function(i, val) {

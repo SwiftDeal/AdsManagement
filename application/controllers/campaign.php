@@ -55,12 +55,12 @@ class Campaign extends Publisher {
                 "image" => $image,
                 "category" => json_encode(RequestMethods::post("category")),
                 "coverage" => json_encode(RequestMethods::post("coverage", "IN")),
-                "budget" => RequestMethods::post("budget"),
+                "budget" => RequestMethods::post("budget", 100),
                 "frequency" => RequestMethods::post("frequency", 2),
                 "start" => RequestMethods::post("start"),
                 "end" => RequestMethods::post("end"),
-                "cpc" => RequestMethods::post("cpc", 200),
-                "visibility" => 0,
+                "cpc" => RequestMethods::post("cpc", 0.15),
+                "visibility" => 1,
                 "live" => 0
             ));
 

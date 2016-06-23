@@ -133,7 +133,7 @@ class Ad extends \Shared\MongoModel {
      * @validate required
      * @label budget
      */
-    protected $_budget;
+    protected $_budget = 100;
 
     /**
      * @column
@@ -168,7 +168,7 @@ class Ad extends \Shared\MongoModel {
      *
      * @label cost per click
      */
-    protected $_cpc = 200.00;
+    protected $_cpc = 0.15;
 
     /**
      * @column

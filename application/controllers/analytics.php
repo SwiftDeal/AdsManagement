@@ -14,7 +14,7 @@ class Analytics extends Manage {
      * @before _secure
      */
     public function campaigns() {
-        $this->JSONview();$impressions = [];$clicks = [];$i = [];$total_impression = 0;$total_click = 0;
+        $this->JSONview();$impressions = [];$clicks = [];$i = [];$ccampaigns = [];$icampaigns = [];$total_impression = 0;$total_click = 0;$spent = 0;
         $user_id = RequestMethods::get("user_id");$start = RequestMethods::get("start");$end = RequestMethods::get("end");
         $view = $this->getActionView();
         $ads = \Models\Mongo\Ad::all(array("user_id" => $user_id));
@@ -33,6 +33,16 @@ class Analytics extends Manage {
             } else {
                 $ianalytics[$code] = $result["hits"];
             }
+            if (array_key_exists($result['cid'], $ccampaigns)) {
+                $ccampaigns[$result['cid']] += $result["hits"];
+            } else {
+                $ccampaigns[$result['cid']] = $result["hits"];
+            }
+        }
+        foreach ($ads as $ad) {
+            if (array_key_exists($ad->_id, $ccampaigns)) {
+                $spent += $ad->cpc*$ccampaigns[$ad->_id];
+            }
         }
 
         $clicks['cid'] = array('$in' => $i);
@@ -46,12 +56,18 @@ class Analytics extends Manage {
             } else {
                 $canalytics[$code] = 1;
             }
+            if (array_key_exists($result['cid'], $icampaigns)) {
+                $icampaigns[$result['cid']] += 1;
+            } else {
+                $icampaigns[$result['cid']] = 1;
+            }
         }
 
         $view->set("clicks", $total_click);
         $view->set("impressions", $total_impression);
         $view->set("ianalytics", $ianalytics);
         $view->set("canalytics", $canalytics);
+        $view->set("spent", $spent);
     }
 
     /**
