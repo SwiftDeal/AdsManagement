@@ -75,7 +75,10 @@ namespace Shared {
         }
 
         /**
-         * Specific types are needed for MongoDB
+         * @important | @core function
+         * Specific types are needed for MongoDB for proper querying
+         * @param misc $value
+         * @param string $type
          */
         protected function _convertToType($value, $type) {
             if (is_object($value) && is_a($value, 'MongoRegex')) {
@@ -124,12 +127,21 @@ namespace Shared {
             return $value;
         }
 
+        /**
+         * @getter
+         * @override
+         * @return \MongoCollection
+         */
         public function getTable() {
             $table = parent::getTable();
             $collection = Registry::get("MongoDB")->$table;
             return $collection;
         }
 
+        /**
+         * @getter
+         * Returns "_id" if presents else "__id"
+         */
         public function getId() {
             if (property_exists($this, '_id')) {
                 return $this->_id;
@@ -137,6 +149,9 @@ namespace Shared {
             return $this->__id;
         }
 
+        /**
+         * Updates the MongoDB query
+         */
         protected function _updateQuery($where) {
             $columns = $this->getColumns();
 
@@ -155,6 +170,11 @@ namespace Shared {
             return $query;
         }
 
+        /**
+         * Updates the fields when query mongodb
+         * Checks for correct property "id" and "_id"
+         * Also accounts for "*" in MySql
+         */
         protected function _updateFields($fields) {
             $f = [];
             foreach ($fields as $key => $value) {
@@ -162,23 +182,27 @@ namespace Shared {
                     continue;
                 }
 
-                if ($value == "id") {
+                if ($value == "id" && !property_exists($this, '_id')) {
                     $f[] = "_id";
+                } else {
+                    $f[] = $value;
                 }
             }
+            return $f;
         }
 
         /**
-         * @param array $where ['name' => 'something']
+         * @param array $where ['name' => 'something'] OR ['name = ?' => 'something'] (both works)
          * @param array $fields ['name' => true, '_id' => true]
          * @param string $order Name of the field
-         * @param int $direction 1 or -1
+         * @param int $direction 1 | -1 OR "asc" |  "desc"
          * @param int $limit
-         * @
+         * @return array
          */
         public static function all($where = array(), $fields = array(), $order = null, $direction = null, $limit = null, $page = null) {
             $model = new static();
             $where = $model->_updateQuery($where);
+            $fields = $model->_updateFields($fields);
             return $model->_all($where, $fields, $order, $direction, $limit, $page);
         }
 
@@ -224,12 +248,12 @@ namespace Shared {
         }
 
         /**
-         * @param array $where ['name' => 'something']
+         * @param array $where ['name' => 'something'] OR ['name = ?' => 'something'] (both works)
          * @param array $fields ['name' => true, '_id' => true]
          * @param string $order Name of the field
-         * @param int $direction 1 or -1
+         * @param int $direction 1 | -1 OR "asc" |  "desc"
          * @param int $limit
-         * @
+         * @return \Shared\Mongomodel object | null
          */
         public static function first($where = array(), $fields = array()) {
             $model = new static();
@@ -250,6 +274,10 @@ namespace Shared {
             return $this->_convert($record);
         }
 
+        /**
+         * Converts the MongoDB result to an object of class 
+         * whose parent is \Shared\MongoModel
+         */
         protected function _convert($record) {
             if (!$record) return null;
             $columns = $this->getColumns();
@@ -285,7 +313,7 @@ namespace Shared {
 
         public static function count($query = []) {
             $model = new static();
-            $where = $model->_updateQuery($query);
+            $query = $model->_updateQuery($query);
             return $model->_count($query);
         }
 

@@ -247,6 +247,7 @@ class Auth extends Controller {
      * @before _secure, _admin
      */
     public function loginas($user_id) {
+        Registry::get("session")->set("admin_user_id", $this->user->_id);
         $this->setUser(false);
         $user = User::first(array("id = ?" => $user_id));
         $this->authorize($user);
@@ -264,5 +265,17 @@ class Auth extends Controller {
      */
     public function _layout() {
         $this->setLayout("layouts/account");
+    }
+
+    public function logout() {
+        $session = Registry::get("session");
+        $uid = $session->get("admin_user_id");
+        if ($uid) {
+            $user = User::first(["id = ?" => $uid]);
+            $this->authorize($user);
+        } else {
+            session_destroy();
+            $this->redirect("/");
+        }
     }
 }

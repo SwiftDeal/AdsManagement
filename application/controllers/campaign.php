@@ -165,7 +165,7 @@ class Campaign extends Publisher {
         $value = RequestMethods::get("value", 0);
         $where = array("{$property}" => $value);
 
-        $contents = \Ad::all($where, array("id", "title", "modified", "image", "visibility", "url", "live", "user_id"), "created", -1, $limit, $page);
+        $contents = \Ad::all($where, array("id", "title", "modified", "image", "visibility", "created", "url", "live", "user_id"), "created", "desc", $limit, $page);
         $count = \Ad::count($where);
 
         $view->set("contents", $contents);

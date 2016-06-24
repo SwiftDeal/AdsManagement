@@ -48,7 +48,7 @@ class Manage extends Admin {
         $value = RequestMethods::get("value", 0);
 
         $where = array("{$property} = ?" => $value);
-        $customers = Customer::all($where, array("id","user_id", "modified", "live", "balance"), "created", -1, $limit, $page);
+        $customers = Customer::all($where, array("id","user_id", "modified", "created", "live", "balance"), "created", "desc", $limit, $page);
         $count = Customer::count($where);
 
         $view->set("customers", $customers);

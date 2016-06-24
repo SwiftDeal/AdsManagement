@@ -33,6 +33,7 @@
                                 <th>Title</th>
                                 <th>Advertiser</th>
                                 <th>Status</th>
+                                <th>Created</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -57,18 +58,25 @@
                                     {echo $content->title}
                                 </td>
                                 <td><a href="/admin/info/user/{$content->user_id}" target="_blank">{echo $content->user_id}</a></td>
-                                <td><small>{echo Framework\StringMethods::datetime_to_text($content->modified)}</small></td>
+                                <td>
+                                    {if $content->live}
+                                    <span class="label label-success">Active</span>
+                                    {/if} {else}
+                                    <span class="label label-warning">Inactive</span>
+                                    {/else}
+                                </td>
+                                <td><small>{echo Framework\StringMethods::datetime_to_text($content->created)}</small></td>
                                 <td>
                                     {if($content->live)}
-                                        <a href="/admin/edit/item/{$content->_id}/live/0" class="btn btn-warning btn-xs"><i class="fa fa-ban"></i></a>
+                                        <a href="/admin/edit/ad/{$content->_id}/live/0" class="btn btn-warning btn-xs"><i class="fa fa-ban"></i></a>
                                         {if($content->visibility)}
-                                        <a href="/admin/edit/item/{$content->_id}/visibility/0" class="btn btn-warning btn-xs"><i class="fa fa-eye-slash"></i></a>
+                                        <a href="/admin/edit/ad/{$content->_id}/visibility/0" class="btn btn-warning btn-xs"><i class="fa fa-eye-slash"></i></a>
                                         {/if} {else}
-                                            <a href="/admin/edit/item/{$content->_id}/visibility/1" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></a>
+                                            <a href="/admin/edit/ad/{$content->_id}/visibility/1" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></a>
                                         {/else}
                                     {/if}
                                     {else}
-                                        <a href="/admin/edit/item/{$content->_id}/live/1" class="btn btn-success btn-xs"><i class="fa fa-check"></i></a>
+                                        <a href="/admin/edit/ad/{$content->_id}/live/1" class="btn btn-success btn-xs"><i class="fa fa-check"></i></a>
                                     {/else}
                                     <a href="/campaign/delete/{$content->_id}" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
                                 </td>

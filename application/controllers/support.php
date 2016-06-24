@@ -36,7 +36,7 @@ class Support extends Publisher {
         $value = RequestMethods::get("value", 1);
         $where = array("{$property} = ?" => $value);
 
-        $tickets = Ticket::all($where, array("user_id", "subject", "modified", "live", "id"), "modified", -1, $limit, $page);
+        $tickets = Ticket::all($where, array("user_id", "subject", "modified", "live", "id"), "modified", "desc", $limit, $page);
         $count = Ticket::count($where);
         
         $view->set("tickets", $tickets);

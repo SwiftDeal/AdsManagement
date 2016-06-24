@@ -23,8 +23,9 @@ class Admin extends Auth {
         $yesterday = strftime("%Y-%m-%d", strtotime('-1 day'));
 
         $database = Registry::get("database");
-        $payments = $database->query()->from("transactions", array("SUM(amount)" => "payment"))->where("live=?", 1)->all();
-        $instamojos = $database->query()->from("instamojos", array("SUM(amount)" => "received"))->where("live=?", 1)->all();
+        // $payments = $database->query()->from("transactions", array("SUM(amount)" => "payment"))->where("live=?", 1)->all();
+        // $instamojos = $database->query()->from("instamojos", array("SUM(amount)" => "received"))->where("live=?", 1)->all();
+        $payments = $instamojos = [];
         
         $view->set("received", round($instamojos[0]["received"], 2));
         $view->set("payment", round($payments[0]["payment"], 2));
@@ -169,25 +170,24 @@ class Admin extends Auth {
 
         $object = $model::first(array("id = ?" => $id));
 
-        $vars = $object->columns;
+        $vars = $object->getColumns();
         $array = array();
         foreach ($vars as $key => $value) {
-            array_push($array, $key);
-            $vars[$key] = htmlentities($object->$key);
+            $array[] = $key;
         }
         if (RequestMethods::post("action") == "update") {
             foreach ($array as $field) {
                 $object->$field = RequestMethods::post($field, $vars[$field]);
-                $vars[$field] = htmlentities($object->$field);
             }
             $object->save();
             $view->set("success", true);
         }
 
-        $view->set("vars", $vars);
+        $view->set("object", $object);
         $view->set("array", $array);
         $view->set("model", $model);
         $view->set("id", $id);
+        $view->set("columns", $vars);
     }
 
     /**
@@ -209,7 +209,7 @@ class Admin extends Auth {
 
         $view->set("object", $object);
 
-        $this->redirect($_SERVER['HTTP_REFERER']);
+        $this->redirect(RequestMethods::server('HTTP_REFERER', '/admin'));
     }
 
     /**
@@ -227,7 +227,7 @@ class Admin extends Auth {
         $object->delete();
         $view->set("deleted", true);
         
-        $this->redirect($_SERVER['HTTP_REFERER']);
+        $this->redirect(RequestMethods::server('HTTP_REFERER', '/admin'));
     }
 
     /**

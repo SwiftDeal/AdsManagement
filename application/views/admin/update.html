@@ -13,7 +13,14 @@
                     <div class="form-group">
                         <label class="col-sm-4 control-label">{echo $var}</label>
                         <div class="col-sm-8">
-                            <input type="text" name="{echo $var}" class="form-control" value="{echo $vars[$var]}" {if($var=="id" )}disabled{/if}>
+                            {if $columns[$var]["type"] == "date"}
+                                {script $object->$var = date("Y-m-d", $object->$var->sec)}
+                            {/if} {elseif $columns[$var]["type"] == "datetime"}
+                                {script $object->$var = date("Y-m-d H:i:s", $object->$var->sec)}
+                            {/elseif} {else}
+                                {script $object->$var = htmlentities($object->$var)}
+                            {/else}
+                            <input type="text" name="{echo $var}" class="form-control" value="{echo $object->$var}" {if($var=="_id" )}disabled{/if}>
                         </div>
                     </div>
                     {/foreach}

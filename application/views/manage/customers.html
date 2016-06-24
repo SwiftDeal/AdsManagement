@@ -27,6 +27,7 @@
                             <th>Name</th>
                             <th>Modified</th>
                             <th>Balance</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -45,11 +46,18 @@
                             <td><small>{echo Framework\StringMethods::datetime_to_text($user->modified)}</small></td>
                             <td>{echo $user->convert($customer->balance)}</td>
                             <td>
+                                {if $customer->live}
+                                <span class="label label-success">Active</span>
+                                {/if} {else}
+                                <span class="label label-warning">Inactive</span>
+                                {/else}
+                            </td>
+                            <td>
                                 {if($customer->live == 0)}
-                                    <a href="#" class="btn btn-primary btn-xs"><i class="fa fa-check"></i></a>&nbsp;
+                                    <a href="/admin/edit/customer/{echo $customer->_id}/live/1" class="btn btn-primary btn-xs"><i class="fa fa-check"></i></a>&nbsp;
                                 {/if}
                                 {else}
-                                    <a href="#" class="btn btn-warning btn-xs"><i class="fa fa-ban"></i></a>&nbsp;
+                                    <a href="/admin/edit/customer/{echo $customer->_id}/live/0" class="btn btn-warning btn-xs"><i class="fa fa-ban"></i></a>&nbsp;
                                 {/else}
                                 <a href="#" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
                                 <a href="/support/manageticket.html?property=user_id&amp;value={$user->_id}" class="btn btn-primary btn-xs"><i class="fa fa-support"></i></a>&nbsp;
