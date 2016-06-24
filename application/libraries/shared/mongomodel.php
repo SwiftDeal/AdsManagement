@@ -104,6 +104,9 @@ namespace Shared {
 
                 case 'datetime':
                 case 'date':
+                    if (is_object($value) && is_a($value, 'MongoDate')) {
+                        break;
+                    }
                     $value = new \MongoDate(strtotime($value));
                     break;
 
@@ -117,7 +120,9 @@ namespace Shared {
                     break;
 
                 case 'array':
-                    $value = (array) $value;
+                    if (!is_array($value)) {
+                        $value = (array) $value;   
+                    }
                     break;
                 
                 default:

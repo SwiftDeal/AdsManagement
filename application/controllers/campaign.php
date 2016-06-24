@@ -176,6 +176,17 @@ class Campaign extends Publisher {
         $view->set("limit", $limit);
     }
 
+    public function status($id, $status) {
+        $this->noview();
+        $ad = \Ad::first(["_id = ?" => $id, "user_id = ?" => $this->user->_id]);
+        if ($ad) {
+            $ad->visibility = $status;
+            $ad->save();
+        }
+
+        $this->redirect(RequestMethods::server('HTTP_REFERER', '/campaign/manage'));
+    }
+
     /**
      * @before _secure, _layout
      */

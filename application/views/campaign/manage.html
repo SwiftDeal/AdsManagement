@@ -31,6 +31,7 @@
                     <tr>
                         <th>Campaign</th>
                         <th>Realtime</th>
+                        <th>Approval</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -53,8 +54,20 @@
                             {/else}
                         </td>
                         <td>
+                            {if $ad->visibility}
+                            <span class="label label-success">Active</span>
+                            {/if} {else}
+                            <span class="label label-warning">Inactive</span>
+                            {/else}
+                        </td>
+                        <td>
                             <a href="/campaign/edit/{$ad->_id}.html" class="btn btn-info btn-xs"><i class="fa fa-edit"></i></a>
-                            <a href="/campaign/remove/{$ad->_id}.html" class="btn btn-delete btn-xs"><i class="fa fa-trash"></i></a>
+                            {if $ad->visibility}
+                            <a href="/campaign/status/{$ad->_id}/0" class="btn btn-warning btn-xs"><i class="fa fa-eye-slash"></i></a>
+                            {/if} {else}
+                            <a href="/campaign/status/{$ad->_id}/1" class="btn btn-info btn-xs"><i class="fa fa-eye"></i></a>
+                            {/else}
+                            <a href="/campaign/remove/{$ad->_id}.html" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
                         </td>
                     </tr>
                     {/foreach}
