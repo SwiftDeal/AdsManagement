@@ -228,6 +228,20 @@ class Campaign extends Publisher {
         }
     }
 
+    public function remove($id) {
+        $this->noview();
+        $ad = \Ad::first(["_id = ?" => $id, "user_id = ?" => $this->user->_id]);
+        if (!$ad) {
+            $this->redirect("/404");
+        }
+
+        $impression = \Impressions::first(["cid = ?" => $ad->_id]);
+        if (!$impression && !$ad->live) {
+            $ad->delete();
+        }
+        $this->redirect(RequestMethods::server('HTTP_REFERER', '/campaign/manage'));
+    }
+
     /**
      * Download the video and convert it to mp4
      * Store in uploads dir

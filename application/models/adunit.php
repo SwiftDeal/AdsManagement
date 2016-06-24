@@ -4,7 +4,6 @@
  * AdUnit Mongo Model
  * @author Faizan Ayubi, Hemant Mann
  */
-namespace Models\Mongo;
 class AdUnit extends \Shared\MongoModel {
 
     /**

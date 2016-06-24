@@ -31,6 +31,7 @@
                     <tr>
                         <th>Campaign</th>
                         <th>Realtime</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                     {foreach $ad in $ads}
@@ -45,7 +46,15 @@
                             <span class="label label-success">View</span>
                         </td>
                         <td>
+                            {if $ad->live}
+                            <span class="label label-primary">Approved</span>
+                            {/if} {else}
+                            <span class="label label-warning">UnApproved</span>
+                            {/else}
+                        </td>
+                        <td>
                             <a href="/campaign/edit/{$ad->_id}.html" class="btn btn-info btn-xs"><i class="fa fa-edit"></i></a>
+                            <a href="/campaign/remove/{$ad->_id}.html" class="btn btn-delete btn-xs"><i class="fa fa-trash"></i></a>
                         </td>
                     </tr>
                     {/foreach}

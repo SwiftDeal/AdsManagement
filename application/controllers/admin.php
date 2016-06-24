@@ -51,8 +51,8 @@ class Admin extends Auth {
         $order = RequestMethods::get("order", "created");
         $sort = RequestMethods::get("sort", -1);
 
-        $view->set("items", array());
-        $view->set("values", array());
+        $view->set("results", array());
+        $view->set("fields", array());
         $view->set("model", $model);
         $view->set("models", Shared\Markup::models());
         $view->set("page", $page);
@@ -73,28 +73,19 @@ class Admin extends Auth {
 
             $objects = $model::all($where, array("*"), $order, $sort, $limit, $page);
             $count = $model::count($where);
-            $i = 0;
-            if ($objects) {
-                foreach ($objects as $object) {
-                    $properties = $object->getJsonData();
-                    foreach ($properties as $key => $property) {
-                        $key = substr($key, 1);
-                        $items[$i][$key] = $property;
-                        $values[$i][] = $key;
-                    }
-                    $i++;
-                }
-                if (RequestMethods::get("csv") == true) {
-                    $this->downloadCSV($items);
-                }
-                $view->set("items", $items);
-                $view->set("values", $values[0]);
-                $view->set("count", $count);
-                //echo '<pre>', print_r($values[0]), '</pre>';
-                $view->set("success", "Total Results : {$count}");
+
+            if ($count == 0) {
+                $view->set("success", "No results found");
             } else {
-                $view->set("success", "No Results Found");
+                $view->set("success", "Total Results : {$count}");
             }
+
+            $m = new $model();
+            $fields = $m->getColumns();
+
+            $view->set("results", $objects)
+                ->set("fields", $fields)
+                ->set("count", $count);
         }
     }
 
@@ -177,7 +168,7 @@ class Admin extends Auth {
         }
         if (RequestMethods::post("action") == "update") {
             foreach ($array as $field) {
-                $object->$field = RequestMethods::post($field, $vars[$field]);
+                $object->$field = RequestMethods::post($field, $object->$field);
             }
             $object->save();
             $view->set("success", true);

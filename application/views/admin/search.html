@@ -76,21 +76,28 @@
                     <table class="table table-striped text-center table-hover table-bordered">
                         <thead>
                             <tr>
-                                {foreach $value in $values}
-                                <th>{$value}</th>
+                                {foreach $f in $fields}
+                                <th>{$f['name']}</th>
                                 {/foreach}
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {foreach $item in $items}
+                            {foreach $object in $results}
                                 <tr>
-                                {foreach $value in $values}
-                                    <td>{echo $item[$value]}</td>
+                                {foreach $f in $fields}
+                                    {if $f["type"] == "date"}
+                                        {script $object->$f["name"] = date("Y-m-d", $object->$f["name"]->sec)}
+                                    {/if} {elseif $f["type"] == "datetime"}
+                                        {script $object->$f["name"] = date("Y-m-d H:i:s", $object->$f["name"]->sec)}
+                                    {/elseif} {else}
+                                        {script $object->$f["name"] = htmlentities($object->$f["name"])}
+                                    {/else}
+                                    <td>{echo $object->$f["name"]}</td>
                                 {/foreach}
                                 <td>
-                                    <a href="/admin/update/{$model}/{echo $item['id']}" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i> Edit</a>
-                                    <a href="/admin/delete/{$model}/{echo $item['id']}" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> Delete</a>
+                                    <a href="/admin/update/{$model}/{echo $object->_id}" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i> Edit</a>
+                                    <a href="/admin/delete/{$model}/{echo $object->_id}" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> Delete</a>
                                 </td>
                                 </tr>
                             {/foreach}

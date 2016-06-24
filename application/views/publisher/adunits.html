@@ -41,8 +41,7 @@
                                 <span class="label label-primary">View</span>
                             </td>
                             <td>
-                                {script $date = date('Y-m-d H:i:s', $a->created->sec)}
-                                <small>{echo Framework\StringMethods::only_date($date)}</small>
+                                <small>{echo Framework\StringMethods::only_date($a->created)}</small>
                             </td>
                             <td>
                                 <button class="btn btn-primary btn-xs code" data-auid="{$a->_id}"><i class="fa fa-code"></i> Code</button>

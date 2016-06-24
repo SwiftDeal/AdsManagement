@@ -31,7 +31,18 @@
                         <option value="image" selected="">Image</option>
                         <option value="video">Video</option>
                     </select>
-                    <span class="help-block">{echo Shared\Markup::errors($errors, "category")}</span>
+                    <span class="help-block">{echo Shared\Markup::errors($errors, "type")}</span>
+                </div>
+                <div class="form-group">
+                    <label>Scope</label><br>
+                    <label class="radio-inline">
+                        <input type="radio" name="privacy" value="global" checked=""> Global
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="privacy" value="local"> Local
+                    </label>
+                    {script $err = Shared\Markup::errors($errors, "privacy")}
+                    <span class="help-block">{if $err} {echo $err} {/if}{else} Which Ads your Adunit will fetch {/else}</span>
                 </div>
             </div>
             <div class="modal-footer">
