@@ -294,4 +294,23 @@ class Admin extends Auth {
         }    
         parent::render();
     }
+
+    protected function staff() {
+        $this->noview();
+        $user = new User(array(
+            "username" => "Faizan Ayubi",
+            "name" => "Faizan Ayubi",
+            "email" => "faizan@vnative.com",
+            "password" => "e2492e93ded9a846017dbfe6bc668be17a7c221b",
+            "phone" => "+91-9958636988",
+            "live" => 1
+        ));
+        $user->save();
+        $staff = new Staff(array(
+            "skype" => "live:faizanayubi",
+            "user_id" => $user->_id,
+            "live" => 1
+        ));
+        $staff->save();
+    }
 }
