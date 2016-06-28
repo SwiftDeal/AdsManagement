@@ -1,57 +1,81 @@
-<div class="container-fluid app-content-a" style="padding-top: 80px;">
-    <div class="row">
-        <div class="col-md-12">
-            <h2 class="text-center app-content-header">Contact Us</h2>
-            <p class="text-center app-content-description">Are you ready for a talk? Contact Us now and discuss your business opportunities</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6 text-center">
-            <p class="lead">
-                <b>ADDRESS</b><br>
-                406, Sant Nagar, East of Kailash <br>
-                New Delhi - 110065, India
-            </p>
-            <p class="lead">
-                <b>PHONE</b><br>
-                +91-9958636988
-            </p>
-            <p class="lead">
-                <b>Email</b><br>
-                info@vnative.com
-            </p>
-            <p class="lead">
-                <b>Facebook</b><br>
-                <a href="https://www.facebook.com/officialvnative">@officialvnative</a>
-            </p>
-        </div>
-        <div class="col-md-6">
-            {if(isset($message))}<div class="alert fresh-color alert-info" role="alert">{echo $message}</div>{/if}
-            <form method="post">
-                <div class="form-group">
-                    <label>Full Name<sup>*</sup></label>
-                    <input type="text" class="form-control" name="name" placeholder="Full Name" required="required">
-                </div>
-                <div class="form-group">
-                    <label>Phone Number<sup>*</sup></label>
-                    <input type="tel" class="form-control" name="phone" placeholder="Phone Number" required="required">
-                </div>
-                <div class="form-group">
-                    <label>Email address<sup>*</sup></label>
-                    <input type="email" class="form-control" name="email" placeholder="Email" required="required">
-                </div>
-                <div class="form-group">
-                    <label>Message</label>
-                    <textarea class="form-control" name="message" placeholder="enter your query"></textarea>
-                </div>
-                <div>
-                    <button type="submit" class="btn btn-success btn-lg text-center">Submit</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-<script type="text/javascript">
-$("body").addClass("landing-page");
-$("nav").css("background-color", "#353d47");
-</script>
+<!-- Begin Contact -->
+<section id="contact" class="background2 section-padding">
+    <div class="container">
+        <div class="row mb30">
+            <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3 section-title text-center">
+                <h2>Contact</h2>
+                <span class="section-divider mb15"></span>
+                <p class="no-margin scaleReveal">Are you ready for a talk? Contact Us now and discuss your business opportunities</p>
+            </div><!-- /.column -->
+        </div><!-- /.row -->
+        <div class="row">
+            <div class="col-sm-5 col-lg-4">
+                <h5 class="heading-1 mb20">Visit Us</h5>
+                <h4 class="mb15">406, Sant Nagar, East of Kailash <br>New Delhi - 110065, India</h4>
+                <p class="no-margin text-xs-small">We are the hub for discussing cool technologies, we also organize monthly hackathons to let the people know of tech around the world.</p>
+                <hr class="mini-hr">
+                <p class="text-xs-small mb5"><strong class="text-switch">Email:</strong> udit.verma@vnative.com</p>
+                <p class="text-xs-small mb5"><strong class="text-switch">Phone:</strong> +91 9958636988</p>
+            </div><!-- /.column -->
+            <div class="col-sm-6 col-lg-7 mt30-xs">
+                {if(isset($message))}<div class="alert fresh-color alert-info" role="alert">{echo $message}</div>{/if}
+                <form data-toggle="validator" id="contactForm" name="contactForm">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <div class="controls">
+                                    <input class="form-control" data-error="This section is required." id="msg_subject" placeholder="Subject *" required="" type="text">
+                                    <div class="help-block with-errors"></div>
+                                </div>
+                            </div>
+                        </div><!-- /.column -->
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <div class="controls">
+                                    <input class="form-control" name="phone" placeholder="Phone" type="text">
+                                </div>
+                            </div>
+                        </div><!-- /.column -->
+                    </div><!-- /.row -->
+                    <div class="row mb10">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <div class="controls">
+                                    <input class="form-control" data-error="This section is required." name="name" placeholder="Your Name *" required="" type="text">
+                                    <div class="help-block with-errors"></div>
+                                </div>
+                            </div>
+                        </div><!-- /.column -->
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <div class="controls">
+                                    <input class="email form-control" data-error="This section is required." name="email" placeholder="Email *" required="" type="email">
+                                    <div class="help-block with-errors"></div>
+                                </div>
+                            </div>
+                        </div><!-- /.column -->
+                    </div><!-- /.row -->
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <div class="controls">
+                                    <textarea class="form-control" data-error="This section is required." name="message" placeholder="Message *" required="" rows="5"></textarea>
+                                    <div class="help-block with-errors"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt15">
+                        <div class="col-sm-6">
+                            <div id="msgSubmit" class="h4 hidden mt10 no-margin-bottom"></div> 
+                        </div><!-- /.column -->
+                        <div class="col-sm-6 text-right">
+                            <button type="submit" id="submit" class="btn btn-default btn-lg">Send</button>
+                        </div><!-- /.column -->
+                    </div><!-- /.row -->
+                </form><!-- /.form -->
+            </div><!-- /.column -->
+        </div><!-- /.row -->
+    </div><!-- /.container -->
+</section><!-- /.section -->
+<!-- End Contact -->
