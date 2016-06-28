@@ -1,75 +1,63 @@
-<div class="jumbotron app-header">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4"></div>
-            <div class="col-md-4">
+<!-- Begin Jumbotron -->
+<div id="home" class="jumbotron jumbotron-register">
+    <div id="particles-js"></div><!-- /.particles div -->
+    <div class="container center-vertically-holder">
+        <div class="center-vertically">
+            <div class="col-sm-7 col-lg-6 mt40-xs">
+                <h1 class="mb30 no-margin-top scaleReveal">
+                    A <strong>one of a kind</strong> information book.
+                </h1>
+                <p class="bottomReveal">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras est urna, imperdiet eget sem at, pellentesque cursusiz elit. Etiam id ante et elit interdum sollicitudin.</p>
+                <p class="mb30 bottomReveal">Lorem ipsum dolor sit amet, consectet adipiscing elit. Cras est urna, imperd eget sem atez.</p>
+                <a href="https://www.youtube.com/watch?v=ARHl2apZ3q0" class="text-small popup-youtube mt20">
+                    <span class="pe-7s-play"></span> Video
+                </a>
+            </div>
+
+            <div class="col-sm-5 col-lg-5 col-lg-offset-1 mt40-xs">
                 {if(isset($message))}<div class="alert fresh-color alert-info" role="alert">{echo $message}</div>{/if}
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title text-center">
-                            <div class="title">Register</div>
+                <form role="form" method="post" class="register-form mb40-xs">
+                    <h3 class="no-margin-top mb20">Get our free product</h3>
+                    <div class="form-group">
+                        <input type="text" name="name" class="form-control" placeholder="Full Name" required="">
+                        <span class="help-block">{echo Shared\Markup::errors($errors, "name")}</span>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" name="email" class="form-control" placeholder="Primary Email" required="">
+                        <span class="help-block">{echo Shared\Markup::errors($errors, "email")}</span>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" name="phone" class="form-control" placeholder="Phone Number" required="">
+                        <span class="help-block">{echo Shared\Markup::errors($errors, "phone")}</span>
+                    </div>
+                    <div class="form-group">
+                        <select name="type" class="form-control">
+                            <option>I want to...</option>
+                            <option value="advertise">Advertise my content</option>
+                            <option value="monetize">Monetize my platform</option>
+                            <option value="all">Advertise and monetize</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="url" name="url" class="form-control" placeholder="Facebook Page URL or Website or App" required="">
+                        <span class="help-block">{echo Shared\Markup::errors($errors, "url")}</span>
+                    </div>
+                    <div class="form-group">
+                        <div class="text-center">
+                            <div class="checkbox3 checkbox-round checkbox-check checkbox-light">
+                                <input type="checkbox" checked=""> I agree to vNative <a href="/termsofservice.html" target="_blank">Terms and Conditions</a>
+                            </div>
                         </div>
                     </div>
-                    <form class="card-body form-horizontal" method="post" action="">
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Name</label>
-                            <div class="col-sm-10">
-                                <input type="text" name="name" class="form-control" placeholder="Full Name" required="">
-                                <span class="help-block">{echo Shared\Markup::errors($errors, "name")}</span>
-                            </div>
+                    <div class="form-group no-margin-bottom mt20">
+                        <div class="text-center">
+                            <input type="hidden" name="action" value="register">
+                            <button type="submit" class="btn btn-primary">Register</button>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Email</label>
-                            <div class="col-sm-10">
-                                <input type="email" name="email" class="form-control" placeholder="Primary Email" required="">
-                                <span class="help-block">{echo Shared\Markup::errors($errors, "email")}</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Phone</label>
-                            <div class="col-sm-10">
-                                <input type="tel" name="phone" class="form-control" placeholder="Phone Number" required="">
-                                <span class="help-block">{echo Shared\Markup::errors($errors, "phone")}</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Type</label>
-                            <div class="col-sm-10">
-                                <select name="type" class="form-control">
-                                    <option>I want to...</option>
-                                    <option value="advertise">Advertise my content</option>
-                                    <option value="monetize">Monetize my platform</option>
-                                    <option value="all">Advertise and monetize</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Platform</label>
-                            <div class="col-sm-10">
-                                <input type="url" name="url" class="form-control" placeholder="Facebook Page URL or Website or App" required="">
-                                <span class="help-block">{echo Shared\Markup::errors($errors, "url")}</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="text-center">
-                                <div class="checkbox3 checkbox-round checkbox-check checkbox-light">
-                                    <input type="checkbox" checked=""> I agree to vNative <a href="/termsofservice.html" target="_blank">Terms and Conditions</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="text-center">
-                                <input type="hidden" name="action" value="register">
-                                <button type="submit" class="btn btn-primary">Register</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="col-md-4"></div>
-        </div>
-    </div>
+                    </div>
+                </form>
+            </div><!-- /.column -->
+        </div><!-- /.vertical center -->
+    </div><!-- /.container -->
 </div>
-<script type="text/javascript">
-$("body").addClass("landing-page");
-</script>
+<!-- End Jumbotron -->
