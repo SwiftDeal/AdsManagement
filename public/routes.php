@@ -64,6 +64,16 @@ $routes = array(
         "action" => "faqs"
     ),
     array(
+        "pattern" => "timeline",
+        "controller" => "home",
+        "action" => "timeline"
+    ),
+    array(
+        "pattern" => "team",
+        "controller" => "home",
+        "action" => "team"
+    ),
+    array(
         "pattern" => "request-demo",
         "controller" => "home",
         "action" => "requestdemo"

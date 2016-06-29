@@ -20,6 +20,14 @@ class Home extends Auth {
         $this->seo(array("title" => "Terms of Use", "view" => $this->getLayoutView()));
     }
 
+    public function timeline() {
+        $this->seo(array("title" => "Timeline of awesomeness", "view" => $this->getLayoutView()));
+    }
+
+    public function team() {
+        $this->seo(array("title" => "Team behind vNative", "view" => $this->getLayoutView()));
+    }
+
     public function pricing() {
         $this->seo(array("title" => "vNative pricing", "view" => $this->getLayoutView()));
     }
