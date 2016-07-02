@@ -168,7 +168,16 @@ class Admin extends Auth {
         }
         if (RequestMethods::post("action") == "update") {
             foreach ($array as $field) {
-                $object->$field = RequestMethods::post($field, $object->$field);
+                $v = RequestMethods::post($field, $object->$field);
+                switch ($columns[$field]["type"]) {
+                    case 'array':
+                        $v = json_decode($v);
+                        break;
+                    
+                    default:
+                        break;
+                }
+                $object->$field = $v;
             }
             $object->save();
             $view->set("success", true);

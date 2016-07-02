@@ -90,6 +90,8 @@
                                         {script $object->$f["name"] = date("Y-m-d", $object->$f["name"]->sec)}
                                     {/if} {elseif $f["type"] == "datetime"}
                                         {script $object->$f["name"] = date("Y-m-d H:i:s", $object->$f["name"]->sec)}
+                                    {/elseif} {elseif $f["type"] == "array"}
+                                        {script $object->$f["name"] = implode(",", $object->$f["name"])}
                                     {/elseif} {else}
                                         {script $object->$f["name"] = htmlentities($object->$f["name"])}
                                     {/else}

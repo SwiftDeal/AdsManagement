@@ -17,10 +17,13 @@
                                 {script $object->$var = date("Y-m-d", $object->$var->sec)}
                             {/if} {elseif $columns[$var]["type"] == "datetime"}
                                 {script $object->$var = date("Y-m-d H:i:s", $object->$var->sec)}
+                            {/elseif} {elseif $columns[$var]["type"] == "array"}
+                                {script $object->$var = json_encode($object->$var)}
                             {/elseif} {else}
                                 {script $object->$var = htmlentities($object->$var)}
                             {/else}
-                            <input type="text" name="{echo $var}" class="form-control" value="{echo $object->$var}" {if($var=="_id" )}disabled{/if}>
+
+                            <input type="text" name="{echo $var}" class="form-control" value='{echo $object->$var}' {if($var=="_id" )}disabled{/if}>
                         </div>
                     </div>
                     {/foreach}
