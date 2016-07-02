@@ -56,7 +56,9 @@ class Publisher extends Advertiser {
                 "user_id" => $this->user->_id,
                 "name" => RequestMethods::post("name"),
                 "category" => RequestMethods::post("category"),
-                "type" => (RequestMethods::post("type"))
+                "type" => (RequestMethods::post("type")),
+                "privacy" => (RequestMethods::post("privacy")),
+                "live" => 1
             ));
             $adunit->save();
 

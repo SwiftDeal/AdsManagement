@@ -159,7 +159,7 @@ class Auth extends Controller {
             "password" => sha1($pass),
             "phone" => RequestMethods::post("phone"),
             "currency" => "INR",
-            "live" => 0
+            "live" => 1
         ));
         if ($user->validate()) {
             $user->save();
@@ -172,7 +172,7 @@ class Auth extends Controller {
             "country" => $this->country(),
             "balance" => 0,
             "type" => RequestMethods::post("type"),
-            "live" => 0
+            "live" => 1
         ));
         if ($customer->validate()) {
             $customer->save();
@@ -185,6 +185,15 @@ class Auth extends Controller {
                 "live" => 0
             ));
             $platform->save();
+
+            $subscription = new Subscription(array(
+                "user_id" => $user->_id,
+                "start" => strftime("%Y-%m-%d", strtotime('now')),
+                "end" => strftime("%Y-%m-%d", strtotime('+30 day')),
+                "period" => 30,
+                "live" => 0
+            ));
+            $subscription->save();            
 
             $this->notify(array(
                 "template" => "register",

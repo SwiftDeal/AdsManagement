@@ -6,14 +6,14 @@
             <div class="input-group">
                 <label class="sr-only">From</label>
                 <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> From</span>
-                <input type="date" style="width: 180px" name="start" class="form-control" value="{$now}" />
+                <input type="date" style="width: 180px" name="start" class="form-control" value="{$start}" />
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
                 <label class="sr-only">To</label>
                 <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> To</span>
-                <input type="date" style="width: 180px" name="end" class="form-control" value="{$now}" />
+                <input type="date" style="width: 180px" name="end" class="form-control" value="{$end}" />
             </div>
         </div>
         <input type="hidden" name="user_id" value="{echo $user->_id}">

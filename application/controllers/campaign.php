@@ -61,7 +61,7 @@ class Campaign extends Publisher {
                 "end" => RequestMethods::post("end"),
                 "cpc" => RequestMethods::post("cpc", 0.15),
                 "visibility" => 1,
-                "live" => 0
+                "live" => 1
             ));
 
             if ($video) {
@@ -80,7 +80,7 @@ class Campaign extends Publisher {
                     ]);
                     $cat->save();
                 }
-                $view->set("message", "Campaign Created Successfully, will be approved within 24 hours.<a href='/campaign/manage.html'>Manage Campaigns</a>");
+                $this->redirect('/campaign/manage.html');
             }  else {
                 $view->set("errors", $ad->getErrors());
             }
