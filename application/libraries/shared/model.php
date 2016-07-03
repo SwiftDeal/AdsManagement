@@ -301,9 +301,6 @@ namespace Shared {
 
             $query = $this->_updateQuery(['_id' => $this->__id]);
             $return = $collection->remove($query, ['justOne' => true]);
-            if ($return !== true) {
-                throw new \Exception("Error Deleting the record");
-            }
         }
 
         public static function deleteAll($query = []) {
@@ -312,9 +309,6 @@ namespace Shared {
             $collection = $instance->getTable();
 
             $return = $collection->remove($query);
-            if ($return !== true) {
-                throw new \Exception("Error in deleteAll");
-            }
         }
 
         public static function count($query = []) {

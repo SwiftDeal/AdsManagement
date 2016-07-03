@@ -11,8 +11,8 @@
                                 <i class="fa fa-line-chart"></i> Data
                             </a>
                             <a href="/manage/customers.html" class="list-group-item"><i class="fa fa-bullhorn fa-2x"></i>  Customers <span class="badge">{echo Customer::count()}</span></a>
-                            <a href="/campaign/all.html" class="list-group-item"><i class="fa fa-file fa-2x"></i> Campaigns <span class="badge">{echo Shared\Markup::nice_number(\Models\Mongo\Ad::count())}</span></a>
-                            <a href="/admin/search.html?model=link&amp;key=live&amp;sign=equal&amp;value=1" class="list-group-item"><i class="fa fa-link fa-2x"></i>  AdUnits <span class="badge">{echo Shared\Markup::nice_number(\Models\Mongo\AdUnit::count())}</span></a>
+                            <a href="/campaign/all.html" class="list-group-item"><i class="fa fa-file fa-2x"></i> Campaigns <span class="badge">{echo Shared\Markup::nice_number(\Ad::count())}</span></a>
+                            <a href="/admin/search.html?model=link&amp;key=live&amp;sign=equal&amp;value=1" class="list-group-item"><i class="fa fa-link fa-2x"></i>  AdUnits <span class="badge">{echo Shared\Markup::nice_number(\AdUnit::count())}</span></a>
                         </div>
                     </div>
 
