@@ -3,7 +3,7 @@
 /**
  * @author Faizan Ayubi
  */
-class Ticket extends \Shared\MongoModel {
+class Ticket extends \Shared\Model {
     
     /**
      * @column

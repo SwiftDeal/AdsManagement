@@ -5,7 +5,7 @@
  *
  * @author Faizan Ayubi
  */
-class Meta extends \Shared\MongoModel {
+class Meta extends \Shared\Model {
     
     /**
      * @column

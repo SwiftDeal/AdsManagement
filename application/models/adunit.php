@@ -4,7 +4,7 @@
  * AdUnit Mongo Model
  * @author Faizan Ayubi, Hemant Mann
  */
-class AdUnit extends \Shared\MongoModel {
+class AdUnit extends \Shared\Model {
 
     /**
      * @column

@@ -4,7 +4,7 @@
  * Category Model
  * @author Hemant Mann
  */
-class Category extends \Shared\MongoModel {
+class Category extends \Shared\Model {
 
     /**
      * @column

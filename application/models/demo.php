@@ -4,7 +4,7 @@
  * Demo Model
  * @author Hemant Mann
  */
-class Demo extends \Shared\MongoModel {
+class Demo extends \Shared\Model {
 
     /**
      * @column

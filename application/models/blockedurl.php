@@ -3,7 +3,7 @@
 /**
  * @author Hemant Mann
  */
-class BlockedUrl extends \Shared\MongoModel {
+class BlockedUrl extends \Shared\Model {
 
     /**
      * @column

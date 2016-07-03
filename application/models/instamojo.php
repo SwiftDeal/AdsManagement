@@ -5,7 +5,7 @@
  *
  * @author Faizan Ayubi
  */
-class Instamojo extends \Shared\MongoModel {
+class Instamojo extends \Shared\Model {
     
     /**
      * @column

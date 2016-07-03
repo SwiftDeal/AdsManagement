@@ -5,7 +5,7 @@
  *
  * @author Faizan Ayubi
  */
-class Platform extends \Shared\MongoModel{
+class Platform extends \Shared\Model{
     
     /**
      * @column

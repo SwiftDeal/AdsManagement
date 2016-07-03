@@ -4,7 +4,7 @@
  * Ad Model
  * @author Hemant Mann
  */
-class Ad extends \Shared\MongoModel {
+class Ad extends \Shared\Model {
 
     /**
      * @column

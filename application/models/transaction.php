@@ -4,7 +4,7 @@
  * for live = 0 credit, live = 1 debit
  * @author Faizan Ayubi
  */
-class Transaction extends \Shared\MongoModel {
+class Transaction extends \Shared\Model {
 
     /**
      * @column

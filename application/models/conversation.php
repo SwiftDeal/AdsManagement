@@ -3,7 +3,7 @@
 /**
  * @author Faizan Ayubi
  */
-class Conversation extends \Shared\MongoModel {
+class Conversation extends \Shared\Model {
     
     /**
      * @column

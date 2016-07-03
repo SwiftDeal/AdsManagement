@@ -5,7 +5,7 @@
  *
  * @author Faizan Ayubi
  */
-class Payout extends \Shared\MongoModel {
+class Payout extends \Shared\Model {
     
     /**
      * @column

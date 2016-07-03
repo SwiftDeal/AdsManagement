@@ -4,7 +4,7 @@
  * Impression Model
  * @author Hemant Mann
  */
-class Impression extends \Shared\MongoModel {
+class Impression extends \Shared\Model {
 
     /**
      * @column

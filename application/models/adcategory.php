@@ -4,7 +4,7 @@
  * AdCategory Model
  * @author Hemant Mann
  */
-class AdCategory extends \Shared\MongoModel {
+class AdCategory extends \Shared\Model {
 
     /**
      * @column

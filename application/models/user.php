@@ -3,7 +3,7 @@
 /**
  * @author Faizan Ayubi
  */
-class User extends \Shared\MongoModel {
+class User extends \Shared\Model {
 
     /**
      * @column
