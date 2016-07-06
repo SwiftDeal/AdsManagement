@@ -60,6 +60,8 @@ class Campaign extends Publisher {
                 "start" => RequestMethods::post("start"),
                 "end" => RequestMethods::post("end"),
                 "cpc" => RequestMethods::post("cpc", 0.15),
+                "privacy" => RequestMethods::post("privacy"),
+                //"device" => RequestMethods::post("device"),
                 "visibility" => 1,
                 "live" => 1
             ));
