@@ -161,4 +161,34 @@ class Support extends Publisher {
         $ticket->live = $live;
         $ticket->save();
     }
+
+    /**
+     * @before _secure, changeLayout, _admin
+     */
+    public function enquiries() {
+        $this->seo(array("title" => "Enquiries","view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+        $page = RequestMethods::get("page", 1);
+        $limit = RequestMethods::get("limit", 10);
+
+        $enquiries = Enquiry::all(array(), array("*"), "created", "desc", $limit, $page);
+        $count = Enquiry::count(array());
+
+        $view->set("enquiries", $enquiries);
+        $view->set("page", $page);
+        $view->set("count", $count);
+        $view->set("limit", $limit);
+    }
+
+    /**
+     * @before _secure, changeLayout, _admin
+     */
+    public function enquiry($id) {
+        $this->seo(array("title" => "Enquiry","view" => $this->getLayoutView()));
+        $view = $this->getActionView();
+        
+        $enquiry = Enquiry::first(array("_id = ?" => $id), array("*"));
+
+        $view->set("enquiry", $enquiry);
+    }
 }

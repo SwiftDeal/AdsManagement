@@ -1,0 +1,71 @@
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h3 class="page-header text-center">Enquiry</h3>
+            <span class="pull-right">Total: {$count}</span>
+            <form class="form-inline text-center" role="form" method="get" action="">
+                <div class="form-group">
+                    <div class="input-group">
+                        <select name="property" class="form-control" value="{$property}">
+                            <option value="live">Live</option>
+                            <option value="user_id">UserId</option>
+                            <option value="subject">Subject</option>
+                            <option value="type">Type</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" name="value" class="form-control" placeholder="Enter value" value="{$value}" />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form><hr>
+            <div class="panel panel-default">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Website</th>
+                            <th>Type</th>
+                            <th>Created</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $e in $enquiries}
+                        <tr>
+                            <td>{echo $e->name}</td>
+                            <td>{echo $e->website}</td>
+                            <td>
+                                {if($e->type)}
+                                <span class="label label-warning">Contact</span> {/if} {else}
+                                <span class="label label-success">Demo</span> {/else}
+                            </td>
+                            <td><small>{echo Framework\StringMethods::datetime_to_text($e->modified)}</small></td>
+                            <td>
+                                {if($e->live)}
+                                    <a href="/admin/edit/enquiry/{$e->_id}/live/0" class="btn btn-primary btn-xs"><i class="fa fa-check"></i> Close</a>
+                                {/if} {else}
+                                    <a href="/admin/edit/enquiry/{$e->_id}/live/1" class="btn btn-warning btn-xs"><i class="fa fa-ban"></i> Open</a>
+                                {/else}
+                                <a href="/support/enquiry/{$e->_id}" class="btn btn-info btn-xs" target="_blank"><i class="fa fa-list"></i>Details</a>
+                            </td>
+                        </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center">
+                <ul class="pager">
+                    {if($page != 1)}
+                    <li><a href="{echo Shared\Markup::pagination($page - 1)}">Previous</a></li>
+                    {/if} 
+                    {if($page < $count/$limit)}
+                    <li><a href="{echo Shared\Markup::pagination($page + 1)}">Next</a></li>
+                    {/if}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
