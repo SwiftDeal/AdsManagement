@@ -46,30 +46,9 @@ class Organization extends \Shared\Model {
      * @length 255
      * 
      * @validate required, min(3), max(255)
-     * @label logo url
-     */
-    protected $_logo;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * @length 255
-     * 
-     * @validate required, min(3), max(255)
      * @label default url
      */
     protected $_url = null;
-
-    /**
-     * @column
-     * @readwrite
-     * @type array
-     * 
-     * @validate required
-     * @label registeration form field
-     */
-    protected $_regform = [];
 
     /**
      * @column

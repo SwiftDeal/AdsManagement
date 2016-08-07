@@ -30,16 +30,6 @@ class Link extends Shared\Model {
      */
     protected $_domain;
 
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * @length 255
-     * @index
-     * @value Subdomain of the APP
-     */
-    protected $_app = '';
-
     public function getUrl() {
         return 'http://' . $this->domain . '/'. $this->getMongoID();
     }

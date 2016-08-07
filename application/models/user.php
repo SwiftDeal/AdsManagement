@@ -12,7 +12,7 @@ class User extends Shared\Model {
      * @type mongoid
      * @index
      */
-    protected $_organization_id;
+    protected $_org_id;
     
     /**
      * @column
