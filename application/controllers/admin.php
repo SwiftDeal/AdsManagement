@@ -17,7 +17,7 @@ class Admin extends Auth {
         $this->seo(array("title" => "Dashboard"));
         $view = $this->getActionView();
 
-        $publishers = User::all(["organization_id = ?" => $this->org->_id, "type = ?" => "publisher"], ["_id"]);
+        $publishers = User::all(["org_id = ?" => $this->org->_id, "type = ?" => "publisher"], ["_id"]);
         $in = [];
         foreach ($publishers as $p) {
             $in[] = $p->_id;
@@ -129,7 +129,7 @@ class Admin extends Auth {
         $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
         
-        $find = Performance::overall($dateQuery, User::all(["organization_id = ?" => $this->org->id], ["_id"]));
+        $find = Performance::overall($dateQuery, User::all(["org_id = ?" => $this->org->id], ["_id"]));
         $view->set($find);
     }
 

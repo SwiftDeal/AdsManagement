@@ -39,7 +39,7 @@ class Campaign extends Admin {
     public function create() {
     	$this->seo(['title' => 'Campaign Create', 'description' => 'Create a new campaign']);
     	$view = $this->getActionView(); $session = Registry::get('session');
-        $advertisers = \User::all(["organization_id = ?" => $this->org->_id, 'type = ?' => 'advertiser'], ['_id', 'name']);
+        $advertisers = \User::all(["org_id = ?" => $this->org->_id, 'type = ?' => 'advertiser'], ['_id', 'name']);
         if (count($advertisers) === 0) {
             $session->set('$flashMessage', 'Please Add an Advertiser!!');
             $this->redirect('/advertiser/add.html');
@@ -248,7 +248,7 @@ class Campaign extends Admin {
         $this->seo(['title' => 'Campaign Import', 'description' => 'Create a new campaign']);
         $view = $this->getActionView(); $org = $this->org;
 
-        $advertisers = \User::all(["organization_id = ?" => $this->org->_id, 'type = ?' => 'advertiser'], ['_id', 'name']);
+        $advertisers = \User::all(["org_id = ?" => $this->org->_id, 'type = ?' => 'advertiser'], ['_id', 'name']);
         if (count($advertisers) < 1) {
             $this->redirect('/advertiser/add.html');
         }

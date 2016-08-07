@@ -87,7 +87,7 @@ class Advertiser extends Auth {
         $end = RequestMethods::get('end', $end);
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
 
-        $users = \User::all(['type' => 'advertiser', 'organization_id' => $this->org->_id]);
+        $users = \User::all(['type' => 'advertiser', 'org_id' => $this->org->_id]);
         $advertisers = [];
         foreach ($users as $u) {
             $perf = \Performance::calculate($u, $dateQuery);
@@ -191,7 +191,7 @@ class Advertiser extends Auth {
      */
     public function manage() {
         $this->seo(array("title" => "Manage")); $view = $this->getActionView();
-        $advertisers = \User::all(["type = ?" => "advertiser", "organization_id = ?" => $this->org->_id], [], 'created', 'desc');
+        $advertisers = \User::all(["type = ?" => "advertiser", "org_id = ?" => $this->org->_id], [], 'created', 'desc');
 
         $view->set("advertisers", $advertisers);
     }
@@ -201,7 +201,7 @@ class Advertiser extends Auth {
      */
     public function update($id) {
         $this->JSONView(); $view = $this->getActionView();
-        $a = \User::first(["_id = ?" => $id, "organization_id = ?" => $this->org->_id]);
+        $a = \User::first(["_id = ?" => $id, "org_id = ?" => $this->org->_id]);
         if (!$a || RequestMethods::type() !== 'POST') {
             return $view->set('message', 'Invalid Request!!');
         }
@@ -259,7 +259,7 @@ class Advertiser extends Auth {
             $this->redirect("/404");
         }
 
-        $user = \User::first(["_id" => $pid, 'type' => 'advertiser', 'organization_id' => $this->org->_id]);
+        $user = \User::first(["_id" => $pid, 'type' => 'advertiser', 'org_id' => $this->org->_id]);
         if (!$user) $this->redirect("/404");
 
         $ads = \Ad::all(['advert_id = ?' => $user->_id], ['_id']);

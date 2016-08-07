@@ -271,16 +271,16 @@ class Cron extends Shared\Controller {
             $uid = $m->getMongoID($m->propid);
             // find user info
             if (!array_key_exists($uid, $users)) {
-                $user = \User::first(['_id = ?' => $m->propid], ['_id', 'organization_id', 'email', 'meta']);
+                $user = \User::first(['_id = ?' => $m->propid], ['_id', 'org_id', 'email', 'meta']);
                 $users[$uid] = $user;
             } else {
                 $user = $users[$uid];
             }
 
             // find organization
-            $orgid = $user->getMongoID($user->organization_id);
+            $orgid = $user->getMongoID($user->org_id);
             if (!array_key_exists($orgid, $orgs)) {
-                $org = \Organization::first(['_id = ?' => $user->organization_id], ['meta', 'domain', '_id']);
+                $org = \Organization::first(['_id = ?' => $user->org_id], ['meta', 'domain', '_id']);
                 $orgs[$orgid] = $org;
             } else {
                 $org = $orgs[$orgid];

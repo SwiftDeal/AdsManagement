@@ -225,7 +225,7 @@ class Publisher extends Auth {
         $this->seo(array("title" => "Payments"));
         $view = $this->getActionView();
 
-        $users = \User::all(['type = ?' => 'publisher', 'organization_id' => $this->org->_id]);
+        $users = \User::all(['type = ?' => 'publisher', 'org_id' => $this->org->_id]);
         $payments = [];
         foreach ($users as $u) {
             $lastTransaction = \Transaction::first(['user_id = ?' => $u->_id], [], 'created', 'desc');
@@ -293,7 +293,7 @@ class Publisher extends Auth {
     public function manage() {
         $this->seo(array("title" => "List Publisher"));$view = $this->getActionView();
 
-        $publishers = \User::all(["type = ?" => "publisher", "organization_id = ?" => $this->org->_id], [], 'created', 'desc');
+        $publishers = \User::all(["type = ?" => "publisher", "org_id = ?" => $this->org->_id], [], 'created', 'desc');
 
         $view->set("publishers", $publishers);
     }
@@ -303,7 +303,7 @@ class Publisher extends Auth {
      */
     public function update($id) {
         $this->JSONView(); $view = $this->getActionView();
-        $p = \User::first(["_id = ?" => $id, "organization_id = ?" => $this->org->_id]);
+        $p = \User::first(["_id = ?" => $id, "org_id = ?" => $this->org->_id]);
         if (!$p || RequestMethods::type() !== 'POST') {
             return $view->set('message', 'Invalid Request!!');
         }
@@ -384,7 +384,7 @@ class Publisher extends Auth {
         $this->seo(array("title" => "Publisher Edit"));
         $view = $this->getActionView();
 
-        $publisher = User::first(["_id = ?" => $id, "organization_id = ?" => $this->org->id]);
+        $publisher = User::first(["_id = ?" => $id, "org_id = ?" => $this->org->id]);
         $lastTransaction = \Transaction::first(['user_id = ?' => $publisher->_id], [], 'created', 'desc');
         $performances = \Performance::all(['user_id = ?' => $publisher->_id, 'created' => ['$gt' => $lastTransaction->created]]);
         $payment = 0.00;
@@ -451,7 +451,7 @@ class Publisher extends Auth {
             $this->redirect("/404");
         }
 
-        $user = \User::first(["_id" => $pid, 'type' => 'publisher', 'organization_id' => $this->org->_id]);
+        $user = \User::first(["_id" => $pid, 'type' => 'publisher', 'org_id' => $this->org->_id]);
         if (!$user) {
             $this->redirect("/404");
         }

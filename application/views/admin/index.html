@@ -34,7 +34,7 @@
                             <i class="fa fa-users text-muted"></i>
                             <div class="wid-icon-info">
                                 <p class="text-muted m-b-5 font-13 text-uppercase">Publishers</p>
-                                <h4 class="m-t-0 m-b-5 counter">{echo User::count(["organization_id = ?" => $org->id, "type = ?" => "publisher"])}</h4>
+                                <h4 class="m-t-0 m-b-5 counter">{echo User::count(["org_id = ?" => $org->id, "type = ?" => "publisher"])}</h4>
                             </div>
                         </div>
                     </div>
@@ -91,7 +91,7 @@
                             <i class="fa fa-suitcase text-muted"></i>
                             <div class="wid-icon-info">
                                 <p class="text-muted m-b-5 font-13 text-uppercase">Advertisers</p>
-                                <h4 class="m-t-0 m-b-5 counter">{echo User::count(["organization_id = ?" => $org->id, "type = ?" => "advertiser"])}</h4>
+                                <h4 class="m-t-0 m-b-5 counter">{echo User::count(["org_id = ?" => $org->id, "type = ?" => "advertiser"])}</h4>
                             </div>
                         </div>
                     </div>

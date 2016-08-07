@@ -105,7 +105,7 @@ class Report extends Admin {
         $start = $dateQuery['start']; $end = $dateQuery['end'];
 
         // find all the publishers for this organization
-        $users = \User::all(['type' => 'publisher', 'organization_id' => $this->org->_id], ['_id']);
+        $users = \User::all(['type' => 'publisher', 'org_id' => $this->org->_id], ['_id']);
         $in = [];
         foreach ($users as $u) {
             $in[] = $u->_id;
@@ -131,7 +131,7 @@ class Report extends Admin {
         arsort($stats, SORT_NUMERIC);
         $result = [];
         foreach ($stats as $key => $value) {
-        	$u = \User::first(['_id' => $key, 'organization_id' => $this->org->_id], ['name']);
+        	$u = \User::first(['_id' => $key, 'org_id' => $this->org->_id], ['name']);
 
         	if (!$u) continue;
         	$result[] = ArrayMethods::toObject([
@@ -206,8 +206,8 @@ class Report extends Admin {
         $end = RM::get("end", date('Y-m-d', strtotime('-1 day')));
 
         // find all the users
-        $users = \User::all(['organization_id' => $this->org->_id, 'type' => 'publisher'], ['_id', 'name']);
-        $advertisers = \User::all(['organization_id' => $this->org->_id, 'type' => 'advertiser'], ['_id', 'email']);
+        $users = \User::all(['org_id' => $this->org->_id, 'type' => 'publisher'], ['_id', 'name']);
+        $advertisers = \User::all(['org_id' => $this->org->_id, 'type' => 'advertiser'], ['_id', 'email']);
         $in = []; $url = null;
         foreach ($advertisers as $a) {
             $in[] = $a->_id;

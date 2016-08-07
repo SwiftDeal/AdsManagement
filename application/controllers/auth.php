@@ -54,7 +54,7 @@ class Auth extends Controller {
     protected function _login($org, $view) {
         $session = Registry::get("session");
         $email = RequestMethods::post("email"); $pass = RequestMethods::post("password");
-        $user = \User::first(["organization_id = ?" => $org->_id, "email = ?" => $email]);
+        $user = \User::first(["org_id = ?" => $org->_id, "email = ?" => $email]);
 
         if (!$user) {
             return $view->set('message', 'Invalid credentials');
@@ -159,7 +159,7 @@ class Auth extends Controller {
     protected function _publisherRegister($org, $view) {
         $email = RequestMethods::post("email");
         $platformUrl = RequestMethods::post("platform", '');
-        $exist = \User::first(['email = ?' => $email, 'organization_id = ?' => $org->_id]);
+        $exist = \User::first(['email = ?' => $email, 'org_id = ?' => $org->_id]);
         if ($exist) {
             return $view->set('message', 'Email already exists!!');
         }
@@ -172,7 +172,7 @@ class Auth extends Controller {
             return $view->set('message', $e->getMessage());
         }
         $user = new User(array(
-            "organization_id" => $org->id,
+            "org_id" => $org->id,
             "name" => RequestMethods::post("name"),
             "email" => $email,
             "password" => sha1(RequestMethods::post("password")),
@@ -198,7 +198,7 @@ class Auth extends Controller {
         $pass = Shared\Utils::randomPass();
         $email = RequestMethods::post("email");
         $platformUrl = RequestMethods::post("url", '');
-        $exist = \User::first(['email = ?' => $email, 'organization_id = ?' => $org->_id]);
+        $exist = \User::first(['email = ?' => $email, 'org_id = ?' => $org->_id]);
         if ($exist) {
             return $view->set('message', "Email already exists!!");
         }
@@ -212,7 +212,7 @@ class Auth extends Controller {
         }
 
         $user = new User(array(
-            "organization_id" => $org->id,
+            "org_id" => $org->id,
             "name" => RequestMethods::post("name"),
             "email" => $email,
             "password" => sha1(RequestMethods::post("password")),
@@ -243,7 +243,7 @@ class Auth extends Controller {
         $session->set("admin_user_id", $this->user->id);
         $this->setUser(false);
         $user = User::first(array("_id = ?" => $user_id));
-        $org = Organization::first(["_id = ?" => $user->organization_id]);
+        $org = Organization::first(["_id = ?" => $user->org_id]);
         $this->_loginRedirect($user, $org);
     }
 
@@ -257,7 +257,7 @@ class Auth extends Controller {
             $this->redirect("/");
         } else {
             $user = User::first(["id = ?" => $admin]);
-            $org = Organization::first(["_id = ?" => $user->organization_id]);
+            $org = Organization::first(["_id = ?" => $user->org_id]);
             $session->erase("admin_user_id");
             $this->_loginRedirect($user, $org);
         }
