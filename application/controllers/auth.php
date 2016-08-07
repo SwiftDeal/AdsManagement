@@ -12,7 +12,7 @@ class Auth extends Controller {
     public function __construct($options = []) {
         parent::__construct($options);
         $host = RequestMethods::server('SERVER_NAME');
-        if (strpos($host, "vmtraffic.com")) {
+        if (strpos($host, "vnative.com")) {
             $domain = explode(".", $host);
             $domain = array_shift($domain);
             $q = ["domain = ?" => $domain];

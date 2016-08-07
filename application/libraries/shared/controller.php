@@ -197,7 +197,7 @@ namespace Shared {
             if (!$mongoDB) {
                 $configuration = Registry::get("configuration");
                 $dbconf = $configuration->parse("configuration/database")->database->mongodb;
-                $mongo = new \MongoClient("mongodb://".$dbconf->dbuser.":".$dbconf->password. $dbconf->url.":25849/".$dbconf->dbname."?replicaSet=rs-ds025849");
+                $mongo = new \MongoClient("mongodb://".$dbconf->dbuser.":".$dbconf->password. $dbconf->url."/".$dbconf->dbname."?replicaSet=rs-ds025849");
                 $mongoDB = $mongo->selectDB($dbconf->dbname);
 
                 Registry::set("MongoDB", $mongoDB);
