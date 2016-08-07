@@ -1,0 +1,68 @@
+<div class="content-page">
+    <div class="content">
+        <div class="container">
+            <!-- Page-Title -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-title-box">
+                        <h4 class="page-title">Click Logs (Total - {echo $count})</h4>
+                    </div>
+                </div>
+                <form class="form-inline text-center" role="form" id="range">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <label class="sr-only">Platforms</label>
+                            <select name="link" class="form-control selectVal" data-value='{echo json_encode(["$link"])}' data-live-search="true">
+                                {foreach $p in $platforms}
+                                <option value="{echo $p->url}">{echo $p->url}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <label class="sr-only">From</label>
+                            <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> From</span>
+                            <input type="date" style="width: 180px" name="start" class="form-control" value="{$start}" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <label class="sr-only">To</label>
+                            <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> To</span>
+                            <input type="date" style="width: 180px" name="end" class="form-control" value="{$end}" />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Change</button>
+                </form>
+            </div>
+            <br><br>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card-box">
+                        <div class="table-responsive">
+                            <table class="table m-0">
+                                <thead>
+                                    <tr>
+                                        <th>Publisher</th>
+                                        <th>Name</th>
+                                        <th>Clicks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {foreach $p in $publishers}
+                                    <tr>
+                                        <td>{echo $p_i}</td>
+                                        <td>{echo $p->name}</td>
+                                        <td>{echo $p->clicks}</td>
+                                    </tr>
+                                    {/foreach}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

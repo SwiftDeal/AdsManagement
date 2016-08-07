@@ -1,0 +1,10 @@
+Hi {echo $user->name} <br>
+You have requested password change for {echo $app}
+
+<br>
+Go the below URL to change the password<br>
+<a href="http://{echo $subdomain}.{echo $domain}/auth/resetpassword/{echo $meta->value}.html">Login</a>
+
+<br>
+Thank You
+{echo $team} Team <br>

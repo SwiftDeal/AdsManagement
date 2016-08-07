@@ -1,0 +1,101 @@
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form-inline pull-right" role="form" id="range">
+            <div class="form-group">
+                <div class="input-group">
+                    <label class="sr-only">From</label>
+                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> From</span>
+                    <input type="date" style="width: 180px" name="start" class="form-control" value="{$start}" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <label class="sr-only">To</label>
+                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> To</span>
+                    <input type="date" style="width: 180px" name="end" class="form-control" value="{$end}" />
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Show</button>
+        </form>
+        <h4 class="page-title">Reports</h4>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <h4 class="m-t-0 header-title"><b>Revenue Table</b></h4>
+            <table class="tablesaw m-t-20 table m-b-0" data-tablesaw-mode="stack">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Clicks</th>
+                        <th>Earning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {script $total = 0.00} {foreach $p in $performances}
+                    <tr>
+                        <td>{echo Framework\StringMethods::only_date($p->created)}</td>
+                        <td>{echo $p->clicks}</td>
+                        <td><i class="fa fa-usd"> {echo $p->revenue}</i></td>
+                        {script $total += $p->revenue}
+                    </tr>
+                    {/foreach}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>Total: <i class="fa fa-usd"> {echo $total}</i></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <h4 class="m-t-0 header-title"><b>Tracking Links Summary</b></h4>
+            <table class="tablesaw m-t-20 table m-b-0" data-tablesaw-mode="stack">
+                <thead>
+                    <tr>
+                        <th>PREVIEW</th>
+                        <th>TITLE</th>
+                        <th>TYPE</th>
+                        <th>RATE</th>
+                        <th>CLICKS</th>
+                        <th>EARNINGS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {foreach $l in $links}
+                    {script $a = Ad::first(["_id = ?" => $l->ad_id], ['title', 'url', '_id', 'image']);}
+                    {script $c = Commission::first(["ad_id = ?" => $l->ad_id])}
+
+                    <!-- find ad clicks and filter -->
+                    {script $key = $a->getMongoID()}
+                    {if array_key_exists($key, $clicks)}
+                        {script $adClicks = $clicks[$key]}
+                        {script $uniqClicks = Click::checkFraud($adClicks)}
+                    {/if} {else}
+                        {script $uniqClicks = []}
+                    {/else}
+                    
+                    <tr>
+                        <td>
+                            <img src="{echo CDN}uploads/images/{echo $a->image}" alt="" class="img-responsive" width="70" height="70">
+                        </td>
+                        <td><a href="/campaign/info/{$a->id}.html">{echo $a->title}</a></td>
+                        <td>
+                            {echo strtoupper($c->model)} <br>
+                            <small>{echo $c->description}</small>
+                        </td>
+                        <td>{echo $user->convert($c->rate)}</td>
+                        <td>{echo count($uniqClicks)}</td>
+                        <td>{echo $user->convert($c->rate * count($uniqClicks))}</td>
+                    </tr>
+                    {/foreach}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

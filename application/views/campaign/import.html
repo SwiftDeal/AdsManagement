@@ -1,0 +1,48 @@
+{include campaign/modals/create.html}
+<div class="content-page">
+    <div class="content">
+        <div class="container">
+            <!-- Page-Title -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="page-title-box">
+                        <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#createCampaign"><i class="fa fa-plus"></i> New Campaign</button>
+                        <h4 class="page-title">Campaigns Import</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card-box">
+                        {if isset($message)}
+                        <div class="alert alert-info alert-dismissible fade in" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                            {echo $message}
+                        </div>
+                        {/if}
+                        <h4 class="m-t-0 header-title">CSV Upload</h4>
+                        <p class="text-muted m-b-30 font-13">Upload CSV with this format to import the campaigns.</p>
+                        <div class="p-20">
+                            <form action="" method="post" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <label for="Advertiser">Advertiser</label>
+                                    <select name="advert_id" required="" class="form-control">
+                                        {foreach $a in $advertiser}
+                                        <option value="{echo $a->_id}">{echo $a->name}</option>
+                                        {/foreach}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>CSV File</label>
+                                    <input type="file" required="" name="csv" class="form-control">
+                                    <span class="font-13 text-muted"></span>
+                                </div>
+                                <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

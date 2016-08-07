@@ -1,0 +1,128 @@
+<div class="row">
+    <div class="col-sm-12">
+        <h4 class="page-title">Account</h4>
+        {if isset($message)}
+        <div class="alert alert-info alert-dismissible fade in" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+            {echo $message}
+        </div>
+        {/if}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <h4 class="m-t-0 header-title"><b>Payouts</b></h4>
+            <table class="tablesaw m-t-20 table m-b-0" data-tablesaw-mode="stack">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {foreach $t in $transactions}
+                    <tr>
+                        <td>{echo Framework\StringMethods::only_date($t->created)}</td>
+                        <td>{echo $t->amount . " " . $t->currency}</td>
+                    </tr>
+                    {/foreach}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card-box">
+            <h4 class="m-t-0 header-title"><b>Basic data</b></h4>
+            <form role="form" method="post">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" name="name" value="{echo $user->name}" class="form-control" placeholder="Full Name">
+                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "name")}</span>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" name="phone" value="{echo $user->phone}" class="form-control" placeholder="Phone Number">
+                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "phone")}</span>
+                </div>
+                <div class="form-group">
+                    <label>Currency</label>
+                    <select name="currency" class="form-control" value="{echo $user->currency}">
+                        <option value="INR">INR</option>
+                        <option value="USD">USD</option>
+                    </select>
+                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "currency")}</span>
+                </div>
+                <input type="hidden" name="action" value="account">
+                <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
+            </form>
+        </div>
+
+        <div class="card-box">
+            <h4 class="m-t-0 header-title"><b>Payout</b></h4>
+            <form role="form" method="post">
+                {script $payout = isset($user->meta['payout']) ? $user->meta['payout'] : []}
+                <div class="form-group">
+                    <label>Paypal</label>
+                    <input type="email" class="form-control" value="{echo isset($payout['paypal']) ? $payout['paypal'] : null }" name="paypal" placeholder="Paypal email">
+                </div>
+                <div class="form-group">
+                    <label>Paytm</label>
+                    <input type="text" value="{echo isset($payout['paytm']) ? $payout['paytm'] : null }" class="form-control" name="paytm" placeholder="Paytm Number">
+                </div>
+                <div class="form-group">
+                    <label>Payoneer</label>
+                    <input type="text" value="{echo isset($payout['payoneer']) ? $payout['payoneer'] : null }" class="form-control" name="payoneer" placeholder="Payoneer account">
+                </div>
+                <input type="hidden" name="action" value="payout">
+                <button type="submit" class="btn btn-info waves-effect waves-light">Change</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card-box">
+            <h4 class="m-t-0 header-title"><b>Change Password</b></h4>
+            <form role="form" method="post">
+                <div class="form-group">
+                    <label>Old Password</label>
+                    <input type="password" class="form-control" name="password" placeholder="Old Password">
+                </div>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" class="form-control" name="npassword" placeholder="New Password">
+                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "password")}</span>
+                </div>
+                <input type="hidden" name="action" value="password">
+                <button type="submit" class="btn btn-info waves-effect waves-light">Change</button>
+            </form>
+        </div>
+
+        <div class="card-box">
+            <h4 class="m-t-0 header-title"><b>Finance Data</b></h4>
+            <form role="form" method="post">
+                {script $bank = isset($user->meta['bank']) ? $user->meta['bank'] : []}
+                <div class="form-group">
+                    <label>Bank Account Number</label>
+                    <input type="text" value="{echo isset($bank['account_no']) ? $bank['account_no'] : null }" class="form-control" name="account_number" placeholder="Bank Account Number">
+                </div>
+                <div class="form-group">
+                    <label>Account Owner Name</label>
+                    <input type="text" value="{echo isset($bank['account_owner']) ? $bank['account_owner'] : null }" class="form-control" name="account_owner" placeholder="Account Owner Name">
+                </div>
+                <div class="form-group">
+                    <label>Bank Name</label>
+                    <input type="text" value="{echo isset($bank['name']) ? $bank['name'] : null }" class="form-control" name="account_bank" placeholder="Bank Name">
+                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "password")}</span>
+                </div>
+                <div class="form-group">
+                    <label>IFSC/Swift Code</label>
+                    <input type="text" value="{echo isset($bank['ifsc']) ? $bank['ifsc'] : null }" class="form-control" name="account_code" placeholder="IFSC/Swift Code">
+                </div>
+                <input type="hidden" name="action" value="bank">
+                <button type="submit" class="btn btn-purple waves-effect waves-light">Save</button>
+            </form>
+        </div>
+    </div>
+</div>

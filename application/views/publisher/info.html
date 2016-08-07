@@ -1,0 +1,74 @@
+<div class="content-page">
+    <div class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="page-title-box">
+                        <ol class="breadcrumb pull-right">
+                            <li><a href="/admin.html">Dashboard</a></li>
+                            <li><a href="/publisher/manage.html">All Publishers</a></li>
+                            <li class="active">{echo $publisher->name}</li>
+                        </ol>
+                        <h4 class="page-title">{echo $publisher->name}'s account</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                {if isset($message)}
+                <div class="alert alert-info alert-dismissible fade in" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    {echo $message}
+                </div>
+                {/if}
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="m-t-0 header-title"><b>User data</b></h4>
+                        <form role="form" method="post">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" name="name" value="{echo $user->name}" class="form-control" placeholder="Full Name">
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "name")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Currency</label>
+                                <select name="currency" class="form-control" value="{echo $user->currency}">
+                                    <option value="INR">INR</option>
+                                    <option value="USD">USD</option>
+                                </select>
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "currency")}</span>
+                            </div>
+                            <input type="hidden" name="action" value="account">
+                            <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="m-t-0 header-title"><b>Change Password</b></h4>
+                        <form class="form-horizontal" role="form" method="post">
+                            <div class="form-group">
+                                <label for="inputPassword3" class="col-sm-3 control-label">Old Password</label>
+                                <div class="col-sm-9">
+                                    <input type="password" class="form-control" name="password" placeholder="Old Password">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPassword4" class="col-sm-3 control-label">New Password</label>
+                                <div class="col-sm-9">
+                                    <input type="password" class="form-control" name="npassword" placeholder="New Password">
+                                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "password")}</span>
+                                </div>
+                            </div>
+                            <div class="form-group m-b-0">
+                                <div class="col-sm-offset-3 col-sm-9">
+                                    <input type="hidden" name="action" value="password">
+                                    <button type="submit" class="btn btn-info waves-effect waves-light">Change</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

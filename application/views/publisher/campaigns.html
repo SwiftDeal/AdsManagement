@@ -1,0 +1,75 @@
+{include publisher/modals/link.html}
+<!-- Bootstrap Select -->
+<div class="row">
+    <div class="col-sm-12">
+        <h4 class="page-title">Campaigns List: Browse</h4>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card-box">
+            <form class="form-inline text-center" role="form" id="range">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="sr-only">Category</label>
+                        <span class="add-on input-group-addon"><i class="fa fa-tags fa-fw"></i> Category</span>
+                        <select class="form-control" name="coverage[]" multiple="" data-live-search=true title="Browse by Category" style="width: 180px">
+                        {foreach $cat in $categories}
+                        <option value="{echo $cat->_id}">{echo $cat->name}</option>
+                        {/foreach}
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+            <div class="table-responsive">
+                <table class="table m-0">
+                    <thead>
+                        <tr>
+                            <th>PREVIEW</th>
+                            <th>TITLE</th>
+                            <th>PAYOUT</th>
+                            <th>TYPE</th>
+                            <th>CLICKS</th>
+                            <th>CATEGORY</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tbody>
+                            {foreach $count in $clicks}
+                            {script $a = $ads[$count_i]}
+                            {script $c = Commission::first(["ad_id = ?" => $a->id])}
+                            <tr>
+                                <td>
+                                    <img src="{echo CDN}uploads/images/{echo $a->image}" alt="" class="img-responsive" width="70" height="70"> {script $id = $a->getMongoID()}
+                                    <button type="button" data-adid="{echo $a->_id}" class="createLink btn btn-purple btn-xs waves-effect waves-light">Tracking Link</button>
+                                </td>
+                                <td><a href="/campaign/info/{$a->_id}.html">{echo $a->title}</a></td>
+                                <td>USD {echo $c->rate}</td>
+                                <td>{echo strtoupper($c->model)}</td>
+                                {script $names = []}
+                                {foreach $cat in $a->category}
+                                    {script $key = Shared\Utils::getMongoID($cat)}
+                                    {if isset($categories[$key])} {script $names[] = $categories[$cat]->name} {/if}
+                                {/foreach}
+                                <td>{echo $count}</td>
+                                <td>{echo implode(", ", $names)}</td>
+                            </tr>
+                            {/foreach}
+                        </tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <ul class="pager">
+                {if ($page != 1)}
+                <li><a href="{echo Shared\Markup::pagination($page - 1)}">Previous</a></li>
+                {/if} {if ($page < $count/$limit)}
+                <li><a href="{echo Shared\Markup::pagination($page + 1)}">Next</a></li>
+                {/if}
+            </ul>
+        </div>
+    </div>
+</div>

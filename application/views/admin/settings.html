@@ -1,0 +1,115 @@
+<div class="content-page">
+    <div class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="page-title-box">
+                        <ol class="breadcrumb pull-right">
+                            <li><a href="/admin">Dashboard</a></li>
+                            <li class="active">Settings</li>
+                        </ol>
+                        <h4 class="page-title">Settings</h4>
+                    </div>
+                </div>
+            </div>
+            {if isset($message)}
+            <div class="alert alert-info alert-dismissible fade in" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                {echo $message}
+            </div>
+            {/if}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="m-t-0 header-title">Commission Settings</h4>
+                        <form action="" method="post">
+                            <div class="form-group">
+                                {script $model = isset($org->meta['model']) ? $org->meta['model'] : null}
+                                <label>Model</label>
+                                <select name="model" required="" value="{echo $model}" class="form-control">
+                                    <option value="cpc">CPC</option>
+                                    <option value="cpm">CPM</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                {script $rate = isset($org->meta['rate']) ? $org->meta['rate'] : null}
+                                <label>Model Rate</label>
+                                <input type="text" value="{echo $rate}" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,4})?$" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" required="">
+                            </div>
+                            <div class="form-group">
+                                {script $unit = isset($org->meta['unit']) ? $org->meta['unit'] : null}
+                                <label>Unit</label>
+                                <select name="unit" required="" value="{echo $unit}" class="form-control">
+                                    <option value="INR">INR</option>
+                                    <option value="USD">USD</option>
+                                </select>
+                            </div>
+                            <input type="hidden" name="action" value="commission">
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="m-t-0 header-title"><b>Tracking Domains</b></h4>
+                        <form action="" method="post">
+                            <div class="form-group">
+                                {if count($org->tdomains) == 0}
+                                <div class="input-group">
+                                   <input type="text" name="tdomains[]" class="form-control" placeholder="Enter Tracking Domain" id="trackingDomain">
+                                   <span class="input-group-btn">
+                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
+                                   </span>
+                                </div>
+                                {/if} {script $i = 1}
+                                {foreach $t in $org->tdomains}
+                                <div class="input-group">
+                                   <input type="text" name="tdomains[]" value="{echo $t}" class="form-control" placeholder="Enter Tracking Domain" {if $i == 1} id="trackingDomain" {/if}>
+                                   <span class="input-group-btn">
+                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
+                                   </span>
+                                </div>
+                                {script ++$i} {/foreach}
+                            </div>
+                            <input type="hidden" name="action" value="domains">
+                            <button type="button" id="addDomain" class="btn btn-primary"><i class="fa fa-plus"></i> Add More</button>
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="m-t-0 header-title"><b>Category</b></h4>
+                        <form action="" method="post">
+                            <div class="form-group">
+                                {if count($categories) == 0}
+                                <div class="input-group">
+                                   <input type="text" name="category[]" class="form-control" placeholder="Enter Category Name" id="categoryBox">
+                                   <span class="input-group-btn">
+                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
+                                   </span>
+                                </div>
+                                {/if} {script $i = 1}
+                                {foreach $c in $categories}
+                                <div class="input-group">
+                                   <input type="text" name="category[]" value="{echo $c->name}" class="form-control" placeholder="Enter Category Name" {if $i++ == 1} id="categoryBox" {/if}>
+                                   <span class="input-group-btn">
+                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
+                                   </span>
+                                </div>
+                                {/foreach}
+                            </div>
+                            <input type="hidden" name="action" value="categories">
+                            <button type="button" id="addCategory" class="btn btn-primary"><i class="fa fa-plus"></i> Add More</button>
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

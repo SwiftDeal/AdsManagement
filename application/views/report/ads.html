@@ -1,0 +1,78 @@
+<div class="content-page">
+    <div class="content">
+        <div class="container">
+            <!-- Page-Title -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="page-title-box">
+                        <form class="form-inline pull-right" role="form" id="range">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label class="sr-only">From</label>
+                                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> From</span>
+                                    <input type="date" style="width: 180px" name="start" class="form-control" value="{$start}" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label class="sr-only">To</label>
+                                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> To</span>
+                                    <input type="date" style="width: 180px" name="end" class="form-control" value="{$end}" />
+                                </div>
+                            </div>
+                            <input type="hidden" name="user_id" value="{echo $user->_id}">
+                            <button type="submit" class="btn btn-primary">Show</button>
+                        </form>
+                        <h4 class="page-title">Campaign Reports</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card-box">
+                        <div class="table-rep-plugin">
+                            <div class="table-responsive" data-pattern="priority-columns">
+                                <table id="tech-companies-1" class="table  table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Status</th>
+                                            <th>Preview</th>
+                                            <th>Title</th>
+                                            <th>Clicks</th>
+                                            <th>Rate</th>
+                                            <th>Revenue</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {foreach $c in $ads} {script $cm = Commission::first(["ad_id = ?" => $c->id])}
+                                        <tr>
+                                            <td>
+                                                {if $c->live}
+                                                <span class="label label-success">Active</span>
+                                                {/if} {else}
+                                                <span class="label label-warning">Inactive</span>
+                                                {/else}
+                                            </td>
+                                            <td>
+                                                <img src="{echo $c->image}" alt="" width="70" height="70"><br>
+                                                <a href="{echo $c->url}" target="_blank" class="btn btn-xs btn-default">Landing Page</a>
+                                            </td>
+                                            <td>{echo $c->title}</td>
+                                            <td>{echo $c->clicks}</td>
+                                            <td>
+                                                USD {echo $cm->rate} <b>{echo strtoupper($cm->model)}</b>
+                                            </td>
+                                            <td>{echo $c->clicks*$cm->rate}</td>
+                                        </tr>
+                                        {/foreach}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,28 @@
+<div class="modal fade" id="createLink" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <form action="/publisher/createLink" id="createLinkForm" method="post" class="modal-content">
+            <div class="modal-header text-center">
+            Select Domain
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="Domain">Domain</label>
+                    <select name="domain" class="form-control" style="width: 180px">
+                        {if count($org->tdomains) === 0}
+                            <option value="dobolly.com" selected="">dobolly.com</option>
+                        {/if} {else}
+                            {foreach $d in $org->tdomains}
+                            <option value="{echo $d}">{echo $d}</option>
+                            {/foreach}
+                        {/else}
+                    </select>
+                </div>
+            </div>
+            <input type="hidden" name="adid" id="campaignId" value="">
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Go</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </form>
+    </div>
+</div>

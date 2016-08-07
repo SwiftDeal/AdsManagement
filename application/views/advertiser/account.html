@@ -1,0 +1,50 @@
+<div class="content-page">
+    <div class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="page-title-box">
+                        <ol class="breadcrumb pull-right">
+                            <li><a href="/admin">Dashboard</a></li>
+                            <li class="active">Settings</li>
+                        </ol>
+                        <h4 class="page-title">Settings</h4>
+                    </div>
+                </div>
+            </div>
+            {if isset($message)}
+            <div class="alert alert-info alert-dismissible fade in" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                {echo $message}
+            </div>
+            {/if}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="m-t-0 header-title">Campaign Settings</h4>
+                        <form action="" method="post">
+                            <div class="form-group">
+                                {script $model = isset($user->meta['model']) ? $user->meta['model'] : null}
+                                <label>Model</label>
+                                <select name="model" required="" value="{echo $model}" class="form-control">
+                                    <option>Select</option>
+                                    <option value="cpc">CPC</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                {script $rate = isset($user->meta['rate']) ? $user->meta['rate'] : null}
+                                <label for="Rate">Rate</label>
+                                <div class="input-group">
+                                    <span class="add-on input-group-addon"><i class="fa fa-usd fa-fw"></i> USD</span>
+                                    <input type="text" value="{echo $rate}" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" class="form-control" placeholder="Rate for revenue model. Eg: 0.0012" required="">
+                                </div>
+                            </div>
+                            <input type="hidden" name="action" value="campaign">
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

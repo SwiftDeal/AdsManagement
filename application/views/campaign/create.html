@@ -1,0 +1,120 @@
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="page-title-box">
+                        <ol class="breadcrumb pull-right">
+                            <li><a href="/admin.html">Dashboard</a></li>
+                            <li><a href="/campaign/manage.html">All campaigns</a></li>
+                            <li class="active">Create Campaign</li>
+                        </ol>
+                        <h4 class="page-title">Welcome !</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                {if isset($message)}
+                <div class="alert alert-info alert-dismissible fade in" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    {echo $message}
+                </div>
+                {/if}
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body no-padding">
+                            <form method="post" action="" enctype="multipart/form-data">
+                                <div class="panel panel-default panel-body">
+                                    <div class="form-group">
+                                        <label for="Advertiser">Advertiser</label>
+                                        <select name="advert_id" class="form-control" required="">
+                                            {foreach $a in $advertiser}
+                                            <option value="{echo $a->_id}">{echo $a->name}</option>
+                                            {/foreach}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Original URL</label>
+                                        <input type="url" class="form-control" name="url" required="" value="{echo $meta['url']}">
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "url")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Title</label>
+                                        <input type="text" name="title" class="form-control" maxlength="100" required="" value="{echo $meta['title']}">
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "title")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <textarea class="form-control" name="description" rows="3">{echo $meta['description']}</textarea>
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "description")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Image</label>
+                                        {script $im = $meta['image']}
+                                        {if $im}
+                                        <img src="{echo $im}" class="img-thumbnail">
+                                        <input type="hidden" name="image_url" value="{echo $im}">
+                                        {/if}
+                                        <input type="file" class="form-control" name="image" {if !$im}required=""{/if}>
+                                        <span class="help-block text-danger">Image should be 650px X 315px for good reach on Social Media<br>{echo Shared\Markup::errors($errors, "image")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Category</label>
+                                        <select name="category[]" class="selectpicker form-control" multiple="" data-live-search=true title="Choose a campaign category">
+                                            {foreach $cat in $categories}
+                                            <option value="{echo $cat->_id}">{echo $cat->name}</option>
+                                            {/foreach}
+                                        </select>
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "category")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Coverage</label>
+                                        <select name="coverage[]" class="form-control selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
+                                            {include auth/country.html}
+                                        </select>
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "coverage")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Model</label>
+                                        <select name="model" required="" class="form-control">
+                                            <option value="cpc" selected="">CPC (Cost per one Click)</option>
+                                            <option value="cpm">CPM (Cost per thousand Impressions)</option>
+                                            <option value="cpa">CPA (Cost per Action)</option>
+                                        </select>
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "model")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="Rate">Payout</label>
+                                        <div class="input-group">
+                                            <span class="add-on input-group-addon"><i class="fa fa-usd fa-fw"></i> USD</span>
+                                            <input type="text" name="payout" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" class="form-control" placeholder="Rate for revenue model. Eg: 0.3" value="0.07" required="">
+                                        </div>
+                                        <small class="help-block">You can add more different rate for different countries later. <a href="https://www.google.co.in/search?q=usd%20to%20inr" target="_blank">Conversion Rates</a></small>
+                                    </div>
+                                    <input type="hidden" name="action" value="save">
+                                    <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Create</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row well">
+                        <div data-spy="affix" data-offset-top="60" data-offset-bottom="200">
+                            <div class="row-fluid">
+                                <div class="col-sm-4">
+                                    <img src="{echo $meta['image']}" class="img-responsive">
+                                </div>
+                                <div class="col-sm-8">
+                                    <a href="{echo $meta['url']}"><b>{echo $meta['title']}</b></a>
+                                    <p>{echo $meta['description']}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

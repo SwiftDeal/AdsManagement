@@ -1,0 +1,139 @@
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+            <!-- Page-Title -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="page-title-box">
+                        <form class="form-inline pull-right" role="form" id="range">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label class="sr-only">From</label>
+                                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> From</span>
+                                    <input type="date" style="width: 180px" name="start" class="form-control" value="{$start}" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label class="sr-only">To</label>
+                                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> To</span>
+                                    <input type="date" style="width: 180px" name="end" class="form-control" value="{$end}" />
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Show</button>
+                        </form>
+                        <h4 class="page-title">Dashboard</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card-box widget-icon">
+                        <div>
+                            <i class="fa fa-users text-muted"></i>
+                            <div class="wid-icon-info">
+                                <p class="text-muted m-b-5 font-13 text-uppercase">Publishers</p>
+                                <h4 class="m-t-0 m-b-5 counter">{echo User::count(["organization_id = ?" => $org->id, "type = ?" => "publisher"])}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card-box widget-icon">
+                        <div>
+                            <i class="fa fa-mouse-pointer text-muted"></i>
+                            <div class="wid-icon-info">
+                                <p class="text-muted m-b-5 font-13 text-uppercase">Clicks</p>
+                                <h4 class="m-t-0 m-b-5 counter">{echo $performance->clicks}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card-box widget-icon">
+                        <div>
+                            <i class="fa fa-eye text-muted"></i>
+                            <div class="wid-icon-info">
+                                <p class="text-muted m-b-5 font-13 text-uppercase">Impressions</p>
+                                <h4 class="m-t-0 m-b-5 counter">{echo $performance->impressions}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card-box widget-icon">
+                        <div>
+                            <i class="fa fa-bank text-muted"></i>
+                            <div class="wid-icon-info">
+                                <p class="text-muted m-b-5 font-13 text-uppercase">Payouts</p>
+                                <h4 class="m-t-0 m-b-5 counter">{echo $performance->revenue}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card-box widget-icon">
+                        <div>
+                            <i class="fa fa-bullhorn text-muted"></i>
+                            <div class="wid-icon-info">
+                                <p class="text-muted m-b-5 font-13 text-uppercase">Campaign</p>
+                                <h4 class="m-t-0 m-b-5 counter">{echo Ad::count(["org_id = ?" => $org->id])}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card-box widget-icon">
+                        <div>
+                            <i class="fa fa-suitcase text-muted"></i>
+                            <div class="wid-icon-info">
+                                <p class="text-muted m-b-5 font-13 text-uppercase">Advertisers</p>
+                                <h4 class="m-t-0 m-b-5 counter">{echo User::count(["organization_id = ?" => $org->id, "type = ?" => "advertiser"])}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card-box widget-icon">
+                        <div>
+                            <i class="fa fa-tablet text-muted"></i>
+                            <div class="wid-icon-info">
+                                <p class="text-muted m-b-5 font-13 text-uppercase">Platform</p>
+                                <h4 class="m-t-0 m-b-5 counter">0</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card-box widget-icon">
+                        <div>
+                            <i class="fa fa-code text-muted"></i>
+                            <div class="wid-icon-info">
+                                <p class="text-muted m-b-5 font-13 text-uppercase">AdUnits</p>
+                                <h4 class="m-t-0 m-b-5 counter">0</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end row -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-box">
+                        <h4 class="text-dark  header-title m-t-0">Network Statistics</h4>
+                        <div id="clickstats" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end container -->
+    </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+    admin_home();
+});
+</script>

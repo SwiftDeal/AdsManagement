@@ -1,0 +1,53 @@
+<div class="content-page">
+    <div class="content">
+        <div class="container">
+            <!-- Page-Title -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="page-title-box">
+                        <ol class="breadcrumb pull-right">
+                            <li><a href="/admin/index.html">Dashboard</a></li>
+                            <li class="active">Publisher Payments</li>
+                        </ol>
+                        <h4 class="page-title">Publisher Payments</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card-box">
+                        <div class="table-rep-plugin">
+                            <div class="table-responsive" data-pattern="priority-columns">
+                                <table id="tech-companies-1" class="table  table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Amount Due</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {foreach $a in $advertisers}
+                                        <tr>
+                                            <td>{echo $a->name}</td>
+                                            <td>{echo $a->email}</td>
+                                            <td>{echo $a->phone}</td>
+                                            <td><i class="fa fa-usd"> {echo $a->amount}</i></td>
+                                            <td>
+                                                Do Something
+                                            </td>
+                                        </tr>
+                                        {/foreach}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

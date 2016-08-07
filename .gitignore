@@ -1,0 +1,7 @@
+application/configuration/*
+
+# Config File
+sftp-config.json
+
+# Uplaod Dir
+uploads/*

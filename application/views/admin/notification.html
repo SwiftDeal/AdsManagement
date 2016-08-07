@@ -1,0 +1,57 @@
+{include admin/modals/notification.html}
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="page-title-box">
+                        <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#createNotify"><i class="fa fa-plus"></i> New Notification</button>
+                        <h4 class="page-title">Notifications</h4>
+                    </div>
+                    <div class="card-box">
+                        {if isset($message)}
+                        <div class="alert alert-info alert-dismissible fade in" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                            {echo $message}
+                        </div>
+                        {/if}
+
+                        <div class="table-responsive">
+                            <table class="table m-0">
+                                <thead>
+                                    <tr>
+                                        <th>Created</th>
+                                        <th>Message</th>
+                                        <th>Target</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tbody>
+                                        {foreach $n in $notifications}
+                                        <tr>
+                                            <td>{echo Framework\StringMethods::only_date($n->created)}</td>
+                                            <td>{echo $n->message}</td>
+                                            <td>{echo $n->target}</td>
+                                            <td>
+                                                {if !$n->live}
+                                                <a href="#" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-xs btn-success"><i class="fa fa-check"></i> Enable</a>
+                                                {/if} {else}
+                                                <a href="#" data-send='{echo json_encode(["live" => 0])}' class="update btn btn-xs btn-warning"><i class="fa fa-times"></i> Disable</a>
+                                                {/else}
+                                                <a href="#" data-message="Are you sure you want to delete this Notification??" class="delete btn btn-xs btn-danger"><i class="fa fa-trash"></i> Remove</a>
+                                            </td>
+                                        </tr>
+                                        {/foreach}
+                                    </tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end row -->
+        </div>
+    </div>
+</div>

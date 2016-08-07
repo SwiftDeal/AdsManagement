@@ -1,0 +1,58 @@
+{include publisher/modals/link.html}
+<div class="row">
+    <div class="col-sm-12">
+        <h4 class="page-title text-center">{echo $ad->title}</h4>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card-box">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="text-center">
+                        <img src="{echo CDN}uploads/images/{echo $ad->image}" alt="" width="300">
+                    </p>
+                    <p class="text-center">
+                        <a href="{echo $ad->url}" target="_blank" class="btn btn-default waves-effect waves-light">View Landing Page</a> {script $id = $ad->getMongoID()}
+
+                        {if $user->type === "publisher"}
+                        <button type="button" data-adid="{echo $ad->_id}" class="createLink btn btn-purple waves-effect waves-light">Tracking Link</button>
+                        {/if}
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Model</th>
+                                <td>
+                                    {echo $c->unit} {echo $c->rate} <b>{echo strtoupper($c->model)}</b>
+                                    <br>
+                                    <small>{echo $c->description}</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>Description</th>
+                                <td>{echo $ad->description}</td>
+                            </tr>
+                            <tr>
+                                <th>Category</th>
+                                <td>{echo implode(", ", $ad->category)}</td>
+                            </tr>
+                            {script $link = Link::first(["ad_id = ?" => $id, "user_id = ?" => $user->id])} {if($link)}
+                            <tr>
+                                <th>Tracking Link</th>
+                                <td>{echo $link->getUrl()}</td>
+                            </tr>
+                            {/if}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

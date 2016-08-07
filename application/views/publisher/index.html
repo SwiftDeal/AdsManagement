@@ -1,0 +1,82 @@
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+        <h4 class="page-title">Dashboard</h4>
+    </div>
+</div>
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-6 col-md-3">
+        <div class="text-center card-box">
+            <h3 class="text-primary counter">{echo $performance->clicks}</h3>
+            <p class="text-muted text-nowrap">Clicks <small>(Last 24Hr)</small></p>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="text-center card-box">
+            <h3 class="text-success" id="click">0</h3>
+            <p class="text-muted text-nowrap">Clicks <small>(Last 7 Days)</small></p>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="text-center card-box">
+            <h3 class="text-pink" id="payout">0</h3>
+            <p class="text-muted text-nowrap">Payout <small>(Last 7 Days)</small></p>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="text-center card-box">
+            <h3 class="text-info counter">{echo $performance->impressions}</h3>
+            <p class="text-muted text-nowrap">Impressions <small>(Last 24Hr)</small></p>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card-box">
+            <h4 class="text-dark  header-title m-t-0 m-b-30">Performance Last 7 Days</h4>
+            <div id="clickstats" style="height: 300px;"></div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        {if isset($notifications)}
+        <div class="card-box">
+            <h4 class="text-dark  header-title m-t-0">Recent Notifications</h4>
+            <div class="table-responsive">
+                <table class="table">
+                    <tbody>
+                        {foreach $n in $notifications}
+                        <tr>
+                            <td>{echo Framework\StringMethods::only_date($n->created)}</td>
+                            <td>{echo $n->message}</td>
+                        </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {/if}
+    </div>
+    <div class="col-md-6">
+        {if isset($featured)}
+        <div class="card-box widget-user">
+            <h4 class="text-dark  header-title m-t-0">Featured Campaign</h4>
+            <div>
+                <img src="assets/images/users/avatar-1.jpg" class="img-responsive img-circle" alt="user">
+                <div class="wid-u-info">
+                    <img src="{echo CDN}uploads/images/{echo $featured->image}" alt="" class="img-responsive" width="70" height="70">
+                    <h4 class="m-t-0 m-b-5"><a href="/campaign/info/{$featured->_id}.html">{echo $featured->title}</a></h4>
+                    <small class="text-warning"><b>($c->model)} - {echo $c->rate}</b></small>
+                </div>
+            </div>
+        </div>
+        {/if}
+    </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+    pub_home();
+});
+</script>
