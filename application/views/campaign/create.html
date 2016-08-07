@@ -85,12 +85,12 @@
                                         <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "model")}</span>
                                     </div>
                                     <div class="form-group">
-                                        <label for="Rate">Payout</label>
+                                        <label for="Rate">Payout rate</label>
                                         <div class="input-group">
-                                            <span class="add-on input-group-addon"><i class="fa fa-usd fa-fw"></i> USD</span>
-                                            <input type="text" name="payout" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" class="form-control" placeholder="Rate for revenue model. Eg: 0.3" value="0.07" required="">
+                                            <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                            <input type="text" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" class="form-control" placeholder="Rate for revenue model. Eg: 0.3" value="0.07" required="">
                                         </div>
-                                        <small class="help-block">You can add more different rate for different countries later. <a href="https://www.google.co.in/search?q=usd%20to%20inr" target="_blank">Conversion Rates</a></small>
+                                        <small class="help-block">You can add different cpc for different country later</small>
                                     </div>
                                     <input type="hidden" name="action" value="save">
                                     <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Create</button>

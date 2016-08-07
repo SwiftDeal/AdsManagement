@@ -164,9 +164,9 @@ class Advertiser extends Auth {
             if (!$user) return;
             $user->meta = [
                 'campaign' => [
-                    'model' => RequestMethods::post('model', 'cpc'),
-                    'rate' => RequestMethods::post('rate', 0.25),
-                    'unit' => RequestMethods::post('unit', 'INR')
+                    'model' => RequestMethods::post('model'),
+                    'rate' => $this->currency(RequestMethods::post('rate')),
+                    'coverage' => ['ALL']
                 ]
             ];
             $user->save();

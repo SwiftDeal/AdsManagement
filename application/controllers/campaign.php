@@ -82,15 +82,14 @@ class Campaign extends Admin {
     			return $view->set('message', 'Failed to upload the image');
     		}
     		$campaign = new \Ad([
+                'user_id' => RequestMethods::post('advert_id'),
     			'title' => RequestMethods::post('title'),
     			'description' => RequestMethods::post('description'),
                 'org_id' => $this->org->_id,
-                'advert_id' => RequestMethods::post('advert_id'),
     			'url' => RequestMethods::post('url'),
     			'category' => \Ad::setCategories(RequestMethods::post('category', [$categories[0]->getMongoID()])),
-    			'user_id' => $this->user->_id,
     			'image' => $img,
-                'type' => RequestMethods::post('type', 'text'),
+                'type' => RequestMethods::post('type', 'article'),
     			'live' => true
     		]);
 
@@ -100,8 +99,8 @@ class Campaign extends Admin {
     		$campaign->save();
             $commission = new \Commission([
                 'ad_id' => $campaign->_id,
-                'model' => RequestMethods::post('model', 'cpc'),
-                'rate' => RequestMethods::post('payout', 0.05),
+                'model' => RequestMethods::post('model'),
+                'rate' => $this->currency(RequestMethods::post('rate')),
                 'coverage' => RequestMethods::post('coverage')
             ]);
             $commission->save();

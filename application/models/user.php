@@ -168,14 +168,14 @@ class User extends Shared\Model {
         foreach ($fields as $f) {
             $user->$f = RequestMethods::post($f, $user->$f);
         }
-        $user->organization_id = $org->_id;
+        $user->org_id = $org->_id;
         $user->type = $type;
 
         if (!$user->validate()) {
             $view->set("errors", $user->errors);
             return false;
         }
-        $u = self::first(["email = ?" => $user->email, "organization_id = ?" => $org->_id]);
+        $u = self::first(["email = ?" => $user->email, "org_id = ?" => $org->_id]);
         if ($u) {
             $view->set("message", "User already exists!!");
             return false;

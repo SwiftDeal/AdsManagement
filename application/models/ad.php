@@ -82,7 +82,7 @@ class Ad extends Shared\Model {
      *
      * @validate required
      * @label ad type
-     * @value text, image, video
+     * @value article, image, video
      */
     protected $_type;
 

@@ -67,6 +67,20 @@ namespace Shared {
             }
         }
 
+        protected function currency($n) {
+            $user = $this->getUser();
+            switch ($user->currency) {
+                case 'INR':
+                    $v = $n/66;
+                    break;
+                
+                default:
+                    $v = $n;
+                    break;
+            }
+            return $v;
+        }
+
         /**
          * @protected
          */

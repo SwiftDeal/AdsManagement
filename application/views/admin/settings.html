@@ -27,22 +27,19 @@
                                 {script $model = isset($org->meta['model']) ? $org->meta['model'] : null}
                                 <label>Model</label>
                                 <select name="model" required="" value="{echo $model}" class="form-control">
-                                    <option value="cpc">CPC</option>
-                                    <option value="cpm">CPM</option>
+                                    <option value="cpc">CPC (Cost per Click)</option>
+                                    <option value="cpm">CPM (Cost per thousand impressions)</option>
+                                    <option value="cpa">CPA (Cost per action)</option>
                                 </select>
                             </div>
+                            
                             <div class="form-group">
                                 {script $rate = isset($org->meta['rate']) ? $org->meta['rate'] : null}
                                 <label>Model Rate</label>
-                                <input type="text" value="{echo $rate}" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,4})?$" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" required="">
-                            </div>
-                            <div class="form-group">
-                                {script $unit = isset($org->meta['unit']) ? $org->meta['unit'] : null}
-                                <label>Unit</label>
-                                <select name="unit" required="" value="{echo $unit}" class="form-control">
-                                    <option value="INR">INR</option>
-                                    <option value="USD">USD</option>
-                                </select>
+                                <div class="input-group">
+                                    <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                    <input type="text" value="{echo $rate}" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,4})?$" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" required="">
+                                </div>
                             </div>
                             <input type="hidden" name="action" value="commission">
                             <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
