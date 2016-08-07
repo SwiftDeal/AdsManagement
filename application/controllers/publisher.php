@@ -52,23 +52,10 @@ class Publisher extends Auth {
         $count = \Ad::count($query); $in = [];
         $categories = \Category::all(["org_id = ?" => $this->org->_id], ['name', '_id']);
 
-        foreach ($ads as $a) {
-            $in[] = $a->_id;
-        }
-        $clickCol = Registry::get("MongoDB")->clicks;
-        $records = $clickCol->find(['adid' => ['$in' => $in]], ['adid', 'pid', 'ipaddr', 'referer']);
-        $clicks = Click::classify($records, 'adid');
-
-        $result = [];
-        foreach ($clicks as $key => $value) {
-            $result[$key] = count($value);
-        }
-        arsort($result);
-    	
         $view->set([
             'limit' => $limit, 'page' => $page,
             'count' => $count, 'ads' => $ads,
-            'categories' => $categories, 'clicks' => $result
+            'categories' => $categories
         ]);
     }
 
@@ -200,7 +187,6 @@ class Publisher extends Auth {
             'user_id' => $this->user->_id,
             'ad_id' => $ad->_id,
             'domain' => $domain,
-            'app' => $this->org->domain,
             'live' => true
         ]);
         $link->save();
@@ -263,12 +249,15 @@ class Publisher extends Auth {
         if (RequestMethods::type() == 'POST') {
             $user = \User::addNew('publisher', $this->org, $view);
             if (!$user) return;
-            $user->meta = [
-                'campaign' => [
-                    'model' => RequestMethods::post('model'),
-                    'rate' => RequestMethods::post('rate', null)
-                ]
-            ];
+            if (RequestMethods::post('rate')) {
+                $user->meta = [
+                    'campaign' => [
+                        'model' => RequestMethods::post('model'),
+                        'rate' => $this->currency(RequestMethods::post('rate')),
+                        'coverage' => ['ALL']
+                    ]
+                ];
+            }
             $user->save();
 
             Mail::send([

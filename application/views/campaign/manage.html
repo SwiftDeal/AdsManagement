@@ -49,11 +49,11 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Preview</th>
-                                        <th>Title</th>
-                                        <th>Payout</th>
-                                        <th>Categories</th>
-                                        <th>Stats</th>
+                                        <th>PREVIEW</th>
+                                        <th>TITLE</th>
+                                        <th>PAYOUT</th>
+                                        <th>CATEGORY</th>
+                                        <th>ACTION</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -73,7 +73,7 @@
                                             </td>
                                             <td><a href="/campaign/info/{$a->_id}.html">{echo $a->title}</a></td>
                                             <td>
-                                                $ {echo $c->rate} <b>{echo strtoupper($c->model)}</b>
+                                                <b>{echo strtoupper($c->model)}</b> {echo $user->convert($c->rate)} 
                                                 <br>
                                                 <small>{echo $c->description}</small>
                                             </td>

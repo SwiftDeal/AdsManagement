@@ -14,7 +14,6 @@
                     </p>
                     <p class="text-center">
                         <a href="{echo $ad->url}" target="_blank" class="btn btn-default waves-effect waves-light">View Landing Page</a> {script $id = $ad->getMongoID()}
-
                         {if $user->type === "publisher"}
                         <button type="button" data-adid="{echo $ad->_id}" class="createLink btn btn-purple waves-effect waves-light">Tracking Link</button>
                         {/if}
@@ -26,7 +25,7 @@
                             <tr>
                                 <th>Model</th>
                                 <td>
-                                    {echo $c->unit} {echo $c->rate} <b>{echo strtoupper($c->model)}</b>
+                                    {echo $c->rate} <b>{echo strtoupper($c->model)}</b>
                                     <br>
                                     <small>{echo $c->description}</small>
                                 </td>

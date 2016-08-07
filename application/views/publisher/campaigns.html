@@ -30,14 +30,13 @@
                             <th>TITLE</th>
                             <th>PAYOUT</th>
                             <th>TYPE</th>
-                            <th>CLICKS</th>
                             <th>CATEGORY</th>
+                            <th>CLICKS</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tbody>
-                            {foreach $count in $clicks}
-                            {script $a = $ads[$count_i]}
+                            {foreach $a in $ads}
                             {script $c = Commission::first(["ad_id = ?" => $a->id])}
                             <tr>
                                 <td>
@@ -45,15 +44,15 @@
                                     <button type="button" data-adid="{echo $a->_id}" class="createLink btn btn-purple btn-xs waves-effect waves-light">Tracking Link</button>
                                 </td>
                                 <td><a href="/campaign/info/{$a->_id}.html">{echo $a->title}</a></td>
-                                <td>USD {echo $c->rate}</td>
+                                <td>{echo $user->convert($c->rate)}</td>
                                 <td>{echo strtoupper($c->model)}</td>
                                 {script $names = []}
                                 {foreach $cat in $a->category}
                                     {script $key = Shared\Utils::getMongoID($cat)}
                                     {if isset($categories[$key])} {script $names[] = $categories[$cat]->name} {/if}
                                 {/foreach}
-                                <td>{echo $count}</td>
                                 <td>{echo implode(", ", $names)}</td>
+                                <td>{echo $count}</td>
                             </tr>
                             {/foreach}
                         </tbody>

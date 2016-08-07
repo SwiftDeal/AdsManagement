@@ -47,21 +47,19 @@
                                     <div class="form-group">
                                         <label for="Model">Model (Optional)</label>
                                         <select name="model" class="form-control">
-                                            <option></option>
-                                            <option value="cpc" selected="">CPC</option>
-                                            <option value="cpm">CPM</option>
+                                            <option value="cpc" selected="">CPC (Cost per Click)</option>
+                                            <option value="cpm">CPM (Cost per thousand impressions)</option>
+                                            <option value="cpa">CPA (Cost per action)</option>
                                         </select>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="Rate">Rate (Optional)</label>
                                         <div class="input-group">
-                                            <span class="add-on input-group-addon"><i class="fa fa-usd fa-fw"></i> USD</span>
-                                            <input type="text" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,2})?$" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" value="" required="">
+                                            <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                            <input type="text" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,2})?$" class="form-control" placeholder="Rate for revenue model. Eg: 2.3">
                                         </div>
-                                        <small class="help-block">Publisher earning will be decided by this value set else by campaign rate</small>
                                     </div>
-
                                     <input type="hidden" name="action" value="addPublisher">
                                     <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Add</button>
                                 </div>

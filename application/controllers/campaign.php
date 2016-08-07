@@ -87,7 +87,7 @@ class Campaign extends Admin {
     			'description' => RequestMethods::post('description'),
                 'org_id' => $this->org->_id,
     			'url' => RequestMethods::post('url'),
-    			'category' => \Ad::setCategories(RequestMethods::post('category', [$categories[0]->getMongoID()])),
+    			'category' => \Ad::setCategories(RequestMethods::post('category')),
     			'image' => $img,
                 'type' => RequestMethods::post('type', 'article'),
     			'live' => true
@@ -122,12 +122,12 @@ class Campaign extends Admin {
         $limit = RequestMethods::get("limit", 30);
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
         $query = [
-            "user_id = ?" => $this->user->id,
+            "org_id = ?" => $this->org->id,
             "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]
         ];
 
         $property = RequestMethods::get("property", "live");
-        $value = RequestMethods::get("value", 0);
+        $value = RequestMethods::get("value", 1);
         if (in_array($property, ["advert_id", "url", "title", "live"])) {
             $query["{$property} = ?"] = $value;
         }
