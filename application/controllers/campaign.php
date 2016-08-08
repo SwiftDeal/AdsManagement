@@ -90,7 +90,7 @@ class Campaign extends Admin {
     			'category' => \Ad::setCategories(RequestMethods::post('category')),
     			'image' => $img,
                 'type' => RequestMethods::post('type', 'article'),
-    			'live' => true
+    			'live' => false
     		]);
 
     		if (!$campaign->validate()) {
@@ -127,8 +127,8 @@ class Campaign extends Admin {
         ];
 
         $property = RequestMethods::get("property", "live");
-        $value = RequestMethods::get("value", 1);
-        if (in_array($property, ["advert_id", "url", "title", "live"])) {
+        $value = RequestMethods::get("value", 0);
+        if (in_array($property, ["user_id", "url", "title", "live"])) {
             $query["{$property} = ?"] = $value;
         }
     	$campaigns = \Ad::all($query, [], 'created', 'desc', $limit, $page);
@@ -205,7 +205,7 @@ class Campaign extends Admin {
     public function update($cid) {
         $this->JSONView();
         $view = $this->getActionView();
-        $c = \Ad::first(["_id = ?" => $cid, "user_id = ?" => $this->user->_id]);
+        $c = \Ad::first(["_id = ?" => $cid, "org_id = ?" => $this->org->_id]);
         if (!$c || RequestMethods::type() !== 'POST') {
             return $view->set('message', 'Invalid Request!!');
         }

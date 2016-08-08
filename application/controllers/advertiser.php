@@ -49,7 +49,7 @@ class Advertiser extends Auth {
         $page = RequestMethods::get("page", 1);
 
         $query = [
-            "advert_id" => $this->user->id
+            "user_id" => $this->user->id
         ];
         $ads = \Ad::all($query, ['title', 'image', 'category', '_id', 'live', 'created'], 'created', 'desc', $limit, $page);
         $count = \Ad::count($query);
@@ -262,7 +262,7 @@ class Advertiser extends Auth {
         $user = \User::first(["_id" => $pid, 'type' => 'advertiser', 'org_id' => $this->org->_id]);
         if (!$user) $this->redirect("/404");
 
-        $ads = \Ad::all(['advert_id = ?' => $user->_id], ['_id']);
+        $ads = \Ad::all(['user_id = ?' => $user->_id], ['_id']);
         if (count($ads) === 0) {
             $user->delete();
             $view->set('message', 'Advertiser Deleted successfully!!');

@@ -137,7 +137,7 @@ class Cron extends Shared\Controller {
 
             // find ads for the publisher
             $clickCol = Registry::get("MongoDB")->clicks;
-            $ads = \Ad::all(['advert_id' => $u->_id], ['_id', 'title']);
+            $ads = \Ad::all(['user_id' => $u->_id], ['_id', 'title']);
             $clicksCount = 0; $revenue = 0.00;
             foreach ($ads as $a) {
                 // find clicks for the ad for the given date
@@ -191,7 +191,7 @@ class Cron extends Shared\Controller {
         $adsInfo = [];
         foreach ($users as $u) {
             // find all the ads
-            $ads = \Ad::all(['advert_id' => $u->_id], ['_id', 'url']);
+            $ads = \Ad::all(['user_id' => $u->_id], ['_id', 'url']);
             // find all the platforms
             $platforms = \Platform::all(['user_id' => $u->_id], ['_id', 'url']);
 
@@ -292,7 +292,7 @@ class Cron extends Shared\Controller {
             $urls = $m->value['urls'];
 
             foreach ($urls as $url) {
-                $ad = \Ad::first(['user_id' => $user->_id, 'org_id' => $org->_id, 'advert_id' => $advert_id, 'url' => $url]);
+                $ad = \Ad::first(['user_id' => $advert_id, 'org_id' => $org->_id, 'url' => $url]);
                 if ($ad) continue;  // already crawled URL may be due to failed cron earlier
                 
                 $data = Utils::fetchCampaign($url);
@@ -300,9 +300,8 @@ class Cron extends Shared\Controller {
                 if (!$image) $image = '';
 
                 $ad = new \Ad([
-                    'user_id' => $user->_id,
+                    'user_id' => $advert_id,
                     'org_id' => $org->_id,
-                    'advert_id' => $advert_id,
                     'title' => $data['title'],
                     'description' => $data['description'],
                     'url' => $url,
