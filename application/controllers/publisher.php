@@ -476,6 +476,7 @@ class Publisher extends Auth {
     public function register() {
         $this->seo(array("title" => "Publisher Register", "description" => "Register"));
         $view = $this->getActionView(); $view->set('errors', []);
+        $session = Registry::get("session");
 
         $csrf_token = $session->get('Publisher\Register:$token');
         $token = RequestMethods::post("token", '');

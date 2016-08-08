@@ -33,7 +33,7 @@
                                                 {if $p->live}
                                                 <span class="text text-success">{echo $p->_id}</span>
                                                 {/if} {else}
-                                                <span class="label label-warning">{echo $p->_id}</span>
+                                                <span class="text text-warning">{echo $p->_id}</span>
                                                 {/else}
                                             </td>
                                             <td>{echo $p->name}</td>
@@ -42,9 +42,9 @@
                                             <td>
                                                 <a href="/publisher/info/{echo $p->_id}.html" class="btn btn-xs btn-primary"><i class="fa fa-edit"></i></a>
                                                 {if !$p->live}
-                                                <a href="/publisher/update/{echo $p->_id}.html" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-xs btn-success"><i class="fa fa-check"></i></a>
+                                                <a href="/publisher/update/{echo $p->_id}" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-xs btn-success"><i class="fa fa-check"></i></a>
                                                 {/if} {else}
-                                                <a href="/publisher/update/{echo $p->_id}.html" data-send='{echo json_encode(["live" => 0])}' class="update btn btn-xs btn-warning"><i class="fa fa-times"></i></a>
+                                                <a href="/publisher/update/{echo $p->_id}" data-send='{echo json_encode(["live" => 0])}' class="update btn btn-xs btn-warning"><i class="fa fa-times"></i></a>
                                                 {/else}
                                                 <a href="/publisher/delete/{echo $p->_id}.html" data-message="Are you sure you want to delete this publisher??" class="delete btn btn-xs btn-danger"><i class="fa fa-trash"></i></a>
                                                 <a href="/auth/loginas/{echo $p->_id}" class="btn btn-xs btn-default"><i class="fa fa-sign-in"></i></a>

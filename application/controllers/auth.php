@@ -302,13 +302,6 @@ class Auth extends Controller {
             $perf->revenue += round($revenue, 6);
         }
 
-        if ($perf->clicks === 0) {
-            continue;
-        } else {
-            $avgCpc = $perf->revenue / $perf->clicks;
-        }
-        $perf->cpc = round($avgCpc, 6);
-
         return $perf;
     }
 }

@@ -31,7 +31,6 @@
                             <th>PAYOUT</th>
                             <th>TYPE</th>
                             <th>CATEGORY</th>
-                            <th>CLICKS</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -52,7 +51,6 @@
                                     {if isset($categories[$key])} {script $names[] = $categories[$cat]->name} {/if}
                                 {/foreach}
                                 <td>{echo implode(", ", $names)}</td>
-                                <td>{echo $count}</td>
                             </tr>
                             {/foreach}
                         </tbody>

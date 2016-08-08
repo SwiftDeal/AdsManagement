@@ -344,7 +344,7 @@ class Advertiser extends Auth {
 
     public function register() {
         $this->seo(array("title" => "Advertiser Register", "description" => "Register"));
-        $view = $this->getActionView();
+        $view = $this->getActionView(); $session = Registry::get("session");
 
         $view->set('errors', []);
         $csrf_token = $session->get('Advertiser\Register:$token');
