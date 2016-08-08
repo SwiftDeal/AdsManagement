@@ -3,6 +3,7 @@
 /**
  * @author Faizan Ayubi
  */
+use Shared\Utils as Utils;
 class Platform extends Shared\Model {
 
     /**

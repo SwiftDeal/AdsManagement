@@ -6,6 +6,8 @@ use Shared\Controller as Controller;
 use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
 use \Curl\Curl;
+use Shared\Utils as Utils;
+use Shared\Mail as Mail;
 
 class Auth extends Controller {
 
@@ -184,6 +186,15 @@ class Auth extends Controller {
         ));
         if ($user->validate()) {
             $user->save();
+
+            Mail::send([
+                'user' => $user,
+                'template' => 'pubRegister',
+                'subject' => 'Publisher at '. $this->org->name,
+                'app' => $this->org->domain,
+                'subdomain' => $this->org->domain,
+                'team' => $this->org->name
+            ]);
             
             $platform->user_id = $user->_id;
             $platform->meta = null;
