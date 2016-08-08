@@ -285,11 +285,30 @@ class Advertiser extends Auth {
         }
     }
 
-        /**
+    /**
      * @before _secure
      */
     public function platforms() {
         $this->seo(array("title" => "List of Platforms")); $view = $this->getActionView();
+
+        if (RequestMethods::type() === 'POST') {
+            $pid = RequestMethods::post('pid');
+            try {
+                if ($pid) {
+                    $p = \Platform::first(['_id = ?' => $pid]);
+                } else {
+                    $p = new \Platform([
+                        'user_id' => $this->user->_id,
+                        'live' => true
+                    ]);
+                }
+                $p->url = RequestMethods::post('url');
+                $p->save();
+                $view->set('message', 'Platform saved successfully!!');
+            } catch (\Exception $e) {
+                $view->set('message', $e->getMessage());
+            }
+        }
 
         $platforms = \Platform::all(["user_id = ?" => $this->user->_id], ['_id', 'url']);
         $results = [];

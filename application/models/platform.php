@@ -28,4 +28,15 @@ class Platform extends Shared\Model {
     * @type array
     */
     protected $_meta = [];
+
+    public function setUrl($url) {
+        if (!preg_match('/^https?:\/\//', $url)) {
+            $url = 'http://' . $url;
+        }
+
+        if (!Utils::urlRegex($url)) {
+            throw new \Exception('Invalid URL');
+        }
+        $this->_url = $url;
+    }
 }
