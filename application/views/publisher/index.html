@@ -14,6 +14,12 @@
     </div>
     <div class="col-sm-6 col-md-3">
         <div class="text-center card-box">
+            <h3 class="text-info">{echo $user->convert($performance->revenue)}</h3>
+            <p class="text-muted text-nowrap">Payouts <small>(Last 24Hr)</small></p>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="text-center card-box">
             <h3 class="text-success" id="click">0</h3>
             <p class="text-muted text-nowrap">Clicks <small>(Last 7 Days)</small></p>
         </div>
@@ -22,12 +28,6 @@
         <div class="text-center card-box">
             <h3 class="text-pink" id="payout">0</h3>
             <p class="text-muted text-nowrap">Payout <small>(Last 7 Days)</small></p>
-        </div>
-    </div>
-    <div class="col-sm-6 col-md-3">
-        <div class="text-center card-box">
-            <h3 class="text-info counter">{echo $performance->impressions}</h3>
-            <p class="text-muted text-nowrap">Impressions <small>(Last 24Hr)</small></p>
         </div>
     </div>
 </div>
@@ -54,7 +54,7 @@
     <div class="col-md-6">
         {if isset($topusers)}
         <div class="card-box widget-user">
-            <h4 class="text-dark  header-title m-t-0">Top users</h4>
+            <h4 class="text-dark  header-title m-t-0">Top 10 publishers</h4>
             <div class="table-responsive">
                 <table class="table">
                     <tbody>

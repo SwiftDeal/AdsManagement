@@ -146,56 +146,62 @@ class Campaign extends Admin {
             ->set("categories", $categories);
     }
 
+    protected function categories($category) {
+        $array = [];$multi = [];
+        $categories = \Category::all(['org_id' => $this->org->_id], ['name', '_id']);
+        foreach ($category as $cat) {
+            $array[] = Shared\Utils::getMongoID($cat);
+        }
+        return [
+            "ids" => $array,
+            "categories" => $categories
+        ];
+    }
+
     /**
      * @before _secure
      */
     public function edit($id) {
-        $this->seo(['title' => 'Campaign Edit', 'description' => 'Edit the campaign']);
+        $c = \Ad::first(["_id = ?" => $id, "org_id = ?" => $this->org->_id]);
+        if(!$c) $this->redirect("/campaign/manage.html");
+        $this->seo(['title' => 'Edit '.$c->title, 'description' => 'Edit the campaign']);
         $view = $this->getActionView();
-
-        $c = \Ad::first(["_id = ?" => $id, "user_id = ?" => $this->user->_id]);
         $comm = \Commission::first(["ad_id = ?" => $c->_id]);
-        $categories = \Category::all(['org_id' => $this->org->_id], ['name', '_id']);
-        $view->set('adCategories', $categories);
 
-        $fields = $c->render(['title', 'description', 'url']);
-        if (RequestMethods::type() == 'POST') {
-            foreach ($fields as $key => $value) {
-                $c->$key = RequestMethods::post($key, $c->$key);
-            }
-
+        $categories = $this->categories($c->category);
+        $view->set('categories', $categories["categories"]);
+        $view->set('adCategories', $categories["ids"]);
+        
+        if (RequestMethods::post("action") == "adedit") {
             $img = $c->image;
             if ($_FILES['image']['name']) {
                 $img = $this->_upload('image', 'images', ['extension' => 'jpe?g|gif|bmp|png|tif']);
                 @unlink(APP_PATH . '/public/assets/uploads/images/' . $c->image);
             }
             $c->image = $img;
-            $c->coverage = RequestMethods::post('coverage', ['ALL']);
-            $c->category = \Ad::setCategories(RequestMethods::post('category', [$categories[0]->getMongoID()]));
+            $c->category = \Ad::setCategories(RequestMethods::post('category'));
+            $c->title = RequestMethods::post('title');
+            $c->description = RequestMethods::post('description');
 
             if (!$c->validate()) {
                 $view->set("errors", $c->errors);
                 $view->set("message", "Validation Failed");
             } else {
                 $c->save();
-                $comm->model = RequestMethods::post('model', 'cpc');
-                $comm->rate = RequestMethods::post('rate', 0.15);
-
-                $comm->bid = round(0.20 / 66.76, 6);
-                if ($comm->rate == 0.15) {
-                    $comm->bid = 0.20;
-                } else if ($comm->rate == 0.16) {
-                    $comm->bid = 0.25;
-                }
-                $comm->save();
-
-                $view->set("message", "Campaign updated!!");
             }
+        }
+        if (RequestMethods::post("action") == "commedit") {
+            $comm->model = RequestMethods::post('model');
+            $comm->rate = $this->currency(RequestMethods::post('rate'));
+            $comm->coverage = RequestMethods::post('coverage', ['ALL']);
+            $comm->bid = 0;
+
+            $comm->save();
+            $view->set("message", "Campaign updated!!");
         }
 
         $view->set("c", $c)
-            ->set("comm", $comm)
-            ->set('fields', $fields);
+            ->set("comm", $comm);
 
     }
 
