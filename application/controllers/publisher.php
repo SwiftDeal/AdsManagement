@@ -22,20 +22,58 @@ class Publisher extends Auth {
         $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-1 day')));
         $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
-        $query = [
+        $clickCol = Registry::get("MongoDB")->clicks;
+        $clicks = $clickCol->find([
             "pid" => $this->user->id,
             "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]
-        ];
-        
-        $clickCol = Registry::get("MongoDB")->clicks;
-        $total_clicks = $clickCol->count($query);
+        ],['adid', 'cookie', 'ipaddr', 'referer']);
 
-        $clicks = $clickCol->find($query,['adid', 'cookie', 'ipaddr', 'referer']);
+        $notifications = Notification::all(["org_id = ?" => $this->org->id], [], "created", "desc", 5, 1);
 
         $view->set("start", $start)
             ->set("end", $end)
-            ->set("performance", $this->perf($clicks, $this->user))
-            ->set("clicks", $total_clicks);
+            ->set("topusers", $this->topusers($dateQuery))
+            ->set("notifications", $notifications)
+            ->set("performance", $this->perf($clicks, $this->user));
+    }
+
+    protected function topusers($dateQuery) {
+        $clickCol = Registry::get("MongoDB")->clicks;$result = [];
+        $pubs = User::all(["org_id = ?" => $this->org->_id, "type = ?" => "publisher"], ["_id"]);$in = [];
+        foreach ($pubs as $pb) {
+            $in[] = $pb->_id;
+        }
+        $pipeline = array(
+            array(
+                '$match' => array(
+                    "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']],
+                    'pid' => ['$in' => $in],
+                )
+            ),
+            array(
+                '$group' => array(
+                    '_id' => array('pid' => '$pid'),
+                    'count' => array('$sum' => 1)
+                )
+            ),
+            array(
+                '$sort' => array(
+                    'count' => -1
+                )
+            ),
+            array(
+                '$limit' => 10
+            )
+        );
+        $publishers = $clickCol->aggregate($pipeline);
+        foreach ($publishers["result"] as $pub => $value) {
+            $p = User::first(["_id = ?" => $value["_id"]["pid"]],["name"]);
+            $result[] = [
+                "name" => $p->name,
+                "count" => $value["count"]
+            ];
+        }
+        return $result;
     }
 
     /**
@@ -49,7 +87,7 @@ class Publisher extends Auth {
         $query = ["live = ?" => true, "org_id = ?" => $this->org->_id];
     	
         $ads = \Ad::all($query, [], 'created', 'desc', $limit, $page);
-        $count = \Ad::count($query); $in = [];
+        $count = \Ad::count($query);
         $categories = \Category::all(["org_id = ?" => $this->org->_id], ['name', '_id']);
 
         $view->set([

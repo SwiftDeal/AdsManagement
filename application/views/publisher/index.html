@@ -32,14 +32,6 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md-12">
-        <div class="card-box">
-            <h4 class="text-dark  header-title m-t-0 m-b-30">Performance Last 7 Days</h4>
-            <div id="clickstats" style="height: 300px;"></div>
-        </div>
-    </div>
-</div>
-<div class="row">
     <div class="col-md-6">
         {if isset($notifications)}
         <div class="card-box">
@@ -60,19 +52,31 @@
         {/if}
     </div>
     <div class="col-md-6">
-        {if isset($featured)}
+        {if isset($topusers)}
         <div class="card-box widget-user">
-            <h4 class="text-dark  header-title m-t-0">Featured Campaign</h4>
-            <div>
-                <img src="assets/images/users/avatar-1.jpg" class="img-responsive img-circle" alt="user">
-                <div class="wid-u-info">
-                    <img src="{echo CDN}uploads/images/{echo $featured->image}" alt="" class="img-responsive" width="70" height="70">
-                    <h4 class="m-t-0 m-b-5"><a href="/campaign/info/{$featured->_id}.html">{echo $featured->title}</a></h4>
-                    <small class="text-warning"><b>($c->model)} - {echo $c->rate}</b></small>
-                </div>
+            <h4 class="text-dark  header-title m-t-0">Top users</h4>
+            <div class="table-responsive">
+                <table class="table">
+                    <tbody>
+                        {foreach $u in $topusers}
+                        <tr>
+                            <td>{echo $u["name"]}</td>
+                            <td>{echo $u["count"]}</td>
+                        </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
             </div>
         </div>
         {/if}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card-box">
+            <h4 class="text-dark  header-title m-t-0 m-b-30">Performance Last 7 Days</h4>
+            <div id="clickstats" style="height: 300px;"></div>
+        </div>
     </div>
 </div>
 <script type="text/javascript">

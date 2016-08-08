@@ -61,9 +61,9 @@
                                             <td>{echo $c->title}</td>
                                             <td>{echo $c->clicks}</td>
                                             <td>
-                                                USD {echo $cm->rate} <b>{echo strtoupper($cm->model)}</b>
+                                                {echo $user->convert($cm->rate)} <b>{echo strtoupper($cm->model)}</b>
                                             </td>
-                                            <td>{echo $c->clicks*$cm->rate}</td>
+                                            <td>{echo $user->convert($c->clicks*$cm->rate)}</td>
                                         </tr>
                                         {/foreach}
                                     </tbody>

@@ -36,7 +36,17 @@ class Admin extends Auth {
 
         $view->set("start", $start)
             ->set("end", $end)
+            ->set("links", Registry::get("MongoDB")->links->count(['user_id' => ['$in' => $in]]))
+            ->set("platforms", Registry::get("MongoDB")->platforms->count(['user_id' => ['$in' => $in]]))
             ->set("performance", $this->perf($clicks, $this->user));
+    }
+
+    protected function publishers() {
+        $publishers = User::all(["org_id = ?" => $this->org->_id, "type = ?" => "publisher"], ["_id"]);
+        $in = [];
+        foreach ($publishers as $p) {
+            $in[] = $p->_id;
+        }
     }
 
     /**
