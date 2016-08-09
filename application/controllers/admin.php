@@ -140,7 +140,7 @@ class Admin extends Auth {
         $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
         
-        $find = Performance::overall($dateQuery, User::all(["org_id = ?" => $this->org->id], ["_id"]));
+        $find = Performance::overall($dateQuery, User::all(["type" => "publisher", "org_id = ?" => $this->org->id], ["_id"]));
         $view->set($find);
     }
 

@@ -53,6 +53,7 @@
     </div>
     <div class="col-md-4">
         {if isset($topusers)}
+        {script $topusers = $topusers['publishers']}
         <div class="card-box widget-user">
             <h4 class="text-dark  header-title m-t-0">Top 10 publishers</h4>
             <div class="table-responsive">

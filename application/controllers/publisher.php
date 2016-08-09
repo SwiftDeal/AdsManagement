@@ -38,39 +38,57 @@ class Publisher extends Auth {
     }
 
     protected function topusers($dateQuery) {
-        $clickCol = Registry::get("MongoDB")->clicks;$result = [];
-        $pubs = User::all(["org_id = ?" => $this->org->_id, "type = ?" => "publisher"], ["_id"]);$in = [];
+        $clickCol = Registry::get("MongoDB")->clicks;
+
+        $result = ['publishers' => [], 'ads' => []]; $in = []; $pubClicks = [];
+        $pubs = User::all(["org_id = ?" => $this->org->_id, "type = ?" => "publisher"], ["_id"]);
         foreach ($pubs as $pb) {
             $in[] = $pb->_id;
         }
-        $pipeline = array(
-            array(
-                '$match' => array(
-                    "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']],
-                    'pid' => ['$in' => $in],
-                )
-            ),
-            array(
-                '$group' => array(
-                    '_id' => array('pid' => '$pid'),
-                    'count' => array('$sum' => 1)
-                )
-            ),
-            array(
-                '$sort' => array(
-                    'count' => -1
-                )
-            ),
-            array(
-                '$limit' => 10
-            )
-        );
-        $publishers = $clickCol->aggregate($pipeline);
-        foreach ($publishers["result"] as $pub => $value) {
-            $p = User::first(["_id = ?" => $value["_id"]["pid"]],["name"]);
-            $result[] = [
+        
+        $records = $clickCol->find([
+            'created' => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']],
+            'pid' => ['$in' => $in]
+        ], ['adid', 'pid', 'ipaddr', 'referer']);
+        $records = Click::classify($records, 'adid');
+        
+        foreach ($records as $key => $value) {
+            $filter = Click::classify($value, 'pid');
+            $adClicksCount = 0;
+            foreach ($filter as $pid => $v) {
+                $clicks = Click::checkFraud($v);
+                $count = count($clicks);
+
+                if (!array_key_exists($pid, $pubClicks)) {
+                    $pubClicks[$pid] = $count;
+                } else {
+                    $pubClicks[$pid] += $count;
+                }
+                $adClicksCount += $count;
+            }
+
+            $adClicks[$key] = $adClicksCount;
+        }
+
+        // sort publishers based on clicks and find their details
+        arsort($pubClicks); array_splice($pubClicks, 10);
+        foreach ($pubClicks as $pid => $count) {
+            $p = User::first(["_id = ?" => $pid], ['name']);
+            $result['publishers'][] = [
                 "name" => $p->name,
-                "count" => $value["count"]
+                "count" => $count
+            ];
+        }
+
+        arsort($adClicks); array_splice($adClicks, 10);
+        foreach ($adClicks as $adid => $count) {
+            $ad = \Ad::first(['_id' => $adid], ['title', 'image', 'url']);
+            $result['ads'][] = [
+                '_id' => $adid,
+                'title' => $ad->title,
+                'image' => $ad->image,
+                'url' => $ad->url,
+                'clicks' => $count
             ];
         }
         return $result;
