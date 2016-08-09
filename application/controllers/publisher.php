@@ -51,7 +51,7 @@ class Publisher extends Auth {
         } $org = $this->org;
         
         $records = $clickCol->find([
-            'created' => ['$gte' => $dateQuery['start']],
+            "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']],
             'pid' => ['$in' => $in]
         ], ['adid', 'pid', 'ipaddr', 'referer']);
 
@@ -83,25 +83,6 @@ class Publisher extends Auth {
                 $pubClicks[$pid]++;
             }
         }
-
-        /*$records = Click::classify($records, 'adid');
-        foreach ($records as $key => $value) {
-            $filter = Click::classify($value, 'pid');
-            $adClicksCount = 0;
-            foreach ($filter as $pid => $v) {
-                $clicks = Click::checkFraud($v);
-                $count = count($clicks);
-
-                if (!array_key_exists($pid, $pubClicks)) {
-                    $pubClicks[$pid] = $count;
-                } else {
-                    $pubClicks[$pid] += $count;
-                }
-                $adClicksCount += $count;
-            }
-            $adClicks[$key] = $adClicksCount;
-        }*/
-
         // sort publishers based on clicks and find their details
         arsort($pubClicks); array_splice($pubClicks, 10);
         foreach ($pubClicks as $pid => $count) {
@@ -137,13 +118,24 @@ class Publisher extends Auth {
         $query = ["live = ?" => true, "org_id = ?" => $this->org->_id];
     	
         $ads = \Ad::all($query, [], 'created', 'desc', $limit, $page);
-        $count = \Ad::count($query);
+        $count = \Ad::count($query); $cats = [];
         $categories = \Category::all(["org_id = ?" => $this->org->_id], ['name', '_id']);
+        foreach ($categories as $cat) {
+            $id = (string) $cat->_id;
+            $cats[$id] = $cat->name;
+        }
+        $user = $this->user; $model = null; $rate = null;
 
+        if (array_key_exists("campaign", $user->meta)) {
+            $model = $user->meta["campaign"]["model"];
+            $rate = $user->meta["campaign"]["rate"];
+        }
+        
         $view->set([
             'limit' => $limit, 'page' => $page,
             'count' => $count, 'ads' => $ads,
-            'categories' => $categories
+            'model' => $model, 'rate' => $rate,
+            'cats' => $cats, 'categories' => $categories
         ]);
     }
 

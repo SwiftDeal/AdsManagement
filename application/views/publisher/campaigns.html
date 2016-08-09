@@ -28,31 +28,35 @@
                         <tr>
                             <th>PREVIEW</th>
                             <th>TITLE</th>
-                            <th>PAYOUT</th>
                             <th>TYPE</th>
+                            <th>PAYOUT</th>
                             <th>CATEGORY</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tbody>
-                            {foreach $a in $ads}
+                        {foreach $a in $ads}
                             {script $c = Commission::first(["ad_id = ?" => $a->id])}
                             <tr>
                                 <td>
-                                    <img src="{echo CDN}uploads/images/{echo $a->image}" alt="" class="img-responsive" width="70" height="70"> {script $id = $a->getMongoID()}
-                                    <button type="button" data-adid="{echo $a->_id}" class="createLink btn btn-purple btn-xs waves-effect waves-light">Tracking Link</button>
+                                    <img src="{echo CDN}uploads/images/{echo $a->image}" alt="" class="img-responsive" width="150"> {script $id = $a->getMongoID()}
+                                    <button type="button" data-adid="{echo $a->_id}" class="createLink btn btn-purple btn-xs waves-effect waves-light text-center">Tracking Link</button>
                                 </td>
                                 <td><a href="/campaign/info/{$a->_id}.html">{echo $a->title}</a></td>
-                                <td>{echo $user->convert($c->rate)}</td>
                                 <td>{echo strtoupper($c->model)}</td>
-                                {script $names = []}
+                                {if($c->model == $model)}
+                                <td>{echo $user->convert($rate)}</td>
+                                {/if} {else}
+                                <td>{echo $user->convert($c->rate)}</td>
+                                {/else}
+                                <td>
                                 {foreach $cat in $a->category}
                                     {script $key = Shared\Utils::getMongoID($cat)}
-                                    {if isset($categories[$key])} {script $names[] = $categories[$cat]->name} {/if}
+                                    <label class="label label-info">{echo $cats[$key]}</label>
                                 {/foreach}
-                                <td>{echo implode(", ", $names)}</td>
+                                </td>
                             </tr>
-                            {/foreach}
+                        {/foreach}
                         </tbody>
                     </tbody>
                 </table>

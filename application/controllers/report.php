@@ -197,6 +197,57 @@ class Report extends Admin {
     /**
      * @before _secure
      */
+    public function links() {
+        $this->seo(array("title" => "Link Logs"));
+        $view = $this->getActionView();
+
+        $limit = RM::get("limit", 10); $page = RM::get("page", 1);
+        $prop = RM::get("property"); $val = RM::get("value");
+        $sort = RM::get("sort", "desc"); $sign = RM::get("sign", "equal");
+        $orderBy = RM::get("order", 'created');
+        $start = RM::get("start", date('Y-m-d', strtotime('-7 day')));
+        $end = RM::get("end", date('Y-m-d', strtotime('-1 day')));
+        $fields = (new \Link())->getColumns();
+
+        // Only find the users for this organizations
+        $users = \User::all(['org_id' => $this->org->_id], ['_id']);
+        $in = []; $query = [];
+        foreach ($users as $u) {
+            $in[] = $u->_id;
+        }
+
+        $query['user_id'] = ['$in' => $in]; $searching = [];
+        foreach ($fields as $key => $value) {
+            $search = RM::get($key);
+            if (!$search) continue;
+            $searching[$key] = $search;
+
+             // Only allow full object ID's and rest regex searching
+            if (in_array($key, ['user_id', 'ad_id', '_id'])) {
+                $query[$key] = RM::get($key);
+            } else {
+                $query[$key] = new \MongoRegex("/$search/i");
+            }
+        }
+        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
+        $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
+
+        $records = \Link::all($query, [], $orderBy, $sort, $limit, $page);
+        $count = \Link::count($query);
+
+        $view->set([
+            'links' => $records, 'fields' => $fields,
+            'limit' => $limit, 'page' => $page,
+            'property' => $prop, 'value' => $val,
+            'sign' => $sign, 'sort' => $sort,
+            'order' => $orderBy, 'count' => $count,
+            'start' => $start, 'end' => $end, 'query' => $searching
+        ]);
+    }
+
+    /**
+     * @before _secure
+     */
     public function platforms() {
         $this->seo(["title" => "Platform wise click stats"]);
         $view = $this->getActionView();

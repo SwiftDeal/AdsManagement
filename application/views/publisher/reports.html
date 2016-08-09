@@ -15,7 +15,7 @@
                     <input type="date" style="width: 180px" name="end" class="form-control" value="{$end}" />
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Show</button>
+            <button type="submit" class="btn btn-primary">Change</button>
         </form>
         <h4 class="page-title">Reports</h4>
     </div>
@@ -37,14 +37,14 @@
                     <tr>
                         <td>{echo Framework\StringMethods::only_date($p->created)}</td>
                         <td>{echo $p->clicks}</td>
-                        <td><i class="fa fa-usd"> {echo $p->revenue}</i></td>
+                        <td>{echo $user->convert($p->revenue)}</i></td>
                         {script $total += $p->revenue}
                     </tr>
                     {/foreach}
                     <tr>
                         <td></td>
                         <td></td>
-                        <td>Total: <i class="fa fa-usd"> {echo $total}</i></td>
+                        <td>Total: {echo $user->convert($total)}</td>
                     </tr>
                 </tbody>
             </table>
@@ -60,6 +60,7 @@
                     <tr>
                         <th>PREVIEW</th>
                         <th>TITLE</th>
+                        <th>CREATED</th>
                         <th>TYPE</th>
                         <th>RATE</th>
                         <th>CLICKS</th>
@@ -68,7 +69,7 @@
                 </thead>
                 <tbody>
                     {foreach $l in $links}
-                    {script $a = Ad::first(["_id = ?" => $l->ad_id], ['title', 'url', '_id', 'image']);}
+                    {script $a = Ad::first(["_id = ?" => $l->ad_id], ['title', 'url', '_id', 'image', 'created']);}
                     {script $c = Commission::first(["ad_id = ?" => $l->ad_id])}
 
                     <!-- find ad clicks and filter -->
@@ -82,9 +83,10 @@
                     
                     <tr>
                         <td>
-                            <img src="{echo CDN}uploads/images/{echo $a->image}" alt="" class="img-responsive" width="70" height="70">
+                            <img src="{echo CDN}uploads/images/{echo $a->image}" alt="" class="img-responsive" width="100" height="100">
                         </td>
                         <td><a href="/campaign/info/{$a->id}.html">{echo $a->title}</a></td>
+                        <td><small>{echo Framework\StringMethods::only_date($a->created)}</small></td>
                         <td>
                             {echo strtoupper($c->model)} <br>
                             <small>{echo $c->description}</small>

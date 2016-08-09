@@ -286,7 +286,7 @@ class Auth extends Controller {
 
     protected function perf($clicks, $p=null) {
         $perf = new Performance();
-        
+        $adsInfo = [];
         $classify = \Click::classify($clicks, 'adid');
         foreach ($classify as $key => $value) {
             if (!array_key_exists($key, $adsInfo)) {
