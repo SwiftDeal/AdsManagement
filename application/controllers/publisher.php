@@ -303,6 +303,7 @@ class Publisher extends Auth {
                 'template' => 'pubRegister',
                 'subject' => 'Publisher at '. $this->org->name,
                 'app' => $this->org->domain,
+                'pass' => $user->password,
                 'subdomain' => $this->org->domain,
                 'team' => $this->org->name
             ]);

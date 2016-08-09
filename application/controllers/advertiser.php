@@ -174,7 +174,7 @@ class Advertiser extends Auth {
             Mail::send([
                 'user' => $user,
                 'template' => 'advertReg',
-                'subject' => 'Advertiser at '. $this->org->name,
+                'subject' => $this->org->name . 'Support',
                 'app' => $this->org->domain,
                 'subdomain' => $this->org->domain,
                 'team' => $this->org->name

@@ -173,11 +173,12 @@ class Auth extends Controller {
         } catch (\Exception $e) {
             return $view->set('message', $e->getMessage());
         }
+        $pass = RequestMethods::post("password");
         $user = new User(array(
             "org_id" => $org->id,
             "name" => RequestMethods::post("name"),
             "email" => $email,
-            "password" => sha1(RequestMethods::post("password")),
+            "password" => sha1($pass),
             "phone" => RequestMethods::post("phone"),
             "country" => RequestMethods::server("HTTP_CF_IPCOUNTRY", "IN"),
             "currency" => "INR",
@@ -190,8 +191,9 @@ class Auth extends Controller {
             Mail::send([
                 'user' => $user,
                 'template' => 'pubRegister',
-                'subject' => 'Publisher at '. $this->org->name,
+                'subject' => $this->org->name . 'Support',
                 'app' => $this->org->domain,
+                'pass' => $pass,
                 'subdomain' => $this->org->domain,
                 'team' => $this->org->name
             ]);
