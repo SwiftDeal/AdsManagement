@@ -52,14 +52,14 @@
         {/if}
     </div>
     <div class="col-md-4">
-        {if isset($topusers)}
-        {script $topusers = $topusers['publishers']}
+        {if isset($topusers['publishers'])}
+        {script $topEarners = $topusers['publishers']}
         <div class="card-box widget-user">
             <h4 class="text-dark  header-title m-t-0">Top 10 publishers</h4>
             <div class="table-responsive">
                 <table class="table">
                     <tbody>
-                        {foreach $u in $topusers}
+                        {foreach $u in $topEarners}
                         <tr>
                             <td>{echo $u["name"]}</td>
                             <td>{echo $u["count"]}</td>
@@ -72,16 +72,17 @@
         {/if}
     </div>
     <div class="col-md-4">
-        {if isset($topcampaigns)}
+        {if isset($topusers['ads'])}
+        {script $topCampaigns = $topusers['ads']}
         <div class="card-box widget-user">
-            <h4 class="text-dark  header-title m-t-0">Top 10 Campaign</h4>
+            <h4 class="text-dark  header-title m-t-0">Top 10 Campaigns</h4>
             <div class="table-responsive">
                 <table class="table">
                     <tbody>
-                        {foreach $tc in $topcampaigns}
+                        {foreach $tc in $topCampaigns}
                         <tr>
-                            <td>{echo $tc["name"]}</td>
-                            <td>{echo $tc["count"]}</td>
+                            <td>{echo $tc["title"]}</td>
+                            <td>{echo $tc["clicks"]}</td>
                         </tr>
                         {/foreach}
                     </tbody>

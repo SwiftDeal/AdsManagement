@@ -37,21 +37,54 @@ class Publisher extends Auth {
             ->set("performance", $this->perf($clicks, $this->user));
     }
 
-    protected function topusers($dateQuery) {
+    public function topusers($dateQuery = null) {
+        if (!$dateQuery) {
+            $date = RequestMethods::get("date", date('Y-m-d'));
+            $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
+        }
         $clickCol = Registry::get("MongoDB")->clicks;
 
         $result = ['publishers' => [], 'ads' => []]; $in = []; $pubClicks = [];
-        $pubs = User::all(["org_id = ?" => $this->org->_id, "type = ?" => "publisher"], ["_id"]);
+        $pubs = User::all(["org_id = ?" => $this->org->_id, "type = ?" => "publisher"], ["_id", "name"]);
         foreach ($pubs as $pb) {
             $in[] = $pb->_id;
-        }
+        } $org = $this->org;
         
         $records = $clickCol->find([
-            'created' => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']],
+            'created' => ['$gte' => $dateQuery['start']],
             'pid' => ['$in' => $in]
         ], ['adid', 'pid', 'ipaddr', 'referer']);
-        $records = Click::classify($records, 'adid');
-        
+
+        // $count = 0;
+        $uniqClicks = []; $adClicks = []; $pubClicks = [];
+        foreach ($records as $r) {
+            $c = (object) $r; $regex = preg_quote($org->url, ".");
+
+            if (!$c->referer || preg_match('/vnative\.com/', $c->referer) || preg_match('#'.$regex.'#', $c->referer)) {
+                continue;
+            }
+            $ip = $c->ipaddr; $adid = $c->adid; $pid = $c->pid;
+            if (isset($uniqClicks[$ip])) {
+                continue;
+            }
+            $uniqClicks[$ip] = true;
+
+            $adid = Utils::getMongoID($adid);
+            $pid = Utils::getMongoID($pid);
+            if (!isset($adClicks[$adid])) {
+                $adClicks[$adid] = 1;
+            } else {
+                $adClicks[$adid]++;
+            }
+
+            if (!isset($pubClicks[$pid])) {
+                $pubClicks[$pid] = 1;
+            } else {
+                $pubClicks[$pid]++;
+            }
+        }
+
+        /*$records = Click::classify($records, 'adid');
         foreach ($records as $key => $value) {
             $filter = Click::classify($value, 'pid');
             $adClicksCount = 0;
@@ -66,14 +99,13 @@ class Publisher extends Auth {
                 }
                 $adClicksCount += $count;
             }
-
             $adClicks[$key] = $adClicksCount;
-        }
+        }*/
 
         // sort publishers based on clicks and find their details
         arsort($pubClicks); array_splice($pubClicks, 10);
         foreach ($pubClicks as $pid => $count) {
-            $p = User::first(["_id = ?" => $pid], ['name']);
+            $p = $pubs[$pid];
             $result['publishers'][] = [
                 "name" => $p->name,
                 "count" => $count

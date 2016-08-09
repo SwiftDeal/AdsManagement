@@ -115,7 +115,7 @@ class Click extends Shared\Model {
                     break;
             }
 
-            if (!array_key_exists($key, $classify)) {
+            if (!isset($classify[$key]) || !array_key_exists($key, $classify)) {
                 $classify[$key] = [];
             }
             $classify[$key][] = $c;
