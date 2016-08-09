@@ -73,9 +73,14 @@ class Click extends Shared\Model {
      */
     protected $_device;
 
-    public static function checkFraud($clicks) {
+    public static function checkFraud($clicks, $org = null) {
         $cf = Registry::get("configuration")->parse("configuration/cf")->cloudflare;
-        $org_url = Registry::get("session")->get("org")->url;
+
+        if (!$org) {
+            $org_url = Registry::get("session")->get("org")->url;   
+        } else {
+            $org_url = (is_null($org->url) || !$org->url) ? '' : $org->url;
+        }
         // The clicks here will be for a publisher on an AD
         $verified = [];
         foreach ($clicks as $c) {

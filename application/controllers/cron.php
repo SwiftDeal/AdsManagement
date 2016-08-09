@@ -49,10 +49,11 @@ class Cron extends Shared\Controller {
         $this->_pubPerf();
         $this->_advertPerf();
         $this->_webPerf();
+        // $this->_test();
     }
 
     protected function _test() {
-        $start = date('Y-m-d', strtotime('-7 day'));
+        $start = date('Y-m-d', strtotime('-2 day'));
         $end = date('Y-m-d', strtotime('-1 day'));
 
         $diff = date_diff(date_create($start), date_create($end));
@@ -70,11 +71,19 @@ class Cron extends Shared\Controller {
             $date = date('Y-m-d', strtotime('-1 day'));
         }
         // find the publishers
-        $publishers = \User::all(['type = ?' => 'publisher', 'live = ?' => true], ['_id', 'email', 'meta']);
+        $publishers = \User::all(['type = ?' => 'publisher', 'live = ?' => true], ['_id', 'email', 'meta', 'org_id']);
 
         // store AD commission info
-        $adsInfo = [];
+        $adsInfo = []; $orgs = [];
         foreach ($publishers as $p) {
+            // @todo find a way to cope up with these multiple array_key_exists statements
+            $org_id = Utils::getMongoID($p->org_id);
+            if (!array_key_exists($org_id, $orgs)) {
+                $org = \Organization::first(['_id' => $org_id], ['url']);
+                $orgs[$org_id] = $org;
+            } else {
+                $org = $orgs[$org_id];
+            }
             // find the clicks for the publisher
             $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
             $start = $dateQuery['start']; $end = $dateQuery['end'];
@@ -98,7 +107,7 @@ class Cron extends Shared\Controller {
                 }
 
                 // Check for click fraud
-                $uniqClicks = Click::checkFraud($value);
+                $uniqClicks = Click::checkFraud($value, $org);
                 $adClicks = count($uniqClicks);
 
                 if (isset($p->meta['campaign']) && !is_null($p->meta['campaign']['rate'])) {
@@ -112,7 +121,7 @@ class Cron extends Shared\Controller {
                 $perf->revenue += round($revenue, 6);
             }
 
-            if ($perf->clicks === 0) {
+            if ($perf->clicks == 0) {
                 continue;
             } else {
                 $avgCpc = $perf->revenue / $perf->clicks;
@@ -129,10 +138,17 @@ class Cron extends Shared\Controller {
         if (!$date) {
             $date = date('Y-m-d', strtotime('-1 day'));
         }
-        $users = \User::all(['type' => 'advertiser', 'live' => true], ['_id', 'email']);
+        $users = \User::all(['type' => 'advertiser', 'live' => true], ['_id', 'email', 'org_id']);
 
-        $adsInfo = [];
+        $adsInfo = [];  $orgs = [];
         foreach ($users as $u) {
+            $org_id = Utils::getMongoID($u->org_id);
+            if (!array_key_exists($org_id, $orgs)) {
+                $org = \Organization::first(['_id' => $org_id], ['url', 'meta']);
+                $orgs[$org_id] = $org;
+            } else {
+                $org = $orgs[$org_id];
+            }
             $perf = Performance::exists($u, $date);
 
             // find ads for the publisher
@@ -149,7 +165,7 @@ class Cron extends Shared\Controller {
                     'created' => ['$gte' => $start, '$lte' => $end]
                 ], ['adid', 'ipaddr', 'cookie', 'referer']);
                 $records = ArrayMethods::toObject($records);
-                $arr = Click::checkFraud($records);
+                $arr = Click::checkFraud($records, $org);
                 $clicks = count($arr);
 
                 $key = Utils::getMongoID($a->_id);
@@ -160,8 +176,8 @@ class Cron extends Shared\Controller {
                 } else {
                     $comm = $adsInfo[$key];
                 }
-                if (is_null($comm->bid)) {
-                    $orate = 0;
+                if (is_null($comm->bid) || !$comm->bid) {
+                    $orate = isset($org->meta['rate']) ? $org->meta['rate'] : 0;
                 } else {
                     $orate = $comm->bid;
                 }
@@ -170,13 +186,13 @@ class Cron extends Shared\Controller {
                 $revenue += $clicks * $orate;
             }
             $perf->clicks = $clicksCount; $perf->revenue = round($revenue, 6);
-            if ($perf->clicks === 0) {
+            if ($perf->clicks == 0) {
                 continue;
             }
 
             $avgCpc = abs($perf->revenue) / $perf->clicks;
             $perf->cpc = round($avgCpc, 6);
-            $msg = 'Saving performance for advertiser: ' . $u->email;
+            $msg = 'Saving performance for advertiser: ' . $u->email . ' with clicks: ' . $perf->clicks;
             $this->log($msg);
             $perf->save();
         }
@@ -186,10 +202,18 @@ class Cron extends Shared\Controller {
         if (!$date) $date = date('Y-m-d', strtotime('-1 day'));
 
         $clickCol = Registry::get("MongoDB")->clicks;
-        $users = \User::all(['type' => 'advertiser', 'live' => true], ['_id', 'email']);
+        $users = \User::all(['type' => 'advertiser', 'live' => true], ['_id', 'email', 'org_id']);
 
-        $adsInfo = [];
+        $adsInfo = []; $orgs = [];
         foreach ($users as $u) {
+            $org_id = Utils::getMongoID($u->org_id);
+            if (!array_key_exists($org_id, $orgs)) {
+                $org = \Organization::first(['_id' => $org_id], ['url']);
+                $orgs[$org_id] = $org;
+            } else {
+                $org = $orgs[$org_id];
+            }
+
             // find all the ads
             $ads = \Ad::all(['user_id' => $u->_id], ['_id', 'url']);
             // find all the platforms
@@ -233,7 +257,7 @@ class Cron extends Shared\Controller {
                         $comm = $adsInfo[$key];
                     }
 
-                    $uniqClicks = Click::checkFraud($value);
+                    $uniqClicks = Click::checkFraud($value, $org);
                     // can parse uniqClicks to find traffic from individual devices
                     $adClicks = count($uniqClicks);
                     
@@ -241,7 +265,7 @@ class Cron extends Shared\Controller {
                     $revenue += $adClicks * $comm->bid;
                 }
 
-                if ($clicks === 0) {
+                if ($clicks == 0) {
                     continue;
                 }
                 $avgCpc = round($revenue / $clicks, 6);
