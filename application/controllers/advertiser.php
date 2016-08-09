@@ -175,9 +175,7 @@ class Advertiser extends Auth {
                 'user' => $user,
                 'template' => 'advertReg',
                 'subject' => $this->org->name . 'Support',
-                'app' => $this->org->domain,
-                'subdomain' => $this->org->domain,
-                'team' => $this->org->name
+                'org' => $this->org
             ]);
             $user->password = sha1($user->password);
             $user->live = 1;

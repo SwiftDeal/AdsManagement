@@ -79,6 +79,7 @@ class Admin extends Auth {
 
                 case 'org':
                     $org->url = RequestMethods::post('url');
+                    $org->email = RequestMethods::post('email');
                     $org->save();
                     $view->set('message', 'Network Settings updated!!');
                     break;

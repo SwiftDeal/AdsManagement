@@ -150,9 +150,7 @@ class Auth extends Controller {
                 "subject" => "New Password Requested",
                 "user" => $exist,
                 "meta" => $meta,
-                'app' => $org->domain,
-                'subdomain' => $org->domain,
-                'team' => $org->name
+                "org" => $this->org
             ));
         }
         return "Password Reset Email Sent Check Your Email. Check in Spam too.";
@@ -192,10 +190,8 @@ class Auth extends Controller {
                 'user' => $user,
                 'template' => 'pubRegister',
                 'subject' => $this->org->name . 'Support',
-                'app' => $this->org->domain,
-                'pass' => $pass,
-                'subdomain' => $this->org->domain,
-                'team' => $this->org->name
+                'org' => $this->org,
+                'pass' => $pass
             ]);
             
             $platform->user_id = $user->_id;

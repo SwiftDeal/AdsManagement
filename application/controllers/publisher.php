@@ -302,10 +302,8 @@ class Publisher extends Auth {
                 'user' => $user,
                 'template' => 'pubRegister',
                 'subject' => 'Publisher at '. $this->org->name,
-                'app' => $this->org->domain,
-                'pass' => $user->password,
-                'subdomain' => $this->org->domain,
-                'team' => $this->org->name
+                'org' => $this->org,
+                'pass' => $user->password
             ]);
             $user->password = sha1($user->password);
             $user->live = 1;

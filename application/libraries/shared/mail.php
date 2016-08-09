@@ -41,29 +41,17 @@ class Mail {
     public static function send($options) {
         $mailgun = self::_mailgun();
         $domain = self::$_conf['domain'];
-        $team = isset($options['team']) ? $options['team'] : self::$_conf['team'];
-        
-        $options['domain'] = $domain;
+        $org = $options["org"];
         $body = self::_body($options);
         $emails = isset($options["emails"]) ? $options["emails"] : array($options["user"]->email);
 
-        $delivery = (isset($options["delivery"]) ? $options["delivery"] : "mailgun");
-        
-        if (isset($options['subdomain'])) {
-            $subdomain = $options['subdomain'] . '.' . $domain;
-        } else {
-            $subdomain = $domain;
-        }
-        switch ($delivery) {
-            default:
-                $mailgun->sendMessage("$domain", array(
-                    'from'    => "$team Team <support@$subdomain>",
-                    'to'      => $emails,
-                    'subject' => $options["subject"],
-                    'html'    => $body
-                ));
-            
-        }
+        $mailgun->sendMessage($domain, array(
+            'from'    => "{$org->name} <info@{$org->domain}.{$domain}>",
+            'to'      => $emails,
+            'subject' => $options["subject"],
+            'h:Reply-To'=> "<{$org->email}>",
+            'html'    => $body
+        ));
         self::log(implode(",", $emails));
     }
 

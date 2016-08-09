@@ -53,6 +53,17 @@ class Organization extends \Shared\Model {
     /**
      * @column
      * @readwrite
+     * @type text
+     * @length 255
+     * 
+     * @validate required, min(3), max(255)
+     * @label default support email
+     */
+    protected $_email = null;
+
+    /**
+     * @column
+     * @readwrite
      * @type array
      * 
      * @validate required
