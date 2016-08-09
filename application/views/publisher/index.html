@@ -32,7 +32,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-4">
         {if isset($notifications)}
         <div class="card-box">
             <h4 class="text-dark  header-title m-t-0">Recent Notifications</h4>
@@ -51,7 +51,7 @@
         </div>
         {/if}
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
         {if isset($topusers)}
         <div class="card-box widget-user">
             <h4 class="text-dark  header-title m-t-0">Top 10 publishers</h4>
@@ -62,6 +62,25 @@
                         <tr>
                             <td>{echo $u["name"]}</td>
                             <td>{echo $u["count"]}</td>
+                        </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {/if}
+    </div>
+    <div class="col-md-4">
+        {if isset($topcampaigns)}
+        <div class="card-box widget-user">
+            <h4 class="text-dark  header-title m-t-0">Top 10 Campaign</h4>
+            <div class="table-responsive">
+                <table class="table">
+                    <tbody>
+                        {foreach $tc in $topcampaigns}
+                        <tr>
+                            <td>{echo $tc["name"]}</td>
+                            <td>{echo $tc["count"]}</td>
                         </tr>
                         {/foreach}
                     </tbody>

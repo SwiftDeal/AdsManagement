@@ -149,19 +149,34 @@ class Admin extends Auth {
     public function notification() {
         $this->seo(array("title" => "Notification"));
         $view = $this->getActionView();
-        
-        $notifications = Notification::all(["org_id = ?" => $this->org->id], [], "created", "desc", 10, 1);
-        $view->set("notifications", $notifications);
 
-        if (RequestMethods::post("action") == "save") {
-            $n = new Notification([
-                "org_id" => $this->org->id,
-                "message" => RequestMethods::post("message"),
-                "target" => RequestMethods::post("target")
-            ]);
-            $n->save();
-            $view->set("message", "Saved Successfully");
+        switch (RequestMethods::post("action")) {
+            case 'save':
+                $n = new Notification([
+                    "org_id" => $this->org->id,
+                    "message" => RequestMethods::post("message"),
+                    "target" => RequestMethods::post("target")
+                ]);
+                $n->save();
+                $view->set("message", "Saved Successfully");
+                break;
         }
+
+        switch (RequestMethods::get("action")) {
+            case 'delete':
+                $id = RequestMethods::get("id");
+                $n = Notification::first(["org_id = ?" => $this->org->id, "id = ?" => $id]);
+                if ($n) {
+                    $n->delete();
+                    $view->set("message", "Deleted Successfully");
+                } else {
+                    $view->set("message", "Notification does not exist");
+                }
+                break;
+        }
+
+        $notifications = Notification::all(["org_id = ?" => $this->org->id], [], "created", "desc");
+        $view->set("notifications", $notifications);
     }
 
     /**

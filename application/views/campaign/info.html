@@ -25,14 +25,10 @@
                             <tr>
                                 <th>Model</th>
                                 <td>
-                                    {echo $c->rate} <b>{echo strtoupper($c->model)}</b>
+                                    {echo $user->convert($c->rate)} <b>{echo strtoupper($c->model)}</b>
                                     <br>
                                     <small>{echo $c->description}</small>
                                 </td>
-                            </tr>
-                            <tr>
-                                <th></th>
-                                <td></td>
                             </tr>
                             <tr>
                                 <th>Description</th>
