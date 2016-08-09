@@ -70,7 +70,7 @@
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-ga('create', 'UA-75681914-8', 'auto');
+ga('create', 'UA-78834277-1', 'auto');
 ga('send', 'pageview');
 
 jQuery(document).ready(function($) {
