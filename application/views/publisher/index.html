@@ -36,7 +36,7 @@
         {if isset($notifications)}
         <div class="card-box">
             <h4 class="text-dark  header-title m-t-0">Recent Notifications</h4>
-            <div class="table-responsive">
+            <div class="table-responsive nicescroll" style="height: 280px">
                 <table class="table">
                     <tbody>
                         {foreach $n in $notifications}
@@ -56,7 +56,7 @@
         {script $topEarners = $topusers['publishers']}
         <div class="card-box widget-user">
             <h4 class="text-dark  header-title m-t-0">Top 10 publishers</h4>
-            <div class="table-responsive">
+            <div class="table-responsive nicescroll" style="height: 280px">
                 <table class="table">
                     <tbody>
                         {foreach $u in $topEarners}
@@ -76,12 +76,12 @@
         {script $topCampaigns = $topusers['ads']}
         <div class="card-box widget-user">
             <h4 class="text-dark  header-title m-t-0">Top 10 Campaigns</h4>
-            <div class="table-responsive">
+            <div class="table-responsive nicescroll" style="height: 280px">
                 <table class="table">
                     <tbody>
                         {foreach $tc in $topCampaigns}
                         <tr>
-                            <td>{echo $tc["title"]}</td>
+                            <td><a href="/campaign/info/{echo $tc['_id']}.html" target="_blank">{echo $tc["title"]}</a></td>
                             <td>{echo $tc["clicks"]}</td>
                         </tr>
                         {/foreach}

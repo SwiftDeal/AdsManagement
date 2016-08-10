@@ -14,7 +14,7 @@ class Organization extends \Shared\Model {
      * @length 255
      * 
      * @validate required, min(3), max(255)
-     * @label paypal email
+     * @label organizaion name
      */
     protected $_name;
 

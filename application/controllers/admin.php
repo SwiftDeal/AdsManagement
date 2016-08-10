@@ -78,6 +78,11 @@ class Admin extends Auth {
     				break;
 
                 case 'org':
+                    if (RequestMethods::post("widgets")) {
+                        $meta = $org->meta;
+                        $meta["widgets"] = RequestMethods::post("widgets");
+                        $org->meta = $meta;
+                    }
                     $org->url = RequestMethods::post('url');
                     $org->email = RequestMethods::post('email');
                     $org->save();
@@ -89,6 +94,9 @@ class Admin extends Auth {
     		}
     		$this->setUser($user);
     	}
+        if (in_array("top10ads", $org->meta["widgets"])) {
+            // echo "yes";
+        }
     }
 
     /**

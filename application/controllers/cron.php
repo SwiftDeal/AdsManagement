@@ -41,6 +41,82 @@ class Cron extends Shared\Controller {
 
     protected function _hourly() {
        $this->importCampaigns();
+       $this->widgets();
+    }
+
+
+    public function widgets() {
+        $this->log("Widgets Started");
+        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-1 day')));
+        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
+        $clickCol = Registry::get("MongoDB")->clicks;
+
+        $orgs = Organization::all(["live = ?" => true]);
+        foreach ($orgs as $org) {
+            if(!array_key_exists("widgets", $org->meta)) continue;
+            $result = ['publishers' => [], 'ads' => []]; $in = []; $pubClicks = [];
+            $pubs = User::all(["org_id = ?" => $org->_id, "type = ?" => "publisher"], ["_id"]);
+            foreach ($pubs as $pb) {
+                $in[] = $pb->_id;
+            }
+            
+            $records = $clickCol->find([
+                "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']],
+                'pid' => ['$in' => $in]
+            ], ['adid', 'pid', 'ipaddr', 'referer']);
+
+            // $count = 0;
+            $uniqClicks = []; $adClicks = []; $pubClicks = [];
+            foreach ($records as $r) {
+                $c = (object) $r; $regex = preg_quote($org->url, ".");
+
+                if (!$c->referer || preg_match('/vnative\.com/', $c->referer) || preg_match('#'.$regex.'#', $c->referer)) {
+                    continue;
+                }
+                $ip = $c->ipaddr; $adid = $c->adid; $pid = $c->pid;
+                if (isset($uniqClicks[$ip])) {
+                    continue;
+                }
+                $uniqClicks[$ip] = true;
+
+                $adid = Utils::getMongoID($adid);
+                $pid = Utils::getMongoID($pid);
+                if (!isset($adClicks[$adid])) {
+                    $adClicks[$adid] = 1;
+                } else {
+                    $adClicks[$adid]++;
+                }
+
+                if (!isset($pubClicks[$pid])) {
+                    $pubClicks[$pid] = 1;
+                } else {
+                    $pubClicks[$pid]++;
+                }
+            }
+            // sort publishers based on clicks and find their details
+            arsort($pubClicks); array_splice($pubClicks, 10);
+            foreach ($pubClicks as $pid => $count) {
+                $result['publishers'][] = [
+                    "_id" => $pid,
+                    "count" => $count
+                ];
+            }
+
+            arsort($adClicks); array_splice($adClicks, 10);
+            foreach ($adClicks as $adid => $count) {
+                $result['ads'][] = [
+                    '_id' => $adid,
+                    'clicks' => $count
+                ];
+            }
+            $meta = $org->meta;
+            $meta["widget"]["top10pubs"] = $result['publishers'];
+            $meta["widget"]["top10ads"] = $result['ads'];
+            $org->meta = $meta;
+            $org->save();
+        }
+        $this->log("Widgets Done");
     }
 
     protected function _daily() {
