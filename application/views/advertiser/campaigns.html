@@ -71,7 +71,8 @@
                             <small>{echo $c->description}</small>
                         </td>
                         <td>{echo count($uniqClicks)}</td>
-                        <td><i class="fa fa-usd"></i> {echo $c->bid * count($uniqClicks)}</td>
+                        {script $rate = isset($org->meta['rate']) ? $org->meta['rate'] : $c->bid}
+                        <td><i class="fa fa-usd"></i> {echo round($rate * count($uniqClicks), 6)}</td>
 
                     </tr>
                     {/foreach}

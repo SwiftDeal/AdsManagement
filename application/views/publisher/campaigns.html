@@ -52,7 +52,7 @@
                                 <td>
                                 {foreach $cat in $a->category}
                                     {script $key = Shared\Utils::getMongoID($cat)}
-                                    <label class="label label-info">{echo $cats[$key]}</label>
+                                    <label class="label label-info">{echo $categories[$key]->name}</label>
                                 {/foreach}
                                 </td>
                             </tr>

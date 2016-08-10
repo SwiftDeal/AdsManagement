@@ -123,15 +123,17 @@ class Publisher extends Auth {
 
         $limit = RequestMethods::get("limit", 20);
         $page = RequestMethods::get("page", 1);
+        $coverage = RequestMethods::get("coverage");
         $query = ["live = ?" => true, "org_id = ?" => $this->org->_id];
+
+        if ($coverage) {
+            // if you want AND query instead of OR query then replace '$in' --> '$all'
+            $query["category"] = ['$in' => Ad::setCategories($coverage)];
+        }
     	
         $ads = \Ad::all($query, [], 'created', 'desc', $limit, $page);
         $count = \Ad::count($query); $cats = [];
         $categories = \Category::all(["org_id = ?" => $this->org->_id], ['name', '_id']);
-        foreach ($categories as $cat) {
-            $id = (string) $cat->_id;
-            $cats[$id] = $cat->name;
-        }
         $user = $this->user; $model = null; $rate = null;
 
         if (array_key_exists("campaign", $user->meta)) {
@@ -143,7 +145,7 @@ class Publisher extends Auth {
             'limit' => $limit, 'page' => $page,
             'count' => $count, 'ads' => $ads,
             'model' => $model, 'rate' => $rate,
-            'cats' => $cats, 'categories' => $categories
+            'categories' => $categories
         ]);
     }
 
