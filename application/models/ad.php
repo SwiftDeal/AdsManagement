@@ -95,4 +95,20 @@ class Ad extends Shared\Model {
         }
         return $result;
     }
+
+    public static function displayData($ads = []) {
+        $result = [];
+        foreach ($ads as $a) {
+            $a = (object) $a;
+            $find = self::first(['_id' => $a->_id], ['title', 'image', 'url']);
+            $result[] = [
+                '_id' => $a->_id,
+                'clicks' => $a->clicks,
+                'title' => $find->title,
+                'image' => $find->image,
+                'url' => $find->url
+            ];
+        }
+        return $result;
+    }
 }

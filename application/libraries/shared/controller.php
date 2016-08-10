@@ -31,7 +31,7 @@ namespace Shared {
          */
         protected $_org = null;
 
-        public function setOrg($org) {
+        public function setOrg($org = null) {
             $session = Registry::get("session");
             if ($org) {
                 $session->set("org", $org);

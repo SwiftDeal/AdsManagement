@@ -7,6 +7,7 @@
  */
 use Shared\Utils as Utils;
 use Framework\ArrayMethods as ArrayMethods;
+use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
 
 class Cron extends Shared\Controller {
@@ -56,17 +57,16 @@ class Cron extends Shared\Controller {
         foreach ($orgs as $org) {
             if(!array_key_exists("widgets", $org->meta)) continue;
             $result = ['publishers' => [], 'ads' => []]; $in = []; $pubClicks = [];
-            $pubs = User::all(["org_id = ?" => $org->_id, "type = ?" => "publisher"], ["_id"]);
+            $pubs = User::all(["org_id = ?" => $org->_id, "type = ?" => "publisher"], ["_id", "name"]);
             foreach ($pubs as $pb) {
                 $in[] = $pb->_id;
             }
             
             $records = $clickCol->find([
                 "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']],
-                'pid' => ['$in' => $in]
+                "pid" => ['$in' => $in]
             ], ['adid', 'pid', 'ipaddr', 'referer']);
 
-            // $count = 0;
             $uniqClicks = []; $adClicks = []; $pubClicks = [];
             foreach ($records as $r) {
                 $c = (object) $r; $regex = preg_quote($org->url, ".");
@@ -97,8 +97,10 @@ class Cron extends Shared\Controller {
             // sort publishers based on clicks and find their details
             arsort($pubClicks); array_splice($pubClicks, 10);
             foreach ($pubClicks as $pid => $count) {
+                $u = $pubs[$pid];
                 $result['publishers'][] = [
                     "_id" => $pid,
+                    "name" => $u->name,
                     "count" => $count
                 ];
             }
@@ -114,6 +116,7 @@ class Cron extends Shared\Controller {
             $meta["widget"]["top10pubs"] = $result['publishers'];
             $meta["widget"]["top10ads"] = $result['ads'];
             $org->meta = $meta;
+            $this->log("Widget Saved for Org: " . $org->name);
             $org->save();
         }
         $this->log("Widgets Done");

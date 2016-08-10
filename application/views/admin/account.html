@@ -84,8 +84,8 @@
                             <div class="form-group">
                                 <label>Widgets</label>
                                 <select name="widgets[]" class="form-control" multiple="">
-                                    <option value="top10pubs" {if(in_array("top10pubs", $org->meta["widgets"]))}selected{/if}>Top10 Publishers</option>
-                                    <option value="top10ads" {if(in_array("top10ads", $org->meta["widgets"]))}selected{/if}>Top10 Ads</option>
+                                    <option value="top10pubs" {if(in_array("top10pubs", $org->meta["widgets"]))}selected=""{/if}>Top10 Publishers</option>
+                                    <option value="top10ads" {if(in_array("top10ads", $org->meta["widgets"]))}selected=""{/if}>Top10 Ads</option>
                                 </select>
                             </div>
                             <input type="hidden" name="action" value="org">

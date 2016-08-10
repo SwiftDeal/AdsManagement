@@ -17,8 +17,9 @@ class Admin extends Auth {
         $this->seo(array("title" => "Dashboard"));
         $view = $this->getActionView();
 
-        $publishers = User::all(["org_id = ?" => $this->org->_id, "type = ?" => "publisher"], ["_id"]);
-        $in = [];
+        $publishers = User::all([
+            "org_id = ?" => $this->org->_id, "type = ?" => "publisher"
+        ], ["_id"]); $in = [];
         foreach ($publishers as $p) {
             $in[] = $p->_id;
         }
@@ -27,18 +28,24 @@ class Admin extends Auth {
         $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
         $query = [
-            'pid' => ['$in' => $in],
+            'user_id' => ['$in' => $in],
             "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]
         ];
         
-        $clickCol = Registry::get("MongoDB")->clicks;
-        $clicks = $clickCol->find($query,['adid', 'cookie', 'ipaddr', 'referer']);
+        $perf = new Performance([
+            'clicks' => 0, 'revenue' => 0.00
+        ]);
+        $networkStats = \Performance::all($query, ['clicks', 'revenue']);
+        foreach ($networkStats as $p) {
+            $perf->clicks += $p->clicks;
+            $perf->revenue += $p->revenue;
+        }
 
         $view->set("start", $start)
             ->set("end", $end)
-            ->set("links", Registry::get("MongoDB")->links->count(['user_id' => ['$in' => $in]]))
-            ->set("platforms", Registry::get("MongoDB")->platforms->count(['user_id' => ['$in' => $in]]))
-            ->set("performance", $this->perf($clicks, $this->user));
+            ->set("links", \Link::count(['user_id' => ['$in' => $in]]))
+            ->set("platforms", \Platform::count(['user_id' => ['$in' => $in]]))
+            ->set("performance", $perf);
     }
 
     protected function publishers() {
@@ -85,7 +92,7 @@ class Admin extends Auth {
                     }
                     $org->url = RequestMethods::post('url');
                     $org->email = RequestMethods::post('email');
-                    $org->save();
+                    $org->save(); $this->setOrg($org);
                     $view->set('message', 'Network Settings updated!!');
                     break;
     			
@@ -94,9 +101,6 @@ class Admin extends Auth {
     		}
     		$this->setUser($user);
     	}
-        if (in_array("top10ads", $org->meta["widgets"])) {
-            // echo "yes";
-        }
     }
 
     /**
