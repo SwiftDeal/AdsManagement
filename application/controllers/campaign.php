@@ -133,7 +133,7 @@ class Campaign extends Admin {
         }
     	$campaigns = \Ad::all($query, [], 'created', 'desc', $limit, $page);
         $count = \Ad::count($query);
-        $categories = Utils::categories();
+        $categories = \Category::all(['org_id' => $this->org->_id], ['_id', 'name']);
 
     	$view->set("campaigns", $campaigns)
             ->set("count", $count)
@@ -168,9 +168,8 @@ class Campaign extends Admin {
         $view = $this->getActionView();
         $comm = \Commission::first(["ad_id = ?" => $c->_id]);
 
-        $categories = $this->categories($c->category);
-        $view->set('categories', $categories["categories"]);
-        $view->set('adCategories', $categories["ids"]);
+        $categories = \Category::all(['org_id' => $this->org->id], ['_id', 'name']);
+        $view->set('categories', $categories);
         
         if (RequestMethods::post("action") == "adedit") {
             $img = $c->image;
@@ -231,13 +230,13 @@ class Campaign extends Admin {
         if (RequestMethods::type() !== "DELETE") {
             return $view->set('message', 'Invalid Request!!');
         }
-        $ad = \Ad::first(["_id = ?" => $id, "user_id = ?" => $this->user->_id]);
+        $ad = \Ad::first(["_id = ?" => $id, "org_id = ?" => $this->org->_id]);
         if (!$ad) return $view->set('message', 'Invalid Request!!');
 
         $stats = Registry::get("MongoDB")->clicks;
         $record = $stats->findOne(["adid" => $ad->_id]);
         if ($record) {
-            return $view->set('message', 'Can not delete!! Campaign contain stats');
+            return $view->set('message', 'Can not delete!! Campaign contain clicks');
         }
         @unlink(APP_PATH . '/public/assets/uploads/images/' . $ad->image);
         $ad->delete();

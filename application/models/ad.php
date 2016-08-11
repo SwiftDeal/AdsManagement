@@ -96,6 +96,14 @@ class Ad extends Shared\Model {
         return $result;
     }
 
+    public function getCategories() {
+        $result = [];
+        foreach ($this->_category as $cat) {
+            $result[] = sprintf('%s', $cat);
+        }
+        return $result;
+    }
+
     public static function displayData($ads = []) {
         $result = [];
         foreach ($ads as $a) {

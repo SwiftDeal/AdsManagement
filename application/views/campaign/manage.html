@@ -77,8 +77,12 @@
                                                 <br>
                                                 <small>{echo $c->description}</small>
                                             </td>
-                                            {script $names = []} {foreach $cat in $a->category} {script $names[] = $categories[$cat]->name} {/foreach}
-                                            <td>{echo implode(", ", $names)}</td>
+                                            <td>
+                                                {foreach $cat in $a->category}
+                                                    {script $key = Shared\Utils::getMongoID($cat)}
+                                                    <label class="label label-info">{echo $categories[$key]->name}</label>
+                                                {/foreach}
+                                            </td>
                                             <td>
                                                 {if !$a->live}
                                                 <a href="campaign/update/{echo $a->_id}" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-xs btn-success"><i class="fa fa-check"></i> Enable</a>

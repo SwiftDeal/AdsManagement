@@ -38,9 +38,9 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Category</label>
-                                        <select name="category[]" class="form-control" multiple="" data-live-search=true title="Choose a campaign category">
+                                        <select name="category[]" data-value='{echo json_encode($c->getCategories())}' class="selectVal form-control" multiple="" data-live-search=true title="Choose a campaign category">
                                         {foreach $cat in $categories}
-                                            <option value="{$cat->id}" {if(in_array($cat->id, $adCategories))}selected{/if}>{$cat->name}</option>
+                                            <option value="{echo $cat->_id}">{echo $cat->name}</option>
                                         {/foreach}
                                         </select>
                                         <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "category")}</span>
