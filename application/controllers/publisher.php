@@ -19,7 +19,7 @@ class Publisher extends Auth {
         $this->seo(array("title" => "Dashboard", "description" => "Stats for your Data"));
         $view = $this->getActionView(); $commissions = []; $clicks = 0;
 
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-1 day')));
+        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('now')));
         $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
         $clickCol = Registry::get("MongoDB")->clicks;
@@ -29,90 +29,28 @@ class Publisher extends Auth {
         ],['adid', 'cookie', 'ipaddr', 'referer']);
 
         $notifications = Notification::all(["org_id = ?" => $this->org->id], [], "created", "desc", 5, 1);
+        $yesterday = Performance::overall(
+            Utils::dateQuery([
+                'start' => strftime("%Y-%m-%d", strtotime('-1 day')),
+                'end' => strftime("%Y-%m-%d", strtotime('-1 day'))
+            ]),
+            $this->user
+        );
+        $total = Performance::overall(
+            Utils::dateQuery([
+                'start' => strftime("%Y-%m-%d", strtotime('-365 day')),
+                'end' => strftime("%Y-%m-%d", strtotime('-1 day'))
+            ]),
+            $this->user
+        );
 
         $view->set("start", $start)
             ->set("end", $end)
-            ->set("topusers", $this->topusers($dateQuery))
+            ->set("topusers", $this->widgets($dateQuery))
             ->set("notifications", $notifications)
+            ->set("total", $total)
+            ->set("yesterday", $yesterday)
             ->set("performance", $this->perf($clicks, $this->user));
-    }
-
-    public function topusers($dateQuery = null) {
-        if (!$dateQuery) {
-            $date = RequestMethods::get("date", date('Y-m-d'));
-            $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
-        } $meta = $this->org->meta;
-        if (isset($meta['widget']) && isset($meta['widget']['top10pubs']) && count($meta['widget']['top10pubs']) > 0) {
-            $widgets = $meta['widget'];
-            return [
-                'publishers' => $widgets['top10pubs'],
-                'ads' => Ad::displayData($widgets['top10ads'])
-            ];
-        }
-
-        $clickCol = Registry::get("MongoDB")->clicks;
-
-        $result = ['publishers' => [], 'ads' => []]; $in = []; $pubClicks = [];
-        $pubs = User::all(["org_id = ?" => $this->org->_id, "type = ?" => "publisher"], ["_id", "name"]);
-        foreach ($pubs as $pb) {
-            $in[] = $pb->_id;
-        } $org = $this->org;
-        
-        $records = $clickCol->find([
-            "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']],
-            'pid' => ['$in' => $in]
-        ], ['adid', 'pid', 'ipaddr', 'referer']);
-
-        // $count = 0;
-        $uniqClicks = []; $adClicks = []; $pubClicks = [];
-        foreach ($records as $r) {
-            $c = (object) $r; $regex = preg_quote($org->url, ".");
-
-            if (!$c->referer || preg_match('/vnative\.com/', $c->referer) || preg_match('#'.$regex.'#', $c->referer)) {
-                continue;
-            }
-            $ip = $c->ipaddr; $adid = $c->adid; $pid = $c->pid;
-            if (isset($uniqClicks[$ip])) {
-                continue;
-            }
-            $uniqClicks[$ip] = true;
-
-            $adid = Utils::getMongoID($adid);
-            $pid = Utils::getMongoID($pid);
-            if (!isset($adClicks[$adid])) {
-                $adClicks[$adid] = 1;
-            } else {
-                $adClicks[$adid]++;
-            }
-
-            if (!isset($pubClicks[$pid])) {
-                $pubClicks[$pid] = 1;
-            } else {
-                $pubClicks[$pid]++;
-            }
-        }
-        // sort publishers based on clicks and find their details
-        arsort($pubClicks); array_splice($pubClicks, 10);
-        foreach ($pubClicks as $pid => $count) {
-            $p = $pubs[$pid];
-            $result['publishers'][] = [
-                "name" => $p->name,
-                "count" => $count
-            ];
-        }
-
-        arsort($adClicks); array_splice($adClicks, 10);
-        foreach ($adClicks as $adid => $count) {
-            $ad = \Ad::first(['_id' => $adid], ['title', 'image', 'url']);
-            $result['ads'][] = [
-                '_id' => $adid,
-                'title' => $ad->title,
-                'image' => $ad->image,
-                'url' => $ad->url,
-                'clicks' => $count
-            ];
-        }
-        return $result;
     }
 
     /**
@@ -145,7 +83,7 @@ class Publisher extends Auth {
             'limit' => $limit, 'page' => $page,
             'count' => $count, 'ads' => $ads,
             'model' => $model, 'rate' => $rate,
-            'categories' => $categories
+            'categories' => $categories, 'coverage' => $coverage
         ]);
     }
 
@@ -184,7 +122,8 @@ class Publisher extends Auth {
             'end' => $end,
             'links' => $links,
             'performances' => $performances,
-            'clicks' => Click::classify($records, 'adid')
+            'clicks' => Click::classify($records, 'adid'),
+            'commission' => $this->user->commission()
         ]);
     }
 
@@ -406,22 +345,6 @@ class Publisher extends Auth {
     }
 
     /**
-     * Returns data of clicks, impressions, payouts for publishers with custom date range
-     * @before _secure
-     */
-    public function performance() {
-        $this->JSONview();$view = $this->getActionView();
-        
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
-        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
-        
-        $find = Performance::overall($dateQuery, $this->user);
-        $find["total_payouts"] = $this->user->convert($find["total_payouts"]);
-        $view->set($find);
-    }
-
-    /**
      * @before _secure
      */
     public function platforms() {
@@ -543,6 +466,20 @@ class Publisher extends Auth {
             $view->set('message', 'Publisher removed successfully!!');
         } else {
             $view->set('message', 'Failed to delete. Publisher has already given clicks!!');
+        }
+    }
+
+    protected function widgets($dateQuery = null) {
+        if (!$dateQuery) {
+            $date = RequestMethods::get("date", date('Y-m-d'));
+            $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
+        } $meta = $this->org->meta;
+        if (isset($meta['widget']) && isset($meta['widget']['top10pubs']) && count($meta['widget']['top10pubs']) > 0) {
+            $widgets = $meta['widget'];
+            return [
+                'publishers' => $widgets['top10pubs'],
+                'ads' => Ad::displayData($widgets['top10ads'])
+            ];
         }
     }
 

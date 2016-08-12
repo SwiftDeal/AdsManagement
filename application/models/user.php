@@ -183,4 +183,11 @@ class User extends Shared\Model {
 
         return $user;
     }
+
+    public function commission() {
+        if (array_key_exists('model', $this->meta["campaign"])) {
+            return $this->meta["campaign"];
+        }
+        return false;
+    }
 }

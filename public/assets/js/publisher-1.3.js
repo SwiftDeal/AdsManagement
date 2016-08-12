@@ -386,38 +386,3 @@ $(document).ready(function() {
         });
     });
 });
-
-function pub_home() {
-    //loading stats
-    $('#click').html('<p class="text-center"><i class="fa fa-spinner fa-spin"></i></p>');
-    $('#payout').html('<p class="text-center"><i class="fa fa-spinner fa-spin"></i></p>');
-
-    request.get({ url: "publisher/performance", data: $('#range').serialize()}, function(err, data) {
-        //stats loaded
-        var arr = morrisData(data, 'date', 'click', 'payout', 'impression');
-        $('#click').html(data.total_clicks);
-        $('#payout').html(data.total_payouts);
-
-        new Morris.Line({
-            element: 'clickstats',
-            data: arr,
-            parseTime: false,
-            xkey: 'date',
-            ykeys: ['click', 'payout', 'impression'],
-            labels: ['Click', 'Payout', 'Impression']
-        });
-    });
-}
-
-function morrisData(object, x, y1, y2, y3) {
-    var result = [];
-    for(var key in object.clicks) {
-        var obj = {};
-        obj[x] = key;
-        obj[y3] = object.impressions[key];
-        obj[y2] = object.payouts[key];
-        obj[y1] = object.clicks[key];
-        result.push(obj);
-    }
-    return result;
-}
