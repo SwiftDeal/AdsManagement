@@ -54,7 +54,8 @@ namespace Shared {
         }
 
         public function nice_number($n) {
-            // first strip any formatting;
+            if (!isset($n)) return 0;
+            // strip any formatting;
             $n = (0+str_replace(",", "", $n));
             // is this a number?
             if (!is_numeric($n)) return false;

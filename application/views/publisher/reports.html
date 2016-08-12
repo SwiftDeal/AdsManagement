@@ -36,7 +36,7 @@
                     {script $total = 0.00} {foreach $p in $performances}
                     <tr>
                         <td>{echo Framework\StringMethods::only_date($p->created)}</td>
-                        <td>{echo $p->clicks}</td>
+                        <td>{echo Shared\Markup::nice_number($p->clicks)}</td>
                         <td>{echo $user->convert($p->revenue)}</i></td>
                         {script $total += $p->revenue}
                     </tr>
@@ -97,7 +97,7 @@
                             {script $rate = $c->rate}
                         {/else}
                         <td>{echo $user->convert($rate)}</td>
-                        <td>{echo count($uniqClicks)}</td>
+                        <td>{echo Shared\Markup::nice_number(count($uniqClicks))}</td>
                         <td>{echo $user->convert($rate * count($uniqClicks))}</td>
                     </tr>
                 {/foreach}

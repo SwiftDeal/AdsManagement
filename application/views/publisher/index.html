@@ -13,15 +13,15 @@
                 <ul class="list-inline m-t-15">
                     <li>
                         <h5 class="text-muted m-t-20">Today</h5>
-                        <h4 class="m-b-0">{echo $performance->clicks}</h4>
+                        <h4 class="m-b-0">{echo Shared\Markup::nice_number($performance->clicks)}</h4>
                     </li>
                     <li>
                         <h5 class="text-muted m-t-20">Yesterday</h5>
-                        <h4 class="m-b-0">{echo $yesterday["total_clicks"]}</h4>
+                        <h4 class="m-b-0">{echo Shared\Markup::nice_number($total["clicks"][$yesterday])}</h4>
                     </li>
                     <li>
                         <h5 class="text-muted m-t-20">Overall</h5>
-                        <h4 class="m-b-0">{echo $total["total_clicks"] + $performance->clicks}</h4>
+                        <h4 class="m-b-0">{echo Shared\Markup::nice_number($total["total_clicks"] + $performance->clicks)}</h4>
                     </li>
                 </ul>
             </div>
@@ -38,7 +38,7 @@
                     </li>
                     <li>
                         <h5 class="text-muted m-t-20">Yesterday</h5>
-                        <h4 class="m-b-0">{echo $user->convert($yesterday["total_payouts"])}</h4>
+                        <h4 class="m-b-0">{echo $user->convert($total["payouts"][$yesterday])}</h4>
                     </li>
                     <li>
                         <h5 class="text-muted m-t-20">Overall</h5>
@@ -55,15 +55,15 @@
                 <ul class="list-inline m-t-15">
                     <li>
                         <h5 class="text-muted m-t-20">Today</h5>
-                        <h4 class="m-b-0">{echo $performance->impressions}</h4>
+                        <h4 class="m-b-0">{echo Shared\Markup::nice_number($performance->impressions)}</h4>
                     </li>
                     <li>
                         <h5 class="text-muted m-t-20">Yesterday</h5>
-                        <h4 class="m-b-0">{echo $yesterday["total_impressions"]}</h4>
+                        <h4 class="m-b-0">{echo Shared\Markup::nice_number($total["impressions"][$yesterday])}</h4>
                     </li>
                     <li>
                         <h5 class="text-muted m-t-20">Overall</h5>
-                        <h4 class="m-b-0">{echo $total["total_impressions"] + $performance->impressions}</h4>
+                        <h4 class="m-b-0">{echo Shared\Markup::nice_number($total["total_impressions"] + $performance->impressions)}</h4>
                     </li>
                 </ul>
             </div>
@@ -101,7 +101,7 @@
                         {foreach $u in $topEarners}
                         <tr>
                             <td>{echo $u["name"]}</td>
-                            <td>{echo $u["count"]}</td>
+                            <td>{echo Shared\Markup::nice_number($u["count"])}</td>
                         </tr>
                         {/foreach}
                     </tbody>
@@ -121,7 +121,7 @@
                         {foreach $tc in $topCampaigns}
                         <tr>
                             <td><a href="/campaign/info/{echo $tc['_id']}.html" target="_blank">{echo $tc["title"]}</a></td>
-                            <td>{echo $tc["clicks"]}</td>
+                            <td>{echo Shared\Markup::nice_number($tc["clicks"])}</td>
                         </tr>
                         {/foreach}
                     </tbody>

@@ -29,13 +29,6 @@ class Publisher extends Auth {
         ],['adid', 'cookie', 'ipaddr', 'referer']);
 
         $notifications = Notification::all(["org_id = ?" => $this->org->id], [], "created", "desc", 5, 1);
-        $yesterday = Performance::overall(
-            Utils::dateQuery([
-                'start' => strftime("%Y-%m-%d", strtotime('-1 day')),
-                'end' => strftime("%Y-%m-%d", strtotime('-1 day'))
-            ]),
-            $this->user
-        );
         $total = Performance::overall(
             Utils::dateQuery([
                 'start' => strftime("%Y-%m-%d", strtotime('-365 day')),
@@ -49,7 +42,7 @@ class Publisher extends Auth {
             ->set("topusers", $this->widgets($dateQuery))
             ->set("notifications", $notifications)
             ->set("total", $total)
-            ->set("yesterday", $yesterday)
+            ->set("yesterday", strftime("%B %d, %Y", strtotime('-1 day')))
             ->set("performance", $this->perf($clicks, $this->user));
     }
 

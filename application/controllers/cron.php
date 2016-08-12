@@ -48,7 +48,7 @@ class Cron extends Shared\Controller {
 
     public function widgets() {
         $this->log("Widgets Started");
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-1 day')));
+        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('now')));
         $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
         $clickCol = Registry::get("MongoDB")->clicks;
