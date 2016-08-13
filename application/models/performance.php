@@ -120,6 +120,8 @@ class Performance extends Shared\Model {
             }
         }
 
+        ksort($clicks); ksort($impressions); ksort($payouts);
+
         return [
             "impressions" => $impressions,
             "total_impressions" => $total_impressions,
