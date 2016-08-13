@@ -40,4 +40,22 @@ class Platform extends Shared\Model {
         }
         $this->_url = $url;
     }
+
+    public function rssFeeds($org) {
+        $users = \User::all(['org_id' => $org->_id, 'type' => 'advertiser'], ['_id']);
+        $in = []; $result = [];
+        foreach ($users as $u) {
+            $in[] = $u->_id;
+        }
+
+        $platforms = \Platform::all([
+            'user_id' => ['$in' => $in]
+        ], ['_id', 'url', 'user_id', 'meta']);
+        foreach ($platforms as $p) {
+            if (isset($p->meta['rss'])) {
+                $result[Utils::getMongoID($p->_id)] = $p;
+            }
+        }
+        return $result;
+    }
 }

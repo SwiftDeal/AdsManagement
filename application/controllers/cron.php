@@ -41,10 +41,41 @@ class Cron extends Shared\Controller {
     }
 
     protected function _hourly() {
-       $this->importCampaigns();
-       $this->widgets();
+        $this->_rssFeed();
+        $this->importCampaigns();
+        $this->widgets();
     }
 
+    protected function _weekly() {
+        // implement
+    }
+
+    protected function _monthly() {
+        // implement
+    }
+
+    protected function _daily() {
+        $this->log("CRON Started");
+
+        $this->_pubPerf();
+        $this->_advertPerf();
+        $this->_webPerf();
+        // $this->_test();
+    }
+
+    protected function _test() {
+        $start = date('Y-m-d', strtotime('-2 day'));
+        $end = date('Y-m-d', strtotime('-1 day'));
+
+        $diff = date_diff(date_create($start), date_create($end));
+        for ($i = 0; $i <= $diff->format("%a"); $i++) {
+            $date = date('Y-m-d', strtotime($start . " +{$i} day"));
+            
+            // $this->_pubPerf($date);
+            // $this->_advertPerf($date);
+            // $this->_webPerf($date);
+        }
+    }
 
     public function widgets() {
         $this->log("Widgets Started");
@@ -120,29 +151,6 @@ class Cron extends Shared\Controller {
             $org->save();
         }
         $this->log("Widgets Done");
-    }
-
-    protected function _daily() {
-        $this->log("CRON Started");
-
-        $this->_pubPerf();
-        $this->_advertPerf();
-        $this->_webPerf();
-        // $this->_test();
-    }
-
-    protected function _test() {
-        $start = date('Y-m-d', strtotime('-2 day'));
-        $end = date('Y-m-d', strtotime('-1 day'));
-
-        $diff = date_diff(date_create($start), date_create($end));
-        for ($i = 0; $i <= $diff->format("%a"); $i++) {
-            $date = date('Y-m-d', strtotime($start . " +{$i} day"));
-            
-            // $this->_pubPerf($date);
-            // $this->_advertPerf($date);
-            // $this->_webPerf($date);
-        }
     }
 
     protected function _pubPerf($date = null) {
@@ -358,12 +366,36 @@ class Cron extends Shared\Controller {
         }
     }
 
-    protected function _weekly() {
-        // implement
-    }
+    protected function _rssFeed() {
+        // find all the platforms for the advertisers
+        $orgs = \Organization::all([], ['_id']);
 
-    protected function _monthly() {
-        // implement
+        foreach ($orgs as $o) {
+            $platforms = \Platform::rssFeeds($org);
+
+            // get feed for each platform
+            foreach ($platforms as $p) {
+                $rss = $p->meta['rss'];
+
+                if (!$rss['parsing']) {
+                    continue;   // parsing is stopeed
+                }
+                $lastCrawled = null;
+                if (isset($rss['lastCrawled'])) {
+                    $lastCrawled = $rss['lastCrawled'];
+                }
+                $result = \Shared\Rss::getFeed($rss['url'], $lastCrawled);
+                
+                $urls = $result['urls'];
+                $rss['lastCrawled'] = $result['lastCrawled'];
+                $p->meta['rss'] = $rss;
+                $p->save();     // save the lastCrawled time
+
+                $user = \User::first(['org_id' => $o->_id, 'type' => 'admin'], ['_id']);
+
+                // \Meta::campImport($user->_id, $p->user_id, $result['urls']);
+            }
+        }
     }
 
     protected function importCampaigns() {

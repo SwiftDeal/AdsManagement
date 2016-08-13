@@ -28,4 +28,19 @@ class Meta extends Shared\Model {
      * @index
      */
     protected $_value;
+
+    public static function campImport($uid, $advert_id, $urls) {
+        $uid = Utils::mongoObjectId($uid);
+        $advert_id = Utils::mongoObjectId($advert_id);
+        $meta = new self([
+            'prop' => 'campImport', 'propid' => $uid,
+            'value' => [
+                'advert_id' => $advert_id,
+                'urls' => $urls
+            ]
+        ]);
+
+        $meta->save();
+        return $meta;
+    }
 }

@@ -11,6 +11,13 @@ class Utils {
 		return $id;
 	}
 
+	public static function mongoObjectId($id) {
+		if (!is_object($id) || !is_a($id, 'MongoId')) {
+            $id = new \MongoId($id);
+        }
+        return $id;
+	}
+
 	public static function downloadImage($url) {
 		if (!$url) { return false; }
 		try {

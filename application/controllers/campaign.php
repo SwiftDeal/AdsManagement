@@ -253,59 +253,100 @@ class Campaign extends Admin {
         $view = $this->getActionView(); $org = $this->org;
 
         $advertisers = \User::all(["org_id = ?" => $this->org->_id, 'type = ?' => 'advertiser'], ['_id', 'name']);
-        if (count($advertisers) < 1) {
+        if (count($advertisers) === 0) {
             $this->redirect('/advertiser/add.html');
-        }
+        } $platforms = \Platform::rssFeeds($this->org);
         $view->set('advertiser', $advertisers);
-        
-        if (RequestMethods::type() === 'POST') {
-            if (!isset($org->meta['model']) || !isset($org->meta['rate'])) {
-                return $view->set('message', 'Please update <a href="/admin/settings">Commission Settings</a>');
-            }
-            $a = $advertisers[0];
-            $advert_id = RequestMethods::post('advert_id', $a->getMongoID($a->_id));
-            $advert = \User::first(['_id = ?' => $advert_id, 'type = ?' => 'publisher']);
-            if (!$advert) return $view->set('message', 'Invalid Request!!');
-            if (!isset($advert->meta['campaign'])) {
-                return $view->set('message', 'Please Update Advertiser campaign settings!!');
-            }
 
-            $csv = $_FILES['csv'];
-
-            if ($csv['error'] > 0) {
-                return $view->set('message', 'Error uploading csv file!!');
-            }
-            if ($csv['type'] !== 'text/csv') {
-                return $view->set('message', 'Invalid CSV file!!');
-            }
-            $tmp = $csv['tmp_name'];
-
-            $file = APP_PATH .'/uploads/'. uniqid() . '.csv';
-            if (!move_uploaded_file($tmp, $file)) {
-                return $view->set('message', 'Error uploading csv file!!');
-            }
-
-            $meta = new \Meta([
-                'prop' => 'campImport',
-                'propid' => $this->user->_id
-            ]); $data = [];
-
-            $data['advert'] = new \MongoId($advert_id);
-            $data['urls'] = [];
+        $action = RequestMethods::post('action', '');
+        switch ($action) {
+            case 'campImport':
+                $this->_import($org, $advertisers, $view);
+                break;
             
-            $fp = fopen($file, 'r');
-            while (($line = fgetcsv($fp)) !== false) {
-                $link = $line[0];
-                if (!$link) continue;
-                $data['urls'][] = $link;
-            }
-            fclose($fp);
-            unlink($file);
+            case 'platform':
+                $pid = RequestMethods::post('pid');
+                $p = $platforms[$pid]; $meta = $p->meta;
+                $meta['rss']['url'] = RequestMethods::post('url');
+                $parsing = (boolean) ((int) RequestMethods::post('parsing', "1"));
+                $meta['rss']['parsing'] = $parsing;
+                
+                $p->meta = $meta;
+                $p->save();
 
-            $meta->value = $data;
-            $meta->save();
-            $view->set('message', 'Campaigns Imported we will process them shortly!!');
+                $view->set('message', 'Updated Rss feed');
+                break;
+
+            case 'newRss':
+                $url = RequestMethods::post('rss_link');
+                $a = array_values($advertisers)[0];
+                $advert_id = RequestMethods::post('advert_id', $a->getMongoID());
+                $advert = \User::first(['_id = ?' => $advert_id, 'type = ?' => 'advertiser']);
+                if (!$advert) return $view->set('message', 'Invalid Request!!');
+
+                // try to find a platform for the given advertiser
+                $domain = parse_url($url, PHP_URL_HOST); $regex = preg_quote($domain, ".");
+                $p = \Platform::first(['user_id' => $advert_id, 'url' => new \MongoRegex('/'.$regex.'/i')]);
+
+                $msg = "RSS Feed Added. Campaigns Will be imported within an hour";
+                try {
+                    // Now schedule importing of campaigns
+                    $result = \Shared\Rss::getFeed($url);
+                    $rss = [ 'url' => $url, 'parsing' => true, 'lastCrawled' => $result['lastCrawled'] ];
+
+                    // if platform not found then add new
+                    if (!$p) {
+                        $p = new \Platform([
+                            'url' => $domain,
+                            'user_id' => $advert_id
+                        ]);
+                    }
+                    $meta = $p->meta; $meta['rss'] = $rss;
+                    $p->meta = $meta; $p->save();
+
+                    \Meta::campImport($this->user->_id, $advert_id, $result['urls']);
+                } catch (\Exception $e) {
+                    $msg = "Internal Server Error!!";
+                }
+                $view->set('message', $msg);
+                break;
         }
+        $platforms = \Platform::rssFeeds($this->org);
+        $view->set('platforms', $platforms);
+    }
+
+    protected function _import($org, $advertisers, &$view) {
+        if (!isset($org->meta['model']) || !isset($org->meta['rate'])) {
+            return $view->set('message', 'Please update <a href="/admin/settings">Commission Settings</a>');
+        }
+        $a = array_values($advertisers)[0];
+        $advert_id = RequestMethods::post('advert_id', $a->getMongoID());
+        $advert = \User::first(['_id = ?' => $advert_id, 'type = ?' => 'advertiser']);
+        if (!$advert) return $view->set('message', 'Invalid Request!!');
+        if (!isset($advert->meta['campaign'])) {
+            return $view->set('message', 'Please Update Advertiser campaign settings!!');
+        }
+
+        $csv = $_FILES['csv']; $tmp = $csv['tmp_name'];
+        if ($csv['type'] !== 'text/csv') {
+            return $view->set('message', 'Invalid CSV file!!');
+        }
+        
+        $file = APP_PATH .'/uploads/'. uniqid() . '.csv';
+        if ($csv['error'] > 0 || !move_uploaded_file($tmp, $file)) {
+            return $view->set('message', 'Error uploading csv file!!');
+        }
+        
+        $fp = fopen($file, 'r'); $urls = [];
+        while (($line = fgetcsv($fp)) !== false) {
+            $link = $line[0];
+            if (!$link) continue;
+            $urls[] = $link;
+        }
+        fclose($fp); unlink($file);
+
+        \Meta::campImport($this->user->_id, $advert_id, $urls);
+        $view->set('message', 'Campaigns Imported we will process them within an hour!!');
     }
 
     public function resize($image, $width = 600, $height = 315) {

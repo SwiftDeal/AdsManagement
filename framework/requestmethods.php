@@ -27,7 +27,7 @@ namespace Framework {
         }
 
         public static function post($key, $default = "") {
-            if (!empty($_POST[$key])) {
+            if (isset($_POST[$key])) {
                 return $_POST[$key];
             } return $default;
         }
