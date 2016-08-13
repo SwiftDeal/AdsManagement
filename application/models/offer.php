@@ -23,6 +23,17 @@ class Offer extends Shared\Model {
     /**
      * @column
      * @readwrite
+     * @type decimal
+     * @length 6,2
+     *
+     * @label revenue percent
+     * @validate required
+     */
+    protected $_revenue;
+
+    /**
+     * @column
+     * @readwrite
      * @type text
      *
      * @validate required
@@ -45,4 +56,11 @@ class Offer extends Shared\Model {
      * @type datetime
      */
     protected $_end;
+
+    /**
+    * @column
+    * @readwrite
+    * @type array
+    */
+    protected $_meta = [];
 }

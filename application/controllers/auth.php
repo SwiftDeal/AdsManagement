@@ -206,7 +206,7 @@ class Auth extends Controller {
     protected function _advertiserRegister($org, $view) {
         $pass = Shared\Utils::randomPass();
         $email = RequestMethods::post("email");
-        $platformUrl = RequestMethods::post("url", '');
+        $platformUrl = RequestMethods::post("platform", '');
         $exist = \User::first(['email = ?' => $email, 'org_id = ?' => $org->_id]);
         if ($exist) {
             return $view->set('message', "Email already exists!!");
