@@ -289,13 +289,6 @@ class Auth extends Controller {
         $adsInfo = [];
         $classify = \Click::classify($clicks, 'adid');
         foreach ($classify as $key => $value) {
-            if (!array_key_exists($key, $adsInfo)) {
-                $comm = \Commission::first(['ad_id = ?' => $key], ['model', 'rate']);
-                $adsInfo[$key] = $comm;
-            } else {
-                $comm = $adsInfo[$key];
-            }
-
             // Check for click fraud
             $uniqClicks = Click::checkFraud($value);
             $adClicks = count($uniqClicks);
@@ -303,6 +296,12 @@ class Auth extends Controller {
             if (isset($p->meta['campaign']) && !is_null($p->meta['campaign']['rate'])) {
                 $rate = $p->meta['campaign']['rate'];
             } else {
+                if (!array_key_exists($key, $adsInfo)) {
+                    $comm = \Commission::first(['ad_id = ?' => $key], ['model', 'rate']);
+                    $adsInfo[$key] = $comm;
+                } else {
+                    $comm = $adsInfo[$key];
+                }
                 $rate = $comm->rate;
             }
             $revenue = ((float) $rate) * $adClicks;

@@ -23,9 +23,14 @@
                     <table class="table">
                         <tbody>
                             <tr>
+                                {if($commission["model"] == $c->model)}
+                                    {script $rate = $commission["rate"]}
+                                {/if} {else}
+                                    {script $rate = $c->rate}
+                                {/else}
                                 <th>Model</th>
                                 <td>
-                                    {echo $user->convert($c->rate)} <b>{echo strtoupper($c->model)}</b>
+                                    {echo $user->convert($rate)} <b>{echo strtoupper($c->model)}</b>
                                     <br>
                                     <small>{echo $c->description}</small>
                                 </td>

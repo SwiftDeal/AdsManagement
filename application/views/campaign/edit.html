@@ -38,12 +38,13 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Category</label>
-                                        <select name="category[]" data-value='{echo json_encode($c->getCategories())}' class="selectVal form-control" multiple="" data-live-search=true title="Choose a campaign category">
+                                        <select name="category[]" class="form-control" multiple="" data-live-search=true title="Choose a campaign category">
                                         {foreach $cat in $categories}
-                                            <option value="{echo $cat->_id}">{echo $cat->name}</option>
+                                            <option value="{echo $cat->_id}" {if(in_array($cat->_id, $c->category))}selected{/if}>{echo $cat->name}</option>
                                         {/foreach}
                                         </select>
                                         <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "category")}</span>
+                                        <small class="pull-right"><u><a href="/admin/settings.html" target="_blank">Add more categoryies</a></u></small>
                                     </div>
                                     <div class="form-group">
                                         <label>Image</label>
@@ -52,7 +53,7 @@
                                         <span class="help-block text-info">Image should be 650px X 315px for good reach on Social Media<br>{echo Shared\Markup::errors($errors, "image")}</span>
                                     </div>
                                     <input type="hidden" name="action" value="adedit">
-                                    <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Create</button>
+                                    <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Save</button>
                                 </div>
                             </form>
                         </div>
@@ -72,6 +73,19 @@
                                     <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "model")}</span>
                                 </div>
                                 <div class="form-group">
+                                    <label>Description (Optional)</label>
+                                    <input type="text" class="form-control" name="description" value="{echo $comm->description}">
+                                </div>
+                                <div class="form-group">
+                                    <label>Coverage</label>
+                                    <select name="coverage[]" class="form-control selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
+                                        {foreach $country in $countries["countries"]}
+                                        <option value="{echo $country['code']}" {if(in_array($country['code'], $countries["keyvalue"]))}selected{/if}>{echo $country['name']}</option>
+                                        {/foreach}
+                                    </select>
+                                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "coverage")}</span>
+                                </div>
+                                <div class="form-group">
                                     <label>Payout Rate</label>
                                     <div class="input-group">
                                         <span class="add-on input-group-addon">{echo $user->currency}</span>
@@ -80,7 +94,7 @@
                                     <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "rate")}</span>
                                 </div>
                                 <input type="hidden" name="action" value="commedit">
-                                <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Create</button>
+                                <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Save</button>
                             </form>
                         </div>
                     </div>

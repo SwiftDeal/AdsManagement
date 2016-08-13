@@ -31,6 +31,7 @@ class Campaign extends Admin {
         $view->set("c", $commission);
         $view->set("start", $start);
         $view->set("end", $end);
+        $view->set('commission', $this->user->commission());
     }
 
     /**
@@ -166,10 +167,9 @@ class Campaign extends Admin {
         if(!$c) $this->redirect("/campaign/manage.html");
         $this->seo(['title' => 'Edit '.$c->title, 'description' => 'Edit the campaign']);
         $view = $this->getActionView();
+        
         $comm = \Commission::first(["ad_id = ?" => $c->_id]);
-
         $categories = \Category::all(['org_id' => $this->org->id], ['_id', 'name']);
-        $view->set('categories', $categories);
         
         if (RequestMethods::post("action") == "adedit") {
             $img = $c->image;
@@ -191,6 +191,7 @@ class Campaign extends Admin {
         }
         if (RequestMethods::post("action") == "commedit") {
             $comm->model = RequestMethods::post('model');
+            $comm->description = RequestMethods::post('description');
             $comm->rate = $this->currency(RequestMethods::post('rate'));
             $comm->coverage = RequestMethods::post('coverage', ['ALL']);
             $comm->bid = 0;
@@ -200,6 +201,8 @@ class Campaign extends Admin {
         }
 
         $view->set("c", $c)
+            ->set('categories', $categories)
+            ->set("countries", Shared\Markup::countries())
             ->set("comm", $comm);
 
     }

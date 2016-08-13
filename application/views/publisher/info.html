@@ -26,12 +26,29 @@
                         <form role="form" method="post">
                             <div class="form-group">
                                 <label>Name</label>
-                                <input type="text" name="name" value="{echo $user->name}" class="form-control" placeholder="Full Name">
+                                <input type="text" name="name" value="{echo $publisher->name}" class="form-control" placeholder="Full Name">
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "name")}</span>
                             </div>
                             <div class="form-group">
+                                <label>Email</label>
+                                <input type="text" name="name" value="{echo $publisher->name}" class="form-control" placeholder="Full Name">
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "name")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="text" name="name" value="{echo $publisher->name}" class="form-control" placeholder="Full Name">
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "name")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Country</label>
+                                <select name="country" class="form-control" value="{echo $publisher->currency}">
+                                    {include auth/country.html}
+                                </select>
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "currency")}</span>
+                            </div>
+                            <div class="form-group">
                                 <label>Currency</label>
-                                <select name="currency" class="form-control" value="{echo $user->currency}">
+                                <select name="currency" class="form-control" value="{echo $publisher->currency}">
                                     <option value="INR">INR</option>
                                     <option value="USD">USD</option>
                                 </select>
