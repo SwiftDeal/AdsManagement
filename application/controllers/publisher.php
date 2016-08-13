@@ -343,6 +343,9 @@ class Publisher extends Auth {
     public function platforms() {
         $this->seo(array("title" => "List of Platforms")); $view = $this->getActionView();
 
+        $code = $this->getNativeCode(true);
+        $view->set('code', $code);
+
         if (RequestMethods::type() === 'POST') {
             $pid = RequestMethods::post('pid');
             try {
@@ -506,6 +509,23 @@ class Publisher extends Auth {
         $session->set('Publisher\Register:$token', $csrf_token);
         $view->set('__token', $csrf_token);
         $view->set('organization', $this->org);
+    }
+
+    /**
+     * @before _secure
+     */
+    public function getNativeCode($internal = false) {
+        $code = '<script>(function (we, a, r, e, vnative){we["vNativeObject"]=vnative;we[vnative]=we[vnative]||function(){(i[vnative].q=i[r].q || []).push(arguments)};var x,y;x=a.createElement(r),y=a.getElementsByTagName(r)[0];x.async=true;x.src=e;y.parentNode.insertBefore(x, y);}(window,document,"script","//serve.vnative.com/js/native.js","vn"));
+            </script><ins class="byvnative"
+            data-client="pub-'. Utils::getMongoID($this->user->id) .'"' .
+            ' data-format="all"></ins>';
+
+        if (!$internal) {
+            $this->JSONview(); $view = $this->getActionView();
+            $view->set('code', $code);
+        } else {
+            return $code;
+        }
     }
     
 }

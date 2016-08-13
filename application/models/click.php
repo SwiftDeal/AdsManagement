@@ -65,6 +65,13 @@ class Click extends Shared\Model {
      */
     protected $_ua;
 
+     /**
+     * @column
+     * @readwrite
+     * @type boolean
+     */
+    protected $_is_bot = true;
+
     /**
      * @column
      * @readwrite
