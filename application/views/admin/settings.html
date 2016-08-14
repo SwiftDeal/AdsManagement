@@ -38,10 +38,36 @@
                                 <label>Model Rate</label>
                                 <div class="input-group">
                                     <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                    <input type="text" value="{echo $rate}" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,4})?$" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" required="">
+                                    <input type="text" value="{echo $user->convert($rate, false)}" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,4})?$" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" required="">
                                 </div>
                             </div>
                             <input type="hidden" name="action" value="commission">
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
+                        </form>
+                    </div>
+                    <div class="card-box">
+                        <h4 class="m-t-0 header-title"><b>Category</b></h4>
+                        <form action="" method="post">
+                            <div class="form-group">
+                                {if count($categories) == 0}
+                                <div class="input-group">
+                                   <input type="text" name="category[]" class="form-control" placeholder="Enter Category Name" id="categoryBox">
+                                   <span class="input-group-btn">
+                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
+                                   </span>
+                                </div>
+                                {/if} {script $i = 1}
+                                {foreach $c in $categories}
+                                <div class="input-group">
+                                   <input type="text" name="category[]" value="{echo $c->name}" class="form-control" placeholder="Enter Category Name" {if $i++ == 1} id="categoryBox" {/if}>
+                                   <span class="input-group-btn">
+                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
+                                   </span>
+                                </div>
+                                {/foreach}
+                            </div>
+                            <input type="hidden" name="action" value="categories">
+                            <button type="button" id="addCategory" class="btn btn-primary"><i class="fa fa-plus"></i> Add More</button>
                             <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
                         </form>
                     </div>
@@ -70,37 +96,6 @@
                             </div>
                             <input type="hidden" name="action" value="domains">
                             <button type="button" id="addDomain" class="btn btn-primary"><i class="fa fa-plus"></i> Add More</button>
-                            <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
-
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card-box">
-                        <h4 class="m-t-0 header-title"><b>Category</b></h4>
-                        <form action="" method="post">
-                            <div class="form-group">
-                                {if count($categories) == 0}
-                                <div class="input-group">
-                                   <input type="text" name="category[]" class="form-control" placeholder="Enter Category Name" id="categoryBox">
-                                   <span class="input-group-btn">
-                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
-                                   </span>
-                                </div>
-                                {/if} {script $i = 1}
-                                {foreach $c in $categories}
-                                <div class="input-group">
-                                   <input type="text" name="category[]" value="{echo $c->name}" class="form-control" placeholder="Enter Category Name" {if $i++ == 1} id="categoryBox" {/if}>
-                                   <span class="input-group-btn">
-                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
-                                   </span>
-                                </div>
-                                {/foreach}
-                            </div>
-                            <input type="hidden" name="action" value="categories">
-                            <button type="button" id="addCategory" class="btn btn-primary"><i class="fa fa-plus"></i> Add More</button>
                             <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
 
                         </form>

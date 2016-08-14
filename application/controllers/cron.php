@@ -41,7 +41,6 @@ class Cron extends Shared\Controller {
     }
 
     protected function _hourly() {
-        $this->_rssFeed();
         $this->importCampaigns();
         $this->widgets();
     }
@@ -60,6 +59,7 @@ class Cron extends Shared\Controller {
         $this->_pubPerf();
         $this->_advertPerf();
         $this->_webPerf();
+        $this->_rssFeed();
         // $this->_test();
     }
 
@@ -371,7 +371,7 @@ class Cron extends Shared\Controller {
         $orgs = \Organization::all([], ['_id']);
 
         foreach ($orgs as $o) {
-            $platforms = \Platform::rssFeeds($org);
+            $platforms = \Platform::rssFeeds($o);
 
             // get feed for each platform
             foreach ($platforms as $p) {

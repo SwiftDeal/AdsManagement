@@ -89,4 +89,25 @@ class Test extends Auth {
             'javascript_filtered' => $filtered
         ]);
     }
+
+    public function publisher() {
+        $this->JSONview(); $view = $this->getActionView();
+        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
+        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+
+        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
+        $query = [
+            "user_id" => $this->user->_id,
+            "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]
+        ];
+
+        $clickCol = Registry::get("MongoDB")->clicks;
+        $records = $clickCol->find([
+            'pid' => $query['user_id'], 'created' => $query['created']
+        ], ['adid', 'ipaddr', 'referer']);
+
+        foreach ($records as $result) {
+            var_dump($result);
+        }
+    }
 }

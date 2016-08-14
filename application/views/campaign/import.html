@@ -1,4 +1,6 @@
 {include campaign/modals/create.html}
+{include campaign/modals/csv.html}
+{include campaign/modals/rss.html}
 <div class="content-page">
     <div class="content">
         <div class="container">
@@ -6,69 +8,21 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
-                        <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#createCampaign"><i class="fa fa-plus"></i> New Campaign</button>
-                        <h4 class="page-title">Campaigns Import</h4>
+                        <span class="pull-right">
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#uploadByRSS"><i class="fa fa-rss"></i> Import By RSS</button>
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#uploadByCSV"><i class="fa fa-upload"></i> Upload CSV</button>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createCampaign"><i class="fa fa-plus"></i> New Campaign</button>
+                        </span>
+                        <h4 class="page-title">Campaigns Auto-Import</h4>
                     </div>
+                    {if isset($message)}
+                    <div class="alert alert-info alert-dismissible fade in" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                        {echo $message}
+                    </div>
+                    {/if}
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card-box">
-                        {if isset($message)}
-                        <div class="alert alert-info alert-dismissible fade in" role="alert">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-                            {echo $message}
-                        </div>
-                        {/if}
-                        <h4 class="m-t-0 header-title">CSV Upload</h4>
-                        <p class="text-muted m-b-30 font-13">Upload CSV with this format to import the campaigns.</p>
-                        <div class="p-20">
-                            <form action="" method="post" enctype="multipart/form-data">
-                                <div class="form-group">
-                                    <label for="Advertiser">Advertiser</label>
-                                    <select name="advert_id" required="" class="form-control">
-                                        {foreach $a in $advertiser}
-                                        <option value="{echo $a->_id}">{echo $a->name}</option>
-                                        {/foreach}
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>CSV File</label>
-                                    <input type="file" required="" name="csv" class="form-control">
-                                    <span class="font-13 text-muted"></span>
-                                </div>
-                                <input type="hidden" name="action" value="campImport">
-                                <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card-box">
-                        <h4 class="m-t-0 header-title">New RSS Feed</h4>
-                        <div class="p-20">
-                            <form action="" method="post">
-                                <div class="form-group">
-                                    <label for="Advertiser">Advertiser</label>
-                                    <select name="advert_id" required="" class="form-control">
-                                        {foreach $a in $advertiser}
-                                        <option value="{echo $a->_id}">{echo $a->name}</option>
-                                        {/foreach}
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>RSS URL</label>
-                                    <input type="url" required="" name="rss_link" class="form-control">
-                                    <span class="font-13 text-muted"></span>
-                                </div>
-                                <input type="hidden" name="action" value="newRss">
-                                <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="row">
                 <div class="col-md-6">
                     <div class="card-box">
@@ -84,14 +38,14 @@
                             <div class="form-group">
                                 <label for="track">RSS Feed Parsing</label>
                                 {script $parsing = (string) ((int) $p->meta['rss']['parsing'])}
-                                <select name="parsing" class="form-control selectVal" data-value='{echo json_encode(["$parsing"])}'>
-                                    <option value="1">Yes</option>
-                                    <option value="0">No</option>
+                                <select name="parsing" class="form-control">
+                                    <option value="1" {if($parsing == "1")}selected{/if}>Yes</option>
+                                    <option value="0" {if($parsing == "0")}selected{/if}>No</option>
                                 </select>
                             </div>
                             <input type="hidden" name="pid" value="{echo $p->_id}">
                             <input type="hidden" name="action" value="platform">
-                            <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
+                            <button type="submit" class="btn btn-purple waves-effect waves-light">Save</button>
                         </form>
                         {/foreach}
                     </div>
