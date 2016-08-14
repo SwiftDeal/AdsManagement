@@ -1,16 +1,111 @@
 <div class="content-page">
     <div class="content">
         <div class="container">
-            <!-- Page-Title -->
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
                         <ol class="breadcrumb pull-right">
-                            <li><a href="#">Minton</a></li>
-                            <li><a href="#">Pages</a></li>
-                            <li class="active">Blank</li>
+                            <li><a href="/admin.html">Dashboard</a></li>
+                            <li><a href="/advertiser/manage.html">All advertisers</a></li>
+                            <li class="active">{echo $advertiser->name}</li>
                         </ol>
-                        <h4 class="page-title">Blank</h4>
+                        <h4 class="page-title">{echo $advertiser->name}'s account</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                {if isset($message)}
+                <div class="alert alert-info alert-dismissible fade in" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    {echo $message}
+                </div>
+                {/if}
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="m-t-0 header-title"><b>User data</b></h4>
+                        <form role="form" method="post">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" name="name" value="{echo $advertiser->name}" class="form-control" placeholder="Full Name">
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "name")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="text" name="email" value="{echo $advertiser->email}" class="form-control" placeholder="Email">
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "email")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="text" name="phone" value="{echo $advertiser->phone}" class="form-control" placeholder="Phone">
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "phone")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Country</label>
+                                <input type="text" name="country" value="{echo $advertiser->country}" class="form-control" placeholder="country">
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "country")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Currency</label>
+                                <select name="currency" class="form-control" value="{echo $advertiser->currency}">
+                                    <option value="INR">INR</option>
+                                    <option value="USD">USD</option>
+                                </select>
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "currency")}</span>
+                            </div>
+                            <input type="hidden" name="action" value="account">
+                            <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="m-t-0 header-title"><b>Change Password</b></h4>
+                        <form class="form-horizontal" role="form" method="post">
+                            <div class="form-group">
+                                <label for="inputPassword3" class="col-sm-3 control-label">Old Password</label>
+                                <div class="col-sm-9">
+                                    <input type="password" class="form-control" name="password" placeholder="Old Password">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPassword4" class="col-sm-3 control-label">New Password</label>
+                                <div class="col-sm-9">
+                                    <input type="password" class="form-control" name="npassword" placeholder="New Password">
+                                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "password")}</span>
+                                </div>
+                            </div>
+                            <div class="form-group m-b-0">
+                                <div class="col-sm-offset-3 col-sm-9">
+                                    <input type="hidden" name="action" value="password">
+                                    <button type="submit" class="btn btn-info waves-effect waves-light">Change</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-box">
+                        <h4 class="m-t-0 header-title"><b>Payout</b></h4>
+                        <form role="form" method="post">
+                            <div class="form-group">
+                                {script $model = isset($advertiser->meta['campaign']) ? $advertiser->meta['campaign']['model'] : null}
+                                <label for="Model">Model (Optional)</label>
+                                <select name="model" class="form-control" value="{echo $model}">
+                                    <option value="cpc" selected="">CPC (Cost per Click)</option>
+                                    <option value="cpm">CPM (Cost per thousand impressions)</option>
+                                    <option value="cpa">CPA (Cost per action)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                {script $rate = isset($advertiser->meta['campaign']) ? $advertiser->meta['campaign']['rate'] : null}
+                                <label for="Rate">Rate (Optional)</label>
+                                <div class="input-group">
+                                    <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                    <input type="text" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,2})?$" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" value="{echo $user->convert($rate, false)}">
+                                </div>
+                            </div>
+                            <input type="hidden" name="action" value="campaign">
+                            <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
+                        </form>
                     </div>
                 </div>
             </div>

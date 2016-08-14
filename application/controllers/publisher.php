@@ -303,9 +303,24 @@ class Publisher extends Auth {
     public function manage() {
         $this->seo(array("title" => "List Publisher"));$view = $this->getActionView();
 
-        $publishers = \User::all(["type = ?" => "publisher", "org_id = ?" => $this->org->_id], [], 'created', 'desc');
+        $page = RequestMethods::get("page", 1);
+        $limit = RequestMethods::get("limit", 30);
+        $query = ["type = ?" => "publisher", "org_id = ?" => $this->org->_id];
+        $property = RequestMethods::get("property", "live");
+        $value = RequestMethods::get("value", 0);
+        if (in_array($property, ["email", "name", "phone", "live"])) {
+            $query["{$property} = ?"] = $value;
+        }
 
-        $view->set("publishers", $publishers);
+        $publishers = \User::all($query, [], 'created', 'desc', $limit, $page);
+        $count = \User::count($query);
+
+        $view->set("publishers", $publishers)
+            ->set("property", $property)
+            ->set("value", $value)
+            ->set("count", $count)
+            ->set("limit", $limit)
+            ->set("page", $page);
     }
 
     /**
@@ -381,58 +396,41 @@ class Publisher extends Auth {
         $this->seo(array("title" => "Publisher Edit"));
         $view = $this->getActionView();
 
-        $publisher = User::first(["_id = ?" => $id, "org_id = ?" => $this->org->id]);
-        $lastTransaction = \Transaction::first(['user_id = ?' => $publisher->_id], [], 'created', 'desc');
-        $performances = \Performance::all(['user_id = ?' => $publisher->_id, 'created' => ['$gt' => $lastTransaction->created]]);
-        $payment = 0.00;
-        foreach ($performances as $p) {
-            $payment += $p->revenue;
-        }
+        $publisher = User::first(["_id = ?" => $id, "type = ?" => "publisher", "org_id = ?" => $this->org->id]);
         $view->set("errors", []);
         if (RequestMethods::type() == 'POST') {
             $action = RequestMethods::post('action', '');
             switch ($action) {
                 case 'account':
-                    $name = RequestMethods::post('name');
-                    $currency = RequestMethods::post('currency', 'INR');
-
-                    $user->name = $name; $user->currency = $currency;
-                    $user->save();
+                    $publisher->name = RequestMethods::post('name');
+                    $publisher->email = RequestMethods::post('email');
+                    $publisher->phone = RequestMethods::post('phone');
+                    $publisher->country = RequestMethods::post('country');
+                    $publisher->currency = RequestMethods::post('currency');
+                    $publisher->save();
                     $view->set('message', 'Account Info updated!!');
                     break;
 
                 case 'password':
                     $old = RequestMethods::post('password');
                     $new = RequestMethods::post('npassword');
-                    $view->set($user->updatePassword($old, $new));
+                    $view->set($publisher->updatePassword($old, $new));
                     break;
 
-                case 'bank':
-                    $meta = $user->getMeta();
-                    $meta['bank'] = [
-                        'name' => RequestMethods::post('account_bank', ''),
-                        'ifsc' => RequestMethods::post('account_code', ''),
-                        'account_no' => RequestMethods::post('account_number', ''),
-                        'account_owner' => RequestMethods::post('account_owner', '')
+                case 'campaign':
+                    $meta = $publisher->getMeta();
+                    $meta['campaign'] = [
+                        'model' => RequestMethods::post('model'),
+                        'rate' => $this->currency(RequestMethods::post('rate'))
                     ];
-                    $user->meta = $meta; $user->save();
-                    $view->set('message', 'Bank Info Updated!!');
-                    break;
-
-                case 'payout':
-                    $meta = $user->getMeta();
-                    $meta['payout'] = [
-                        'paypal' => RequestMethods::post('paypal', ''),
-                        'paytm' => RequestMethods::post('paytm', '')
-                    ];
-                    $user->meta = $meta; $user->save();
+                    $publisher->meta = $meta;
+                    $publisher->save();
                     $view->set('message', 'Payout Info Updated!!');
                     break;
                 
                 default:
                     break;
             }
-            $this->setUser($user);
         }
         $view->set("publisher", $publisher);
     }

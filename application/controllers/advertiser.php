@@ -189,9 +189,71 @@ class Advertiser extends Auth {
      */
     public function manage() {
         $this->seo(array("title" => "Manage")); $view = $this->getActionView();
-        $advertisers = \User::all(["type = ?" => "advertiser", "org_id = ?" => $this->org->_id], [], 'created', 'desc');
 
-        $view->set("advertisers", $advertisers);
+        $page = RequestMethods::get("page", 1);
+        $limit = RequestMethods::get("limit", 30);
+        $query = ["type = ?" => "advertiser", "org_id = ?" => $this->org->_id];
+        $property = RequestMethods::get("property", "live");
+        $value = RequestMethods::get("value", 1);
+        if (in_array($property, ["email", "name", "phone", "live"])) {
+            $query["{$property} = ?"] = $value;
+        }
+
+        $advertisers = \User::all($query, [], 'created', 'desc');
+        $count = \User::count($query);
+
+        $view->set("advertisers", $advertisers)
+            ->set("property", $property)
+            ->set("value", $value)
+            ->set("count", $count)
+            ->set("limit", $limit)
+            ->set("page", $page);
+    }
+
+    /**
+     * @before _admin
+     */
+    public function info($id) {
+        $this->seo(array("title" => "Advertiser Edit"));
+        $view = $this->getActionView();
+
+        $advertiser = User::first(["_id = ?" => $id, "type = ?" => "advertiser", "org_id = ?" => $this->org->id]);
+        $view->set("errors", []);
+        if (RequestMethods::type() == 'POST') {
+            $action = RequestMethods::post('action', '');
+            switch ($action) {
+                case 'account':
+                    $advertiser->name = RequestMethods::post('name');
+                    $advertiser->email = RequestMethods::post('email');
+                    $advertiser->phone = RequestMethods::post('phone');
+                    $advertiser->country = RequestMethods::post('country');
+                    $advertiser->currency = RequestMethods::post('currency');
+                    $advertiser->save();
+                    $view->set('message', 'Account Info updated!!');
+                    break;
+
+                case 'password':
+                    $old = RequestMethods::post('password');
+                    $new = RequestMethods::post('npassword');
+                    $view->set($advertiser->updatePassword($old, $new));
+                    break;
+
+                case 'campaign':
+                    $meta = $advertiser->getMeta();
+                    $meta['campaign'] = [
+                        'model' => RequestMethods::post('model'),
+                        'rate' => $this->currency(RequestMethods::post('rate'))
+                    ];
+                    $advertiser->meta = $meta;
+                    $advertiser->save();
+                    $view->set('message', 'Payout Info Updated!!');
+                    break;
+                
+                default:
+                    break;
+            }
+        }
+        $view->set("advertiser", $advertiser);
     }
 
     /**
