@@ -90,6 +90,11 @@ class Admin extends Auth {
                         $meta["widgets"] = RequestMethods::post("widgets");
                         $org->meta = $meta;
                     }
+                    if (RequestMethods::post("zopim")) {
+                        $meta = $org->meta;
+                        $meta["zopim"] = RequestMethods::post("zopim");
+                        $org->meta = $meta;
+                    }
                     $org->url = RequestMethods::post('url');
                     $org->email = RequestMethods::post('email');
                     $org->save(); $this->setOrg($org);

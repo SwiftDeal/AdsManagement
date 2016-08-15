@@ -34,7 +34,13 @@
     <div class="wrapper-page">
         {ayield action}
     </div>
-    
+
+    <script type="text/javascript">
+        var zopim = "";
+    {if(array_key_exists('zopim', $org->meta))}
+        var zopim = $org->meta["zopim"];
+    {/if}
+    </script>
     <!-- jQuery  -->
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>

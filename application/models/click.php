@@ -83,10 +83,10 @@ class Click extends Shared\Model {
     public static function checkFraud($clicks, $org = null) {
         $cf = Registry::get("configuration")->parse("configuration/cf")->cloudflare;
 
-        if (!$org) {
-            $org_url = Registry::get("session")->get("org")->url;   
+        if ($org) {
+            $org_url = (is_null($org->url) || !$org->url) ? $org->domain.'.'.$cf->api->domain : $org->url;
         } else {
-            $org_url = (is_null($org->url) || !$org->url) ? '' : $org->url;
+            $org_url = $cf->api->domain;
         }
         // The clicks here will be for a publisher on an AD
         $verified = [];
@@ -121,7 +121,6 @@ class Click extends Shared\Model {
                     $key = Utils::getMongoID($c->adid);        
                     break;
             }
-
             if (!isset($classify[$key]) || !array_key_exists($key, $classify)) {
                 $classify[$key] = [];
             }

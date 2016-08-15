@@ -88,6 +88,11 @@
                                     <option value="top10ads" {if(in_array("top10ads", $org->meta["widgets"]))}selected=""{/if}>Top10 Ads</option>
                                 </select>
                             </div>
+                            <div class="form-group">
+                                {script $zopim = in_array("zopim", $org->meta) ? $org->meta["zopim"] : "";}
+                                <label>Zopim ID</label>
+                                <input type="text" name="zopim" value="{echo $zopim}" class="form-control" placeholder="Zopim Chat Integration ID">
+                            </div>
                             <input type="hidden" name="action" value="org">
                             <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
                         </form>

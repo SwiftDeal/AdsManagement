@@ -284,13 +284,13 @@ class Auth extends Controller {
         $this->setLayout("layouts/publisher");
     }
 
-    protected function perf($clicks, $p=null) {
+    protected function perf($clicks, $p, $org) {
         $perf = new Performance();
         $adsInfo = [];
         $classify = \Click::classify($clicks, 'adid');
         foreach ($classify as $key => $value) {
             // Check for click fraud
-            $uniqClicks = Click::checkFraud($value);
+            $uniqClicks = Click::checkFraud($value, $org);
             $adClicks = count($uniqClicks);
 
             if (isset($p->meta['campaign']) && !is_null($p->meta['campaign']['rate'])) {
