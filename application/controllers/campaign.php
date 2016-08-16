@@ -34,6 +34,21 @@ class Campaign extends Admin {
         $view->set('commission', $this->user->commission());
     }
 
+    
+    /**
+     * @before _secure
+     */
+    public function contest() {
+        $this->seo(['title' => 'Contest', 'description' => 'campaign contest']);
+        $view = $this->getActionView(); $session = Registry::get('session');
+        $advertisers = \User::all(["org_id = ?" => $this->org->_id, 'type = ?' => 'advertiser'], ['_id', 'name']);
+        if (count($advertisers) === 0) {
+            $session->set('$flashMessage', 'Please Add an Advertiser!!');
+            $this->redirect('/advertiser/add.html');
+        }
+        $view->set('advertiser', $advertisers);
+    }    
+
     /**
      * @before _secure
      */

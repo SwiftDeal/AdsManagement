@@ -91,6 +91,7 @@ class Admin extends Auth {
                         $org->meta = $meta;
                     }
                     if (RequestMethods::post("zopim")) {
+                        echo "here";
                         $meta = $org->meta;
                         $meta["zopim"] = RequestMethods::post("zopim");
                         $org->meta = $meta;

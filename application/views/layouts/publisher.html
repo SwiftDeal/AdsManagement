@@ -52,7 +52,7 @@
     <script type="text/javascript">
         var zopim = "";
     {if(array_key_exists('zopim', $org->meta))}
-        var zopim = $org->meta["zopim"];
+        var zopim = "{echo $org->meta['zopim']}";
     {/if}
     </script>
     <!-- Plugins  -->
