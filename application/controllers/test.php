@@ -60,54 +60,87 @@ class Test extends Auth {
         $date = date('Y-m-d', strtotime('-1 day'));
         $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
 
-        $sec = strtotime($date . ' 17:27:00');
+        $sec = strtotime($date . ' 00:00:00');
         $clickCol = Registry::get("MongoDB")->clicks;
         $start = new \MongoDate($sec);
         $records = $clickCol->find([
-            'is_bot' => true,
             'created' => ['$gte' => $start, '$lte' => $dateQuery['end']]
-        ], ['adid', 'ipaddr', 'referer']);
+        ], ['adid', 'is_bot', 'ipaddr', 'referer']);
 
         $classify = \Click::classify($records, 'adid');
-        $orig = 0; $fraud = 0;
+        $referer_filtered = 0; $fraud = 0;
+        $javascript_filtered = 0; $js_ref_filtered = 0;
         foreach ($classify as $key => $value) {
             $fraud += count($value);
+            foreach ($value as $c) {
+                if (!$c->is_bot) {
+                    $javascript_filtered++;
+                }
+            }
+
             $uniqClicks = \Click::checkFraud($value);
-            $orig += count($uniqClicks);
+
+            foreach ($uniqClicks as $c) {
+                if (!$c->is_bot) {
+                    $js_ref_filtered++;
+                }
+            }
+            $referer_filtered += count($uniqClicks);
         }
 
-        // These records should be valid visitor check them against 
-        // fraud click algorithm
-        $filtered = $clickCol->count([
-            'is_bot' => false,
-            'created' => ['$gte' => $start, '$lte' => $dateQuery['end']]
-        ]);
-
         $view->set([
-            'orig' => $fraud,
-            'referer_filtered' => $orig,
-            'javascript_filtered' => $filtered
+            'unverified' => $fraud,
+            'referer_filtered' => $referer_filtered,
+            'javascript_filtered' => $javascript_filtered,
+            'js_ref_filtered' => $js_ref_filtered
         ]);
     }
 
-    public function publisher() {
+    /**
+     * @before _admin
+     */
+    public function publishers() {
         $this->JSONview(); $view = $this->getActionView();
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        $date = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-1 day')));
 
-        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
+        $users = \User::all(['type' => 'publisher', 'org_id' => $this->org->_id], ['_id', 'name']);
+        foreach ($users as $u) {
+            $in[] = $u->_id;
+        }
+
+        $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
         $query = [
-            "user_id" => $this->user->_id,
+            "pid" => ['$in' => $in],
             "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]
         ];
 
         $clickCol = Registry::get("MongoDB")->clicks;
-        $records = $clickCol->find([
-            'pid' => $query['user_id'], 'created' => $query['created']
-        ], ['adid', 'ipaddr', 'referer']);
 
-        foreach ($records as $result) {
-            var_dump($result);
+        $records = $clickCol->find($query, ['adid', 'pid', 'is_bot', 'ipaddr', 'referer']);
+        $classify = \Click::classify($records, 'pid');
+        $pubClicks = [];
+        foreach ($classify as $pid => $pClicks) {
+            $orig = count($pClicks); $javascript_filtered = 0;
+            foreach ($pClicks as $c) {
+                if (!$c->is_bot) {
+                    $javascript_filtered++;
+                }
+            }
+
+            $uniqClicks = \Click::checkFraud($pClicks, $this->org);
+            $referer_filtered = count($uniqClicks);
+            $algo = 0.65 * $javascript_filtered + 0.35 * $referer_filtered;
+
+            $pubClicks[$pid] = ArrayMethods::toObject([
+                'name' => $users[$pid]->name,
+                'unverified' => $orig,
+                'referer_filtered' => $referer_filtered,
+                'javascript_filtered' => $javascript_filtered
+                // 'mentioned_algo' => round($algo)
+            ]);
         }
+
+
+        $view->set('publishers', $pubClicks);
     }
 }
