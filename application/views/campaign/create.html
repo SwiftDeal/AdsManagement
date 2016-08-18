@@ -78,12 +78,17 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Model</label>
-                                        <select name="model" required="" class="form-control">
+                                        <select name="model" required="" class="form-control" id="model">
                                             <option value="cpc" selected="">CPC (Cost per one Click)</option>
                                             <option value="cpm">CPM (Cost per thousand Impressions)</option>
                                             <option value="cpa">CPA (Cost per Action)</option>
                                         </select>
                                         <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "model")}</span>
+                                    </div>
+                                    <div class="form-group hidden" id="comm_desc">
+                                        <label>CPA Description</label>
+                                        <textarea class="form-control" name="comm_desc" rows="2"></textarea>
+                                        <small class="help-block">Details for successful conversion</small>
                                     </div>
                                     <div class="form-group">
                                         <label for="Rate">Payout rate</label>
@@ -119,3 +124,9 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+$('#model').change(function() {
+    if ($('#model').val() == 'cpa')
+        $('#comm_desc').removeClass('hidden');
+});
+</script>

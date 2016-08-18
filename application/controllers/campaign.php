@@ -115,6 +115,7 @@ class Campaign extends Admin {
     		$campaign->save();
             $commission = new \Commission([
                 'ad_id' => $campaign->_id,
+                'description' => RequestMethods::post('comm_desc', null),
                 'model' => RequestMethods::post('model'),
                 'rate' => $this->currency(RequestMethods::post('rate')),
                 'coverage' => RequestMethods::post('coverage')

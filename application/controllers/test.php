@@ -57,7 +57,7 @@ class Test extends Auth {
      */
     public function newdata() {
         $this->JSONview(); $view = $this->getActionView();
-        $date = date('Y-m-d', strtotime('-1 day'));
+        $date = date('Y-m-d', strtotime('-2 day'));
         $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
 
         $sec = strtotime($date . ' 00:00:00');

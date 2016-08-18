@@ -24,9 +24,9 @@
                 </div>
             </div>
             <div class="row">
+                {foreach $p in $platforms}
                 <div class="col-md-6">
                     <div class="card-box">
-                        {foreach $p in $platforms}
                         <h4 class="m-t-0 header-title"><b>RSS Feed</b></h4>
                         <form role="form" method="post" action="">
                             <div class="form-group">
@@ -47,9 +47,9 @@
                             <input type="hidden" name="action" value="platform">
                             <button type="submit" class="btn btn-purple waves-effect waves-light">Save</button>
                         </form>
-                        {/foreach}
                     </div>
                 </div>
+                {/foreach}
             </div>
         </div>
     </div>
