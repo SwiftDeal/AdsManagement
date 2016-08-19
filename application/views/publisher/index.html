@@ -71,8 +71,8 @@
     </div>
 </div>
 <div class="row">
+    {if isset($notifications)}
     <div class="col-md-4">
-        {if isset($notifications)}
         <div class="card-box">
             <h4 class="text-dark  header-title m-t-0">Recent Notifications</h4>
             <div class="table-responsive nicescroll" style="height: 280px">
@@ -88,10 +88,10 @@
                 </table>
             </div>
         </div>
-        {/if}
     </div>
+    {/if}
+    {if isset($topusers['publishers'])}
     <div class="col-md-4">
-        {if isset($topusers['publishers'])}
         {script $topEarners = $topusers['publishers']}
         <div class="card-box widget-user">
             <h4 class="text-dark  header-title m-t-0">Top 10 publishers</h4>
@@ -108,10 +108,10 @@
                 </table>
             </div>
         </div>
-        {/if}
     </div>
+    {/if}
+    {if isset($topusers['ads'])}
     <div class="col-md-4">
-        {if isset($topusers['ads'])}
         {script $topCampaigns = $topusers['ads']}
         <div class="card-box widget-user">
             <h4 class="text-dark  header-title m-t-0">Top 10 Campaigns</h4>
@@ -128,6 +128,6 @@
                 </table>
             </div>
         </div>
-        {/if}
     </div>
+    {/if}
 </div>

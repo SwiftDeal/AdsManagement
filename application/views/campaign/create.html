@@ -35,6 +35,20 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
+                                        <label>Device</label>
+                                        <select name="device[]" class="form-control selectpicker" multiple="" data-live-search=true title="Choose a device target">
+                                            <option value="all" selected="">All</option>
+                                            <option value="android">Android</option>
+                                            <option value="iphone">iPhone</option>
+                                            <option value="winphone">Windows Phone</option>
+                                            <option value="linux">Linux</option>
+                                            <option value="windows">Windows</option>
+                                            <option value="mac">Mac OS</option>
+                                            <option value="ipad">iPad</option>
+                                        </select>
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "device")}</span>
+                                    </div>
+                                    <div class="form-group">
                                         <label>Original URL</label>
                                         <input type="url" class="form-control" name="url" required="" value="{echo $meta['url']}">
                                         <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "url")}</span>

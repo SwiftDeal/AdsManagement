@@ -27,6 +27,20 @@
                             <form method="post" action="" enctype="multipart/form-data">
                                 <div class="panel panel-default panel-body">
                                     <div class="form-group">
+                                        <label>Device</label>
+                                        <select name="device[]" class="form-control selectpicker" multiple="" data-live-search=true title="Choose a device target">
+                                            <option value="all" {if(in_array('all', $c->device))}selected{/if}>All</option>
+                                            <option value="android" {if(in_array('android', $c->device))}selected{/if}>Android</option>
+                                            <option value="iphone" {if(in_array('iphone', $c->device))}selected{/if}>iPhone</option>
+                                            <option value="winphone" {if(in_array('winphone', $c->device))}selected{/if}>Windows Phone</option>
+                                            <option value="linux" {if(in_array('linux', $c->device))}selected{/if}>Linux</option>
+                                            <option value="windows" {if(in_array('windows', $c->device))}selected{/if}>Windows</option>
+                                            <option value="mac" {if(in_array('mac', $c->device))}selected{/if}>Mac OS</option>
+                                            <option value="ipad" {if(in_array('ipad', $c->device))}selected{/if}>iPad</option>
+                                        </select>
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "device")}</span>
+                                    </div>
+                                    <div class="form-group">
                                         <label>Title</label>
                                         <input type="text" class="form-control" value="{echo $c->title}" name="title">
                                         <span class="help-block">{echo Shared\Markup::errors($errors, "title")}</span>

@@ -57,7 +57,7 @@ class Test extends Auth {
      */
     public function newdata() {
         $this->JSONview(); $view = $this->getActionView();
-        $date = date('Y-m-d', strtotime('-2 day'));
+        $date = date('Y-m-d', strtotime('-1 day'));
         $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
 
         $sec = strtotime($date . ' 00:00:00');
@@ -75,16 +75,13 @@ class Test extends Auth {
             foreach ($value as $c) {
                 if (!$c->is_bot) {
                     $javascript_filtered++;
+                    if ($c->referer) {
+                        $js_ref_filtered++;
+                    }
                 }
             }
 
             $uniqClicks = \Click::checkFraud($value);
-
-            foreach ($uniqClicks as $c) {
-                if (!$c->is_bot) {
-                    $js_ref_filtered++;
-                }
-            }
             $referer_filtered += count($uniqClicks);
         }
 

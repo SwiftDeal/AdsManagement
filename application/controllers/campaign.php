@@ -106,6 +106,7 @@ class Campaign extends Admin {
     			'category' => \Ad::setCategories(RequestMethods::post('category')),
     			'image' => $img,
                 'type' => RequestMethods::post('type', 'article'),
+                'device' => RequestMethods::post('device', ['all']),
     			'live' => false
     		]);
 
@@ -210,6 +211,7 @@ class Campaign extends Admin {
             $comm->description = RequestMethods::post('description');
             $comm->rate = $this->currency(RequestMethods::post('rate'));
             $comm->coverage = RequestMethods::post('coverage', ['ALL']);
+            $comm->device = RequestMethods::post('device', ['all']);
             $comm->bid = 0;
 
             $comm->save();
