@@ -3,6 +3,7 @@
 /**
  * @author Hemant Mann
  */
+use Shared\Utils as Utils;
 class Meta extends Shared\Model {
 
     /**

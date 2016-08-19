@@ -36,7 +36,7 @@
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "url")}</span>
                             </div>
                             <div class="form-group">
-                                <label for="track">RSS Feed Parsing</label>
+                                <label for="track">Auto Importing</label>
                                 {script $parsing = (string) ((int) $p->meta['rss']['parsing'])}
                                 <select name="parsing" class="form-control">
                                     <option value="1" {if($parsing == "1")}selected{/if}>Yes</option>

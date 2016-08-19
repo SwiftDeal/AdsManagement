@@ -304,7 +304,7 @@ class Campaign extends Admin {
                 if (!$advert) return $view->set('message', 'Invalid Request!!');
 
                 // try to find a platform for the given advertiser
-                $domain = parse_url($url, PHP_URL_HOST); $regex = preg_quote($domain, ".");
+                $domain = parse_url($url, PHP_URL_HOST); $regex = preg_quote($domain);
                 $p = \Platform::first(['user_id' => $advert_id, 'url' => new \MongoRegex('/'.$regex.'/i')]);
 
                 $msg = "RSS Feed Added. Campaigns Will be imported within an hour";

@@ -393,7 +393,7 @@ class Cron extends Shared\Controller {
 
                 $user = \User::first(['org_id' => $o->_id, 'type' => 'admin'], ['_id']);
 
-                // \Meta::campImport($user->_id, $p->user_id, $result['urls']);
+                \Meta::campImport($user->_id, $p->user_id, $result['urls']);
             }
         }
     }

@@ -92,7 +92,7 @@ class Ad extends Shared\Model {
      * @type array
      * @index
      */
-    protected $_device = ['ALL'];
+    protected $_device = [];
 
     public static function setCategories($categories = []) {
         $result = [];
