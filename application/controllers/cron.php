@@ -95,24 +95,16 @@ class Cron extends Shared\Controller {
             
             $records = $clickCol->find([
                 "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']],
+                "is_bot" => false,
                 "pid" => ['$in' => $in]
-            ], ['adid', 'pid', 'ipaddr', 'referer']);
+            ], ['adid', 'pid']);
 
             $uniqClicks = []; $adClicks = []; $pubClicks = [];
             foreach ($records as $r) {
-                $c = (object) $r; $regex = preg_quote($org->url, ".");
+                $c = (object) $r;
 
-                if (!$c->referer || preg_match('/vnative\.com/', $c->referer) || preg_match('#'.$regex.'#', $c->referer)) {
-                    continue;
-                }
-                $ip = $c->ipaddr; $adid = $c->adid; $pid = $c->pid;
-                if (isset($uniqClicks[$ip])) {
-                    continue;
-                }
-                $uniqClicks[$ip] = true;
-
-                $adid = Utils::getMongoID($adid);
-                $pid = Utils::getMongoID($pid);
+                $adid = Utils::getMongoID($c->adid);
+                $pid = Utils::getMongoID($c->pid);
                 if (!isset($adClicks[$adid])) {
                     $adClicks[$adid] = 1;
                 } else {
@@ -178,8 +170,9 @@ class Cron extends Shared\Controller {
             $clickCol = Registry::get("MongoDB")->clicks;
             $clicks = $clickCol->find([
                 'pid' => $p->_id,
+                'is_bot' => false,
                 'created' => ['$gte' => $start, '$lte' => $end]
-            ],['adid', 'cookie', 'ipaddr', 'referer']);
+            ], ['adid']);
 
             $perf = Performance::exists($p, $date);
             
@@ -194,8 +187,8 @@ class Cron extends Shared\Controller {
                 }
 
                 // Check for click fraud
-                $uniqClicks = Click::checkFraud($value, $org);
-                $adClicks = count($uniqClicks);
+                // $uniqClicks = Click::checkFraud($value, $org);
+                $adClicks = count($value);
 
                 if (isset($p->meta['campaign']) && !is_null($p->meta['campaign']['rate'])) {
                     $rate = $p->meta['campaign']['rate'];
@@ -247,13 +240,11 @@ class Cron extends Shared\Controller {
                 $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
                 $start = $dateQuery['start']; $end = $dateQuery['end'];
 
-                $records = $clickCol->find([
+                $clicks = $clickCol->count([
                     'adid' => $a->_id,
+                    'is_bot' => false,
                     'created' => ['$gte' => $start, '$lte' => $end]
-                ], ['adid', 'ipaddr', 'cookie', 'referer']);
-                $records = ArrayMethods::toObject($records);
-                $arr = Click::checkFraud($records, $org);
-                $clicks = count($arr);
+                ]);
 
                 $key = Utils::getMongoID($a->_id);
 
@@ -273,9 +264,7 @@ class Cron extends Shared\Controller {
                 $revenue += $clicks * $orate;
             }
             $perf->clicks = $clicksCount; $perf->revenue = round($revenue, 6);
-            if ($perf->clicks == 0) {
-                continue;
-            }
+            if ($perf->clicks == 0) continue;
 
             $avgCpc = abs($perf->revenue) / $perf->clicks;
             $perf->cpc = round($avgCpc, 6);
@@ -317,10 +306,7 @@ class Cron extends Shared\Controller {
                 }
 
                 // new stats
-                $stat = new \Stat([
-                    'pid' => $p->_id, 'impressions' => null,
-                    'created' => $date
-                ]);
+                $stat = \Stat::exists($u, $date);
                 $clicks = 0; $revenue = 0.00; $avgCpc = 0.00;
 
                 $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
@@ -329,8 +315,9 @@ class Cron extends Shared\Controller {
                 // find all the clicks for the date range
                 $records = $clickCol->find([
                     'adid' => ['$in' => $in],
+                    'is_bot' => false,
                     'created' => ['$gte' => $start, '$lte' => $end]
-                ], ['ipaddr', 'cookie', 'referer', 'device', 'adid']);
+                ], ['adid']);
 
                 // Now classify the clicks according to the AD
                 $classify = \Click::classify($records);
@@ -344,17 +331,21 @@ class Cron extends Shared\Controller {
                         $comm = $adsInfo[$key];
                     }
 
-                    $uniqClicks = Click::checkFraud($value, $org);
+                    if (is_null($comm->bid) || !$comm->bid) {
+                        $orate = isset($org->meta['rate']) ? $org->meta['rate'] : 0;
+                    } else {
+                        $orate = $comm->bid;
+                    }
+
+                    // $uniqClicks = Click::checkFraud($value, $org);
                     // can parse uniqClicks to find traffic from individual devices
-                    $adClicks = count($uniqClicks);
+                    $adClicks = count($value);
                     
-                    $clicks += $adClicks;
-                    $revenue += $adClicks * $comm->bid;
+                    $clicks += $adClicks; $revenue += $adClicks * $orate;
                 }
 
-                if ($clicks == 0) {
-                    continue;
-                }
+                if ($clicks == 0) continue;
+
                 $avgCpc = round($revenue / $clicks, 6);
                 $stat->clicks = $clicks; $stat->revenue = round($revenue, 6);
                 $stat->cpc = $avgCpc;
