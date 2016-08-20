@@ -388,7 +388,7 @@ namespace Framework {
                     break;
 
                 case 'object':
-                    $value = is_null($value);
+                    $value = count(get_object_vars($value));
                     break;
                 
                 default:

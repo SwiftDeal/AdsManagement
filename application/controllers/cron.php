@@ -366,7 +366,8 @@ class Cron extends Shared\Controller {
 
             // get feed for each platform
             foreach ($platforms as $p) {
-                $rss = $p->meta['rss'];
+                $meta = $p->meta;
+                $rss = $meta['rss'];
 
                 if (!$rss['parsing']) {
                     continue;   // parsing is stopeed
@@ -379,11 +380,10 @@ class Cron extends Shared\Controller {
                 
                 $urls = $result['urls'];
                 $rss['lastCrawled'] = $result['lastCrawled'];
-                $p->meta['rss'] = $rss;
+                $meta['rss'] = $rss; $p->meta = $meta;
                 $p->save();     // save the lastCrawled time
 
                 $user = \User::first(['org_id' => $o->_id, 'type' => 'admin'], ['_id']);
-
                 \Meta::campImport($user->_id, $p->user_id, $result['urls']);
             }
         }
@@ -394,7 +394,7 @@ class Cron extends Shared\Controller {
 
         $users = []; $orgs = [];
         foreach ($metas as $m) {
-            $uid = $m->getMongoID($m->propid);
+            $uid = Utils::getMongoID($m->propid);
             // find user info
             if (!array_key_exists($uid, $users)) {
                 $user = \User::first(['_id = ?' => $m->propid], ['_id', 'org_id', 'email', 'meta']);
@@ -404,7 +404,7 @@ class Cron extends Shared\Controller {
             }
 
             // find organization
-            $orgid = $user->getMongoID($user->org_id);
+            $orgid = Utils::getMongoID($user->org_id);
             if (!array_key_exists($orgid, $orgs)) {
                 $org = \Organization::first(['_id = ?' => $user->org_id], ['meta', 'domain', '_id']);
                 $orgs[$orgid] = $org;
@@ -412,13 +412,18 @@ class Cron extends Shared\Controller {
                 $org = $orgs[$orgid];
             }
 
+            $categories = \Category::all(['org_id' => $org->_id], ['_id', 'name']);
+            $categories = array_values($categories);
+            $index = array_rand($categories);
+            $category = $categories[$index];
+
             // fetch ad info foreach URL
-            $advert_id = $m->value['advert'];
+            $advert_id = $m->value['advert_id'];
             $comm = $org->meta;
             $urls = $m->value['urls'];
 
             foreach ($urls as $url) {
-                $ad = \Ad::first(['user_id' => $advert_id, 'org_id' => $org->_id, 'url' => $url]);
+                $ad = \Ad::first(['org_id' => $org->_id, 'url' => $url]);
                 if ($ad) continue;  // already crawled URL may be due to failed cron earlier
                 
                 $data = Utils::fetchCampaign($url);
@@ -432,19 +437,27 @@ class Cron extends Shared\Controller {
                     'description' => $data['description'],
                     'url' => $url,
                     'image' => $image,
-                    'category' => ['386']
+                    'category' => [$category->_id],
+                    'type' => 'article',
+                    'live' => false,
+                    'device' => ['ALL']
                 ]);
-                $ad->save();
-                $commission = new \Commission([
-                    'ad_id' => $ad->_id,
-                    'model' => $comm['model'],
-                    'rate' => $comm['rate'],
-                    'bid' => $user->meta['rate'],
-                    'country' => 'ALL'
-                ]);
-                $commission->save();
+                if ($ad->validate()) {
+                    $ad->save();
+                    $commission = new \Commission([
+                        'ad_id' => $ad->_id,
+                        'model' => $comm['model'],
+                        'rate' => $comm['rate'],
+                        'bid' => @$user->meta['rate'],
+                        'coverage' => ['ALL']
+                    ]);
+                    $commission->save();
+                } else {
+                    var_dump($ad->getErrors());
+                }
             }
-            $this->log('Campaigns inported for the user: ' . $user->email);
+            $msg = 'Campaigns imported for the user: ' . $user->email;
+            $this->log($msg);
             $m->delete();
         }
     }

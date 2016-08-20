@@ -11,6 +11,7 @@ class Ad extends Shared\Model {
      * @type mongoid
      * @index
      *
+     * @validate required
      * @label advertiser user id
      */
     protected $_user_id;
@@ -20,6 +21,7 @@ class Ad extends Shared\Model {
      * @readwrite
      * @type mongoid
      * @index
+     * @validate required
      */
     protected $_org_id;
 

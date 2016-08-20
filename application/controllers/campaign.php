@@ -106,7 +106,7 @@ class Campaign extends Admin {
     			'category' => \Ad::setCategories(RequestMethods::post('category')),
     			'image' => $img,
                 'type' => RequestMethods::post('type', 'article'),
-                'device' => RequestMethods::post('device', ['all']),
+                'device' => RequestMethods::post('device', ['ALL']),
     			'live' => false
     		]);
 
@@ -146,8 +146,10 @@ class Campaign extends Admin {
 
         $property = RequestMethods::get("property", "live");
         $value = RequestMethods::get("value", 0);
-        if (in_array($property, ["user_id", "url", "title", "live"])) {
-            $query["{$property} = ?"] = $value;
+        if (in_array($property, ["user_id", "live"])) {
+            $query[$property] = $value;
+        } else if (in_array($property, ["url", "title"])) {
+            $query[$property] = new \MongoRegex('/'. preg_quote($value) .'/i');
         }
     	$campaigns = \Ad::all($query, [], 'created', 'desc', $limit, $page);
         $count = \Ad::count($query);
@@ -211,7 +213,7 @@ class Campaign extends Admin {
             $comm->description = RequestMethods::post('description');
             $comm->rate = $this->currency(RequestMethods::post('rate'));
             $comm->coverage = RequestMethods::post('coverage', ['ALL']);
-            $comm->device = RequestMethods::post('device', ['all']);
+            $comm->device = RequestMethods::post('device', ['ALL']);
             $comm->bid = 0;
 
             $comm->save();
