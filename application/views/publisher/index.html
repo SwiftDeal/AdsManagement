@@ -72,7 +72,7 @@
 </div>
 <div class="row">
     {if isset($notifications)}
-    <div class="col-md-4">
+    <div class="col-md-{echo $d}">
         <div class="card-box">
             <h4 class="text-dark  header-title m-t-0">Recent Notifications</h4>
             <div class="table-responsive nicescroll" style="height: 280px">
@@ -91,7 +91,7 @@
     </div>
     {/if}
     {if isset($topusers['publishers'])}
-    <div class="col-md-4">
+    <div class="col-md-{echo $d}">
         {script $topEarners = $topusers['publishers']}
         <div class="card-box widget-user">
             <h4 class="text-dark  header-title m-t-0">Top 10 publishers</h4>
@@ -111,7 +111,7 @@
     </div>
     {/if}
     {if isset($topusers['ads'])}
-    <div class="col-md-4">
+    <div class="col-md-{echo $d}">
         {script $topCampaigns = $topusers['ads']}
         <div class="card-box widget-user">
             <h4 class="text-dark  header-title m-t-0">Top 10 Campaigns</h4>

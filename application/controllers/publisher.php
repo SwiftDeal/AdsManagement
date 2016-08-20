@@ -39,6 +39,7 @@ class Publisher extends Auth {
 
         $view->set("start", $start)
             ->set("end", $end)
+            ->set("d", 4)
             ->set("topusers", $this->widgets($dateQuery))
             ->set("notifications", $notifications)
             ->set("total", $total)

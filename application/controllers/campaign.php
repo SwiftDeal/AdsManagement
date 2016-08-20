@@ -106,7 +106,7 @@ class Campaign extends Admin {
     			'category' => \Ad::setCategories(RequestMethods::post('category')),
     			'image' => $img,
                 'type' => RequestMethods::post('type', 'article'),
-                'device' => RequestMethods::post('device', ['ALL']),
+                'device' => RequestMethods::post('device', ['all']),
     			'live' => false
     		]);
 
@@ -200,12 +200,14 @@ class Campaign extends Admin {
             $c->category = \Ad::setCategories(RequestMethods::post('category'));
             $c->title = RequestMethods::post('title');
             $c->description = RequestMethods::post('description');
+            $c->device = RequestMethods::post('device', ['all']);
 
             if (!$c->validate()) {
                 $view->set("errors", $c->errors);
                 $view->set("message", "Validation Failed");
             } else {
                 $c->save();
+                $view->set("message", "Campaign updated!!");
             }
         }
         if (RequestMethods::post("action") == "commedit") {
@@ -213,7 +215,6 @@ class Campaign extends Admin {
             $comm->description = RequestMethods::post('description');
             $comm->rate = $this->currency(RequestMethods::post('rate'));
             $comm->coverage = RequestMethods::post('coverage', ['ALL']);
-            $comm->device = RequestMethods::post('device', ['ALL']);
             $comm->bid = 0;
 
             $comm->save();
