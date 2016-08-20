@@ -17,43 +17,41 @@ class Report extends Admin {
         $this->seo(array("title" => "ADS Effectiveness"));
         $view = $this->getActionView();
 
-        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
+        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-5 day')));
         $end = RM::get("end", strftime("%Y-%m-%d", strtotime('now')));
         $q = ['start' => $start, 'end' => $end]; $view->set($q);
         $dateQuery = Shared\Utils::dateQuery($q);
         $start = $dateQuery['start']; $end = $dateQuery['end'];
 
         // Only find the ads for this organizations
-        $ads = \Ad::all(['org_id' => $this->org->_id], ['_id']);
-        $in = [];
-        foreach ($ads as $a) {
+        $allAds = \Ad::all(['org_id' => $this->org->_id], ['_id', 'title', 'url', 'image', 'live']);
+        $in = []; $ads = [];
+        foreach ($allAds as $a) {
             $in[] = $a->_id;
         }
 
-        $clickCol = Registry::get("MongoDB")->clicks; $ads = [];
+        $clickCol = Registry::get("MongoDB")->clicks;
         $clicks = $clickCol->find([
             'created' => ['$gte' => $start, '$lte' => $end],
+            'is_bot' => false,
             'adid' => ['$in' => $in]
         ], ['adid']);
-        foreach ($clicks as $c) {
-            $result = ArrayMethods::toObject($c);
-        	$adid = Utils::getMongoID($result->adid);
-        	if (!array_key_exists($adid, $ads)) {
-        		$ads[$adid] = 1;
-        	} else {
-        		$ads[$adid]++;
-        	}
+
+        $classify = \Click::classify($clicks, 'adid');
+        foreach ($classify as $key => $value) {
+            $ads[$key] = count($value);
         }
+        
         if (count($ads) == 0) return $view->set('ads', []);
         arsort($ads, SORT_NUMERIC);
         $result = [];
         foreach ($ads as $key => $value) {
-        	$a = \Ad::first(['_id' => $key], ['title', 'live', 'image', 'url']);
+        	$a = $allAds[$key];
         	$result[] = ArrayMethods::toObject([
         		'title' => $a->title,
                 'id' => $key,
         		'image' => CDN. 'uploads/images/'.$a->image,
-        		'status' => $a->live,
+        		'live' => $a->live,
                 'url' => $a->url,
         		'clicks' => $value
         	]);
@@ -68,7 +66,7 @@ class Report extends Admin {
         $this->seo(array("title" => "AD Report"));
         $view = $this->getActionView();
 
-        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
+        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-5 day')));
         $end = RM::get("end", strftime("%Y-%m-%d", strtotime('now')));
         $q = ['start' => $start, 'end' => $end]; $view->set($q);
         $dateQuery = Shared\Utils::dateQuery($q);
@@ -77,18 +75,14 @@ class Report extends Admin {
         $ad = \Ad::first(['org_id = ?' => $this->org->_id, 'id = ?' => $id]);
 
         $clickCol = Registry::get("MongoDB")->clicks; $ads = [];
-        $clicks = $clickCol->find(['created' => ['$gte' => $start, '$lte' => $end], 'adid' => $id], ['adid']);
-        foreach ($clicks as $c) {
-            $result = ArrayMethods::toObject($c);
-            $adid = Utils::getMongoID($result->adid);
-            if (!array_key_exists($adid, $ads)) {
-                $ads[$adid] = 1;
-            } else {
-                $ads[$adid]++;
-            }
-        }
+        $count = $clickCol->count([
+            'created' => ['$gte' => $start, '$lte' => $end],
+            'adid' => $ad->_id,
+            'is_bot' => false
+        ]);
        
-        $view->set('ad', $ad);
+        $view->set('ad', $ad)
+            ->set('clicks', $count);
     }
 
     /**
@@ -98,14 +92,14 @@ class Report extends Admin {
         $this->seo(array("title" => "Publisher Rankings"));
         $view = $this->getActionView();
 
-        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
+        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-5 day')));
         $end = RM::get("end", strftime("%Y-%m-%d", strtotime('now')));
         $q = ['start' => $start, 'end' => $end]; $view->set($q);
         $dateQuery = Utils::dateQuery($q);
         $start = $dateQuery['start']; $end = $dateQuery['end'];
 
         // find all the publishers for this organization
-        $users = \User::all(['type' => 'publisher', 'org_id' => $this->org->_id], ['_id']);
+        $users = \User::all(['type' => 'publisher', 'org_id' => $this->org->_id], ['_id', 'name']);
         $in = [];
         foreach ($users as $u) {
             $in[] = $u->_id;
@@ -114,26 +108,21 @@ class Report extends Admin {
         $clickCol = Registry::get("MongoDB")->clicks; $stats = [];
         $clicks = $clickCol->find([
             'created' => ['$gte' => $start, '$lte' => $end],
+            'is_bot' => false,
             'pid' => ['$in' => $in]
         ], ['pid']);
         
-        foreach ($clicks as $c) {
-            $result = ArrayMethods::toObject($c);
-            $uid = Utils::getMongoID($result->pid);
-        	if (!array_key_exists($uid, $stats)) {
-        		$stats[$uid] = 1;
-        	} else {
-        		$stats[$uid]++;
-        	}
+        $classify = \Click::classify($clicks, 'pid');
+        foreach ($classify as $key => $value) {
+            $stats[$key] = count($value);
         }
 
         if (count($stats) == 0) return $view->set('publishers', []);
         arsort($stats, SORT_NUMERIC);
         $result = [];
         foreach ($stats as $key => $value) {
-        	$u = \User::first(['_id' => $key, 'org_id' => $this->org->_id], ['name']);
+            $u = $users[$key];
 
-        	if (!$u) continue;
         	$result[] = ArrayMethods::toObject([
         		'name' => $u->name,
         		'clicks' => $value
@@ -253,7 +242,7 @@ class Report extends Admin {
         $view = $this->getActionView();
 
         $clickCol = Registry::get("MongoDB")->clicks;
-        $start = RM::get("start", date('Y-m-d', strtotime('-7 day')));
+        $start = RM::get("start", date('Y-m-d', strtotime('-5 day')));
         $end = RM::get("end", date('Y-m-d', strtotime('-1 day')));
 
         // find all the users
@@ -284,9 +273,10 @@ class Report extends Admin {
         }
 
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
+        $query['is_bot'] = false;
         $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
 
-        $records = $clickCol->find($query, ['adid', 'pid', 'ipaddr', 'referer']);
+        $records = $clickCol->find($query, ['adid', 'pid']);
         $count = \Click::count($query);
 
         $stats = []; $count = 0;
@@ -294,8 +284,8 @@ class Report extends Admin {
         foreach ($clicks as $key => $value) {
             $pubClicks = Click::classify($value, 'pid');
             foreach ($pubClicks as $k => $v) {
-                $uniqClicks = Click::checkFraud($v);
-                $uniqCount = count($uniqClicks);
+                // $uniqClicks = Click::checkFraud($v);
+                $uniqCount = count($v);
                 $count += $uniqCount;
 
                 if (!array_key_exists($k, $stats)) {

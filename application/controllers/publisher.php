@@ -24,9 +24,9 @@ class Publisher extends Auth {
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
         $clickCol = Registry::get("MongoDB")->clicks;
         $clicks = $clickCol->find([
-            "pid" => $this->user->id,
+            "pid" => $this->user->id, "is_bot" => false,
             "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]
-        ],['adid', 'cookie', 'ipaddr', 'referer']);
+        ],['adid']);
 
         $notifications = Notification::all(["org_id = ?" => $this->org->id], [], "created", "desc", 5, 1);
         $total = Performance::overall(
@@ -104,8 +104,8 @@ class Publisher extends Auth {
         // find clicks
         $clickCol = Registry::get("MongoDB")->clicks;
         $records = $clickCol->find([
-            'pid' => $query['user_id'], 'created' => $query['created']
-        ], ['adid', 'ipaddr', 'referer']);
+            'pid' => $query['user_id'], 'is_bot' => false, 'created' => $query['created']
+        ], ['adid']);
         
         $view->set([
             'limit' => $limit,

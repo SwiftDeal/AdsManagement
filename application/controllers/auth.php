@@ -290,8 +290,8 @@ class Auth extends Controller {
         $classify = \Click::classify($clicks, 'adid');
         foreach ($classify as $key => $value) {
             // Check for click fraud
-            $uniqClicks = Click::checkFraud($value, $org);
-            $adClicks = count($uniqClicks);
+            // $uniqClicks = Click::checkFraud($value, $org);
+            $adClicks = count($value);
 
             if (isset($p->meta['campaign']) && !is_null($p->meta['campaign']['rate'])) {
                 $rate = $p->meta['campaign']['rate'];

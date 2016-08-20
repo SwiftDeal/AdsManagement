@@ -56,7 +56,8 @@
                     {script $key = $a->getMongoID()}
                     {if array_key_exists($key, $clicks)}
                         {script $adClicks = $clicks[$key]}
-                        {script $uniqClicks = Click::checkFraud($adClicks)}
+                        <!-- Remove click func check -->
+                        {script $uniqClicks = $adClicks}
                     {/if} {else}
                         {script $uniqClicks = []}
                     {/else}

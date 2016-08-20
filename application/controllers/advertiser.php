@@ -62,8 +62,9 @@ class Advertiser extends Auth {
         $clickCol = Registry::get("MongoDB")->clicks;
         $records = $clickCol->find([
             'adid' => ['$in' => $in],
+            'is_bot' => false,
             'created' => $query["created"]
-        ], ['adid', 'ipaddr', 'referer']);
+        ], ['adid']);
 
         $view->set("ads", $ads);
         $view->set("start", $start);
