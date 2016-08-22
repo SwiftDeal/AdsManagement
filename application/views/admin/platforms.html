@@ -31,14 +31,17 @@
                                 <thead>
                                     <tr>
                                         <th>URL</th>
+                                        <th>Owner</th>
                                         <th>Created</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {foreach $p in $platforms}
+                                    {script $u = User::first(["_id = ?" => $p->user_id], ["name"])}
                                     <tr>
                                         <td><a href="$p->url" target="_blank">{echo $p->url}</a></td>
+                                        <td>{echo $u->name}</td>
                                         <td>{echo Framework\StringMethods::only_date($p->created)}</td>
                                         <td>
                                             <a href="/publisher/info/{echo $p->_id}.html" class="btn btn-xs btn-primary"><i class="fa fa-edit"></i></a>

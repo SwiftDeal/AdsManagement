@@ -12,11 +12,11 @@
             <div class="widget-chart text-center">
                 <ul class="list-inline m-t-15">
                     <li>
-                        <h5 class="text-muted m-t-20">Today</h5>
+                        <h5 class="text-muted m-t-20" data-toggle="tooltip" data-placement="top" data-original-title="Total Clicks today, hit refresh to update">Today <sup class="fa fa-info"></sup></h5>
                         <h4 class="m-b-0">{echo Shared\Markup::nice_number($performance->clicks)}</h4>
                     </li>
                     <li>
-                        <h5 class="text-muted m-t-20">Yesterday</h5>
+                        <h5 class="text-muted m-t-20" data-toggle="tooltip" data-placement="top" data-original-title="Yesterday Clicks recieved, updated everyday 1:00 AM (IST)">Yesterday</h5>
                         <h4 class="m-b-0">{echo Shared\Markup::nice_number($total["clicks"][$yesterday])}</h4>
                     </li>
                     <li>

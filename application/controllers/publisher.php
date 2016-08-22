@@ -38,7 +38,7 @@ class Publisher extends Auth {
         );
         $topusers = $this->widgets($dateQuery);
         if (array_key_exists("widgets", $this->org->meta)) {
-            echo $d = isset($notifications) + in_array("top10ads", $this->org->meta["widgets"]) + in_array("top10pubs", $this->org->meta["widgets"]);
+            $d = isset($notifications) + in_array("top10ads", $this->org->meta["widgets"]) + in_array("top10pubs", $this->org->meta["widgets"]);
         }
 
 
