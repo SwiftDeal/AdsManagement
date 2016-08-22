@@ -10,6 +10,7 @@ class Commission extends \Shared\Model {
      * @readwrite
      * @type mongoid
      * @index
+     * @validate required
      */
     protected $_ad_id;
     

@@ -119,6 +119,7 @@ class Campaign extends Admin {
                 'description' => RequestMethods::post('comm_desc', null),
                 'model' => RequestMethods::post('model'),
                 'rate' => $this->currency(RequestMethods::post('rate')),
+                'revenue' => $this->currency(RequestMethods::post('revenue')),
                 'coverage' => RequestMethods::post('coverage')
             ]);
             $commission->save();
@@ -218,8 +219,8 @@ class Campaign extends Admin {
             $comm->model = RequestMethods::post('model');
             $comm->description = RequestMethods::post('description');
             $comm->rate = $this->currency(RequestMethods::post('rate'));
+            $comm->revenue = $this->currency(RequestMethods::post('revenue'));
             $comm->coverage = RequestMethods::post('coverage', ['ALL']);
-            $comm->bid = 0;
 
             $comm->save();
             $view->set("message", "Campaign updated!!");

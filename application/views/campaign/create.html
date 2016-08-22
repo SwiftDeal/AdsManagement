@@ -105,6 +105,14 @@
                                         <small class="help-block">Details for successful conversion</small>
                                     </div>
                                     <div class="form-group">
+                                        <label>Revenue (Charged from Advertiser)</label>
+                                        <div class="input-group">
+                                            <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                            <input type="text" name="revenue" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" value="0.20" class="form-control" placeholder="Rate Charged from advertiser. Eg: 0.20" required="">
+                                        </div>
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "revenue")}</span>
+                                    </div>
+                                    <div class="form-group">
                                         <label for="Rate">Payout rate</label>
                                         <div class="input-group">
                                             <span class="add-on input-group-addon">{echo $user->currency}</span>

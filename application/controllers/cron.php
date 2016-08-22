@@ -255,15 +255,15 @@ class Cron extends Shared\Controller {
                 $key = Utils::getMongoID($a->_id);
 
                 if (!array_key_exists($key, $adsInfo)) {
-                    $comm = \Commission::first(['ad_id' => $key], ['bid']);
+                    $comm = \Commission::first(['ad_id' => $key], ['revenue']);
                     $adsInfo[$key] = $comm;
                 } else {
                     $comm = $adsInfo[$key];
                 }
-                if (is_null($comm->bid) || !$comm->bid) {
+                if (is_null($comm->revenue) || !$comm->revenue) {
                     $orate = isset($org->meta['rate']) ? $org->meta['rate'] : 0;
                 } else {
-                    $orate = $comm->bid;
+                    $orate = $comm->revenue;
                 }
 
                 $clicksCount += $clicks;
@@ -331,16 +331,16 @@ class Cron extends Shared\Controller {
                 // foreach ad remove fraud clicks
                 foreach ($classify as $key => $value) {
                     if (!array_key_exists($key, $adsInfo)) {
-                        $comm = \Commission::first(['ad_id' => $key], ['bid']);
+                        $comm = \Commission::first(['ad_id' => $key], ['revenue']);
                         $adsInfo[$key] = $comm;
                     } else {
                         $comm = $adsInfo[$key];
                     }
 
-                    if (is_null($comm->bid) || !$comm->bid) {
+                    if (is_null($comm->revenue) || !$comm->revenue) {
                         $orate = isset($org->meta['rate']) ? $org->meta['rate'] : 0;
                     } else {
-                        $orate = $comm->bid;
+                        $orate = $comm->revenue;
                     }
 
                     // $uniqClicks = Click::checkFraud($value, $org);
@@ -454,7 +454,7 @@ class Cron extends Shared\Controller {
                         'ad_id' => $ad->_id,
                         'model' => $comm['model'],
                         'rate' => $comm['rate'],
-                        'bid' => @$user->meta['rate'],
+                        'revenue' => @$user->meta['rate'],
                         'coverage' => ['ALL']
                     ]);
                     $commission->save();
