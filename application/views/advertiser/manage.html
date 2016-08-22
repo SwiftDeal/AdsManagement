@@ -56,6 +56,7 @@
                                         <td>{echo Framework\StringMethods::only_date($a->created)}</td>
                                         <td>
                                             <a href="/advertiser/info/{echo $a->_id}.html" class="btn btn-xs btn-primary"><i class="fa fa-edit"></i></a>
+                                            <a href="/perf/manage/{echo $a->_id}.html" class="btn btn-xs btn-purple"><i class="fa fa-pencil"></i> Perf</a>
                                             {if !$a->live}
                                             <a href="advertiser/update/{echo $a->_id}" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-xs btn-success"><i class="fa fa-check"></i></a>
                                             {/if} {else}

@@ -255,10 +255,7 @@ class Campaign extends Admin {
      * @before _secure
      */
     public function delete($id) {
-        $this->JSONView(); $view = $this->getActionView();
-        if (RequestMethods::type() !== "DELETE") {
-            return $view->set('message', 'Invalid Request!!');
-        }
+        parent::delete($id); $view = $this->getActionView();
         $ad = \Ad::first(["_id = ?" => $id, "org_id = ?" => $this->org->_id]);
         if (!$ad) return $view->set('message', 'Invalid Request!!');
 

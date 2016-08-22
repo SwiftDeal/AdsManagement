@@ -38,7 +38,7 @@ class Publisher extends Auth {
         );
         $topusers = $this->widgets($dateQuery);
         if (array_key_exists("widgets", $this->org->meta)) {
-            $d = isset($notifications) + in_array("top10ads", $this->org->meta["widgets"]) + in_array("top10pubs", $this->org->meta["widgets"]);
+            echo $d = isset($notifications) + in_array("top10ads", $this->org->meta["widgets"]) + in_array("top10pubs", $this->org->meta["widgets"]);
         }
 
 
@@ -450,13 +450,7 @@ class Publisher extends Auth {
      * @before _admin
      */
     public function delete($pid) {
-        $this->JSONview();
-        $view = $this->getActionView();
-
-        if (RequestMethods::type() !== 'DELETE') {
-            $this->redirect("/404");
-        }
-
+        parent::delete($pid); $view = $this->getActionView();
         $user = \User::first(["_id" => $pid, 'type' => 'publisher', 'org_id' => $this->org->_id]);
         if (!$user) {
             $this->redirect("/404");

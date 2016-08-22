@@ -93,7 +93,7 @@ class Performance extends Shared\Model {
             $q["user_id"] = $user->id;
         }
         $q["created"] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
-        $performances = self::all($q, ['revenue', 'clicks', 'created']);
+        $performances = self::all($q, ['revenue', 'clicks', 'created', 'impressions']);
 
         foreach ($performances as $p) {
             //calculating datewise

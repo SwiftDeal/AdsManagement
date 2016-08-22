@@ -284,6 +284,17 @@ class Auth extends Controller {
         $this->setLayout("layouts/publisher");
     }
 
+    /**
+     * @before _admin
+     */
+    public function delete($record_id) {
+        $this->JSONview();
+
+        if (RequestMethods::type() !== 'DELETE') {
+            $this->redirect("/404");
+        }
+    }
+
     protected function perf($clicks, $p, $org, $dateQuery = []) {
         $perf = new Performance();
         $adsInfo = [];

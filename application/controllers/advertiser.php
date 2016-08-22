@@ -320,13 +320,8 @@ class Advertiser extends Auth {
      * @before _admin
      */
     public function delete($pid) {
-        $this->JSONview();
+        parent::delete($pid);
         $view = $this->getActionView();
-
-        if (RequestMethods::type() !== 'DELETE') {
-            $this->redirect("/404");
-        }
-
         $user = \User::first(["_id" => $pid, 'type' => 'advertiser', 'org_id' => $this->org->_id]);
         if (!$user) $this->redirect("/404");
 
