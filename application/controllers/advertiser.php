@@ -172,12 +172,15 @@ class Advertiser extends Auth {
             ];
             $user->save();
 
-            Mail::send([
-                'user' => $user,
-                'template' => 'advertReg',
-                'subject' => $this->org->name . 'Support',
-                'org' => $this->org
-            ]);
+            if (RequestMethods::post("notify") == "yes") {
+                Mail::send([
+                    'user' => $user,
+                    'template' => 'advertReg',
+                    'subject' => $this->org->name . 'Support',
+                    'org' => $this->org
+                ]);
+            }
+
             $user->password = sha1($user->password);
             $user->live = 1;
             $user->save();

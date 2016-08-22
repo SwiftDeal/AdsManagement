@@ -1,6 +1,6 @@
 <?php
 /**
- * Description of publisher
+ * Controller to manage publisher actions
  *
  * @author Faizan Ayubi
  */
@@ -286,14 +286,15 @@ class Publisher extends Auth {
                 ];
             }
             $user->save();
-
-            Mail::send([
-                'user' => $user,
-                'template' => 'pubRegister',
-                'subject' => 'Publisher at '. $this->org->name,
-                'org' => $this->org,
-                'pass' => $user->password
-            ]);
+            if (RequestMethods::post("notify") == "yes") {
+                Mail::send([
+                    'user' => $user,
+                    'template' => 'pubRegister',
+                    'subject' => 'Publisher at '. $this->org->name,
+                    'org' => $this->org,
+                    'pass' => $user->password
+                ]);   
+            }
             $user->password = sha1($user->password);
             $user->live = 1;
             $user->save();

@@ -17,7 +17,7 @@ class Report extends Admin {
         $this->seo(array("title" => "ADS Effectiveness"));
         $view = $this->getActionView();
 
-        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-5 day')));
+        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-1 day')));
         $end = RM::get("end", strftime("%Y-%m-%d", strtotime('now')));
         $q = ['start' => $start, 'end' => $end]; $view->set($q);
         $dateQuery = Shared\Utils::dateQuery($q);
@@ -92,7 +92,7 @@ class Report extends Admin {
         $this->seo(array("title" => "Publisher Rankings"));
         $view = $this->getActionView();
 
-        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-5 day')));
+        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-1 day')));
         $end = RM::get("end", strftime("%Y-%m-%d", strtotime('now')));
         $q = ['start' => $start, 'end' => $end]; $view->set($q);
         $dateQuery = Utils::dateQuery($q);
@@ -242,7 +242,7 @@ class Report extends Admin {
         $view = $this->getActionView();
 
         $clickCol = Registry::get("MongoDB")->clicks;
-        $start = RM::get("start", date('Y-m-d', strtotime('-5 day')));
+        $start = RM::get("start", date('Y-m-d', strtotime('-1 day')));
         $end = RM::get("end", date('Y-m-d', strtotime('-1 day')));
 
         // find all the users
