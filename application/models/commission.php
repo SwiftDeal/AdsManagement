@@ -98,8 +98,13 @@ class Commission extends \Shared\Model {
                 break;
             
             case 'publisher':
-                $rate = $comm->rate;
-                $cpaQuery['pid'] = $extra['pid'];
+                $pub = $extra['publisher'];
+                if (isset($pub->meta['campaign']) && !is_null($pub->meta['campaign']['rate'])) {
+                    $rate = $pub->meta['campaign']['rate'];
+                } else {
+                    $rate = $comm->rate;
+                }
+                $cpaQuery['pid'] = $pub->_id;
                 break;
         }
 

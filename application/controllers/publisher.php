@@ -41,6 +41,7 @@ class Publisher extends Auth {
             echo $d = isset($notifications) + in_array("top10ads", $this->org->meta["widgets"]) + in_array("top10pubs", $this->org->meta["widgets"]);
         }
 
+
         $view->set("start", $start)
             ->set("end", $end)
             ->set("d", 12/$d)
@@ -48,7 +49,7 @@ class Publisher extends Auth {
             ->set("notifications", $notifications)
             ->set("total", $total)
             ->set("yesterday", strftime("%B %d, %Y", strtotime('-1 day')))
-            ->set("performance", $this->perf($clicks, $this->user, $this->org));
+            ->set("performance", $this->perf($clicks, $this->user, $this->org, $dateQuery));
     }
 
     /**

@@ -284,30 +284,25 @@ class Auth extends Controller {
         $this->setLayout("layouts/publisher");
     }
 
-    protected function perf($clicks, $p, $org) {
+    protected function perf($clicks, $p, $org, $dateQuery = []) {
         $perf = new Performance();
         $adsInfo = [];
         $classify = \Click::classify($clicks, 'adid');
         foreach ($classify as $key => $value) {
-            // Check for click fraud
-            // $uniqClicks = Click::checkFraud($value, $org);
             $adClicks = count($value);
 
-            if (isset($p->meta['campaign']) && !is_null($p->meta['campaign']['rate'])) {
-                $rate = $p->meta['campaign']['rate'];
-            } else {
-                if (!array_key_exists($key, $adsInfo)) {
-                    $comm = \Commission::first(['ad_id = ?' => $key], ['model', 'rate']);
-                    $adsInfo[$key] = $comm;
-                } else {
-                    $comm = $adsInfo[$key];
-                }
-                $rate = $comm->rate;
-            }
-            $revenue = ((float) $rate) * $adClicks;
+            $info = \Commission::campaignRate($key, $adsInfo, $org, [
+                'type' => 'publisher', 'dateQuery' => $dateQuery, 'publisher' => $p
+            ]);
+            $adsInfo = $info['adsInfo']; $rate = $info['rate'];
 
-            $perf->clicks += $adClicks;
+            if ($info['clicks'] !== false) {    // not a CPC campaign
+                $adClicks = $info['clicks'];
+            }
+            
+            $revenue = $rate * $adClicks; $perf->clicks += $adClicks;
             $perf->revenue += round($revenue, 6);
+            $perf->impressions += \Impression::getStats($key, $p->_id, $dateQuery);
         }
 
         return $perf;

@@ -188,7 +188,7 @@ class Cron extends Shared\Controller {
                 $adClicks = count($value);
 
                 $info = \Commission::campaignRate($key, $adsInfo, $org, [
-                    'type' => 'publisher', 'dateQuery' => $dateQuery, 'pid' => $p->_id
+                    'type' => 'publisher', 'dateQuery' => $dateQuery, 'publisher' => $p
                 ]);
                 $adsInfo = $info['adsInfo']; $rate = $info['rate'];
 
@@ -198,7 +198,7 @@ class Cron extends Shared\Controller {
                 
                 $revenue = $rate * $adClicks; $perf->clicks += $adClicks;
                 $perf->revenue += round($revenue, 6);
-                $perf->impressions += \Impression::getStats($a->_id, $p->_id, $dateQuery);
+                $perf->impressions += \Impression::getStats($key, $p->_id, $dateQuery);
             }
 
             if ($perf->clicks == 0) {
