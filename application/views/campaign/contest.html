@@ -1,3 +1,4 @@
+{include campaign/modals/contest.html}
 <div class="content-page">
     <div class="content">
         <div class="container">
@@ -5,14 +6,55 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
-                        <ol class="breadcrumb pull-right">
-                            <li><a href="#">Minton</a></li>
-                            <li><a href="#">Pages</a></li>
-                            <li class="active">Blank</li>
-                        </ol>
-                        <h4 class="page-title">Blank</h4>
+                        <button type="button" class="btn btn-info pull-right" data-toggle="modal" data-target="#addContest"><i class="fa fa-plus"></i> Add new Contest</button>
+                        <h4 class="page-title">Contest</h4>
+                    </div>
+                    {if isset($message)}
+                    <div class="alert alert-info alert-dismissible fade in" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                        {echo $message}
+                    </div>
+                    {/if}
+                </div>
+            </div>
+            <div class="row">
+                {foreach $contest in $contests}
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="m-t-0 header-title">Contest</h4>
+                        <form role="form" method="post" action="">
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea class="form-control" name="description" rows="3">{echo $contest->description}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Prize</label>
+                                <div class="input-group">
+                                    <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                    <input type="text" name="prize" value="{echo $user->convert($contest->prize, false)}" class="form-control" required="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label class="sr-only">Start</label>
+                                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> Start</span>
+                                    <input type="date" style="width: 180px" name="start" class="form-control" value="{$contest->start}" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label class="sr-only">End</label>
+                                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> End</span>
+                                    <input type="date" style="width: 180px" name="end" class="form-control" value="{$contest->end}" />
+                                </div>
+                            </div>
+                            <input type="hidden" name="cid" value="{echo $contest->_id}">
+                            <input type="hidden" name="action" value="contest">
+                            <button type="submit" class="btn btn-purple waves-effect waves-light">Save</button>
+                        </form>
                     </div>
                 </div>
+                {/foreach}
             </div>
         </div>
     </div>

@@ -3,7 +3,7 @@
 /**
  * @author Faizan Ayubi
  */
-class Offer extends Shared\Model {
+class Contest extends Shared\Model {
 
     /**
      * @column
@@ -16,20 +16,13 @@ class Offer extends Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type array
-     */
-    protected $_ad;
-
-    /**
-     * @column
-     * @readwrite
      * @type decimal
      * @length 6,2
      *
      * @label revenue percent
      * @validate required
      */
-    protected $_revenue;
+    protected $_prize;
 
     /**
      * @column

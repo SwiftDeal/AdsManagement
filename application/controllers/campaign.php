@@ -154,9 +154,13 @@ class Campaign extends Admin {
     	$campaigns = \Ad::all($query, [], 'created', 'desc', $limit, $page);
         $count = \Ad::count($query);
         $categories = \Category::all(['org_id' => $this->org->_id], ['_id', 'name']);
+        $active = \Ad::count(["org_id = ?" => $this->org->id, "live = ?" => 1]);
+        $inactive = \Ad::count(["org_id = ?" => $this->org->id, "live = ?" => 0]);
 
     	$view->set("campaigns", $campaigns)
             ->set("count", $count)
+            ->set("active", $active)
+            ->set("inactive", $inactive)
             ->set("limit", $limit)
             ->set("page", $page)
             ->set("start", $start)
