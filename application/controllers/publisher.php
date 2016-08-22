@@ -17,7 +17,7 @@ class Publisher extends Auth {
      */
     public function index() {
         $this->seo(array("title" => "Dashboard", "description" => "Stats for your Data"));
-        $view = $this->getActionView(); $commissions = []; $clicks = 0;
+        $view = $this->getActionView(); $commissions = []; $clicks = 0;$d = 1;
 
         $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('now')));
         $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
@@ -36,11 +36,15 @@ class Publisher extends Auth {
             ]),
             $this->user
         );
+        $topusers = $this->widgets($dateQuery);
+        if (array_key_exists("widgets", $this->org->meta)) {
+            echo $d = isset($notifications) + in_array("top10ads", $this->org->meta["widgets"]) + in_array("top10pubs", $this->org->meta["widgets"]);
+        }
 
         $view->set("start", $start)
             ->set("end", $end)
-            ->set("d", 4)
-            ->set("topusers", $this->widgets($dateQuery))
+            ->set("d", 12/$d)
+            ->set("topusers", $topusers)
             ->set("notifications", $notifications)
             ->set("total", $total)
             ->set("yesterday", strftime("%B %d, %Y", strtotime('-1 day')))
@@ -315,10 +319,14 @@ class Publisher extends Auth {
 
         $publishers = \User::all($query, [], 'created', 'desc', $limit, $page);
         $count = \User::count($query);
+        $active = \User::count(["type = ?" => "publisher", "org_id = ?" => $this->org->_id, "live = ?" => 1]);
+        $inactive = \User::count(["type = ?" => "publisher", "org_id = ?" => $this->org->_id, "live = ?" => 0]);
 
         $view->set("publishers", $publishers)
             ->set("property", $property)
             ->set("value", $value)
+            ->set("active", $active)
+            ->set("inactive", $inactive)
             ->set("count", $count)
             ->set("limit", $limit)
             ->set("page", $page);

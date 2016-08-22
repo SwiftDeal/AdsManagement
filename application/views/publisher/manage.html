@@ -20,7 +20,7 @@
                             <button type="submit" class="btn btn-primary">Search</button>
                             <a href="/publisher/add.html" class="btn btn-success"><i class="fa fa-plus"></i> New publisher</a>
                         </form>
-                        <h4 class="page-title">Publisher/Affiliates({echo $count})</h4>
+                        <h4 class="page-title">Affiliates <small><a href="/publisher/manage.html?property=live&amp;value=1">Active({echo $active})</a> | <a href="/publisher/manage.html?property=live&amp;value=0">Inactive({echo $inactive})</a></small></h4>
                     </div>
                     <div class="card-box">
                         {if isset($message)}

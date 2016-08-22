@@ -202,10 +202,14 @@ class Advertiser extends Auth {
 
         $advertisers = \User::all($query, [], 'created', 'desc');
         $count = \User::count($query);
+        $active = \User::count(["type = ?" => "advertiser", "org_id = ?" => $this->org->_id, "live = ?" => 1]);
+        $inactive = \User::count(["type = ?" => "advertiser", "org_id = ?" => $this->org->_id, "live = ?" => 0]);
 
         $view->set("advertisers", $advertisers)
             ->set("property", $property)
             ->set("value", $value)
+            ->set("active", $active)
+            ->set("inactive", $inactive)
             ->set("count", $count)
             ->set("limit", $limit)
             ->set("page", $page);

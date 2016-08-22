@@ -117,27 +117,33 @@ class Cron extends Shared\Controller {
                     $pubClicks[$pid]++;
                 }
             }
+
+            $meta = $org->meta;
+            $meta["widget"] = [];
             // sort publishers based on clicks and find their details
-            arsort($pubClicks); array_splice($pubClicks, 10);
-            foreach ($pubClicks as $pid => $count) {
-                $u = $pubs[$pid];
-                $result['publishers'][] = [
-                    "_id" => $pid,
-                    "name" => $u->name,
-                    "count" => $count
-                ];
+            if (in_array("top10pubs", $meta["widgets"])) {
+                arsort($pubClicks); array_splice($pubClicks, 10);
+                foreach ($pubClicks as $pid => $count) {
+                    $u = $pubs[$pid];
+                    $result['publishers'][] = [
+                        "_id" => $pid,
+                        "name" => $u->name,
+                        "count" => $count
+                    ];
+                }
+                $meta["widget"]["top10pubs"] = $result['publishers'];
             }
 
-            arsort($adClicks); array_splice($adClicks, 10);
-            foreach ($adClicks as $adid => $count) {
-                $result['ads'][] = [
-                    '_id' => $adid,
-                    'clicks' => $count
-                ];
+            if (in_array("top10ads", $meta["widgets"])) {
+                arsort($adClicks); array_splice($adClicks, 10);
+                foreach ($adClicks as $adid => $count) {
+                    $result['ads'][] = [
+                        '_id' => $adid,
+                        'clicks' => $count
+                    ];
+                }
+                $meta["widget"]["top10ads"] = $result['ads'];
             }
-            $meta = $org->meta;
-            $meta["widget"]["top10pubs"] = $result['publishers'];
-            $meta["widget"]["top10ads"] = $result['ads'];
             $org->meta = $meta;
             $this->log("Widget Saved for Org: " . $org->name);
             $org->save();
