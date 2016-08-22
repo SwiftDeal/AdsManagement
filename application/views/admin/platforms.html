@@ -1,0 +1,66 @@
+<div class="content-page">
+    <div class="content">
+        <div class="container">
+            <!-- Page-Title -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="page-title-box">
+                        <form class="form-inline pull-right" role="form" id="range">
+                            <div class="form-group">
+                                <select class="form-control" name="property" value="{$property}" style="width: 120px;">
+                                    <option value="user_id">Publisher Id</option>
+                                    <option value="url">URL</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="value" value="{echo $value}">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </form>
+                        <h4 class="page-title">Platforms ($count)</h4>
+                    </div>
+                    <div class="card-box">
+                        {if isset($message)}
+                        <div class="alert alert-info alert-dismissible fade in" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                            {echo $message}
+                        </div>
+                        {/if}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>URL</th>
+                                        <th>Created</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {foreach $p in $platforms}
+                                    <tr>
+                                        <td><a href="$p->url" target="_blank">{echo $p->url}</a></td>
+                                        <td>{echo Framework\StringMethods::only_date($p->created)}</td>
+                                        <td>
+                                            <a href="/publisher/info/{echo $p->_id}.html" class="btn btn-xs btn-primary"><i class="fa fa-edit"></i></a>
+                                            <a href="/publisher/delete/{echo $p->_id}.html" data-message="Are you sure you want to delete this publisher??" class="delete btn btn-xs btn-danger"><i class="fa fa-trash"></i></a>
+                                        </td>
+                                    </tr>
+                                    {/foreach}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <ul class="pager">
+                            {if ($page != 1)}
+                            <li><a href="{echo Shared\Markup::pagination($page - 1)}">Previous</a></li>
+                            {/if} {if ($page < $count/$limit)}
+                            <li><a href="{echo Shared\Markup::pagination($page + 1)}">Next</a></li>
+                            {/if}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

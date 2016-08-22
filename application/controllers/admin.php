@@ -48,12 +48,13 @@ class Admin extends Auth {
             ->set("performance", $perf);
     }
 
-    protected function publishers() {
-        $publishers = User::all(["org_id = ?" => $this->org->_id, "type = ?" => "publisher"], ["_id"]);
+    protected function orgusers($type = "publisher") {
+        $publishers = User::all(["org_id = ?" => $this->org->_id, "type = ?" => $type], ["_id"]);
         $in = [];
         foreach ($publishers as $p) {
             $in[] = $p->_id;
         }
+        return $in;
     }
 
     /**
@@ -204,6 +205,31 @@ class Admin extends Auth {
     public function billing() {
         $this->seo(array("title" => "Billing"));
         $view = $this->getActionView();
+    }
+
+    /**
+     * @before _secure
+     */
+    public function platforms() {
+        $this->seo(array("title" => "Platforms"));
+        $view = $this->getActionView();
+
+        $query['user_id'] = ['$in' => $this->orgusers()];
+        $limit = RequestMethods::get("limit", 20);
+        $page = RequestMethods::get("page", 1);
+        $property = RequestMethods::get("property");
+        $value = RequestMethods::get("value");
+        if (in_array($property, ["url", "user_id"])) {
+            $query["{$property} = ?"] = $value;
+        }
+
+        $platforms = Platform::all($query, [], 'created', 'desc', $limit, $page);
+        $count = Platform::count($query);
+
+        $view->set("platforms", $platforms)
+            ->set("count", $count)
+            ->set("limit", $limit)
+            ->set("page", $page);
     }
 
     /**

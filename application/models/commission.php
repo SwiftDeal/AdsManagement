@@ -44,7 +44,7 @@ class Commission extends \Shared\Model {
      * @label payout for model
      * @validate required
      */
-    protected $_bid = 0;
+    protected $_revenue = null;
 
     /**
      * @column
