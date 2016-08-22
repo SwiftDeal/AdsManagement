@@ -55,4 +55,21 @@ class Impression extends Shared\Model {
      * @type integer
      */
     protected $_hits;
+
+    public static function getStats($adid, $pid = null, $dateQuery = []) {
+        $query = ['adid' => $adid];
+        if ($pid) {
+            $query['pid'] = $pid;
+        }
+
+        if (count($dateQuery) > 0) {
+            $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
+        }
+        $records = self::all($query, ['hits']);
+        $total = 0;
+        foreach ($records as $r) {
+            $total += $r->hits;
+        }
+        return $total;
+    }
 }

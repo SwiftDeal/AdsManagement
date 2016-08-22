@@ -185,26 +185,20 @@ class Cron extends Shared\Controller {
             // classify the clicks according to AD ID
             $classify = \Click::classify($clicks, 'adid');
             foreach ($classify as $key => $value) {
-                if (!array_key_exists($key, $adsInfo)) {
-                    $comm = \Commission::first(['ad_id = ?' => $key], ['model', 'rate']);
-                    $adsInfo[$key] = $comm;
-                } else {
-                    $comm = $adsInfo[$key];
-                }
-
-                // Check for click fraud
-                // $uniqClicks = Click::checkFraud($value, $org);
                 $adClicks = count($value);
 
-                if (isset($p->meta['campaign']) && !is_null($p->meta['campaign']['rate'])) {
-                    $rate = $p->meta['campaign']['rate'];
-                } else {
-                    $rate = $comm->rate;
-                }
-                $revenue = ((float) $rate) * $adClicks;
+                $info = \Commission::campaignRate($key, $adsInfo, $org, [
+                    'type' => 'publisher', 'dateQuery' => $dateQuery, 'pid' => $p->_id
+                ]);
+                $adsInfo = $info['adsInfo']; $rate = $info['rate'];
 
-                $perf->clicks += $adClicks;
+                if ($info['clicks'] !== false) {    // not a CPC campaign
+                    $adClicks = $info['clicks'];
+                }
+                
+                $revenue = $rate * $adClicks; $perf->clicks += $adClicks;
                 $perf->revenue += round($revenue, 6);
+                $perf->impressions += \Impression::getStats($a->_id, $p->_id, $dateQuery);
             }
 
             if ($perf->clicks == 0) {
@@ -240,7 +234,7 @@ class Cron extends Shared\Controller {
             // find ads for the publisher
             $clickCol = Registry::get("MongoDB")->clicks;
             $ads = \Ad::all(['user_id' => $u->_id], ['_id', 'title']);
-            $clicksCount = 0; $revenue = 0.00;
+            $clicksCount = 0; $revenue = 0.00; $imp = 0;
             foreach ($ads as $a) {
                 // find clicks for the ad for the given date
                 $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
@@ -251,25 +245,19 @@ class Cron extends Shared\Controller {
                     'is_bot' => false,
                     'created' => ['$gte' => $start, '$lte' => $end]
                 ]);
+                $adid = Utils::getMongoID($a->_id);
+                $info = \Commission::campaignRate($adid, $adsInfo, $org, ['type' => 'advertiser', 'dateQuery' => $dateQuery]);
+                $orate = $info['rate']; $adsInfo = $info['adsInfo'];
 
-                $key = Utils::getMongoID($a->_id);
-
-                if (!array_key_exists($key, $adsInfo)) {
-                    $comm = \Commission::first(['ad_id' => $key], ['revenue']);
-                    $adsInfo[$key] = $comm;
-                } else {
-                    $comm = $adsInfo[$key];
-                }
-                if (is_null($comm->revenue) || !$comm->revenue) {
-                    $orate = isset($org->meta['rate']) ? $org->meta['rate'] : 0;
-                } else {
-                    $orate = $comm->revenue;
+                if ($info['clicks'] !== false) {    // not a CPC campaign
+                    $clicks = $info['clicks'];
                 }
 
-                $clicksCount += $clicks;
-                $revenue += $clicks * $orate;
+                $clicksCount += $clicks; $revenue += $clicks * $orate;
+                $imp += \Impression::getStats($a->_id, null, $dateQuery);
             }
             $perf->clicks = $clicksCount; $perf->revenue = round($revenue, 6);
+            $perf->impressions = $imp;
             if ($perf->clicks == 0) continue;
 
             $avgCpc = abs($perf->revenue) / $perf->clicks;
@@ -363,6 +351,10 @@ class Cron extends Shared\Controller {
         }
     }
 
+    /**
+     * Process the RSS Feed Urls from Platforms Table and queue the AD
+     * urls in the Meta Table for campaign importing
+     */
     protected function _rssFeed() {
         // find all the platforms for the advertisers
         $orgs = \Organization::all([], ['_id']);
@@ -395,6 +387,10 @@ class Cron extends Shared\Controller {
         }
     }
 
+    /**
+     * Process the Meta table for campaign urls and create the
+     * campaign from the corresponding URL
+     */
     protected function importCampaigns() {
         $metas = \Meta::all(['prop = ?' => 'campImport']);
 

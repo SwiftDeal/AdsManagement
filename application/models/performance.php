@@ -74,7 +74,7 @@ class Performance extends Shared\Model {
                 'created' => $date
             ]);
         }
-        $perf->clicks = 0;
+        $perf->clicks = 0; $perf->impressions = 0;
         $perf->revenue = 0.00;
         $perf->cpc = 0.00;
         return $perf;
