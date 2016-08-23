@@ -90,8 +90,11 @@ class Commission extends \Shared\Model {
         ];
         switch ($extra['type']) {
             case 'advertiser':
+                $advert = (isset($extra['advertiser'])) ? $extra['advertiser'] : (object) ['meta' => []];
                 if ($comm->revenue) {
                     $rate = $comm->revenue;
+                } else if (isset($advert->meta['campaign'])) {
+                    $rate = $advert->meta['campaign']['rate'];
                 } else {
                     $rate = isset($org->meta['rate']) ? $org->meta['rate'] : 0;
                 }

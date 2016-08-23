@@ -218,7 +218,7 @@ class Cron extends Shared\Controller {
         if (!$date) {
             $date = date('Y-m-d', strtotime('-1 day'));
         }
-        $users = \User::all(['type' => 'advertiser', 'live' => true], ['_id', 'email', 'org_id']);
+        $users = \User::all(['type' => 'advertiser', 'live' => true], ['_id', 'meta', 'email', 'org_id']);
 
         $adsInfo = [];  $orgs = [];
         foreach ($users as $u) {
@@ -246,7 +246,7 @@ class Cron extends Shared\Controller {
                     'created' => ['$gte' => $start, '$lte' => $end]
                 ]);
                 $adid = Utils::getMongoID($a->_id);
-                $info = \Commission::campaignRate($adid, $adsInfo, $org, ['type' => 'advertiser', 'dateQuery' => $dateQuery]);
+                $info = \Commission::campaignRate($adid, $adsInfo, $org, ['type' => 'advertiser', 'dateQuery' => $dateQuery, 'advertiser' => $u]);
                 $orate = $info['rate']; $adsInfo = $info['adsInfo'];
 
                 if ($info['clicks'] !== false) {    // not a CPC campaign

@@ -33,11 +33,12 @@ class Admin extends Auth {
         ];
         
         $perf = new Performance([
-            'clicks' => 0, 'revenue' => 0.00
+            'clicks' => 0, 'revenue' => 0.00, 'impressions' => 0
         ]);
-        $networkStats = \Performance::all($query, ['clicks', 'revenue']);
+        $networkStats = \Performance::all($query, ['clicks', 'revenue', 'impressions']);
         foreach ($networkStats as $p) {
             $perf->clicks += $p->clicks;
+            $perf->impressions += $p->impressions;
             $perf->revenue += $p->revenue;
         }
 
