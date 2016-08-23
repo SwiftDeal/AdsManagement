@@ -307,8 +307,8 @@ class Auth extends Controller {
             ]);
             $adsInfo = $info['adsInfo']; $rate = $info['rate'];
 
-            if ($info['clicks'] !== false) {    // not a CPC campaign
-                $adClicks = $info['clicks'];
+            if ($info['conversions'] !== false) {    // not a CPC campaign
+                $adClicks = $info['conversions'];
             }
             
             $revenue = $rate * $adClicks; $perf->clicks += $adClicks;

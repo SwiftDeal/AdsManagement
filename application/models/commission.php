@@ -83,7 +83,8 @@ class Commission extends \Shared\Model {
             $comm = $commissions[$adid];
         }
 
-        $info = ['adsInfo' => $commissions, 'clicks' => false];
+        $info = ['adsInfo' => $commissions, 'conversions' => false];
+        $dateQuery = $extra['dateQuery'];
         $cpaQuery = [
             'adid' => $adid,
             'created' => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]
@@ -113,9 +114,8 @@ class Commission extends \Shared\Model {
 
         switch (strtolower($comm->model)) {
             case 'cpa':
-                $dateQuery = $extra['dateQuery'];
                 $count = \Conversion::count($cpaQuery);
-                $info['clicks'] = $count;
+                $info['conversions'] = $count;
                 break;
             
         }

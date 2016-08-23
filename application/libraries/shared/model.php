@@ -94,7 +94,13 @@ namespace Shared {
             $doc = []; $columns = $this->getColumns();
             foreach ($columns as $key => $value) {
                 if (isset($this->$value['raw'])) {
-                    $doc[$key] = $this->_convertToType($this->$value['raw'], $value['type']);
+                    $v = $this->_convertToType($this->$value['raw'], $value['type']);
+                    $v = $this->_preventEmpty($v, $value['type']);
+                    if (is_null($v)) {
+                        continue;
+                    } else {
+                        $doc[$key] = $v;
+                    }
                 }
             }
             if (isset($doc['_id'])) {
@@ -112,6 +118,28 @@ namespace Shared {
                 $doc['modified'] = new \MongoDate();
                 $collection->update(['_id' => $this->__id], ['$set' => $doc]);
             }
+        }
+
+        protected function _preventEmpty($value, $type) {
+            switch ($type) {
+                case 'integer':
+                    if ($value === 0) {
+                        $value = null;
+                    }
+                    break;
+                
+                case 'array':
+                    if (count($value) === 0) {
+                        $value = null;
+                    }
+                    break;
+
+                case 'decimal':
+                    if (round($value, 2) === 0.0) {
+                        $value = null;
+                    }
+            }
+            return $value;
         }
 
         /**

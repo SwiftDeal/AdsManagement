@@ -26,7 +26,14 @@ class Performance extends Shared\Model {
      * @readwrite
      * @type integer
      */
-    protected $_clicks;
+    protected $_clicks = 0;
+
+    /**
+     * @column
+     * @readwrite
+     * @type integer
+     */
+    protected $_conversions = 0;
 
     /**
      * @column
@@ -41,7 +48,7 @@ class Performance extends Shared\Model {
      * @type decimal
      * @length 10,2
      */
-    protected $_revenue;
+    protected $_revenue = 0.0;
 
     public static function calculate($user, $dateQuery = []) {
         $query = ['user_id' => $user->_id];
@@ -76,7 +83,7 @@ class Performance extends Shared\Model {
         }
         $perf->clicks = 0; $perf->impressions = 0;
         $perf->revenue = 0.00;
-        $perf->cpc = 0.00;
+        $perf->cpc = 0.00; $perf->conversions = 0;
         return $perf;
     }
 

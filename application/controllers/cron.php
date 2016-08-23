@@ -64,13 +64,14 @@ class Cron extends Shared\Controller {
     }
 
     protected function _test() {
-        $start = date('Y-m-d', strtotime('-2 day'));
-        $end = date('Y-m-d', strtotime('-1 day'));
+        $start = date('Y-m-d', strtotime('-3 day'));
+        $end = date('Y-m-d', strtotime('-3 day'));
 
         $diff = date_diff(date_create($start), date_create($end));
         for ($i = 0; $i <= $diff->format("%a"); $i++) {
             $date = date('Y-m-d', strtotime($start . " +{$i} day"));
-            
+            var_dump($date);
+
             // $this->_pubPerf($date);
             // $this->_advertPerf($date);
             // $this->_webPerf($date);
@@ -185,30 +186,37 @@ class Cron extends Shared\Controller {
             // classify the clicks according to AD ID
             $classify = \Click::classify($clicks, 'adid');
             foreach ($classify as $key => $value) {
-                $adClicks = count($value);
+                $adClicks = count($value); $conversions = 0;
 
                 $info = \Commission::campaignRate($key, $adsInfo, $org, [
                     'type' => 'publisher', 'dateQuery' => $dateQuery, 'publisher' => $p
                 ]);
                 $adsInfo = $info['adsInfo']; $rate = $info['rate'];
 
-                if ($info['clicks'] !== false) {    // not a CPC campaign
-                    $adClicks = $info['clicks'];
+                if ($info['conversions'] !== false) {    // not a CPC campaign
+                    $conversions = $info['conversions'];
+                    $revenue = $conversions * $rate;
+                } else {
+                    $revenue = $rate * $adClicks;    
                 }
                 
-                $revenue = $rate * $adClicks; $perf->clicks += $adClicks;
+                $perf->clicks += $adClicks; $perf->conversions += $conversions;
                 $perf->revenue += round($revenue, 6);
                 $perf->impressions += \Impression::getStats($key, $p->_id, $dateQuery);
             }
 
             if ($perf->clicks == 0) {
-                continue;
+                if ($perf->impressions == 0) {
+                    continue;
+                } else {
+                    $avgCpc = "0.00";
+                }
             } else {
                 $avgCpc = $perf->revenue / $perf->clicks;
             }
             $perf->cpc = round($avgCpc, 6);
 
-            $msg = 'Performance saved for user: ' . $p->email. ' with clicks: ' . $perf->clicks;
+            $msg = 'Performance saved for user: ' . $p->email. ' with clicks: ' . $perf->clicks . ' impressions: ' . $perf->impressions;
             $this->log($msg);
             $perf->save();
         }
@@ -234,7 +242,8 @@ class Cron extends Shared\Controller {
             // find ads for the publisher
             $clickCol = Registry::get("MongoDB")->clicks;
             $ads = \Ad::all(['user_id' => $u->_id], ['_id', 'title']);
-            $clicksCount = 0; $revenue = 0.00; $imp = 0;
+            $clicksCount = 0; $revenue = 0.00;
+            $imp = 0; $conversions = 0;
             foreach ($ads as $a) {
                 // find clicks for the ad for the given date
                 $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
@@ -249,20 +258,31 @@ class Cron extends Shared\Controller {
                 $info = \Commission::campaignRate($adid, $adsInfo, $org, ['type' => 'advertiser', 'dateQuery' => $dateQuery, 'advertiser' => $u]);
                 $orate = $info['rate']; $adsInfo = $info['adsInfo'];
 
-                if ($info['clicks'] !== false) {    // not a CPC campaign
-                    $clicks = $info['clicks'];
+                $conv = $info['conversions'];
+                if ($conv !== false) {    // not a CPC campaign
+                    $conversions += $conv;
+                    $revenue += $conv * $orate;
+                } else {
+                    $revenue += $clicks * $orate;
                 }
 
-                $clicksCount += $clicks; $revenue += $clicks * $orate;
+                $clicksCount += $clicks; 
                 $imp += \Impression::getStats($a->_id, null, $dateQuery);
             }
             $perf->clicks = $clicksCount; $perf->revenue = round($revenue, 6);
-            $perf->impressions = $imp;
-            if ($perf->clicks == 0) continue;
+            $perf->impressions = $imp; $perf->conversions = $conversions;
+            if ($perf->clicks == 0) {
+                if ($perf->impressions === 0) {
+                    continue;
+                } else {
+                    $avgCpc = "0.00";
+                }
+            } else {
+                $avgCpc = abs($perf->revenue) / $perf->clicks;
+            }
 
-            $avgCpc = abs($perf->revenue) / $perf->clicks;
             $perf->cpc = round($avgCpc, 6);
-            $msg = 'Saving performance for advertiser: ' . $u->email . ' with clicks: ' . $perf->clicks;
+            $msg = 'Saving performance for advertiser: ' . $u->email . ' with clicks: ' . $perf->clicks . ' earning: '. $perf->revenue .' impressions: ' . $perf->impressions;
             $this->log($msg);
             $perf->save();
         }

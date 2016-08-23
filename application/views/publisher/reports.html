@@ -29,6 +29,7 @@
                     <tr>
                         <th>Day</th>
                         <th>Clicks</th>
+                        <th>Conversions</th>
                         <th>Earning</th>
                     </tr>
                 </thead>
@@ -37,6 +38,7 @@
                     <tr>
                         <td>{echo Framework\StringMethods::only_date($p->created)}</td>
                         <td>{echo Shared\Markup::nice_number($p->clicks)}</td>
+                        <td>{echo Shared\Markup::nice_number($p->conversions)}</td>
                         <td>{echo $user->convert($p->revenue)}</i></td>
                         {script $total += $p->revenue}
                     </tr>
