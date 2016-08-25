@@ -379,6 +379,7 @@ function advert_home() {
 
         $('#click').html(data.total_clicks);
         $('#earning').html(data.total_payouts);
+        $('#impressions').html(data.total_impressions);
         var arr = [];
         arr = morrisData(data, 'date', 'click', 'debit', 'impression');
         
