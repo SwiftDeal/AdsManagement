@@ -38,13 +38,13 @@
                                             <td>{echo $p->name}</td>
                                             <td>{echo $p->email}</td>
                                             <td>{echo $p->phone}</td>
-                                            <td><i class="fa fa-usd"> {echo $p->amount}</i></td>
+                                            <td>{echo $user->currency} {echo $user->convert($p->amount)}</i></td>
                                             {script $bank = (array) $p->bank}
                                             <td>{echo isset($bank['name']) ? $bank['name'] : ''} - {echo isset($bank['ifsc']) ? $bank['ifsc'] : ''}</td>
                                             <td>{echo isset($bank['account_no']) ? $bank['account_no'] : ''}</td>
                                             <td>{echo isset($bank['account_owner']) ? $bank['account_owner'] : ''}</td>
                                             <td>
-                                                <a href="/publisher/info/{echo $p->user_id}.html" class="btn btn-xs btn-default"><i class="fa fa-sign-in"></i> Pay Now</a>
+                                                <a href="/admin/newTrans/{echo $p->user_id}.html" class="btn btn-xs btn-default"><i class="fa fa-sign-in"></i> Pay Now</a>
                                             </td>
                                         </tr>
                                         {/foreach}

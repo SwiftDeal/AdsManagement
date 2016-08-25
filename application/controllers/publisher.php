@@ -98,19 +98,22 @@ class Publisher extends Auth {
         $page = RequestMethods::get("page", 1);
 
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
-        $query = [
-            "user_id" => $this->user->_id,
-            "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]
-        ];
-
-        $performances = \Performance::all($query, ['created', 'clicks', 'revenue'], 'created', 'desc');
+        $query = [ "user_id" => $this->user->_id ];
         $links = \Link::all($query, [], 'created', 'desc', $limit, $page);
         $count = \Link::count($query);
 
+        $query["created"] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
+        $performances = \Performance::all($query, ['created', 'clicks', 'revenue'], 'created', 'desc');
+        
+        $in = [];
+        foreach ($links as $l) {
+            $in[] = $l->ad_id;
+        }
         // find clicks
         $clickCol = Registry::get("MongoDB")->clicks;
         $records = $clickCol->find([
-            'pid' => $query['user_id'], 'is_bot' => false, 'created' => $query['created']
+            'adid' => ['$in' => $in], 'is_bot' => false,
+            'pid' => $query['user_id'], 'created' => $query['created']
         ], ['adid']);
         
         $view->set([
@@ -238,6 +241,8 @@ class Publisher extends Auth {
     public function payments() {
         $this->seo(array("title" => "Payments"));
         $view = $this->getActionView();
+        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
+        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
 
         $users = \User::all(['type = ?' => 'publisher', 'org_id' => $this->org->_id]);
         $payments = [];
@@ -453,7 +458,7 @@ class Publisher extends Auth {
         parent::delete($pid); $view = $this->getActionView();
         $user = \User::first(["_id" => $pid, 'type' => 'publisher', 'org_id' => $this->org->_id]);
         if (!$user) {
-            $this->redirect("/404");
+            $this->_404();
         }
         $clicks = \Click::count(["pid = ?" => $user->_id]);
         if ($clicks === 0) {

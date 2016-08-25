@@ -26,7 +26,7 @@ class Perf extends Auth {
         $view = $this->getActionView();
         $user = \User::first(['_id' => $uid, 'org_id' => $this->org->_id], ['_id', 'name']);
         if (!$user) {
-            $this->redirect('/404');
+            $this->_404();
         }
 
         $start = RequestMethods::get("start", date("Y-m-d", strtotime('-2 day')));
@@ -54,7 +54,7 @@ class Perf extends Auth {
 
         $perf = \Performance::first(['_id' => $perf_id, 'user_id' => $uid]);
         if (!$user || !$perf) {
-            $this->redirect('/404');
+            $this->_404();
         }
 
         if (RequestMethods::type() === 'POST' && RequestMethods::post("perf_id") == $perf_id) {

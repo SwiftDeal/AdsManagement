@@ -87,7 +87,7 @@ class Performance extends Shared\Model {
         return $perf;
     }
 
-    public static function overall($dateQuery, $user=null) {
+    public static function overall($dateQuery = [], $user=null) {
         $q = [];$clicks = []; $impressions = []; $payouts = []; $total_clicks = 0; $total_payouts = 0; $total_impressions = 0;
 
         if (is_array($user)) {
@@ -99,9 +99,11 @@ class Performance extends Shared\Model {
         } elseif ($user) {
             $q["user_id"] = $user->id;
         }
-        $q["created"] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
-        $performances = self::all($q, ['revenue', 'clicks', 'created', 'impressions']);
 
+        if (count($dateQuery) > 0) {
+            $q["created"] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];   
+        }
+        $performances = self::all($q, ['revenue', 'clicks', 'created', 'impressions']);
         foreach ($performances as $p) {
             //calculating datewise
             $date = \Framework\StringMethods::only_date($p->created);

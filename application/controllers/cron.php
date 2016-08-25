@@ -16,7 +16,7 @@ class Cron extends Shared\Controller {
         parent::__construct($options);
         $this->noview();
         if (php_sapi_name() != 'cli') {
-            $this->redirect("/404");
+            $this->_404();
         }
     }
 

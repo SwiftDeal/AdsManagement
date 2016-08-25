@@ -291,7 +291,7 @@ class Auth extends Controller {
         $this->JSONview();
 
         if (RequestMethods::type() !== 'DELETE') {
-            $this->redirect("/404");
+            $this->_404();
         }
     }
 

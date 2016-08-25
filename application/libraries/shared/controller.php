@@ -120,6 +120,11 @@ namespace Shared {
             exit();
         }
 
+        public function _404($msg = "Invalid Request") {
+            $this->noview();
+            throw new \Framework\Router\Exception\Controller($msg);
+        }
+
         public function setUser($user) {
             $session = Registry::get("session");
             if ($user) {

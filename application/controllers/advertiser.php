@@ -287,8 +287,7 @@ class Advertiser extends Auth {
     public function _admin() {
         parent::_secure();
         if ($this->user->type !== 'admin' || !$this->org) {
-            $this->noview();
-            throw new \Framework\Router\Exception\Controller("Invalid Request");
+            $this->_404();
         }
         $this->setLayout("layouts/admin");
     }
@@ -323,7 +322,7 @@ class Advertiser extends Auth {
         parent::delete($pid);
         $view = $this->getActionView();
         $user = \User::first(["_id" => $pid, 'type' => 'advertiser', 'org_id' => $this->org->_id]);
-        if (!$user) $this->redirect("/404");
+        if (!$user) $this->_404();
 
         $ads = \Ad::all(['user_id = ?' => $user->_id], ['_id']);
         if (count($ads) === 0) {
@@ -418,8 +417,7 @@ class Advertiser extends Auth {
     public function _secure() {
         parent::_secure();
         if ($this->user->type !== 'advertiser' || !$this->org) {
-            $this->noview();
-            throw new \Framework\Router\Exception\Controller("Invalid Request");
+            $this->_404();
         }
         $this->setLayout("layouts/advertiser");
     }

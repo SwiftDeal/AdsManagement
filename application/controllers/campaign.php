@@ -14,7 +14,7 @@ class Campaign extends Admin {
     public function info($id) {
         $type = ($this->user) && ($this->user->type === "publisher" || $this->user->type === "advertiser");
         if (!$type) {
-            $this->redirect("/404");
+            $this->_404();
         } else {
             $this->setLayout("layouts/".$this->user->type);
         }
