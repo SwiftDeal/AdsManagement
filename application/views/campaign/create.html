@@ -29,7 +29,7 @@
                                     <div class="form-group">
                                         <label for="Advertiser">Advertiser</label>
                                         <select name="advert_id" class="form-control" required="">
-                                            {foreach $a in $advertiser}
+                                            {foreach $a in $advertisers}
                                             <option value="{echo $a->_id}">{echo $a->name}</option>
                                             {/foreach}
                                         </select>
@@ -90,9 +90,11 @@
                                         </select>
                                         <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "coverage")}</span>
                                     </div>
+                                    {script $adv = array_values($advertisers)[0]}
+                                    {script $camp = isset($adv->meta['campaign']) ? $adv->meta['campaign'] : ['rate' => '0.20', 'model' => 'cpc']}
                                     <div class="form-group">
                                         <label>Model</label>
-                                        <select name="model" required="" class="form-control" id="model">
+                                        <select name="model" required="" class="selectVal form-control" data-value='{echo json_encode($camp["model"])}' id="model">
                                             <option value="cpc" selected="">CPC (Cost per one Click)</option>
                                             <option value="cpm">CPM (Cost per thousand Impressions)</option>
                                             <option value="cpa">CPA (Cost per Action)</option>
@@ -108,15 +110,16 @@
                                         <label>Revenue (Charged from Advertiser)</label>
                                         <div class="input-group">
                                             <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                            <input type="text" name="revenue" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" value="0.20" class="form-control" placeholder="Rate Charged from advertiser. Eg: 0.20" required="">
+                                            <input type="text" name="revenue" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" value="{echo $camp['rate']}" class="form-control" placeholder="Rate Charged from advertiser. Eg: 0.20" required="">
                                         </div>
                                         <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "revenue")}</span>
                                     </div>
+                                    {script $payout = isset($org->meta['rate']) ? $org->meta['rate'] : '0.3'}
                                     <div class="form-group">
                                         <label for="Rate">Payout rate</label>
                                         <div class="input-group">
                                             <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                            <input type="text" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" class="form-control" placeholder="Rate for revenue model. Eg: 0.3" value="0.07" required="">
+                                            <input type="text" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" class="form-control" placeholder="Rate for revenue model. Eg: 0.3" value="{echo $payout}" required="">
                                         </div>
                                         <small class="help-block">You can add different cpc for different country later</small>
                                     </div>

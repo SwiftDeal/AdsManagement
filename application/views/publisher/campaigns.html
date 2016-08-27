@@ -40,7 +40,9 @@
                             <tr>
                                 <td>
                                     <img src="{echo CDN}uploads/images/{echo $a->image}" alt="" class="img-responsive" width="150"> {script $id = $a->getMongoID()}
-                                    <button type="button" data-adid="{echo $a->_id}" class="createLink btn btn-purple btn-xs waves-effect waves-light text-center">Tracking Link</button>
+                                    <div class="text-center">
+                                        <button type="button" data-adid="{echo $a->_id}" class="createLink btn btn-purple btn-xs waves-effect waves-light text-center">Generate Link</button>
+                                    </div>
                                 </td>
                                 <td><a href="/campaign/info/{$a->_id}.html">{echo $a->title}</a></td>
                                 <td>{echo strtoupper($c->model)}</td>

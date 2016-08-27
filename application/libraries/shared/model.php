@@ -135,7 +135,7 @@ namespace Shared {
                     break;
 
                 case 'decimal':
-                    if (round($value, 2) === 0.0) {
+                    if ($value === 0.0) {
                         $value = null;
                     }
             }
@@ -395,6 +395,28 @@ namespace Shared {
                 }
             }
             return $c;
+        }
+
+        /**
+         * Find the records of the table and if none found then sets a
+         * flash message to the session and redirects if $opts['redirect']
+         * is set else returns the records
+         */
+        public static function isEmpty($query = [], $fields = [], $opts = []) {
+            $records = self::all($query, $fields);
+            $session = Registry::get("session");
+
+            if (count($records) === 0) {
+                if (isset($opts['msg'])) {
+                    $session->set('$flashMessage', $opts['msg']);
+                }
+
+                if (isset($opts['redirect'])) {
+                    $controller = $opts['controller'];
+                    $controller->redirect($opts['redirect']);
+                }
+            }
+            return $records;
         }
 
         public function delete() {

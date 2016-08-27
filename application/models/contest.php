@@ -30,8 +30,15 @@ class Contest extends Shared\Model {
      * @type text
      *
      * @validate required
-     * @label ad type
-     * @value advertisers, publishers
+     */
+    protected $_title;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     *
+     * @validate required
      */
     protected $_description;
 

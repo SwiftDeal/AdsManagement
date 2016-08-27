@@ -41,11 +41,17 @@ class Campaign extends Admin {
     public function contest() {
         $this->seo(['title' => 'Contest', 'description' => 'campaign contest']);
         $view = $this->getActionView(); $session = Registry::get('session');
-        $advertisers = \User::all(["org_id = ?" => $this->org->_id, 'type = ?' => 'advertiser'], ['_id', 'name']);
-        if (count($advertisers) === 0) {
-            $session->set('$flashMessage', 'Please Add an Advertiser!!');
-            $this->redirect('/advertiser/add.html');
+        $advertisers = \User::isEmpty([
+            "org_id = ?" => $this->org->_id, 'type = ?' => 'advertiser'
+        ], ['_id', 'name'], [
+            'msg' => 'Please Add an Advertiser!!',
+            'controller' => $this, 'redirect' => '/advertiser/add.html'
+        ]);
+
+        if (RequestMethods::type() === 'POST') {
+            // do something
         }
+
         $view->set('advertiser', $advertisers);
     }    
 
@@ -55,18 +61,16 @@ class Campaign extends Admin {
     public function create() {
     	$this->seo(['title' => 'Campaign Create', 'description' => 'Create a new campaign']);
     	$view = $this->getActionView(); $session = Registry::get('session');
-        $advertisers = \User::all(["org_id = ?" => $this->org->_id, 'type = ?' => 'advertiser'], ['_id', 'name']);
-        if (count($advertisers) === 0) {
-            $session->set('$flashMessage', 'Please Add an Advertiser!!');
-            $this->redirect('/advertiser/add.html');
-        }
-        $view->set('advertiser', $advertisers);
+        $advertisers = \User::isEmpty([ "org_id = ?" => $this->org->_id, 'type = ?' => 'advertiser'], ['_id', 'name', 'meta'], [
+            'msg' => 'Please Add an Advertiser!!',
+            'controller' => $this, 'redirect' => '/advertiser/add.html'
+        ]);
+        $view->set('advertisers', $advertisers);
 
-        $categories = \Category::all(['org_id' => $this->org->_id], ['name', '_id']);
-        if (count($categories) === 0) {
-            $session->set('$flashMessage', 'Please Set Categories!!');
-            $this->redirect('/admin/settings.html');   
-        }
+        $categories = \Category::isEmpty(['org_id' => $this->org->_id], ['name', '_id'], [
+            'msg' => 'Please Set Categories!!',
+            'controller' => $this, 'redirect' => '/admin/settings.html'
+        ]);
         $view->set('categories', $categories);
 
     	$link = RequestMethods::get("link");
