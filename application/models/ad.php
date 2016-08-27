@@ -115,7 +115,7 @@ class Ad extends Shared\Model {
     }
 
     public static function displayData($ads = []) {
-        $result = [];
+        $result = []; $ads = (array) $ads;
         foreach ($ads as $a) {
             $a = (object) $a;
             $find = self::first(['_id' => $a->_id], ['title', 'image', 'url']);
@@ -128,5 +128,19 @@ class Ad extends Shared\Model {
             ];
         }
         return $result;
+    }
+
+    public function delete() {
+        $stats = \Framework\Registry::get("MongoDB")->clicks;
+        $id = $this->_id;
+        $record = $stats->findOne(["adid" => $id]);
+        if ($record) {
+            return ['message' => 'Can not delete!! Campaign contain clicks'];
+        }
+        @unlink(APP_PATH . '/public/assets/uploads/images/' . $this->image);
+        parent::delete();
+        $com = \Commission::first(["ad_id = ?" => $id]);
+        $com->delete();
+        return ['message' => 'Campaign removed successfully!!'];
     }
 }

@@ -110,7 +110,7 @@
                                         <label>Revenue (Charged from Advertiser)</label>
                                         <div class="input-group">
                                             <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                            <input type="text" name="revenue" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" value="{echo $camp['rate']}" class="form-control" placeholder="Rate Charged from advertiser. Eg: 0.20" required="">
+                                            <input type="text" name="revenue" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" value="{echo $user->convert($camp['rate'], false)}" class="form-control" placeholder="Rate Charged from advertiser. Eg: 0.20" required="">
                                         </div>
                                         <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "revenue")}</span>
                                     </div>
@@ -119,7 +119,7 @@
                                         <label for="Rate">Payout rate</label>
                                         <div class="input-group">
                                             <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                            <input type="text" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" class="form-control" placeholder="Rate for revenue model. Eg: 0.3" value="{echo $payout}" required="">
+                                            <input type="text" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" class="form-control" placeholder="Rate for revenue model. Eg: 0.3" value="{echo $user->convert($payout, false)}" required="">
                                         </div>
                                         <small class="help-block">You can add different cpc for different country later</small>
                                     </div>

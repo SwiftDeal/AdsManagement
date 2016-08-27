@@ -24,6 +24,10 @@
                         <h4 class="m-t-0 header-title">Contest</h4>
                         <form role="form" method="post" action="">
                             <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" class="form-control" name="title" value="{echo $contest->title}" required="">
+                            </div>
+                            <div class="form-group">
                                 <label>Description</label>
                                 <textarea class="form-control" name="description" rows="3">{echo $contest->description}</textarea>
                             </div>
@@ -36,21 +40,24 @@
                             </div>
                             <div class="form-group">
                                 <div class="input-group">
+                                    {script $date = date('Y-m-d', $contest->start->sec)}
                                     <label class="sr-only">Start</label>
                                     <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> Start</span>
-                                    <input type="date" style="width: 180px" name="start" class="form-control" value="{$contest->start}" />
+                                    <input type="date" style="width: 180px" name="start" class="form-control" value="{echo $date}" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="input-group">
+                                    {script $date = date('Y-m-d', $contest->end->sec)}
                                     <label class="sr-only">End</label>
                                     <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> End</span>
-                                    <input type="date" style="width: 180px" name="end" class="form-control" value="{$contest->end}" />
+                                    <input type="date" style="width: 180px" name="end" class="form-control" value="{echo $date}" />
                                 </div>
                             </div>
-                            <input type="hidden" name="cid" value="{echo $contest->_id}">
+                            <input type="hidden" name="contest_id" value="{echo $contest->_id}">
                             <input type="hidden" name="action" value="contest">
                             <button type="submit" class="btn btn-purple waves-effect waves-light">Save</button>
+                            <a href="campaign/contest/{echo $contest->_id}" data-message="Are you sure you want to delete this contest??" class="delete btn btn-danger"><i class="fa fa-trash"></i> Remove</a>
                         </form>
                     </div>
                 </div>

@@ -38,21 +38,22 @@ class Campaign extends Admin {
     /**
      * @before _secure
      */
-    public function contest() {
+    public function contest($id = null) {
         $this->seo(['title' => 'Contest', 'description' => 'campaign contest']);
-        $view = $this->getActionView(); $session = Registry::get('session');
-        $advertisers = \User::isEmpty([
-            "org_id = ?" => $this->org->_id, 'type = ?' => 'advertiser'
-        ], ['_id', 'name'], [
-            'msg' => 'Please Add an Advertiser!!',
-            'controller' => $this, 'redirect' => '/advertiser/add.html'
-        ]);
+        $view = $this->getActionView();
 
         if (RequestMethods::type() === 'POST') {
-            // do something
+            $msg = \Contest::updateContests($this);
+            $view->set($msg);
         }
 
-        $view->set('advertiser', $advertisers);
+        if (RequestMethods::type() === 'DELETE') {
+            $contest = \Contest::deleteAll(['_id' => $id]);
+            $view->set('message', 'Contest removed!!');
+        }
+        $contests = \Contest::all(["org_id = ?" => $this->org->_id]);
+
+        $view->set('contests', $contests);
     }    
 
     /**
@@ -261,18 +262,11 @@ class Campaign extends Admin {
     public function delete($id) {
         parent::delete($id); $view = $this->getActionView();
         $ad = \Ad::first(["_id = ?" => $id, "org_id = ?" => $this->org->_id]);
+
         if (!$ad) return $view->set('message', 'Invalid Request!!');
 
-        $stats = Registry::get("MongoDB")->clicks;
-        $record = $stats->findOne(["adid" => $ad->_id]);
-        if ($record) {
-            return $view->set('message', 'Can not delete!! Campaign contain clicks');
-        }
-        @unlink(APP_PATH . '/public/assets/uploads/images/' . $ad->image);
-        $ad->delete();
-        $com = \Commission::first(["ad_id = ?" => $ad->_id]);
-        $com->delete();
-        $view->set('message', 'Campaign removed successfully!!');
+        $msg = $ad->delete();
+        $view->set($msg);
     }
 
     /**

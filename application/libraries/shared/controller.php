@@ -67,7 +67,8 @@ namespace Shared {
             }
         }
 
-        protected function currency($n) {
+        public function currency($n) {
+            $n = (float) $n;
             $user = $this->getUser();
             switch ($user->currency) {
                 case 'INR':
