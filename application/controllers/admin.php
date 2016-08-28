@@ -204,8 +204,39 @@ class Admin extends Auth {
      * @before _secure
      */
     public function billing() {
-        $this->seo(array("title" => "Billing"));
-        $view = $this->getActionView();
+        $this->seo(array("title" => "Billing")); $view = $this->getActionView();
+        $start = RequestMethods::get('start', date('Y-m-d', strtotime('-30 day')));
+        $end = RequestMethods::get('end', date('Y-m-d'));
+        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
+
+        // find advertiser performances to get clicks and impressions
+        $performances = \Performance::overall(
+            $dateQuery,
+            User::all(['org_id' => $this->org->_id, 'type' => 'advertiser'], ['_id'])
+        );
+
+        $clicks = $performances['total_clicks'];
+        if ($clicks < 100000) {
+            $price = 15 / 1000;
+        } else {
+            $price = 10 / 1000;
+        }
+        $click_cost = $price * $clicks;
+
+        $impressions = $performances['total_impressions'];
+        if ($impressions < 100000) {
+            $price = 15 / 1000; // it's in INR
+        } else {
+            $price = 10 / 1000;
+        }
+        $imp_cost = $impressions * $price;
+
+        $view->set([
+            'start' => $start,
+            'end' => $end,
+            'clicks' => [ 'total' => $clicks, 'cost' => $click_cost ],
+            'impressions' => [ 'total' => $impressions, 'cost' => $imp_cost ]
+        ]);
     }
 
     /**

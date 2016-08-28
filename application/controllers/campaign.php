@@ -262,7 +262,6 @@ class Campaign extends Admin {
     public function delete($id) {
         parent::delete($id); $view = $this->getActionView();
         $ad = \Ad::first(["_id = ?" => $id, "org_id = ?" => $this->org->_id]);
-
         if (!$ad) return $view->set('message', 'Invalid Request!!');
 
         $msg = $ad->delete();
