@@ -374,8 +374,10 @@ class Publisher extends Auth {
     public function platforms() {
         $this->seo(array("title" => "List of Platforms")); $view = $this->getActionView();
 
-        $code = $this->getNativeCode(true);
-        $view->set('code', $code);
+        $nativeCode = $this->getAdCode('native', true);
+        $bannerCode = $this->getAdCode('banner', true);
+        $view->set('nativeCode', $nativeCode);
+        $view->set('bannerCode', $bannerCode);
 
         if (RequestMethods::type() === 'POST') {
             $pid = RequestMethods::post('pid');
@@ -522,11 +524,21 @@ class Publisher extends Auth {
     /**
      * @before _secure
      */
-    public function getNativeCode($internal = false) {
+    public function getAdCode($type = 'native', $internal = false) {
         $code = '<script>(function (we, a, r, e, vnative){we["vNativeObject"]=vnative;we[vnative]=we[vnative]||function(){(i[vnative].q=i[r].q || []).push(arguments)};var x,y;x=a.createElement(r),y=a.getElementsByTagName(r)[0];x.async=true;x.src=e;y.parentNode.insertBefore(x, y);}(window,document,"script","//serve.vnative.com/js/native.js","vn"));
-            </script><ins class="byvnative"
-            data-client="pub-'. Utils::getMongoID($this->user->id) .'"' .
-            ' data-format="all"></ins>';
+            </script><ins class="byvnative" data-client="pub-'. Utils::getMongoID($this->user->id) .'" data-format="all" ';
+
+        switch ($type) {
+            case 'banner':
+                $code .= 'data-type="banner" data-width="300" data-height="200"';
+                break;
+            
+            default:
+                $code .= 'data-type="native"';
+                break;
+        }
+        
+        $code .= '></ins>';
 
         if (!$internal) {
             $this->JSONview(); $view = $this->getActionView();
