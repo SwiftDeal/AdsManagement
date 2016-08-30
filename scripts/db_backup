@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Global Vars
+db_name=
+db_user=
+db_pass=
+db_url=
+
+read -p "DB Name: " db_name
+read -p "DB Password: " db_pass
+read -p "DB Url: " db_url
+read -p "DB User: " db_user
+
+/usr/bin/mongodump -h ${db_url} -d ${db_name} -u ${db_user} -p ${db_pass} -o /home/ubuntu/mongodump

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+mkdir -p /home/ubuntu/backups
+for f in /var/www/*; do
+	uploads_dir="${f}/public/assets/uploads"
+	project=${f##*/}	# Get Name of project whose backup is to be done
+
+	if [[ -d $uploads_dir ]]; then
+		tar -czf /home/ubuntu/backups/${project}.tar ${uploads_dir}
+	fi
+done
