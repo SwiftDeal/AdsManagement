@@ -528,13 +528,8 @@ class Publisher extends Auth {
         $this->seo(array("title" => "Publisher Register", "description" => "Register"));
         $view = $this->getActionView();
 
-        $start = RequestMethods::get('start', date('Y-m-d', strtotime('-7 day')));
-        $end = RequestMethods::get('end', date('Y-m-d'));
-        $dateQuery = Utils::dateQuery($start, $end);
         $contests = \Contest::all([
-            'org_id' => $this->org->_id,
-            // 'start' => ['$gte' => $dateQuery['start']],
-            'end' => ['$lte' => $dateQuery['end']]
+            'org_id' => $this->org->_id
         ]);
         $view->set('contests', $contests);
     }
