@@ -42,6 +42,7 @@ class Cron extends Shared\Controller {
 
     protected function _hourly() {
         $this->importCampaigns();
+        $this->_contests();
         $this->widgets();
     }
 
@@ -481,6 +482,93 @@ class Cron extends Shared\Controller {
             $msg = 'Campaigns imported for the user: ' . $user->email;
             $this->log($msg);
             $m->delete();
+        }
+    }
+
+    protected function _contests() {
+        $contests = \Contest::all();
+        foreach ($contests as $c) {
+            // find publishers performances
+            $start = date('Y-m-d', $c->start->sec);
+            $yesterday = date('Y-m-d', strtotime('-1 day'));
+            $dateQuery = Utils::dateQuery($start, $yesterday);
+
+            // whatever may the type be but sort publisher according to clicks
+            $pubClicks = [];
+
+            $users = \User::all(['type' => 'publisher', 'org_id' => $c->org_id], ['_id', 'name']);
+            foreach ($users as $u) {
+                $perf = \Performance::calculate($u, $dateQuery);
+
+                $key = $perf['clicks'];
+                if (!array_key_exists($key, $pubClicks)) {
+                    $pubClicks[$key] = [];
+                }
+                $pubClicks[$key][] = sprintf('%s', $u->_id);
+            }
+            krsort($pubClicks);
+
+            $meta = (is_array($c->meta) ? $c->meta : []);
+            if (!isset($meta['condition'])) {
+                continue;
+            }
+
+            $condition = $meta['condition'];
+            switch ($c->type) {
+                case 'topEarner':
+                    $count = $condition['topEarnerCount'];
+                    $i = 0;
+                    $condition['winners'] = [];
+                    foreach ($pubClicks as $key => $value) {
+                        if ($i >= $count) {
+                            break;  // we have total topEarners reqd.
+                        }
+                        foreach ($value as $v) {
+                            $condition['winners'][] = $v;
+                            $i++;
+
+                            if ($i >= $count) break;
+                        }
+                    }
+                    break;
+                
+                case 'clickRange':
+                    foreach ($pubClicks as $key => $value) {
+                        // foreach clickRange check if this key is in range
+                        foreach ($condition as &$cond) {
+                            $winners = isset($cond['winners']) ? $cond['winners'] : [];
+
+                            $isStart = is_numeric($cond['start']);
+                            $isEnd = is_numeric($cond['end']);
+
+                            $start = (int) $cond['start']; $end = (int) $cond['end'];
+                            $merge = false;
+
+                            if ($isStart && $isEnd) {
+                                if ($start <= $key && $end >= $key) {
+                                    $merge = true;
+                                }
+                            } else if ($isStart && $start <= $key) {
+                                $merge = true;
+                            } else if ($isEnd && $end >= $key) {
+                                $merge = true;
+                            }
+
+                            if ($merge) {
+                                $winners = array_merge($winners, $value);
+                            }
+
+                            $cond['winners'] = $winners;
+                        }
+                    }
+                    break;
+
+            }
+            
+            $meta['condition'] = $condition;
+            $c->meta = $meta;
+            var_dump('Saving contest: ' . $c->_id);
+            $c->save();
         }
     }
 

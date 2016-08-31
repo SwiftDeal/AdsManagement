@@ -69,7 +69,7 @@ class Contest extends Shared\Model {
         $type = RequestMethods::post('type');
         switch ($type) {
             case 'clickRange': // process all the ranges
-                $meta = $contest->meta;
+                $meta = $contest->meta; $oldCond = isset($meta['condition']) ? $meta['condition'] : [];
                 $condition = [];
                 $rangeStart = RequestMethods::post('rangeStart', []);
                 $rangeEnd = RequestMethods::post('rangeEnd', []);
@@ -81,17 +81,27 @@ class Contest extends Shared\Model {
                         'prize' => $rangePrize[$i]
                     ];
                 }
+
+                // prevent winners from being ovverriden
+                if (count($oldCond) === count($condition)) {
+                    $i = 0;
+                    for ($i = 0, $total = count($condition); $i < $total; ++$i) {
+                        if ($condition[$i]['start'] == $oldCond[$i]['start'] && $condition[$i]['end'] == $oldCond[$i]['end']) {
+                            $condition[$i]['winners'] = isset($oldCond[$i]['winners']) ? $oldCond[$i]['winners'] : [];
+                        }
+                    }
+                }
+
                 $meta['condition'] = $condition;
                 $contest->meta = $meta;
                 break;
             
             case 'topEarner':
-                $meta = $contest->meta;
-                $meta['condition'] = [
-                    'prize' => RequestMethods::post('topEarnerPrize'),
-                    'topEarnerCount' => RequestMethods::post('topEarnerCount')
-                ];
-                $contest->meta = $meta;
+                $meta = $contest->meta; $condition = $meta['condition'];
+                $condition['prize'] = RequestMethods::post('topEarnerPrize');
+                $condition['topEarnerCount'] = RequestMethods::post('topEarnerCount');
+
+                $meta['condition'] = $condition; $contest->meta = $meta;
                 break;
 
             default:
