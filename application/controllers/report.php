@@ -17,7 +17,7 @@ class Report extends Admin {
         $this->seo(array("title" => "ADS Effectiveness"));
         $view = $this->getActionView();
 
-        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-1 day')));
+        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('now')));
         $end = RM::get("end", strftime("%Y-%m-%d", strtotime('now')));
         $q = ['start' => $start, 'end' => $end]; $view->set($q);
         $dateQuery = Shared\Utils::dateQuery($q);
@@ -92,7 +92,7 @@ class Report extends Admin {
         $this->seo(array("title" => "Publisher Rankings"));
         $view = $this->getActionView();
 
-        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-1 day')));
+        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('now')));
         $end = RM::get("end", strftime("%Y-%m-%d", strtotime('now')));
         $q = ['start' => $start, 'end' => $end]; $view->set($q);
         $dateQuery = Utils::dateQuery($q);

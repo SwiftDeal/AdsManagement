@@ -5,3 +5,4 @@ sftp-config.json
 
 # Uplaod Dir
 uploads/*
+.DS_Store
