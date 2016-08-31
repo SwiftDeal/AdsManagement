@@ -88,7 +88,7 @@ class Contest extends Shared\Model {
             case 'topEarner':
                 $meta = $contest->meta;
                 $meta['condition'] = [
-                    'price' => RequestMethods::post('topEarnerPrize'),
+                    'prize' => RequestMethods::post('topEarnerPrize'),
                     'topEarnerCount' => RequestMethods::post('topEarnerCount')
                 ];
                 $contest->meta = $meta;

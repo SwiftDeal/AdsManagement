@@ -13,6 +13,14 @@ class Auth extends Controller {
 
     public function __construct($options = []) {
         parent::__construct($options);
+
+        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
+        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+
+        if ($this->actionView) {
+            $this->actionView->set(['start' => $start, 'end' => $end]);
+        }
+
         $host = RequestMethods::server('SERVER_NAME');
         if (strpos($host, "vnative.com")) {
             $domain = explode(".", $host);

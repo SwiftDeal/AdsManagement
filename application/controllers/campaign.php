@@ -141,14 +141,15 @@ class Campaign extends Admin {
     	$view = $this->getActionView();
 
         $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        $end = RequestMethods::get("end", null);
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 30);
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
-        $query = [
-            "org_id = ?" => $this->org->id,
-            "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]
-        ];
+        $query = ["org_id = ?" => $this->org->id];
+
+        if ($end) {
+            $query["created"] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
+        }
 
         $property = RequestMethods::get("property", "live");
         $value = RequestMethods::get("value", 0);

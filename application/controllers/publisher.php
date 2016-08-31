@@ -524,6 +524,24 @@ class Publisher extends Auth {
     /**
      * @before _secure
      */
+    public function contests() {
+        $this->seo(array("title" => "Publisher Register", "description" => "Register"));
+        $view = $this->getActionView();
+
+        $start = RequestMethods::get('start', date('Y-m-d', strtotime('-7 day')));
+        $end = RequestMethods::get('end', date('Y-m-d'));
+        $dateQuery = Utils::dateQuery($start, $end);
+        $contests = \Contest::all([
+            'org_id' => $this->org->_id,
+            // 'start' => ['$gte' => $dateQuery['start']],
+            'end' => ['$lte' => $dateQuery['end']]
+        ]);
+        $view->set('contests', $contests);
+    }
+
+    /**
+     * @before _secure
+     */
     public function getAdCode($type = 'native', $internal = false) {
         $code = '<script>(function (we, a, r, e, vnative){we["vNativeObject"]=vnative;we[vnative]=we[vnative]||function(){(i[vnative].q=i[r].q || []).push(arguments)};var x,y;x=a.createElement(r),y=a.getElementsByTagName(r)[0];x.async=true;x.src=e;y.parentNode.insertBefore(x, y);}(window,document,"script","//serve.vnative.com/js/native.js","vn"));
             </script><ins class="byvnative" data-client="pub-'. Utils::getMongoID($this->user->id) .'" data-format="all" ';

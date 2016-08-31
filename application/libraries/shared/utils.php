@@ -167,10 +167,14 @@ class Utils {
 
 	/**
 	 * Converts dates to be passed for mongodb query
-	 * @param  array  $opts start and end date
 	 * @return array       mongodb start and end date
 	 */
-	public static function dateQuery($opts = []) {
+	public static function dateQuery($dateQ, $endDate = null) {
+		if (!is_array($dateQ)) {
+			$opts = ['start' => $dateQ, 'end' => $endDate];
+		} else {
+			$opts = $dateQ;
+		}
 		$start = strtotime("-1 day");
 		$end = strtotime("+1 day");
 
@@ -182,7 +186,7 @@ class Utils {
 		if (isset($opts['end'])) {
 			$end = strtotime($opts['end'] . ' 23:59:59');
 		}
-		$end = new \MongoDate($end, 999);
+		$end = new \MongoDate($end, "99999");
 
 		return [
 			'start' => $start,
