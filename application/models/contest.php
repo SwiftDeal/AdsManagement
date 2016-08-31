@@ -18,17 +18,6 @@ class Contest extends Shared\Model {
      * @column
      * @readwrite
      * @type text
-     * @length 6,2
-     *
-     * @label revenue percent
-     * @validate required
-     */
-    protected $_prize;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
      *
      * @validate required
      */
@@ -39,7 +28,7 @@ class Contest extends Shared\Model {
      * @readwrite
      * @type text
      */
-    protected $_description;
+    protected $_type;
 
     /**
      * @column
@@ -65,21 +54,50 @@ class Contest extends Shared\Model {
 
     public static function updateContests($controller) {
         $org = $controller->org;
-        $fields = ['title', 'start', 'end', 'description'];
+        $fields = ['title', 'start', 'end'];
         $id = RequestMethods::post('contest_id');
         if ($id) {
             $contest = self::first(['_id' => $id, 'org_id' => $org->_id]);
         } else {
-            $contest = new self([
-                'org_id' => $org->_id,
-                'prize' => round($prize, 6)
-            ]);
+            $contest = new self([ 'org_id' => $org->_id ]);
         }
-        $prize = $controller->currency(RequestMethods::post('prize'));
         foreach ($fields as $f) {
             $contest->$f = RequestMethods::post($f);
         }
-        $contest->prize = round($prize, 6);
+
+        // depending on the contest type process the fields
+        $type = RequestMethods::post('type');
+        switch ($type) {
+            case 'clickRange': // process all the ranges
+                $meta = $contest->meta;
+                $condition = [];
+                $rangeStart = RequestMethods::post('rangeStart', []);
+                $rangeEnd = RequestMethods::post('rangeEnd', []);
+                $rangePrize = RequestMethods::post('rangePrize', []);
+                for ($i = 0, $total = count($rangeStart); $i < $total; ++$i) {
+                    $condition[] = [
+                        'start' => $rangeStart[$i],
+                        'end' => $rangeEnd[$i],
+                        'prize' => $rangePrize[$i]
+                    ];
+                }
+                $meta['condition'] = $condition;
+                $contest->meta = $meta;
+                break;
+            
+            case 'topEarner':
+                $meta = $contest->meta;
+                $meta['condition'] = [
+                    'price' => RequestMethods::post('topEarnerPrize'),
+                    'topEarnerCount' => RequestMethods::post('topEarnerCount')
+                ];
+                $contest->meta = $meta;
+                break;
+
+            default:
+                return array('message' => 'Invalid Request!!');
+        }
+        $contest->type = $type;
 
         if ($contest->validate()) {
             $contest->save();

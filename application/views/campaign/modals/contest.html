@@ -1,5 +1,5 @@
 <div class="modal fade" id="addContest" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <form action="" method="post" class="modal-content">
             <div class="modal-header text-center">
                 <h4 class="m-t-0 header-title">New Contest</h4>
@@ -10,14 +10,33 @@
                     <input type="text" class="form-control" name="title" required="">
                 </div>
                 <div class="form-group">
-                    <label>Description</label>
-                    <textarea class="form-control" name="description" rows="3"></textarea>
+                    <label>Type</label><br>
+                    <select name="type" class="form-control" id="contestType">
+                        <option value="clickRange" selected="">Click Range</option>
+                        <option value="topEarner">Top Earner</option>
+                    </select>
                 </div>
-                <div class="form-group">
-                    <label>Prize</label>
+                <div class="form-group" id="clickRange">
+                    <label for="ClickRange">Enter Click Range</label>
                     <div class="input-group">
-                        <span class="add-on input-group-addon">{echo $user->currency}</span>
-                        <input type="text" name="prize" value="{echo $user->convert($contest->prize, false)}" class="form-control" required="">
+                        <input type="text" name="rangeStart[]" class="form-control" value="1000" placeholder="Starting Click Range" id="categoryBox">
+                        <span class="input-group-addon">-</span>
+                        <input type="text" name="rangeEnd[]" value="2000" class="form-control" placeholder="Ending Click Range">
+                        <span class="input-group-addon">-</span>
+                        <input type="text" name="rangePrize[]" placeholder="Describe the prize for the winner!!" class="form-control">
+                        <span class="input-group-btn">
+                             <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
+                        </span>
+                    </div>
+                    <button type="button" id="addCategory" class="btn btn-primary"><i class="fa fa-plus"></i> Add More</button>
+                    <span class="help-block text-danger">If There is no Upper Limit (Ending Range) Please Fill this value => NULL</span>
+                </div>
+                <div class="form-group hide" id="topEarner">
+                    <label for="Top Earner">Top Earners</label>
+                    <div class="input-group">
+                        <input type="text" name="topEarnerCount" class="form-control" placeholder="Enter Number of top earners to be considered">
+                        <span class="input-group-addon">-</span>
+                        <input type="text" name="topEarnerPrize" class="form-control" placeholder="Eg: Win an iPad Mini">
                     </div>
                 </div>
                 <div class="form-group">
@@ -42,3 +61,20 @@
         </form>
     </div>
 </div>
+<script>
+    $(document).ready(function () {
+        $('#contestType').on('change', function () {
+            var current = $(this).val();
+            var opts = $(this).find('option');
+
+            // hide all the other types dialog boxes
+            $.each(opts, function (i, el) {
+                var selector = $('#' + $(el).val());
+                if (!selector.hasClass('hide')) {
+                    selector.addClass('hide');
+                }
+            });
+            $('#' + current).removeClass('hide');
+        });
+    });
+</script>

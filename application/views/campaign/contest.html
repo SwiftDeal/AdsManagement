@@ -27,16 +27,31 @@
                                 <label>Title</label>
                                 <input type="text" class="form-control" name="title" value="{echo $contest->title}" required="">
                             </div>
+                            <!-- Display Contest Meta according to type -->
                             <div class="form-group">
-                                <label>Description</label>
-                                <textarea class="form-control" name="description" rows="3">{echo $contest->description}</textarea>
+                                <label>Type</label>
+                                <input type="text" disabled="" class="form-control" value="{echo $contest->type}" name="type" required="">
                             </div>
                             <div class="form-group">
-                                <label>Prize</label>
+                            {script $condition = $contest->meta['condition']}
+                            {if $contest->type === "clickRange"}
+                            <label for="Clicks Range">Clicks Range</label>
+                            {foreach $c in $condition}
                                 <div class="input-group">
-                                    <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                    <input type="text" name="prize" value="{echo $user->convert($contest->prize, false)}" class="form-control" required="">
+                                    <input type="text" name="rangeStart[]" placeholder="Click Range Start" class="form-control" value="{echo $c['start']}"><span class="input-group-addon">-</span>
+                                    <input type="text" name="rangeEnd[]" placeholder="Click Range End" class="form-control" value="{echo $c['end']}"><span class="input-group-addon">-</span>
+                                    <input type="text" placeholder="Click Range Prize" name="rangePrize[]" class="form-control" value="{echo $c['prize']}">
                                 </div>
+                            {/foreach}
+                            {/if} {elseif $contest->type === "topEarner"}
+                            <label for="Top Earner">Top Earners</label>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <input type="text" name="topEarnerCount" class="form-control" value="{echo $condition['topEarnerCount']}" placeholder="Top Earner count"><span class="input-group-addon">-</span>
+                                    <input type="text" name="topEarnerPrize" class="form-control" value="{echo $condition['price']}" placeholder="Prize given to the top earners">
+                                </div>
+                            </div>
+                            {/elseif}
                             </div>
                             <div class="form-group">
                                 <div class="input-group">
