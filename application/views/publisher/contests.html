@@ -5,59 +5,118 @@
 </div>
 <div class="row">
     <div class="col-sm-12">
-        <div class="card-box">
-            <h4 class="m-t-0 header-title"><b>Contests</b></h4>
-            {foreach $contest in $contests}
-            <h5>Contest: {echo $contest->title}</h5>
-            <table class="tablesaw m-t-20 table m-b-0" data-tablesaw-mode="stack">
-                {script $condition = $contest->meta['condition']}
-                {if $contest->type === "clickRange"}
-                <thead>
-                    <tr>
-                        <th>Click Range</th>
-                        <th>Prize</th>
-                        <th>Winners</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {foreach $c in $condition}
-                    <tr>
-                        <td>{echo $c['start']} -- {echo $c['end']}</td>
-                        <td>{echo $c['prize']}</td>
-                        {script $winners = isset($c['winners']) ? $c['winners'] : []}
-                        {if count($winners) === 0} {script continue} {/if}
-                        <td>
-                            <table class="table text-center">
-                                {foreach $w in $winners}
-                                    {script $usr = \User::first(['_id' => $w], ['name'])}
-                                    <tr>
-                                        <td>{echo $usr->name}</td>
-                                    </tr>
-                                {/foreach}
-                            </table>
-                        </td>
-                    </tr>
-                    {/foreach}
-                </tbody>
-                {/if} {elseif $contest->type === "topEarner"}
-                <thead>
-                    <tr>
-                        <th>Prize</th>
-                        <th>{echo $condition['prize']}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {script $winners = isset($condition['winners']) ? $condition['winners'] : []}
-                    {foreach $w in $winners}
-                        {script $usr = \User::first(['_id' => $w], ['name'])}
+        <ul class="nav nav-tabs navtab-custom">
+            <li class="active">
+                <a href="#home" data-toggle="tab" aria-expanded="true">
+                    <span class="visible-xs"><i class="fa fa-home"></i></span>
+                    <span class="hidden-xs">Contest</span>
+                </a>
+            </li>
+            <li class="">
+                <a href="#profile" data-toggle="tab" aria-expanded="false">
+                    <span class="visible-xs"><i class="fa fa-user"></i></span>
+                    <span class="hidden-xs">Leader Board</span>
+                </a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="home">
+            {script $users = []}
+            {script $campId = 1} {foreach $contest in $contests}
+                <h4 class="m-t-0 header-title">{echo $campId++}. <b>{echo $contest->title}</b></h4>
+                {script $perf = \Performance::calculate($user, ['start' => $contest->start, 'end' => $contest->end])}
+                <p class="text-center">Your Clicks: <b>{echo $perf['clicks']}</b> <small>(Excluding Today)</small></p>
+                <table class="tablesaw m-t-20 table m-b-0" data-tablesaw-mode="stack">
+                    {script $condition = $contest->meta['condition']}
+                    {if $contest->type === "clickRange"}
+                    <thead>
                         <tr>
-                            <td>{echo $usr->name}</td>
+                            <th>Click Range</th>
+                            <th>Prize</th>
+                            <th>Winners</th>
                         </tr>
-                    {/foreach}
-                </tbody>
-                {/elseif}
-            </table>
+                    </thead>
+                    <tbody>
+                        {foreach $c in $condition}
+                        <tr>
+                            <td>{echo $c['start']} -- {echo $c['end']}</td>
+                            <td>{echo $c['prize']}</td>
+                            {script $winners = isset($c['winners']) ? $c['winners'] : []}
+                            {if count($winners) === 0} {script continue} {/if}
+                            <td class="text-center">
+                                <table class="table">
+                                    {foreach $w in $winners}
+                                        {if array_key_exists($w, $users)}
+                                            {script $usr = $users[$w]}
+                                        {/if} {else}
+                                            {script $usr = \User::first(['_id' => $w], ['name'])}
+                                            {script $users[$w] = $usr}
+                                        {/else}
+                                        <tr>
+                                            <td>{echo $usr->name}</td>
+                                        </tr>
+                                    {/foreach}
+                                </table>
+                            </td>
+                        </tr>
+                        {/foreach}
+                    </tbody>
+                    {/if} {elseif $contest->type === "topEarner"}
+                    <thead>
+                        <tr>
+                            <th>Prize ===></th>
+                            <th>{echo $condition['prize']}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {script $winners = isset($condition['winners']) ? $condition['winners'] : []}
+                        {foreach $w in $winners}
+                            {if array_key_exists($w, $users)}
+                                {script $usr = $users[$w]}
+                            {/if} {else}
+                                {script $usr = \User::first(['_id' => $w], ['name'])}
+                                {script $users[$w] = $usr}
+                            {/else}
+                            <tr class="text-center">
+                                <td>{echo $usr->name}</td>
+                            </tr>
+                        {/foreach}
+                    </tbody>
+                    {/elseif}
+                </table>
             {/foreach}
+            </div>
+            <div class="tab-pane" id="profile">
+            {script $pubs = \User::all(['type' => 'publisher', 'org_id' => $org->_id], ['_id', 'name'])}
+            {script $campId = 1} {foreach $contest in $contests}
+                <h4 class="m-t-0 header-title">{echo $campId++}. <b>{echo $contest->title}</b></h4>
+                {script $dateQuery = ['start' => $contest->start, 'end' => $contest->end]}
+                {script $topEarners = \Shared\Services\User::topEarners($pubs, $dateQuery)}
+
+                {if count($topEarners) === 0}
+                    <p class="text-center">Not Enough Data to Display</p>
+                    {script continue}
+                {/if}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Name</th>
+                            <th>Clicks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {script $i = 1} {foreach $e in $topEarners}
+                        <tr>
+                            <td># {echo $i++}</td>
+                            <td>{echo $e->name}</td>
+                            <td>{echo $e->clicks}</td>
+                        </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            {/foreach}
+            </div>
         </div>
     </div>
 </div>

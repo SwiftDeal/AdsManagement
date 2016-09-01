@@ -531,6 +531,7 @@ class Publisher extends Auth {
         $contests = \Contest::all([
             'org_id' => $this->org->_id
         ]);
+
         $view->set('contests', $contests);
     }
 

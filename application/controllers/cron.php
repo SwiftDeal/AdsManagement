@@ -556,6 +556,7 @@ class Cron extends Shared\Controller {
 
                             if ($merge) {
                                 $winners = array_merge($winners, $value);
+                                $winners = array_unique($winners);
                             }
 
                             $cond['winners'] = $winners;
