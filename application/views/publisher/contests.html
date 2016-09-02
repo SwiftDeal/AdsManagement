@@ -23,7 +23,7 @@
             <div class="tab-pane active" id="home">
             {script $users = []}
             {script $campId = 1} {foreach $contest in $contests}
-                <h4 class="m-t-0 header-title">{echo $campId++}. <b>{echo $contest->title}</b></h4>
+                <h4 class="m-t-0 header-title">{echo $campId++}. <b>{echo $contest->title}</b> <small>({echo Framework\StringMethods::only_date($contest->start)} - {echo Framework\StringMethods::only_date($contest->end)})</small></h4>
                 {script $perf = \Performance::calculate($user, ['start' => $contest->start, 'end' => $contest->end])}
                 <p class="text-center">Your Clicks: <b>{echo $perf['clicks']}</b> <small>(Excluding Today)</small></p>
                 <table class="tablesaw m-t-20 table m-b-0" data-tablesaw-mode="stack">
@@ -89,7 +89,7 @@
             <div class="tab-pane" id="profile">
             {script $pubs = \User::all(['type' => 'publisher', 'org_id' => $org->_id], ['_id', 'name'])}
             {script $campId = 1} {foreach $contest in $contests}
-                <h4 class="m-t-0 header-title">{echo $campId++}. <b>{echo $contest->title}</b></h4>
+                <h4 class="m-t-0 header-title">{echo $campId++}. <b>{echo $contest->title}</b> <small>({echo Framework\StringMethods::only_date($contest->start)} - {echo Framework\StringMethods::only_date($contest->end)})</small></h4>
                 {script $dateQuery = ['start' => $contest->start, 'end' => $contest->end]}
                 {script $topEarners = \Shared\Services\User::topEarners($pubs, $dateQuery)}
 

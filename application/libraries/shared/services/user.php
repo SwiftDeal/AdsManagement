@@ -20,24 +20,25 @@ class User {
 		foreach ($users as $u) {
 			$perf = \Performance::calculate($u, $dateQuery);
 
-			$count = $perf['clicks'];
-			if ($count === 0) {
+			$clicks = $perf['clicks'];
+			if ($clicks === 0) {
 				continue;
 			}
 
-			if (!array_key_exists($count, $pubClicks)) {
-				$pubClicks[$count] = [];
+			if (!array_key_exists($clicks, $pubClicks)) {
+				$pubClicks[$clicks] = [];
 			}
-			$pubClicks[$count][] = AM::toObject([
+			$pubClicks[$clicks][] = AM::toObject([
 				'name' => $u->name,
-				'clicks' => $count
+				'clicks' => $clicks
 			]);
 		}
+		
 		if (count($pubClicks) === 0) {
 			return $result;
 		}
 
-		krsort($pubClicks);array_splice($pubClicks, $count);
+		krsort($pubClicks); array_splice($pubClicks, $count);
 
 		$i = 0;
 		foreach ($pubClicks as $key => $value) {
