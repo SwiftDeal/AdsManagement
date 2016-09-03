@@ -21,7 +21,7 @@ class Auth extends Controller {
             $this->actionView->set(['start' => $start, 'end' => $end]);
         }
 
-        $host = RequestMethods::server('SERVER_NAME');
+        $host = RequestMethods::server('HTTP_HOST');
         if (strpos($host, "vnative.com")) {
             $domain = explode(".", $host);
             $domain = array_shift($domain);
@@ -30,13 +30,14 @@ class Auth extends Controller {
             $domain = $host;
             $q = ["url = ?" => $domain];
         }
-
         $this->domain = $domain;
 
-        if (!$this->org) {
+
+        if (!is_object($this->org) || !property_exists($this->org, '__id')) {
             $org = \Organization::first($q);
+
             if (!$org) {
-                $this->redirect('/500');
+                $this->_404();
             } else {
                 $this->org = $org;
             }

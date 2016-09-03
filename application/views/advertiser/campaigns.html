@@ -45,6 +45,7 @@
                         <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Title</th>
                         <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Settings</th>
                         <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Clicks</th>
+                        <th>Conversions</th>
                         <th>Debit</th>
                     </tr>
                 </thead>
@@ -53,7 +54,7 @@
                     {script $c = Commission::first(["ad_id = ?" => $a->_id])}
 
                     <!-- find ad clicks and filter -->
-                    {script $key = $a->getMongoID()}
+                    {script $key = $a->_id}
                     {if array_key_exists($key, $clicks)}
                         {script $adClicks = $clicks[$key]}
                         <!-- Remove click func check -->
@@ -66,15 +67,23 @@
                         <td>
                             <img src="{echo CDN}uploads/images/{echo $a->image}" alt="" class="img-responsive" width="70" height="70">
                         </td>
-                        <td><a href="/campaign/info/{$a->id}.html">{echo $a->title}</a></td>
+                        <td><a href="/campaign/info/{$a->_id}.html">{echo $a->title}</a></td>
                         <td>
-                            USD {echo $c->bid} <b>{echo strtoupper($c->model)}</b><br>
+                            USD {echo $c->rate} <b>{echo strtoupper($c->model)}</b><br>
                             <small>{echo $c->description}</small>
                         </td>
                         <td>{echo count($uniqClicks)}</td>
-                        {script $rate = isset($org->meta['rate']) ? $org->meta['rate'] : $c->bid}
-                        <td><i class="fa fa-usd"></i> {echo round($rate * count($uniqClicks), 6)}</td>
-
+                        
+                        {script $rate = isset($org->meta['rate']) ? $org->meta['rate'] : $c->rate}
+                        {if strtolower($c->model) == "cpa"}
+                            {script $clickCount = \Conversion::count(['adid' => $a->_id, 'created' => $dateQuery])}
+                            <td>{echo $clickCount}</td>
+                        {/if} {else}
+                            {script $clickCount = count($uniqClicks)}
+                            <td>0</td>
+                        {/else}
+                        
+                        <td><i class="fa fa-usd"></i>  {echo round($rate * $clickCount, 6)}</td>
                     </tr>
                     {/foreach}
                 </tbody>

@@ -24,7 +24,7 @@ class Publisher extends Auth {
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
         $clickCol = Registry::get("MongoDB")->clicks;
         $clicks = $clickCol->find([
-            "pid" => $this->user->id, "is_bot" => false,
+            "pid" => Utils::mongoObjectId($this->user->id), "is_bot" => false,
             "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]
         ],['adid']);
 
@@ -40,7 +40,6 @@ class Publisher extends Auth {
         if (array_key_exists("widgets", $this->org->meta)) {
             $d = isset($notifications) + in_array("top10ads", $this->org->meta["widgets"]) + in_array("top10pubs", $this->org->meta["widgets"]);
         }
-
 
         $view->set("start", $start)
             ->set("end", $end)
@@ -107,7 +106,7 @@ class Publisher extends Auth {
         
         $in = [];
         foreach ($links as $l) {
-            $in[] = $l->ad_id;
+            $in[] = Utils::mongoObjectId($l->ad_id);
         }
         // find clicks
         $clickCol = Registry::get("MongoDB")->clicks;
@@ -320,8 +319,10 @@ class Publisher extends Auth {
         $query = ["type = ?" => "publisher", "org_id = ?" => $this->org->_id];
         $property = RequestMethods::get("property", "live");
         $value = RequestMethods::get("value", 0);
-        if (in_array($property, ["email", "name", "phone", "live"])) {
+        if (in_array($property, ["live"])) {
             $query["{$property} = ?"] = $value;
+        } else if (in_array($property, ["email", "name", "phone"])) {
+            $query["{$property} = ?"] = Utils::mongoRegex($value);
         }
 
         $publishers = \User::all($query, [], 'created', 'desc', $limit, $page);

@@ -92,7 +92,7 @@ class Cron extends Shared\Controller {
             $result = ['publishers' => [], 'ads' => []]; $in = []; $pubClicks = [];
             $pubs = User::all(["org_id = ?" => $org->_id, "type = ?" => "publisher"], ["_id", "name"]);
             foreach ($pubs as $pb) {
-                $in[] = $pb->_id;
+                $in[] = Utils::mongoObjectId($pb->_id);
             }
             
             $records = $clickCol->find([
@@ -177,7 +177,7 @@ class Cron extends Shared\Controller {
             
             $clickCol = Registry::get("MongoDB")->clicks;
             $clicks = $clickCol->find([
-                'pid' => $p->_id,
+                'pid' => Utils::mongoObjectId($p->_id),
                 'is_bot' => false,
                 'created' => ['$gte' => $start, '$lte' => $end]
             ], ['adid']);
@@ -251,7 +251,7 @@ class Cron extends Shared\Controller {
                 $start = $dateQuery['start']; $end = $dateQuery['end'];
 
                 $clicks = $clickCol->count([
-                    'adid' => $a->_id,
+                    'adid' => Utils::mongoObjectId($a->_id),
                     'is_bot' => false,
                     'created' => ['$gte' => $start, '$lte' => $end]
                 ]);
@@ -317,7 +317,7 @@ class Cron extends Shared\Controller {
                     if (!preg_match('#^'.$regex.'#', $a->url)) {
                         continue;
                     }
-                    $in[] = $a->_id;
+                    $in[] = Utils::mongoObjectId($a->_id);
                 }
 
                 // new stats
@@ -485,11 +485,11 @@ class Cron extends Shared\Controller {
         }
     }
 
-    protected function _contests() {
+    public function _contests() {
         $contests = \Contest::all();
         foreach ($contests as $c) {
             // find publishers performances
-            $start = date('Y-m-d', $c->start->sec);
+            $start = $c->start->format('Y-m-d');
             $yesterday = date('Y-m-d', strtotime('-1 day'));
             $dateQuery = Utils::dateQuery($start, $yesterday);
 

@@ -2,7 +2,7 @@
 ob_start();
 define("DEBUG", TRUE);
 define("APP_PATH", dirname(__FILE__));
-define("CDN", "/public/assets/");
+define("CDN", "/assets/");
 
 date_default_timezone_set('Asia/Kolkata');
 ini_set('max_execution_time', 9000);

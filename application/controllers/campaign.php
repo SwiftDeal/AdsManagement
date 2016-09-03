@@ -156,7 +156,7 @@ class Campaign extends Admin {
         if (in_array($property, ["user_id", "live"])) {
             $query[$property] = $value;
         } else if (in_array($property, ["url", "title"])) {
-            $query[$property] = new \MongoRegex('/'. preg_quote($value) .'/i');
+            $query[$property] = Utils::mongoRegex(preg_quote($value));
         }
     	$campaigns = \Ad::all($query, [], 'created', 'desc', $limit, $page);
         $count = \Ad::count($query);
@@ -310,7 +310,7 @@ class Campaign extends Admin {
 
                 // try to find a platform for the given advertiser
                 $domain = parse_url($url, PHP_URL_HOST); $regex = preg_quote($domain);
-                $p = \Platform::first(['user_id' => $advert_id, 'url' => new \MongoRegex('/'.$regex.'/i')]);
+                $p = \Platform::first(['user_id' => $advert_id, 'url' => Utils::mongoRegex($regex)]);
 
                 $msg = "RSS Feed Added. Campaigns Will be imported within an hour";
                 try {

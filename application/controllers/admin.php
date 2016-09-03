@@ -53,7 +53,7 @@ class Admin extends Auth {
         $publishers = User::all(["org_id = ?" => $this->org->_id, "type = ?" => $type], ["_id"]);
         $in = [];
         foreach ($publishers as $p) {
-            $in[] = $p->_id;
+            $in[] = Utils::mongoObjectId($p->_id);
         }
         return $in;
     }
@@ -66,6 +66,7 @@ class Admin extends Auth {
     	$view = $this->getActionView();
 
     	$user = $this->user; $org = $this->org;
+
     	$view->set("errors", []);
     	if (RequestMethods::type() == 'POST') {
     		$action = RequestMethods::post('action', '');
@@ -275,7 +276,7 @@ class Admin extends Auth {
         $dateQuery = [];
         if ($transaction) {
             $dateQuery['start'] = $transaction->created;
-            $dateQuery['end'] = new \MongoDate();
+            $dateQuery['end'] = new \MongoDB\BSON\UTCDateTime(strtotime('now') * 1000);
         }
         $perf = \Performance::overall($dateQuery, $user);
 

@@ -99,8 +99,8 @@ class Ad extends Shared\Model {
     public static function setCategories($categories = []) {
         $result = [];
         foreach ($categories as $c) {
-            if (!is_object($c) || !is_a($c, 'MongoId')) {
-                $result[] = new \MongoId($c);
+            if (!is_object($c) || !is_a($c, 'MongoDB\BSON\ObjectID')) {
+                $result[] = new \MongoDB\BSON\ObjectID($c);
             }
         }
         return $result;

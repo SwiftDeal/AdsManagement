@@ -19,7 +19,7 @@ class User {
 
 		foreach ($users as $u) {
 			$perf = \Performance::calculate($u, $dateQuery);
-
+			
 			$clicks = $perf['clicks'];
 			if ($clicks === 0) {
 				continue;

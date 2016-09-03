@@ -29,7 +29,7 @@ namespace Framework {
 
             // fix extra backslashes in $_POST/$_GET
             if (get_magic_quotes_gpc()) {
-                $globals = array("_POST", "_GET", "_COOKIE", "_REQUEST", "_SESSION");
+                $globals = array("_POST", "_GET", "_COOKIE", "_REQUEST");
 
                 foreach ($globals as $global) {
                     if (isset($GLOBALS[$global])) {
@@ -46,6 +46,8 @@ namespace Framework {
             $paths[] = get_include_path();
             set_include_path(join(PATH_SEPARATOR, $paths));
             spl_autoload_register(__CLASS__ . "::_autoload");
+            ini_set('unserialize_callback_func', __CLASS__ . "::_autoload"); // set your callback_function
+            session_start();    // @todo - Start session here till further solution found
         }
 
         protected static function _clean($array) {
@@ -55,16 +57,16 @@ namespace Framework {
             return stripslashes($array);
         }
 
-        protected static function _autoload($class) {
+        protected static function _autoload($classname) {
             $paths = explode(PATH_SEPARATOR, get_include_path());
             $flags = PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE;
-            $file = strtolower(str_replace("\\", DIRECTORY_SEPARATOR, trim($class, "\\"))) . ".php";
+            $file = strtolower(str_replace("\\", DIRECTORY_SEPARATOR, trim($classname, "\\"))) . ".php";
 
             foreach ($paths as $path) {
                 $combined = $path . DIRECTORY_SEPARATOR . $file;
 
                 if (file_exists($combined)) {
-                    include($combined);
+                    include_once $combined;
                     return;
                 }
             } throw new Exception("{$class} not found");

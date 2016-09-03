@@ -203,7 +203,7 @@ namespace Framework {
          * @param type $direction
          * @return type
          */
-        public static function first($where = array(), $fields = array("*"), $order = null, $direction = null) {
+        public static function first($where = array(), $fields = array(), $order = null, $direction = null) {
             $model = new static();
             return $model->_first($where, $fields, $order, $direction);
         }

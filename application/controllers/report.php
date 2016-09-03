@@ -27,7 +27,7 @@ class Report extends Admin {
         $allAds = \Ad::all(['org_id' => $this->org->_id], ['_id', 'title', 'url', 'image', 'live']);
         $in = []; $ads = [];
         foreach ($allAds as $a) {
-            $in[] = $a->_id;
+            $in[] = Utils::mongoObjectId($a->_id);
         }
 
         $clickCol = Registry::get("MongoDB")->clicks;
@@ -102,7 +102,7 @@ class Report extends Admin {
         $users = \User::all(['type' => 'publisher', 'org_id' => $this->org->_id], ['_id', 'name']);
         $in = [];
         foreach ($users as $u) {
-            $in[] = $u->_id;
+            $in[] = Utils::mongoObjectId($u->_id);
         }
 
         $clickCol = Registry::get("MongoDB")->clicks; $stats = [];
@@ -151,7 +151,7 @@ class Report extends Admin {
         $ads = \Ad::all(['org_id' => $this->org->_id], ['_id']);
         $in = []; $query = [];
         foreach ($ads as $a) {
-            $in[] = $a->_id;
+            $in[] = Utils::mongoObjectId($a->_id);
         }
 
         $query['adid'] = ['$in' => $in]; $searching = [];
@@ -164,7 +164,7 @@ class Report extends Admin {
             if (in_array($key, ['pid', 'adid', '_id'])) {
                 $query[$key] = RM::get($key);
             } else {
-                $query[$key] = new \MongoRegex("/$search/i");
+                $query[$key] = Utils::mongoRegex($search);
             }
         }
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
@@ -202,7 +202,7 @@ class Report extends Admin {
         $users = \User::all(['org_id' => $this->org->_id], ['_id']);
         $in = []; $query = [];
         foreach ($users as $u) {
-            $in[] = $u->_id;
+            $in[] = Utils::mongoObjectId($u->_id);
         }
 
         $query['user_id'] = ['$in' => $in]; $searching = [];
@@ -215,7 +215,7 @@ class Report extends Admin {
             if (in_array($key, ['user_id', 'ad_id', '_id'])) {
                 $query[$key] = RM::get($key);
             } else {
-                $query[$key] = new \MongoRegex("/$search/i");
+                $query[$key] = new \MongoDB\BSON\Regex("/$search/i");
             }
         }
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
@@ -265,7 +265,7 @@ class Report extends Admin {
             foreach ($ads as $a) {
                 $regex = preg_quote($url, '.');
                 if (preg_match('#^'.$regex.'#', $a->url)) {
-                    $in[] = $a->_id;
+                    $in[] = Utils::mongoObjectId($a->_id);
                 }
             }
 

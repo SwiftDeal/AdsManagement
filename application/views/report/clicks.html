@@ -55,19 +55,16 @@
                                         </tr>
                                         {foreach $object in $clicks}
                                             <tr>
-                                            {foreach $f in $fields}
-                                                {if in_array($f['name'], ['_id', 'modified', 'live'])} {script continue} {/if}
-
-                                                {if $f["type"] == "date" || $f["type"] == "datetime"}
-                                                    {script $object->$f["name"] = Framework\StringMethods::datetime_to_text($object->$f["name"])}
-                                                {/if} {elseif $f["type"] == "array"}
-                                                    {script $object->$f["name"] = implode(",", $object->$f["name"])}
-                                                {/elseif} {else}
-                                                    {script $str = htmlentities($object->$f["name"])}
-                                                    {script $object->$f["name"] = substr($str, 0, 50)}
-                                                {/else}
-                                                <td>{echo $object->$f["name"]}</td>
-                                            {/foreach}
+                                                <td>{echo $object->adid}</td>
+                                                <td>{echo $object->ipaddr}</td>
+                                                <td>{echo $object->referer}</td>
+                                                <td>{echo $object->country}</td>
+                                                <td>{echo $object->cookie}</td>
+                                                <td>{echo $object->pid}</td>
+                                                <td>{echo substr($object->ua, 0, 50)}</td>
+                                                <td>{echo $object->is_bot}</td>
+                                                <td>{echo $object->device}</td>
+                                                <td>{echo Framework\StringMethods::datetime_to_text($object->created)}</td>
                                             </tr>
                                         {/foreach}
                                     </tbody>

@@ -205,8 +205,8 @@ namespace Framework {
         }
 
         public static function datetime_to_text($datetime = "") {
-            if (is_object($datetime) && is_a($datetime, 'MongoDate')) {
-                $datetime = date('Y-m-d H:i:s' ,$datetime->sec);
+            if (is_object($datetime) && is_a($datetime, 'DateTime')) {
+                $datetime = date('Y-m-d H:i:s', $datetime->getTimestamp());
             }
             if ($datetime == '0000-00-00 00:00:00') {
                 return "Not Specified";
@@ -217,8 +217,8 @@ namespace Framework {
         }
 
         public static function only_date($datetime = "") {
-            if (is_object($datetime) && is_a($datetime, 'MongoDate')) {
-                $datetime = date('Y-m-d H:i:s' ,$datetime->sec);
+            if (is_object($datetime) && is_a($datetime, 'DateTime')) {
+                $datetime = date('Y-m-d H:i:s', $datetime->getTimestamp());
             }
             if ($datetime == '0000-00-00 00:00:00') {
                 return 'Not Specified';

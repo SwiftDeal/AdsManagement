@@ -13,7 +13,7 @@
                         <img src="{echo CDN}uploads/images/{echo $ad->image}" alt="" width="300">
                     </p>
                     <p class="text-center">
-                        <a href="{echo $ad->url}" target="_blank" class="btn btn-default waves-effect waves-light">View Landing Page</a> {script $id = $ad->getMongoID()}
+                        <a href="{echo $ad->url}" target="_blank" class="btn btn-default waves-effect waves-light">View Landing Page</a> {script $id = $ad->_id}
                         {if $user->type === "publisher"}
                         <div class="text-center">
                             <button type="button" data-adid="{echo $ad->_id}" class="createLink btn btn-purple waves-effect waves-light">Generate Link</button>

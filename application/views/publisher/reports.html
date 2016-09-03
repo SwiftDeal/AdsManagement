@@ -75,7 +75,7 @@
                     {script $c = Commission::first(["ad_id = ?" => $l->ad_id])}
 
                     <!-- find ad clicks and filter -->
-                    {script $key = $a->getMongoID()}
+                    {script $key = $a->_id}
                     {if array_key_exists($key, $clicks)}
                         {script $adClicks = $clicks[$key]}
                         <!-- Remove check func -->

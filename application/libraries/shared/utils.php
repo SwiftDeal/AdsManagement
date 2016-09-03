@@ -7,13 +7,17 @@ use Framework\ArrayMethods as ArrayMethods;
 
 class Utils {
 	public static function getMongoID($field) {
-		$id = $field->{'$id'};
+		if (is_object($field)) {
+			$id = sprintf('%s', $field);	
+		} else {
+			$id = $field;
+		}
 		return $id;
 	}
 
 	public static function mongoObjectId($id) {
-		if (!is_object($id) || !is_a($id, 'MongoId')) {
-            $id = new \MongoId($id);
+		if (!is_object($id) || !is_a($id, 'MongoDB\BSON\ObjectID')) {
+            $id = new \MongoDB\BSON\ObjectID($id);
         }
         return $id;
 	}
@@ -179,14 +183,17 @@ class Utils {
 		$end = strtotime("+1 day");
 
 		if (isset($opts['start'])) {
-			$start = strtotime($opts['start'] . ' 00:00:00');
+			$start = (int) strtotime($opts['start'] . ' 00:00:00');	// this returns in seconds
+			$start = $start * 1000;	// we need time in milliseconds
 		}
-		$start = new \MongoDate($start);
+		$start = new \MongoDB\BSON\UTCDateTime($start);
 
 		if (isset($opts['end'])) {
-			$end = strtotime($opts['end'] . ' 23:59:59');
+			$end = (int) strtotime($opts['end'] . ' 23:59:59');
+			$end = ($end * 1000) + 999;
 		}
-		$end = new \MongoDate($end, "99999");
+		
+		$end = new \MongoDB\BSON\UTCDateTime($end);
 
 		return [
 			'start' => $start,
@@ -247,6 +254,23 @@ class Utils {
 			$ans[$k] = $second;
 		}
 		return $ans;
+	}
+
+	public static function toArray($object) {
+		$arr = [];
+		$obj = (array) $object;
+		foreach ($obj as $key => $value) {
+			if (is_object($value) && (is_a($value, 'MongoDB\Model\BSONArray') || is_a($value, 'MongoDB\Model\BSONDocument') || is_a($value, 'stdClass'))) {
+				$arr[$key] = self::toArray($value);
+			} else {
+				$arr[$key] = $value;
+			}
+		}
+		return $arr;
+	}
+
+	public static function mongoRegex($val) {
+		return new \MongoDB\BSON\Regex($val, 'i');
 	}
 
 	public static function dataToCsv($data) {

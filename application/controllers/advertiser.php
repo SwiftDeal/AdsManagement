@@ -55,7 +55,7 @@ class Advertiser extends Auth {
         $count = \Ad::count($query);
 
         foreach ($ads as $a) {
-            $in[] = $a->_id;
+            $in[] = Utils::mongoObjectId($a->_id);
         }
 
         $query["created"] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
@@ -64,7 +64,7 @@ class Advertiser extends Auth {
             'adid' => ['$in' => $in],
             'is_bot' => false,
             'created' => $query["created"]
-        ], ['adid']);
+        ], ['projection' => ['adid' => 1]]);
 
         $view->set("ads", $ads);
         $view->set("start", $start);
@@ -73,6 +73,7 @@ class Advertiser extends Auth {
             'count' => $count,
             'page' => $page,
             'limit' => $limit,
+            'dateQuery' => $query['created'],
             'clicks' => Click::classify($records, 'adid')
         ]);
     }
@@ -331,7 +332,7 @@ class Advertiser extends Auth {
         } else {
             $in = []; $query = ['user_id' => $user->_id];
             foreach ($ads as $a) {
-                $in[] = $a->_id;
+                $in[] = Utils::mongoObjectId($a->_id);
             }
             // find clicks for any of the ad
             $clickCount = \Click::count(['ad_id' => ['$in' => $in]]);

@@ -23,7 +23,7 @@ class Test extends Auth {
         $users = \User::all(['org_id' => '57a7631c34243d20318b456c', 'type' => 'publisher'], ['_id', 'name']);
         $clicks = 0; $in = [];
         foreach ($users as $u) {
-            $in[] = $u->_id;
+            $in[] = Utils::mongoObjectId($u->_id);
         }
         $table = Registry::get("MongoDB")->performances;
         $perf = $table->find([
@@ -60,9 +60,9 @@ class Test extends Auth {
         $date = date('Y-m-d', strtotime('-1 day'));
         $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
 
-        $sec = strtotime($date . ' 00:00:00');
+        $sec = strtotime($date . ' 00:00:00') * 1000;
         $clickCol = Registry::get("MongoDB")->clicks;
-        $start = new \MongoDate($sec);
+        $start = new \MongoDB\BSON\UTCDateTime($sec);
         $records = $clickCol->find([
             'created' => ['$gte' => $start, '$lte' => $dateQuery['end']]
         ], ['adid', 'is_bot', 'ipaddr', 'referer']);
@@ -102,7 +102,7 @@ class Test extends Auth {
 
         $users = \User::all(['type' => 'publisher', 'org_id' => $this->org->_id], ['_id', 'name']);
         foreach ($users as $u) {
-            $in[] = $u->_id;
+            $in[] = Utils::mongoObjectId($u->_id);
         }
 
         $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
@@ -126,14 +126,12 @@ class Test extends Auth {
 
             $uniqClicks = \Click::checkFraud($pClicks, $this->org);
             $referer_filtered = count($uniqClicks);
-            $algo = 0.65 * $javascript_filtered + 0.35 * $referer_filtered;
 
             $pubClicks[$pid] = ArrayMethods::toObject([
                 'name' => $users[$pid]->name,
                 'unverified' => $orig,
                 'referer_filtered' => $referer_filtered,
                 'javascript_filtered' => $javascript_filtered
-                // 'mentioned_algo' => round($algo)
             ]);
         }
 

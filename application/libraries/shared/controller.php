@@ -150,10 +150,6 @@ namespace Shared {
                 }
             }
         }
-
-        protected function changeDate($date, $day) {
-            return date_format(date_add(date_create($date),date_interval_create_from_date_string("{$day} day")), 'Y-m-d');;
-        }
         
         public function logout() {
             $this->setUser(false);
@@ -202,23 +198,22 @@ namespace Shared {
             return FALSE;
         }
 
-        protected function _bitly($longURL) {
-            $conf = Registry::get("configuration")->parse("configuration/bitly");
-            $b = new \Curl\Curl();
-            $b->get('https://api-ssl.bitly.com/v3/shorten?access_token='.$conf->bitly->accesstoken.'&longUrl='.urlencode($longURL).'&format=txt');
-            $b->close();
-            return $b->response;
-        }
-
         public function __construct($options = array()) {
             parent::__construct($options);
 
             $mongoDB = Registry::get("MongoDB");
             if (!$mongoDB) {
+                require_once APP_PATH . '/application/libraries/vendor/autoload.php';
                 $configuration = Registry::get("configuration");
-                $dbconf = $configuration->parse("configuration/database")->database->mongodb;
-                $mongo = new \MongoClient("mongodb://".$dbconf->dbuser.":".$dbconf->password. $dbconf->url."/".$dbconf->dbname."?replicaSet=rs-ds025849");
-                $mongoDB = $mongo->selectDB($dbconf->dbname);
+
+                try {
+                    $dbconf = $configuration->parse("configuration/database")->database->mongodb;
+                    $mongo = new \MongoDB\Client("mongodb://" . $dbconf->dbuser . ":" . $dbconf->password . "@" . $dbconf->url."/" . $dbconf->dbname . "?replicaSet=" . $dbconf->replica . "&ssl=true");
+
+                    $mongoDB = $mongo->selectDatabase($dbconf->dbname);
+                } catch (\Exception $e) {
+                    throw new \Framework\Database\Exception("DB Error");   
+                }
 
                 Registry::set("MongoDB", $mongoDB);
             }

@@ -21,7 +21,6 @@ namespace Framework\Session\Driver {
 
         public function __construct($options = array()) {
             parent::__construct($options);
-            session_start();
         }
 
         public function get($key, $default = null) {
@@ -45,7 +44,7 @@ namespace Framework\Session\Driver {
         }
 
         public function __destruct() {
-            session_commit();
+             session_write_close();
         }
 
     }

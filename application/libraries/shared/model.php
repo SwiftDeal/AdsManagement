@@ -47,9 +47,9 @@ namespace Shared {
 
         public function getMongoID($field = null) {
             if ($field) {
-                $id = $field->{'$id'};
+                $id = sprintf('%s', $field);
             } else {
-                $id = $this->_id->{'$id'};
+                $id = sprintf('%s', $this->__id);
             }
             return $id;
         }
@@ -93,30 +93,36 @@ namespace Shared {
 
             $doc = []; $columns = $this->getColumns();
             foreach ($columns as $key => $value) {
-                if (isset($this->$value['raw'])) {
-                    $v = $this->_convertToType($this->$value['raw'], $value['type']);
-                    $v = $this->_preventEmpty($v, $value['type']);
-                    if (is_null($v)) {
-                        continue;
-                    } else {
-                        $doc[$key] = $v;
-                    }
+                $field = $value['raw'];
+                $current = $this->$field;
+                if (!$current) {
+                    continue;
+                }
+                $v = $this->_convertToType($current, $value['type']);
+                $v = $this->_preventEmpty($v, $value['type']);
+                if (is_null($v)) {
+                    continue;
+                } else {
+                    $doc[$key] = $v;
                 }
             }
             if (isset($doc['_id'])) {
                 unset($doc['_id']);
             }
 
+            $todayMilli = strtotime('now') * 1000;
             if (empty($this->$raw)) {
                 if (!array_key_exists('created', $doc)) {
-                    $doc['created'] = new \MongoDate();   
+                    $doc['created'] = new \MongoDB\BSON\UTCDateTime($todayMilli);   
                 }
 
-                $collection->insert($doc);
-                $this->__id = $doc['_id'];
+                $result = $collection->insertOne($doc);
+                $this->__id = $result->getInsertedId();
             } else {
-                $doc['modified'] = new \MongoDate();
-                $collection->update(['_id' => $this->__id], ['$set' => $doc]);
+                $doc['modified'] = new \MongoDB\BSON\UTCDateTime($todayMilli);
+
+                $this->__id = Utils::mongoObjectId($this->__id);
+                $result = $collection->updateOne(['_id' => $this->__id], ['$set' => $doc]);
             }
         }
 
@@ -138,6 +144,13 @@ namespace Shared {
                     if ($value === 0.0) {
                         $value = null;
                     }
+                    break;
+
+                case 'text':
+                    if ($value === '') {
+                        $value = null;
+                    }
+                    break;
             }
             return $value;
         }
@@ -149,7 +162,7 @@ namespace Shared {
          * @param string $type
          */
         protected function _convertToType($value, $type) {
-            if (is_object($value) && is_a($value, 'MongoRegex')) {
+            if (is_object($value) && is_a($value, 'MongoDB\BSON\Regex')) {
                 return $value;
             }
 
@@ -172,18 +185,33 @@ namespace Shared {
 
                 case 'datetime':
                 case 'date':
-                    if ((is_object($value) && is_a($value, 'MongoDate')) || is_array($value)) {
+                    if (is_array($value)) {
                         break;
                     }
-                    $value = new \MongoDate(strtotime($value));
+                    if (is_object($value)) {
+                        if (is_a($value, 'MongoDB\BSON\UTCDateTime')) {
+                           break;
+                        } else if (is_a($value, 'DateTime')) {
+                            $value = $value->format('Y-m-d');
+                        }
+                    }
+                    $value = new \MongoDB\BSON\UTCDateTime(strtotime($value) * 1000);
                     break;
 
                 case 'autonumber':
                 case 'mongoid':
-                    if ((is_object($value) && is_a($value, 'MongoId')) || is_array($value)) {
+                    if ((is_object($value) && is_a($value, 'MongoDB\BSON\ObjectID'))) {
                         break;
+                    } else if (is_array($value)) {
+                        $copy = $value; $value = [];
+                        foreach ($copy as $key => $val) {
+                            $value[$key] = [];
+                            foreach ($val as $v) {
+                                $value[$key][] = Utils::mongoObjectId($v);
+                            }
+                        }
                     } else {
-                        $value = new \MongoId($value);
+                        $value = Utils::mongoObjectId($value);
                     }
                     break;
 
@@ -256,9 +284,9 @@ namespace Shared {
                 }
 
                 if ($value == "id" && !property_exists($this, '_id')) {
-                    $f[] = "_id";
+                    $f["_id"] = 1;
                 } else {
-                    $f[] = $value;
+                    $f[$value] = 1;
                 }
             }
             return $f;
@@ -282,37 +310,36 @@ namespace Shared {
         protected function _all($where = array(), $fields = array(), $order = null, $direction = null, $limit = null, $page = null) {
             $collection = $this->getTable();
 
-            if (empty($fields)) {
-                $cursor = $collection->find($where);
-            } else {
-                $cursor = $collection->find($where, $fields);
+            $opts = [];
+
+            if (!empty($fields)) {
+                $opts['projection'] = $fields;
             }
             
             if ($order && $direction) {
-                if ($direction) {
-                    switch ($direction) {
-                        case 'desc':
-                        case 'DESC':
-                            $direction = -1;
-                            break;
-                        
-                        case 'asc':
-                        case 'ASC':
-                            $direction = 1;
-                            break;
-                    }
+                switch ($direction) {
+                    case 'desc':
+                    case 'DESC':
+                        $direction = -1;
+                        break;
+                    
+                    case 'asc':
+                    case 'ASC':
+                        $direction = 1;
+                        break;
                 }
-                $cursor->sort([$order => $direction]);
+                $opts['sort'] = [$order => $direction];
             }
 
             if ($page) {
-                $cursor->skip($limit * ($page - 1));
+                $opts['skip'] = $limit * ($page - 1);
             }
 
             if ($limit) {
-                $cursor->limit($limit);
+                $opts['limit'] = (int) $limit;
             }
 
+            $cursor = $collection->find($where, $opts);
             $results = [];
             foreach ($cursor as $c) {
                 $converted = $this->_convert($c);
@@ -341,7 +368,7 @@ namespace Shared {
             return $model->_first($where, $fields, $order, $direction);
         }
 
-        protected function _first($where = array(), $fields = array(), $order, $direction) {
+        protected function _first($where = array(), $fields = array(), $order = null, $direction = null) {
             $collection = $this->getTable();
 
             if ($order && $direction) {
@@ -360,17 +387,17 @@ namespace Shared {
                         $direction = 1;
                         break;
                 }
-                $cursor = $collection->find($where, $fields)->sort([$order => $direction])->limit(1);
+                $cursor = $collection->find($where, ['projection' => $fields])->sort([$order => $direction])->limit(1);
 
                 $record = [];
                 foreach ($cursor as $c) {
                     $record = $c;
                 }
             } else {
-                if (empty($fields)) {
-                    $record = $collection->findOne($where); 
+                if (count($fields) === 0) {
+                    $record = $collection->findOne($where);
                 } else {
-                    $record = $collection->findOne($where, $fields);
+                    $record = $collection->findOne($where, ['projection' => $fields]);
                 }
             }
 
@@ -384,16 +411,32 @@ namespace Shared {
         protected function _convert($record) {
             if (!$record) return null;
             $columns = $this->getColumns();
+            $record = (array) $record;
 
             $class = get_class($this);
             $c = new $class();
-            foreach ($columns as $key => $value) {
-                if (!isset($record[$key])) {
+
+            foreach ($record as $key => $value) {
+                if (!property_exists($this, "_{$key}")) {
                     continue;
+                }
+                $raw = "_{$key}";
+
+                if (is_object($value)) {
+                    if (is_a($value, 'MongoDB\BSON\ObjectID')) {
+                        $c->$raw = $this->getMongoID($value);
+                    } else if (is_a($value, 'MongoDB\BSON\UTCDatetime')) {
+                        $c->$raw = $value->toDateTime();
+                    } else if (is_a($value, 'MongoDB\Model\BSONArray') || is_a($value, 'MongoDB\Model\BSONDocument')) {    // fallback case
+                        $c->$raw = Utils::toArray($value);
+                    } else {
+                        $c->$raw = (object) $value;
+                    }
                 } else {
-                    $c->$value['raw'] = $record[$key];
+                    $c->$raw = $value;
                 }
             }
+            
             return $c;
         }
 
@@ -423,7 +466,7 @@ namespace Shared {
             $collection = $this->getTable();
 
             $query = $this->_updateQuery(['_id' => $this->__id]);
-            $return = $collection->remove($query, ['justOne' => true]);
+            $return = $collection->deleteOne($query);
         }
 
         public static function deleteAll($query = []) {
@@ -431,7 +474,7 @@ namespace Shared {
             $query = $instance->_updateQuery($query);
             $collection = $instance->getTable();
 
-            $return = $collection->remove($query);
+            $return = $collection->deleteMany($query);
         }
 
         public static function count($query = []) {
