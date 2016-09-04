@@ -484,8 +484,13 @@ class Publisher extends Auth {
         if (isset($meta['widget']) && isset($meta['widget']['top10pubs']) && count($meta['widget']['top10pubs']) > 0) {
             $widgets = $meta['widget'];
             return [
-                'publishers' => $widgets['top10pubs'],
-                'ads' => Ad::displayData($widgets['top10ads'])
+                'publishers' => $widgets['top10pubs'] ?? [],
+                'ads' => Ad::displayData($widgets['top10ads'] ?? [])
+            ];
+        } else { // fallback case
+            return [
+                'publishers' => [],
+                'ads' => []
             ];
         }
     }

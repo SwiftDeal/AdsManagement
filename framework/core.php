@@ -69,7 +69,7 @@ namespace Framework {
                     include_once $combined;
                     return;
                 }
-            } throw new Exception("{$class} not found");
+            } throw new Exception("{$classname} not found");
         }
 
     }

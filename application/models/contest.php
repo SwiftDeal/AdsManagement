@@ -34,6 +34,7 @@ class Contest extends Shared\Model {
      * @column
      * @readwrite
      * @type datetime
+     * @index
      */
     protected $_start;
 
@@ -42,6 +43,7 @@ class Contest extends Shared\Model {
      * @column
      * @readwrite
      * @type datetime
+     * @index
      */
     protected $_end;
 

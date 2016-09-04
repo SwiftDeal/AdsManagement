@@ -35,7 +35,7 @@ class Report extends Admin {
             'created' => ['$gte' => $start, '$lte' => $end],
             'is_bot' => false,
             'adid' => ['$in' => $in]
-        ], ['adid']);
+        ], ['projection' => ['adid' => 1]]);
 
         $classify = \Click::classify($clicks, 'adid');
         foreach ($classify as $key => $value) {
@@ -110,7 +110,7 @@ class Report extends Admin {
             'created' => ['$gte' => $start, '$lte' => $end],
             'is_bot' => false,
             'pid' => ['$in' => $in]
-        ], ['pid']);
+        ], ['projection' => ['pid' => 1]]);
         
         $classify = \Click::classify($clicks, 'pid');
         foreach ($classify as $key => $value) {

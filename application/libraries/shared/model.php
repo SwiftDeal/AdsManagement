@@ -95,7 +95,8 @@ namespace Shared {
             foreach ($columns as $key => $value) {
                 $field = $value['raw'];
                 $current = $this->$field;
-                if (!$current) {
+                
+                if (!is_array($current) && !isset($current)) {
                     continue;
                 }
                 $v = $this->_convertToType($current, $value['type']);

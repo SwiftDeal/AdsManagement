@@ -13,6 +13,7 @@ class Category extends Shared\Model {
      * @readwrite
      * @type mongoid
      * @index
+     * @index
      */
     protected $_org_id;
 

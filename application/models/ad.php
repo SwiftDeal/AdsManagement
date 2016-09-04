@@ -49,6 +49,7 @@ class Ad extends Shared\Model {
      * @column
      * @readwrite
      * @type text
+     * @index
      *
      * @validate required, min(3)
      * @label Url

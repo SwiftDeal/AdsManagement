@@ -81,14 +81,14 @@ class Cron extends Shared\Controller {
 
     public function widgets() {
         $this->log("Widgets Started");
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('now')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
-        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
-        $clickCol = Registry::get("MongoDB")->clicks;
+        $start = $end = date('Y-m-d');
+        $dateQuery = Utils::dateQuery($start, $end);
+        $clickCol = Registry::get("MongoDB")->selectCollection("clicks");
 
         $orgs = Organization::all(["live = ?" => true]);
         foreach ($orgs as $org) {
             if(!array_key_exists("widgets", $org->meta)) continue;
+
             $result = ['publishers' => [], 'ads' => []]; $in = []; $pubClicks = [];
             $pubs = User::all(["org_id = ?" => $org->_id, "type = ?" => "publisher"], ["_id", "name"]);
             foreach ($pubs as $pb) {
@@ -99,7 +99,7 @@ class Cron extends Shared\Controller {
                 "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']],
                 "is_bot" => false,
                 "pid" => ['$in' => $in]
-            ], ['adid', 'pid']);
+            ], ['projection' => ['adid' => 1, 'pid' => 1]]);
 
             $uniqClicks = []; $adClicks = []; $pubClicks = [];
             foreach ($records as $r) {
@@ -107,6 +107,7 @@ class Cron extends Shared\Controller {
 
                 $adid = Utils::getMongoID($c->adid);
                 $pid = Utils::getMongoID($c->pid);
+
                 if (!isset($adClicks[$adid])) {
                     $adClicks[$adid] = 1;
                 } else {
@@ -118,6 +119,11 @@ class Cron extends Shared\Controller {
                 } else {
                     $pubClicks[$pid]++;
                 }
+            }
+
+            // No clicks found so no need for further processing
+            if (count($pubClicks) === 0 && count($adClicks) === 0) {
+                continue;
             }
 
             $meta = $org->meta;
@@ -146,6 +152,7 @@ class Cron extends Shared\Controller {
                 }
                 $meta["widget"]["top10ads"] = $result['ads'];
             }
+
             $org->meta = $meta;
             $this->log("Widget Saved for Org: " . $org->name);
             $org->save();
@@ -180,7 +187,7 @@ class Cron extends Shared\Controller {
                 'pid' => Utils::mongoObjectId($p->_id),
                 'is_bot' => false,
                 'created' => ['$gte' => $start, '$lte' => $end]
-            ], ['adid']);
+            ], ['projection' => ['adid' => 1]]);
 
             $perf = Performance::exists($p, $date);
             
@@ -332,7 +339,7 @@ class Cron extends Shared\Controller {
                     'adid' => ['$in' => $in],
                     'is_bot' => false,
                     'created' => ['$gte' => $start, '$lte' => $end]
-                ], ['adid']);
+                ], ['projection' => ['adid' => 1]]);
 
                 // Now classify the clicks according to the AD
                 $classify = \Click::classify($records);

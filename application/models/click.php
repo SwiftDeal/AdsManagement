@@ -54,6 +54,7 @@ class Click extends Shared\Model {
      * @readwrite
      * @type mongoid
      * @length 255
+     * @index
      */
     protected $_pid;
 
@@ -69,6 +70,7 @@ class Click extends Shared\Model {
      * @column
      * @readwrite
      * @type boolean
+     * @index
      */
     protected $_is_bot = true;
 

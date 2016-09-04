@@ -255,6 +255,7 @@ class Campaign extends Admin {
         }
         $c->save();
         $view->set('message', 'Updated successfully!!');
+        $view->set('campaign', $c);
     }
 
     /**
