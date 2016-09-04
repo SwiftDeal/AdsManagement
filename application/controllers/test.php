@@ -112,8 +112,10 @@ class Test extends Auth {
         ];
 
         $clickCol = Registry::get("MongoDB")->clicks;
+        $records = $clickCol->find($query, ['projection' => 
+            ['adid' => 1, 'pid' => 1, 'is_bot' => 1, 'ipaddr' => 1, 'referer' => 1]
+        ]);
 
-        $records = $clickCol->find($query, ['adid', 'pid', 'is_bot', 'ipaddr', 'referer']);
         $classify = \Click::classify($records, 'pid');
         $pubClicks = [];
         foreach ($classify as $pid => $pClicks) {

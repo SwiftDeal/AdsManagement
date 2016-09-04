@@ -276,7 +276,7 @@ class Report extends Admin {
         $query['is_bot'] = false;
         $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
 
-        $records = $clickCol->find($query, ['adid', 'pid']);
+        $records = $clickCol->find($query, ['projection' => ['adid' => 1, 'pid' => 1]]);
         $count = \Click::count($query);
 
         $stats = []; $count = 0;

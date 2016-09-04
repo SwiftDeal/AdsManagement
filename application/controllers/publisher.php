@@ -26,7 +26,7 @@ class Publisher extends Auth {
         $clicks = $clickCol->find([
             "pid" => Utils::mongoObjectId($this->user->id), "is_bot" => false,
             "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]
-        ],['adid']);
+        ], ['projection' => ['adid' => 1]]);
 
         $notifications = Notification::all(["org_id = ?" => $this->org->id], [], "created", "desc", 5, 1);
         $total = Performance::overall(
@@ -59,7 +59,7 @@ class Publisher extends Auth {
 
         $limit = RequestMethods::get("limit", 20);
         $page = RequestMethods::get("page", 1);
-        $coverage = RequestMethods::get("coverage");
+        $coverage = RequestMethods::get("coverage", []);
         $query = ["live = ?" => true, "org_id = ?" => $this->org->_id];
 
         if ($coverage) {
@@ -93,11 +93,11 @@ class Publisher extends Auth {
         
         $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
         $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
-        $limit = RequestMethods::get("limit", 30);
+        $limit = RequestMethods::get("limit", 20);
         $page = RequestMethods::get("page", 1);
 
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
-        $query = [ "user_id" => $this->user->_id ];
+        $query = [ "user_id" => Utils::mongoObjectId($this->user->_id) ];
         $links = \Link::all($query, [], 'created', 'desc', $limit, $page);
         $count = \Link::count($query);
 
@@ -105,7 +105,7 @@ class Publisher extends Auth {
         $performances = \Performance::all($query, ['created', 'clicks', 'revenue'], 'created', 'desc');
         
         $in = [];
-        foreach ($links as $l) {
+        foreach ($links as $l) {    // only find clicks for the ads whose links are created
             $in[] = Utils::mongoObjectId($l->ad_id);
         }
         // find clicks
@@ -113,17 +113,14 @@ class Publisher extends Auth {
         $records = $clickCol->find([
             'adid' => ['$in' => $in], 'is_bot' => false,
             'pid' => $query['user_id'], 'created' => $query['created']
-        ], ['adid']);
+        ], ['projection' => ['adid' => 1]]);
         
         $view->set([
-            'limit' => $limit,
-            'page' => $page,
-            'count' => $count,
-            'start' => $start,
-            'end' => $end,
-            'links' => $links,
+            'limit' => $limit, 'page' => $page,
+            'count' => $count, 'start' => $start,
+            'end' => $end, 'links' => $links,
             'performances' => $performances,
-            'clicks' => Click::classify($records, 'adid'),
+            'clicks' => $records,
             'commission' => $this->user->commission()
         ]);
     }

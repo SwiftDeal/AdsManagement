@@ -43,7 +43,15 @@
                             </tr>
                             <tr>
                                 <th>Category</th>
-                                <td>{echo implode(", ", $ad->category)}</td>
+                                
+                                <!-- find cat from DB -->
+                                {script $results = \Category::all(['_id' => ['$in' => $ad->getCategories()]], ['name'])}
+                                {script $categories = []}
+                                
+                                {foreach $r in $results}
+                                    {script $categories[] = $r->name}
+                                {/foreach}
+                                <td>{echo implode(", ", $categories)}</td>
                             </tr>
                             {script $link = Link::first(["ad_id = ?" => $id, "user_id = ?" => $user->id])} {if($link)}
                             <tr>

@@ -34,9 +34,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {script $total = 0.00} {foreach $p in $performances}
+                    {script $total = 0.00} {script $totalClicks = 0} {foreach $p in $performances}
                     <tr>
                         <td>{echo Framework\StringMethods::only_date($p->created)}</td>
+                        {script $totalClicks += $p->clicks}
                         <td>{echo Shared\Markup::nice_number($p->clicks)}</td>
                         <td>{echo Shared\Markup::nice_number($p->conversions)}</td>
                         <td>{echo $user->convert($p->revenue)}</i></td>
@@ -45,8 +46,9 @@
                     {/foreach}
                     <tr>
                         <td></td>
+                        <td>Total: {echo Shared\Markup::nice_number($totalClicks)}</td>
                         <td></td>
-                        <td>Total: {echo $user->convert($total)}</td>
+                        <td>Revenue: {echo $user->convert($total)}</td>
                     </tr>
                 </tbody>
             </table>
@@ -54,9 +56,16 @@
     </div>
 </div>
 <div class="row">
+    <div class="card-box">
+        <div class="text-center">
+                <code>Note: When campaign is 'INACTIVE' clicks will not be counted</code>
+            </div>
+    </div>
+</div>
+<div class="row">
     <div class="col-sm-12">
         <div class="card-box">
-            <h4 class="m-t-0 header-title"><b>Tracking Links Summary</b></h4>
+            <h4 class="m-t-0 header-title"><b>Tracking Links Summary</b><small> Total: {echo $count} Links</small></h4>
             <table class="tablesaw m-t-20 table m-b-0" data-tablesaw-mode="stack">
                 <thead>
                     <tr>
@@ -64,14 +73,19 @@
                         <th>TITLE</th>
                         <th>CREATED</th>
                         <th>TYPE</th>
+                        <th>Campaign Status</th>
                         <th>RATE</th>
                         <th>CLICKS</th>
                         <th>EARNINGS</th>
                     </tr>
                 </thead>
                 <tbody>
+                {script $clicks = Click::classify($clicks, 'adid')}
                 {foreach $l in $links}
-                    {script $a = Ad::first(["_id = ?" => $l->ad_id], ['title', 'url', '_id', 'image', 'created'])}
+                    {script $a = Ad::first(["_id = ?" => $l->ad_id], ['projection' =>
+                        ['title' => 1, 'url' => 1, '_id' => 1, 'image' => 1, 'created' => 1, 'live' => 1]
+                    ])}
+                    
                     {script $c = Commission::first(["ad_id = ?" => $l->ad_id])}
 
                     <!-- find ad clicks and filter -->
@@ -94,6 +108,13 @@
                             {echo strtoupper($c->model)} <br>
                             <small>{echo $c->description}</small>
                         </td>
+                        <td>
+                            {if $a->live}
+                            <span class="label label-success">Active</span>
+                            {/if} {else}
+                            <span class="label label-warning">Inactive</span>
+                            {/else}
+                        </td>
                         {if($commission["model"] == $c->model)}
                             {script $rate = $commission["rate"]}
                         {/if} {else}
@@ -106,6 +127,16 @@
                 {/foreach}
                 </tbody>
             </table>
+
+            <div class="text-center">
+            <ul class="pager">
+                {if ($page != 1)}
+                <li><a href="{echo Shared\Markup::pagination($page - 1)}">Previous</a></li>
+                {/if} {if ($page < $count/$limit)}
+                <li><a href="{echo Shared\Markup::pagination($page + 1)}">Next</a></li>
+                {/if}
+            </ul>
+        </div>
         </div>
     </div>
 </div>

@@ -83,7 +83,11 @@ class Commission extends \Shared\Model {
             $comm = $commissions[$adid];
         }
 
-        $info = ['adsInfo' => $commissions, 'conversions' => false];
+        $info = ['adsInfo' => $commissions, 'conversions' => false, 'rate' => 0];
+        if (!is_object($comm)) {
+            return $info;
+        }
+
         $dateQuery = $extra['dateQuery'];
         $cpaQuery = [
             'adid' => $adid,

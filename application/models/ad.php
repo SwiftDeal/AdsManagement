@@ -132,16 +132,20 @@ class Ad extends Shared\Model {
     }
 
     public function delete() {
-        $stats = \Framework\Registry::get("MongoDB")->clicks;
-        $id = $this->_id;
-        $record = $stats->findOne(["adid" => $id]);
-        if ($record) {
+        $clickCol = \Framework\Registry::get("MongoDB")->clicks;
+        $id = \Shared\Utils::mongoObjectId($this->_id);
+        
+        $count = \Click::count(['adid' => $id]);
+        if ($count !== 0) {
             return ['message' => 'Can not delete!! Campaign contain clicks'];
         }
         @unlink(APP_PATH . '/public/assets/uploads/images/' . $this->image);
         parent::delete();
         $com = \Commission::first(["ad_id = ?" => $id]);
         $com->delete();
+
+        // also need to remove the links
+        \Link::deleteAll(['ad_id' => $id]);
         return ['message' => 'Campaign removed successfully!!'];
     }
 }

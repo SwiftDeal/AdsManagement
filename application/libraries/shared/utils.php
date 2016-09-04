@@ -27,8 +27,8 @@ class Utils {
 		try {
 			$bot = new Bot(['image' => $url], ['logging' => false]);
 			$bot->execute();
-
-			$doc = array_shift($bot->getDocuments());
+			$documents = $bot->getDocuments();
+			$doc = array_shift($documents);
 
 			$contentType = $doc->type;
 			preg_match('/image\/(.*)/i', $contentType, $matches);
@@ -113,7 +113,8 @@ class Utils {
         try {
     		$bot = new Bot(['cloud' => $url], ['logging' => false]);
     	    $bot->execute();
-    	    $doc = array_shift($bot->getDocuments());
+    	    $bot->getDocuments();	// because only variables can be passed as reference
+    	    $doc = array_shift($documents);
 
     	    $type = $doc->type;
     	    if (preg_match("/image/i", $type)) {
