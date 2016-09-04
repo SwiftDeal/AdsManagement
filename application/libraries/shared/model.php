@@ -29,7 +29,7 @@ namespace Shared {
          * @type boolean
          * @index
          */
-        protected $_live = null;
+        protected $_live = false;
 
         /**
          * @column
