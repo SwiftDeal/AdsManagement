@@ -6,7 +6,7 @@ use Framework\Registry as Registry;
 use Framework\ArrayMethods as ArrayMethods;
 
 class Utils {
-	public static function getMongoID($field) {
+	public static function getMongoID($field) : string {
 		if (is_object($field)) {
 			$id = sprintf('%s', $field);	
 		} else {
@@ -107,13 +107,13 @@ class Utils {
 	    return array("html" => $html, "pattern" => $pattern);
 	}
 
-	public static function fetchCampaign($url) {
+	public static function fetchCampaign($url) : array {
 		$data = [];
     	
         try {
     		$bot = new Bot(['cloud' => $url], ['logging' => false]);
     	    $bot->execute();
-    	    $bot->getDocuments();	// because only variables can be passed as reference
+    	    $documents = $bot->getDocuments();	// because only variables can be passed as reference
     	    $doc = array_shift($documents);
 
     	    $type = $doc->type;
@@ -146,7 +146,7 @@ class Utils {
         return $data;
 	}
 
-	public static function randomPass() {
+	public static function randomPass() : string {
 		$alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
         $pass = array(); //remember to declare $pass as an array
         $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
@@ -157,7 +157,7 @@ class Utils {
         return implode($pass); //turn the array into a string
 	}
 
-	public static function urlRegex($url) {
+	public static function urlRegex($url) : boolean {
 		$regex = "((https?|ftp)\:\/\/)"; // SCHEME
         $regex .= "([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?"; // User and Pass
         $regex .= "([a-z0-9-.]*)\.([a-z]{2,4})"; // Host or IP
