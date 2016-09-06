@@ -1,3 +1,10 @@
+<script>
+    var advertisers = {};
+    {foreach $a in $advertisers}
+        {script $meta = (isset($a->meta['campaign'])) ? $a->meta['campaign'] : []}
+        advertisers["{echo $a->_id}"] = JSON.parse('{echo json_encode($meta)}');
+    {/foreach}
+</script>
 <div class="content-page">
     <!-- Start content -->
     <div class="content">
@@ -28,7 +35,7 @@
                                 <div class="panel panel-default panel-body">
                                     <div class="form-group">
                                         <label for="Advertiser">Advertiser</label>
-                                        <select name="advert_id" class="form-control" required="">
+                                        <select name="advert_id" id="advertiserSelect" class="form-control" required="">
                                             {foreach $a in $advertisers}
                                             <option value="{echo $a->_id}">{echo $a->name}</option>
                                             {/foreach}
@@ -94,7 +101,7 @@
                                     {script $camp = isset($adv->meta['campaign']) ? $adv->meta['campaign'] : ['rate' => '0.20', 'model' => 'cpc']}
                                     <div class="form-group">
                                         <label>Model</label>
-                                        <select name="model" required="" class="selectVal form-control" data-value='{echo json_encode($camp["model"])}' id="model">
+                                        <select name="model" required="" class="selectVal form-control" data-value='{echo json_encode([$camp["model"]])}' id="model">
                                             <option value="cpc" selected="">CPC (Cost per one Click)</option>
                                             <option value="cpm">CPM (Cost per thousand Impressions)</option>
                                             <option value="cpa">CPA (Cost per Action)</option>
@@ -110,7 +117,7 @@
                                         <label>Revenue (Charged from Advertiser)</label>
                                         <div class="input-group">
                                             <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                            <input type="text" name="revenue" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" value="{echo $user->convert($camp['rate'], false)}" class="form-control" placeholder="Rate Charged from advertiser. Eg: 0.20" required="">
+                                            <input type="text" id="advertiserRate" name="revenue" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" value="{echo $user->convert($camp['rate'], false)}" class="form-control" placeholder="Rate Charged from advertiser. Eg: 0.20" required="">
                                         </div>
                                         <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "revenue")}</span>
                                     </div>
@@ -150,8 +157,24 @@
     </div>
 </div>
 <script type="text/javascript">
+$('#advertiserSelect').on('change', function () {
+    var id = $(this).val(),
+        advert = advertisers[id];
+
+    if (!advert.model)
+        return false;
+        
+    var model = advert.model;
+    var rate = Number(advert.rate) * 66;
+    $('#model').val(rate);
+    $('#advertiserRate').val(Math.round(rate * 100) / 100);
+});
+
 $('#model').change(function() {
     if ($('#model').val() == 'cpa')
         $('#comm_desc').removeClass('hidden');
+    else
+        if (!$('#comm_desc').hasClass('hidden'))
+            $('#comm_desc').addClass('hidden');
 });
 </script>
