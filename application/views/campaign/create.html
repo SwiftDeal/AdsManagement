@@ -1,4 +1,6 @@
 <script>
+    var currency = "{echo $user->currency}";
+    currency = currency.toLowerCase();
     var advertisers = JSON.parse('{echo json_encode($advertisers)}');
 </script>
 <div class="content-page">
@@ -164,10 +166,19 @@ $('#advertiserSelect').on('change', function () {
     if (!campaign)
         return false;
         
-    var model = campaign.model;
-    var rate = Number(campaign.rate) * 66;
+    var model = campaign.model,
+        rate = Number(campaign.rate),
+        places = 6;
+
+    if (currency === "inr")
+        rate = rate * 66;
+    if (currency === "inr")
+        places = 3;
+
+    var power = Math.pow(10, places);
+
     $('#model').val(rate);
-    $('#advertiserRate').val(Math.round(rate * 100) / 100);
+    $('#advertiserRate').val(Math.round(rate * power) / power);
 });
 
 $('#model').change(function() {

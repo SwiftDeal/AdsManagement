@@ -102,18 +102,20 @@ class User extends Shared\Model {
         return $meta;
     }
 
-    public function convert($n, $p=true) {
+    public function convert($n, $p=true, $places = 2) {
         // first strip any formatting;
         $n = (0+str_replace(",", "", $n));
         // is this a number?
         if (!is_numeric($n)) return false;
         switch (strtolower($this->currency)) {
             case 'inr':
+                $places = 3;
                 $n = (float) ($n * 66);
                 $prefix = '<i class="fa fa-inr"></i> ';
                 break;
             
             default:
+                $places = 6;
                 $prefix = '<i class="fa fa-usd"></i> ';
                 break;
         }
@@ -129,7 +131,7 @@ class User extends Shared\Model {
             return $num;
         }
 
-        if (is_float($n)) $n = number_format($n, 2);
+        if (is_float($n)) $n = number_format($n, $places);
         else $n = number_format($n);
 
         if ($p !== false) {

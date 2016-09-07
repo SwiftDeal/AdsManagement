@@ -36,13 +36,15 @@
                                 <table id="tech-companies-1" class="table  table-striped">
                                     <thead>
                                         <tr>
+                                            <th>Rank</th>
                                             <th>Name</th>
                                             <th>Clicks</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {foreach $p in $publishers}
+                                        {script $i = 1} {foreach $p in $publishers}
                                         <tr>
+                                            <td># {echo $i++}</td>
                                             <td>{echo $p->name}</td>
                                             <td>{echo $p->clicks}</td>
                                         </tr>

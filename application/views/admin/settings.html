@@ -38,7 +38,7 @@
                                 <label>Model Rate</label>
                                 <div class="input-group">
                                     <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                    <input type="text" value="{echo $user->convert($rate, false)}" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,4})?$" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" required="">
+                                    <input type="text" value="{echo $user->convert($rate, false, 4)}" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,4})?$" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" required="">
                                 </div>
                             </div>
                             <input type="hidden" name="action" value="commission">
