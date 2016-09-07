@@ -521,7 +521,6 @@ class Publisher extends Auth {
         $csrf_token = Framework\StringMethods::uniqRandString(44);
         $session->set('Publisher\Register:$token', $csrf_token);
         $view->set('__token', $csrf_token);
-        $view->set('organization', $this->org);
     }
 
     /**

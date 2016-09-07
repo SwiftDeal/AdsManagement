@@ -3,6 +3,7 @@
 # CRON Job script for automated backup
 # Script which can be added in cron tab
 directory="/home/ubuntu/dbs"
+mkdir -p ${directory}
 files=`find "$directory" -name "*.json"`
 
 for x in $files

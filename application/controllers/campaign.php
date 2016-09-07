@@ -66,7 +66,15 @@ class Campaign extends Admin {
             'msg' => 'Please Add an Advertiser!!',
             'controller' => $this, 'redirect' => '/advertiser/add.html'
         ]);
-        $view->set('advertisers', $advertisers);
+        $results = [];
+        foreach ($advertisers as $key => $value) {
+            $results[$key] = (object) [
+                '_id' => $value->_id,
+                'name' => $value->name,
+                'meta' => $value->meta    
+            ];
+        }
+        $view->set('advertisers', $results);
 
         $categories = \Category::isEmpty(['org_id' => $this->org->_id], ['name', '_id'], [
             'msg' => 'Please Set Categories!!',

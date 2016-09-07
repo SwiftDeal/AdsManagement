@@ -82,9 +82,7 @@
                 <tbody>
                 {script $clicks = Click::classify($clicks, 'adid')}
                 {foreach $l in $links}
-                    {script $a = Ad::first(["_id = ?" => $l->ad_id], ['projection' =>
-                        ['title' => 1, 'url' => 1, '_id' => 1, 'image' => 1, 'created' => 1, 'live' => 1]
-                    ])}
+                    {script $a = Ad::first(["_id = ?" => $l->ad_id], ['_id', 'title', 'image', 'live', 'created'])}
                     
                     {script $c = Commission::first(["ad_id = ?" => $l->ad_id])}
 

@@ -55,35 +55,6 @@ namespace Shared {
         }
 
         /**
-         * Renders the form fields for different properties of a model
-         * with validations and type which can be looped through in the views
-         */
-        public function render($f = []) {
-            $fields = array(); $count = count($f);
-            foreach ($this->columns as $column) {
-                if (!$column["label"]) {
-                    continue;
-                }
-                if ($count != 0 && !in_array($column["name"], $f)) {
-                    continue;
-                }
-
-                $r = Utils::particularFields($column["name"]);
-                $arr = array(
-                    "name" => $column["name"],
-                    "placeholder" => $column["label"],
-                    "type" => $r["type"]
-                );
-                if ($column["validate"]) {
-                    $v = Utils::parseValidations($column["validate"]);
-                    $arr = array_merge($arr, $v);
-                }
-                $fields[$arr['name']] = $arr;
-            }
-            return $fields;
-        }
-
-        /**
          * Every time a row is created these fields should be populated with default values.
          */
         public function save() {
@@ -124,6 +95,20 @@ namespace Shared {
 
                 $this->__id = Utils::mongoObjectId($this->__id);
                 $result = $collection->updateOne(['_id' => $this->__id], ['$set' => $doc]);
+            }
+
+            // remove BSON Types from class because they prevent it from
+            // being serialized and store into the session
+            foreach ($columns as $key => $value) {
+                $raw = "_{$key}"; $val = $this->$raw;
+
+                if (is_object($val)) {
+                    if (is_a($val, 'MongoDB\BSON\ObjectID')) {
+                        $this->$raw = Utils::getMongoID($val);
+                    } else if (is_a($val, 'MongoDB\BSON\UTCDatetime')) {
+                        $this->$raw = $val->toDateTime();
+                    }
+                }
             }
         }
 
@@ -280,7 +265,7 @@ namespace Shared {
         protected function _updateFields($fields) {
             $f = [];
             foreach ($fields as $key => $value) {
-                if ($value == "*") {
+                if ($value == "*" || !is_string($value)) {
                     continue;
                 }
 
@@ -388,7 +373,11 @@ namespace Shared {
                         $direction = 1;
                         break;
                 }
-                $cursor = $collection->find($where, ['projection' => $fields])->sort([$order => $direction])->limit(1);
+                $cursor = $collection->find($where, [
+                    'projection' => $fields,
+                    'sort' => [$order => $direction],
+                    'limit' => 1
+                ]);
 
                 $record = [];
                 foreach ($cursor as $c) {

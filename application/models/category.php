@@ -62,15 +62,15 @@ class Category extends Shared\Model {
         foreach ($categories as $c) {
             // check if any AD contains this category
             $adsCol = Registry::get("MongoDB")->ads;
-            $ad = $adsCol->findOne([
-                'org_id' => $org->_id,
-                'category' => ['$elemMatch' => ['$eq' => $c->_id]]
+            $count = $adsCol->count([
+                'org_id' => Utils::mongoObjectId($org->_id),
+                'category' => ['$elemMatch' => ['$eq' => Utils::mongoObjectId($c->_id)]]
             ]);
 
-            if ($ad) {
-                $success = false;
-            } else {
+            if ($count === 0) {
                 $c->delete();
+            } else {
+                $success = false;
             }
         }
 

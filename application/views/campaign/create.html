@@ -1,9 +1,5 @@
 <script>
-    var advertisers = {};
-    {foreach $a in $advertisers}
-        {script $meta = (isset($a->meta['campaign'])) ? $a->meta['campaign'] : []}
-        advertisers["{echo $a->_id}"] = JSON.parse('{echo json_encode($meta)}');
-    {/foreach}
+    var advertisers = JSON.parse('{echo json_encode($advertisers)}');
 </script>
 <div class="content-page">
     <!-- Start content -->
@@ -161,11 +157,15 @@ $('#advertiserSelect').on('change', function () {
     var id = $(this).val(),
         advert = advertisers[id];
 
-    if (!advert.model)
+    var campaign = advert.meta.campaign;
+
+    if (!campaign)
+        $('#advertiserRate').val('Rate for advertiser: ' + advert.name + ' not setup');
+    if (!campaign)
         return false;
         
-    var model = advert.model;
-    var rate = Number(advert.rate) * 66;
+    var model = campaign.model;
+    var rate = Number(campaign.rate) * 66;
     $('#model').val(rate);
     $('#advertiserRate').val(Math.round(rate * 100) / 100);
 });

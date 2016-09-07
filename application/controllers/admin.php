@@ -143,6 +143,7 @@ class Admin extends Auth {
                 case 'categories':
                     $msg = Category::updateNow($this->org);
                     $view->set('message', $msg);
+                    break;
             }
             $this->setUser($user);
         }

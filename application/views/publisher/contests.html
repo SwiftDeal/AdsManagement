@@ -93,7 +93,7 @@
             <div class="tab-pane" id="profile">
             {script $pubs = \User::all(['type' => 'publisher', 'org_id' => $org->_id], ['_id', 'name'])}
             {script $campId = 1} {foreach $contest in $contests}
-                <h4 class="m-t-0 header-title">{echo $campId++}. <b>{echo $contest->title}</b> <small>({echo Framework\StringMethods::only_date($contest->start)} - {echo Framework\StringMethods::only_date($contest->end)})</small></h4>
+                <h4 class="m-t-0 header-title">{echo $campId++}. <b>{echo $contest->title}</b> <small>({echo Framework\StringMethods::only_date($contest->start)} - {echo Framework\StringMethods::only_date($contest->end)}) (Excluding Today)</small></h4>
                 {script $query = ['start' => $contest->start->format('Y-m-d'), 'end' => $contest->end->format('Y-m-d')]}
                 {script $dateQuery = \Shared\Utils::dateQuery($query)}
 

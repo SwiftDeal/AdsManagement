@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Global Vars
+mkdir -p /home/ubuntu/mongodump
 db_name=
 db_user=
 db_pass=
