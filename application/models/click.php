@@ -64,7 +64,15 @@ class Click extends Shared\Model {
      * @type text
      * @length 255
      */
-    protected $_ua;
+    protected $_browser;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * @length 255
+     */
+    protected $_os;
 
      /**
      * @column

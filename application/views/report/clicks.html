@@ -61,7 +61,8 @@
                                                 <td>{echo $object->country}</td>
                                                 <td>{echo $object->cookie}</td>
                                                 <td>{echo $object->pid}</td>
-                                                <td>{echo substr($object->ua, 0, 50)}</td>
+                                                <td>{echo substr($object->browser, 0, 50)}</td>
+                                                <td>{echo $object->os}</td>
                                                 <td>{echo $object->is_bot}</td>
                                                 <td>{echo $object->device}</td>
                                                 <td>{echo Framework\StringMethods::datetime_to_text($object->created)}</td>

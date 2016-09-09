@@ -44,6 +44,7 @@ class Cron extends Shared\Controller {
         $this->importCampaigns();
         $this->_contests();
         $this->widgets();
+        $this->_cleanDB();
     }
 
     protected function _weekly() {
@@ -56,11 +57,14 @@ class Cron extends Shared\Controller {
 
     protected function _daily() {
         $this->log("CRON Started");
+        $this->log('Starting Memory at: ' . memory_get_usage());
 
         $this->_pubPerf();
         $this->_advertPerf();
         $this->_webPerf();
         $this->_rssFeed();
+        $this->log('Peak Memory at: ' . memory_get_peak_usage());
+
         // $this->_test();
     }
 
@@ -77,6 +81,10 @@ class Cron extends Shared\Controller {
             // $this->_advertPerf($date);
             // $this->_webPerf($date);
         }
+    }
+
+    protected function _cleanDB() {
+        \Click::deleteAll(['is_bot' => true]);
     }
 
     public function widgets() {
