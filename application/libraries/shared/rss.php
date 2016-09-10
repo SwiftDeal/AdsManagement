@@ -9,7 +9,7 @@ class Rss {
 	 * @param  String $date Date in 'Y-m-d' format
 	 * @return Array       Array of URL's
 	 */
-	public function getFeed($url, $date = null) {
+	public static function getFeed($url, $date = null) {
 		$reader = new Reader;
 
 	    // Return a resource

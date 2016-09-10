@@ -201,22 +201,7 @@ namespace Shared {
         public function __construct($options = array()) {
             parent::__construct($options);
 
-            $mongoDB = Registry::get("MongoDB");
-            if (!$mongoDB) {
-                require_once APP_PATH . '/application/libraries/vendor/autoload.php';
-                $configuration = Registry::get("configuration");
-
-                try {
-                    $dbconf = $configuration->parse("configuration/database")->database->mongodb;
-                    $mongo = new \MongoDB\Client("mongodb://" . $dbconf->dbuser . ":" . $dbconf->password . "@" . $dbconf->url."/" . $dbconf->dbname . "?replicaSet=" . $dbconf->replica . "&ssl=true");
-
-                    $mongoDB = $mongo->selectDatabase($dbconf->dbname);
-                } catch (\Exception $e) {
-                    throw new \Framework\Database\Exception("DB Error");   
-                }
-
-                Registry::set("MongoDB", $mongoDB);
-            }
+            Services\Db::connect();
 
             // schedule: load user from session           
             Events::add("framework.router.beforehooks.before", function($name, $parameters) {

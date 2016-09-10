@@ -41,7 +41,7 @@ class Platform extends Shared\Model {
         $this->_url = $url;
     }
 
-    public function rssFeeds($org) {
+    public static function rssFeeds($org) {
         $users = \User::all(['org_id' => $org->_id, 'type' => 'advertiser'], ['_id']);
         $in = []; $result = [];
         foreach ($users as $u) {
