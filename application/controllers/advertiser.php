@@ -199,9 +199,11 @@ class Advertiser extends Auth {
         $limit = RequestMethods::get("limit", 30);
         $query = ["type = ?" => "advertiser", "org_id = ?" => $this->org->_id];
         $property = RequestMethods::get("property", "live");
-        $value = RequestMethods::get("value", 1);
-        if (in_array($property, ["email", "name", "phone", "live"])) {
+        $value = RequestMethods::get("value", 0);
+        if (in_array($property, ["live"])) {
             $query["{$property} = ?"] = $value;
+        } else if (in_array($property, ["email", "name", "phone"])) {
+            $query["{$property} = ?"] = Utils::mongoRegex($value);
         }
 
         $advertisers = \User::all($query, [], 'created', 'desc');

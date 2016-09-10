@@ -62,7 +62,7 @@ class Campaign extends Admin {
     public function create() {
     	$this->seo(['title' => 'Campaign Create', 'description' => 'Create a new campaign']);
     	$view = $this->getActionView(); $session = Registry::get('session');
-        $advertisers = \User::isEmpty([ "org_id = ?" => $this->org->_id, 'type = ?' => 'advertiser'], ['_id', 'name', 'meta'], [
+        $advertisers = \User::isEmpty([ "org_id = ?" => $this->org->_id, 'type = ?' => 'advertiser', 'live' => true ], ['_id', 'name', 'meta'], [
             'msg' => 'Please Add an Advertiser!!',
             'controller' => $this, 'redirect' => '/advertiser/add.html'
         ]);
