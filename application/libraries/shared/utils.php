@@ -22,7 +22,7 @@ class Utils {
         return $id;
 	}
 
-	public static function downloadImage($url) {
+	public static function downloadImage($url = null) {
 		if (!$url) { return false; }
 		try {
 			$bot = new Bot(['image' => $url], ['logging' => false]);
@@ -187,74 +187,16 @@ class Utils {
 			$start = (int) strtotime($opts['start'] . ' 00:00:00');	// this returns in seconds
 			$start = $start * 1000;	// we need time in milliseconds
 		}
-		$start = new \MongoDB\BSON\UTCDateTime($start);
 
 		if (isset($opts['end'])) {
 			$end = (int) strtotime($opts['end'] . ' 23:59:59');
 			$end = ($end * 1000) + 999;
 		}
-		
-		$end = new \MongoDB\BSON\UTCDateTime($end);
 
 		return [
-			'start' => $start,
-			'end' => $end
+			'start' => new \MongoDB\BSON\UTCDateTime($start),
+			'end' => new \MongoDB\BSON\UTCDateTime($end)
 		];
-	}
-
-	public function categories() {
-		$categoryCol = Registry::get("MongoDB")->categories;
-		$records = $categoryCol->find([], ['id', 'name']);
-
-		$categories = [];
-		foreach ($records as $r) {
-			$r = ArrayMethods::toObject($r);
-			$cid = $r->id;
-
-			if (!array_key_exists($cid, $categories)) {
-				$categories[$cid] = $r;
-			}
-		}
-		return $categories;
-	}
-
-	public static function getObjectKeys($value) {
-		$keys = [];
-		if (is_a($value, 'Framework\Model')) {
-			$d = $value->getAllProperties();
-
-			foreach ($d as $k => $v) {
-				$keys[] = substr($k, 1);
-			}
-		} else if (is_a($value, 'stdClass')) {
-			foreach ($value as $k => $v) {
-				$keys[] = $k;
-			}
-		}
-		return $keys;
-	}
-
-	protected static function _objToCsv($value) {
-		$keys = self::getObjectKeys($value);
-
-		$ans = [];
-		foreach ($keys as $k) {
-			switch (gettype($value->$k)) {
-				case 'array':
-					$second = implode(",", $value->$k);
-					break;
-
-				case 'object':
-					$second = sprintf('%s', $value->$k);
-					break;
-				
-				default:
-					$second = $value->$k;
-					break;
-			}
-			$ans[$k] = $second;
-		}
-		return $ans;
 	}
 
 	public static function toArray($object) {
@@ -272,40 +214,5 @@ class Utils {
 
 	public static function mongoRegex($val) {
 		return new \MongoDB\BSON\Regex($val, 'i');
-	}
-
-	public static function dataToCsv($data) {
-		$arr = [];
-
-		foreach ($data as $key => $value) {
-			if (is_array($value)) {
-				$arr[] = [$key];
-
-				$first = array_values($value)[0];
-				if (is_object($first)) {
-					$arr[] = self::getObjectKeys($first);
-				}
-
-				foreach ($value as $k => $val) {
-					if (is_object($val)) {
-						$arr[] = array_values(self::_objToCsv($val));
-					} else {
-						$arr[] = $val;
-					}
-				}
-			} else if (is_object($value)) {
-				$arr[] = [$key];
-
-				$keys = self::getObjectKeys($value);
-				$ans = self::_objToCsv($value);
-				foreach ($keys as $k) {
-					$arr[] = [$k, $ans[$k]];
-				}
-			} else {
-				$arr[] = [$key, $value];
-			}
-			$arr[] = ["\n"];
-		}
-		return $arr;
 	}
 }

@@ -200,12 +200,8 @@ namespace Framework {
                         echo json_encode($obj, JSON_PRETTY_PRINT);
                     } else if ($this->defaultExtension == "csv") {
                         // parse the data
-                        $csv = \Shared\Utils::dataToCsv($data);
-                        $file = fopen("php://output", 'w');
-                        foreach ($csv as $value) {
-                            fputcsv($file, $value);
-                        }
-                        fclose($file);
+                        $csv = new \Shared\Services\Csv($data);
+                        $csv->write();
                     }
                     $results = $view->render();
                     $this->actionView->template->implementation->set("action", $results);
