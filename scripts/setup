@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Global Vars
+check_user=$(whoami)
+if [[ $check_user != "root" ]]; then
+	echo "--------- 	Please run this scrip as root 	-----------"
+	exit 1
+fi
+
+# Give executable permission to the scripts
+find . -type f ! -name "*.*" -exec chmod +x '{}' +
+
+# Add the cron_* scripts to the crontab
+files=`find $PWD -maxdepth 1 -type f -name "cron_*"`
+echo "Add these lines to the crontab"
+for x in $files
+do
+	lookup_dir=${x##*/}		# Get only the name of file
+	lookup_dir=${x##*_}		# ie. provide cron_(.*) directory as the lookup directory
+	echo "01 00 * * * $x $PWD/${lookup_dir}"
+done

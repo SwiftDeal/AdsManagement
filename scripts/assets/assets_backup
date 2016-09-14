@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Initialize Global Variables
+log_dir=
+server_ip=
+server_user=
+server_pass=
+server_path=
+project=
+project_dir=
+
+# Read the values parsed from json file
+read -p "Log Dir: " log_dir
+read -p "Project: " project
+read -p "Project Dir: " project_dir
+
+read -p "Backup Server IP: " server_ip
+read -p "Backup Server User-pass: " server_pass
+read -p "Backup Server path: " server_path # path can be relative to user or full-path 
+# path should exist on remote server otherwise error will be thrown
+read -p "Backup Server User: " server_user
+
+# Check for expect
+type expect 2> /dev/null || { sudo apt-get install -y expect; }
+
+cd $project_dir
+
+# Make a compressed tar file of the project
+make_tar() {
+	cd ..
+	tar -cvzf ${project}.tar ${project_dir##*/}
+	cd $project_dir
+}
+
+# Push the backup tar to the remote server using "expect"
+push_backup() {
+	expect -c "
+		set timeout -1
+		spawn scp -o StrictHostKeyChecking=no ../${project}.tar ${server_user}@${server_ip}:${server_path}
+		expect password: { send $server_pass\r }
+		expect '100%'
+		sleep 1
+		exit
+	"
+	rm ../${project}.tar
+	echo "Cleaning UP"
+}
+
+# Log the backup process
+logging() {
+	output=`date`
+	filename="`date +%Y-%m-%d`.txt"
+
+	# check if log_dir exists else create
+	parent_dir=$(dirname $log_dir)
+	mkdir -p $parent_dir
+	mkdir -p $log_dir
+	
+	touch "${log_dir}/${filename}"
+	echo "Backup: '$project' (Server: $server_ip, path: $server_path) Completed on $output" >> "${log_dir}/${filename}"
+	echo "Logging Done"
+}
+
+make_tar
+push_backup
+logging

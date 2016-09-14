@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Lookup Directory Must be passed to the script
+if [[ $# < 1 ]]; then
+	echo "Please provide lookup directory"
+	echo "Example Usage: ./cron_assets 'lookup_dir'"
+	exit 1
+fi
+
+# Pass the directory in command line
+lookup_dir=$1
+files=`find ${lookup_dir} -name "*.json"`
+
+for x in $files
+do
+	python "${lookup_dir}/parse_json.py" $x | "${lookup_dir}/assets_backup"
+done
