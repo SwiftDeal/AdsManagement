@@ -4,11 +4,15 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
-                        <ol class="breadcrumb pull-right">
-                            <li><a href="/admin.html">Dashboard</a></li>
-                            <li><a href="/publisher/manage.html">All Publishers</a></li>
-                            <li class="active">{echo $publisher->name}</li>
-                        </ol>
+                        <div class="pull-right">
+                            {if !$publisher->live}
+                            <a href="/publisher/update/{echo $publisher->_id}" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-success" data-toggle="tooltip" data-placement="top" data-original-title="Activate"><i class="fa fa-check"></i> Activate</a>
+                            {/if} {else}
+                            <a href="/publisher/update/{echo $publisher->_id}" data-send='{echo json_encode(["live" => 0])}' class="update btn btn-warning" data-toggle="tooltip" data-placement="top" data-original-title="Disable"><i class="fa fa-times"></i> Disable</a>
+                            {/else}
+                            <a href="/publisher/delete/{echo $publisher->_id}" data-message="Are you sure you want to delete this publisher??" class="delete btn btn-danger" data-toggle="tooltip" data-placement="top" data-original-title="Delete"><i class="fa fa-trash"></i> Delete</a>
+                            <a href="/auth/loginas/{echo $publisher->_id}" class="btn btn-default" data-toggle="tooltip" data-placement="top" data-original-title="Sign in to this profile"><i class="fa fa-sign-in"></i> Login as</a>
+                        </div>
                         <h4 class="page-title">{echo $publisher->name}'s account</h4>
                     </div>
                 </div>
@@ -49,6 +53,7 @@
                                 <select name="currency" class="form-control" value="{echo $publisher->currency}">
                                     <option value="INR">INR</option>
                                     <option value="USD">USD</option>
+                                    <option value="PKR">PKR</option>
                                 </select>
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "currency")}</span>
                             </div>
@@ -100,7 +105,7 @@
                                 <label for="Rate">Rate (Optional)</label>
                                 <div class="input-group">
                                     <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                    <input type="text" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,2})?$" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" value="{echo $user->convert($rate, false)}">
+                                    <input type="text" name="rate" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" value="{echo $user->convert($rate, false)}">
                                 </div>
                             </div>
                             <input type="hidden" name="action" value="campaign">

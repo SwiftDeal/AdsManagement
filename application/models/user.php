@@ -113,6 +113,12 @@ class User extends Shared\Model {
                 $n = (float) ($n * 66);
                 $prefix = '<i class="fa fa-inr"></i> ';
                 break;
+
+            case 'pkr':
+                $places = 3;
+                $n = (float) ($n * 104);
+                $prefix = '<i class="fa fa-inr"></i> ';
+                break;
             
             default:
                 $places = 6;

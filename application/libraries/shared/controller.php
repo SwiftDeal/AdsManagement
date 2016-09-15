@@ -70,9 +70,13 @@ namespace Shared {
         public function currency($n) {
             $n = (float) $n;
             $user = $this->getUser();
-            switch ($user->currency) {
-                case 'INR':
+            switch (strtolower($user->currency)) {
+                case 'inr':
                     $v = $n/66;
+                    break;
+
+                case 'pkr':
+                    $v = $n/104;
                     break;
                 
                 default:
