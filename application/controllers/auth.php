@@ -88,16 +88,16 @@ class Auth extends Controller {
         }
 
         switch ($user->type) {
-            case 'admin':
-                $this->redirect('/admin/index.html');
-                break;
-            
             case 'publisher':
                 $this->redirect('/publisher/index.html');
                 break;
 
             case 'advertiser':
                 $this->redirect('/advertiser/index.html');
+                break;
+
+            default:
+                $this->redirect('/admin/index.html');
                 break;
         }
     }

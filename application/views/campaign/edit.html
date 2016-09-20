@@ -121,6 +121,24 @@
                             </form>
                         </div>
                     </div>
+                    <div class="card">
+                        <div class="card-body no-padding">
+                            <form method="post" action="" class="panel panel-default panel-body">
+                                <div class="form-group">
+                                    <label for="Advertiser">The Campaign will be <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The Status of the campaign will be changed automatically according to your settings"></i></label>
+                                    <select name="trigger" required="" class="form-control">
+                                        <option value="paused">Paused</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Effective time <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The time will be effective according to your settings."></i></label>
+                                    <input type="datetime" required="" name="rss_link" class="form-control">
+                                </div>
+                                <input type="hidden" name="action" value="timer">
+                                <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Save</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

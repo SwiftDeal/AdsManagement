@@ -66,7 +66,7 @@ class Admin extends Auth {
     /**
      * @before _secure
      */
-    public function account() {
+    public function customization() {
     	$this->seo(array("title" => "Account Settings"));
     	$view = $this->getActionView();
 

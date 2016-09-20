@@ -97,6 +97,13 @@ class Ad extends Shared\Model {
      */
     protected $_device = [];
 
+    /**
+     * @column
+     * @readwrite
+     * @type datetime
+     */
+    protected $_expiry = null;
+
     public static function setCategories($categories = []) {
         $result = [];
         foreach ($categories as $c) {

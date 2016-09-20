@@ -31,7 +31,7 @@
                 <div class="col-md-4">
                     <ul class="list-group">
                         <li class="list-group-item list-group-item-success text-center">
-                            <b>Network</b>
+                            <b>Network</b> <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Total number of clicks, impressions, conversions, revenue from {$start} to {$end}"></i>
                         </li>
                         <a href="/report/clicks.html" class="list-group-item">
                             Clicks<span class="badge">{echo $performance->clicks}</span>
@@ -50,7 +50,7 @@
                 <div class="col-md-4">
                     <ul class="list-group">
                         <li class="list-group-item list-group-item-success text-center">
-                            <b>Total</b>
+                            <b>Total</b> <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Total number of affiliates, advertisers, platforms, campaigns"></i>
                         </li>
                         <a href="/publisher/manage.html" class="list-group-item">
                             Affiliates<span class="badge">{echo User::count(["org_id = ?" => $org->id, "type = ?" => "publisher"])}</span>
@@ -69,7 +69,7 @@
                 <div class="col-md-4">
                     <ul class="list-group">
                         <li class="list-group-item list-group-item-success text-center">
-                            <b>To be Approved</b>
+                            <b>To be Approved</b> <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Pending affiliates, campaigns, advertisers, platforms to be approved"></i>
                         </li>
                         <a href="/publisher/manage.html" class="list-group-item">
                             Affiliates<span class="badge">{echo User::count(["org_id = ?" => $org->id, "type = ?" => "publisher", "live = ?" => 0])}</span>
@@ -100,7 +100,7 @@
                 <div class="col-md-{echo $d}">
                     {script $topEarners = $topusers['publishers']}
                     <div class="card-box widget-user">
-                        <h4 class="text-dark  header-title m-t-0">Top 10 publishers</h4>
+                        <h4 class="text-dark  header-title m-t-0">Top 10 publishers <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Top 10 affiliates ranked by number of clicks daily"></i></h4>
                         <div class="table-responsive nicescroll" style="height: 280px">
                             <table class="table">
                                 <tbody>
