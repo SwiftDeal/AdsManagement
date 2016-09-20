@@ -140,6 +140,7 @@ class Publisher extends Auth {
             switch ($action) {
                 case 'account':
                     $name = RequestMethods::post('name');
+                    $phone = RequestMethods::post('phone');
                     $currency = RequestMethods::post('currency', 'INR');
 
                     $user->name = $name; $user->currency = $currency;
@@ -470,25 +471,6 @@ class Publisher extends Auth {
             $view->set('message', 'Publisher removed successfully!!');
         } else {
             $view->set('message', 'Failed to delete. Publisher has already given clicks!!');
-        }
-    }
-
-    protected function widgets($dateQuery = null) {
-        if (!$dateQuery) {
-            $date = RequestMethods::get("date", date('Y-m-d'));
-            $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
-        } $meta = $this->org->meta;
-        if (isset($meta['widget']) && isset($meta['widget']['top10pubs']) && count($meta['widget']['top10pubs']) > 0) {
-            $widgets = $meta['widget'];
-            return [
-                'publishers' => $widgets['top10pubs'] ?? [],
-                'ads' => Ad::displayData($widgets['top10ads'] ?? [])
-            ];
-        } else { // fallback case
-            return [
-                'publishers' => [],
-                'ads' => []
-            ];
         }
     }
 

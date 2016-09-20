@@ -15,7 +15,7 @@ class Admin extends Auth {
      */
     public function index() {
         $this->seo(array("title" => "Dashboard"));
-        $view = $this->getActionView();
+        $view = $this->getActionView(); $d = 1;
 
         $publishers = User::all([
             "org_id = ?" => $this->org->_id, "type = ?" => "publisher"
@@ -41,9 +41,14 @@ class Admin extends Auth {
             $perf->impressions += $p->impressions;
             $perf->revenue += $p->revenue;
         }
-
+        $topusers = $this->widgets($dateQuery);
+        if (array_key_exists("widgets", $this->org->meta)) {
+            $d = in_array("top10ads", $this->org->meta["widgets"]) + in_array("top10pubs", $this->org->meta["widgets"]);
+        }
         $view->set("start", $start)
             ->set("end", $end)
+            ->set("d", 12/$d)
+            ->set("topusers", $topusers)
             ->set("links", \Link::count(['user_id' => ['$in' => $in]]))
             ->set("platforms", \Platform::count(['user_id' => ['$in' => $in]]))
             ->set("performance", $perf);
@@ -252,7 +257,7 @@ class Admin extends Auth {
         $page = RequestMethods::get("page", 1);
         $property = RequestMethods::get("property");
         $value = RequestMethods::get("value");
-        if (in_array($property, ["url", "user_id"])) {
+        if (in_array($property, ["live", "url", "user_id"])) {
             $query["{$property} = ?"] = $value;
         }
 
@@ -261,6 +266,8 @@ class Admin extends Auth {
 
         $view->set("platforms", $platforms)
             ->set("count", $count)
+            ->set("property", $property)
+            ->set("value", $value)
             ->set("limit", $limit)
             ->set("page", $page);
     }

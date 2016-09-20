@@ -42,7 +42,7 @@
                                 <label>Amount</label>
                                 <div class="input-group">
                                     <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                    <input type="text" name="amount" required="" class="form-control" pattern="[0-9]+">
+                                    <input type="text" name="amount" required="" class="form-control">
                                 </div>
                                 <span class="help-block"><small>Calculated Amount: {echo $user->currency} {echo $user->convert($payment)}</small></span>
                             </div>

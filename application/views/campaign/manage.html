@@ -7,13 +7,10 @@
                 <div class="col-sm-12">
                     <div class="page-title-box">
                         <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#createCampaign"><i class="fa fa-plus"></i> New Campaign</button>
-                        <h4 class="page-title">Campaigns <small><a href="/campaign/manage.html?property=live&amp;value=1">Active({echo $active})</a> | <a href="/campaign/manage.html?property=live&amp;value=0">Inactive({echo $inactive})</a></small></h4>
-                    </div>
-
-                    <div class="card-box">
-                        <div class="text-center">
-                                <code>Note: When campaign is 'INACTIVE/Disabled' clicks will not be counted</code>
-                            </div>
+                        <h4 class="page-title">
+                            Campaigns <small><a href="/campaign/manage.html?property=live&amp;value=1">Active({echo $active})</a> | 
+                            <a href="/campaign/manage.html?property=live&amp;value=0" data-toggle="tooltip" data-placement="top" data-original-title="When campaign is 'INACTIVE/Disabled' clicks will not be counted">Inactive({echo $inactive})</a></small>
+                        </h4>
                     </div>
 
                     <div class="card-box">
