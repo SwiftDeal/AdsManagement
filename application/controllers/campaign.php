@@ -34,6 +34,25 @@ class Campaign extends Admin {
         $view->set('commission', $this->user->commission());
     }
 
+    /**
+     * @before _secure
+     */
+    public function details($id) {
+        $ad = \Ad::first(["_id = ?" => $id]);
+        $this->seo(array("title" => $ad->title));
+        $view = $this->getActionView();
+
+        $commission = Commission::first(["ad_id = ?" => $id]);
+        $advertiser = User::first(["id = ?" => $ad->user_id], ['name']);
+        $categories = \Category::all(["org_id = ?" => $this->org->_id], ['name', '_id']);
+
+        $view->set("ad", $ad)
+            ->set("c", $commission)
+            ->set("categories", $categories)
+            ->set("advertiser", $advertiser)
+            ->set('commission', $this->user->commission());
+    }
+
     
     /**
      * @before _secure

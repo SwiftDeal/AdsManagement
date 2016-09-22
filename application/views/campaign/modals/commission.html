@@ -1,0 +1,55 @@
+<div class="modal fade" id="uploadByCSV" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <form action="/campaign/import.html" method="post" class="modal-content" enctype="multipart/form-data">
+            <div class="modal-header text-center">
+                <h4 class="m-t-0 header-title">Add new commission</h4>
+            </div>
+            <form method="post" action="" class="panel panel-default panel-body modal-body">
+                <div class="form-group">
+                    <label>Model</label>
+                    <select name="model" required="" value="{echo $comm->model}" class="form-control">
+                        <option value="cpc">CPC (Cost per one Click)</option>
+                        <option value="cpm">CPM (Cost per thousand Impressions)</option>
+                        <option value="cpa">CPA (Cost per Action)</option>
+                    </select>
+                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "model")}</span>
+                </div>
+                <div class="form-group">
+                    <label>Description (Optional)</label>
+                    <input type="text" class="form-control" name="description" value="{echo $comm->description}">
+                </div>
+                <div class="form-group">
+                    <label>Coverage</label>
+                    <select name="coverage[]" class="form-control selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
+                        {foreach $country in $countries["countries"]}
+                        <option value="{echo $country['code']}" {if(in_array($country['code'], $countries["keyvalue"]))}selected{/if}>{echo $country['name']}</option>
+                        {/foreach}
+                    </select>
+                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "coverage")}</span>
+                </div>
+                <div class="form-group">
+                    <label>Revenue (Charged from Advertiser)</label>
+                    <div class="input-group">
+                        <span class="add-on input-group-addon">{echo $user->currency}</span>
+                        <input type="text" name="revenue" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" value="{echo $user->convert($comm->revenue, false)}" class="form-control" placeholder="Rate Charged from advertiser. Eg: 0.3" required="">
+                    </div>
+                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "revenue")}</span>
+                </div>
+                <div class="form-group">
+                    <label>Payout Rate</label>
+                    <div class="input-group">
+                        <span class="add-on input-group-addon">{echo $user->currency}</span>
+                        <input type="text" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" value="{echo $user->convert($comm->rate, false)}" class="form-control" placeholder="Rate for revenue model. Eg: 0.3" required="">
+                    </div>
+                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "rate")}</span>
+                </div>
+                <input type="hidden" name="action" value="commedit">
+                <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Save</button>
+            </form>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </form>
+    </div>
+</div>
