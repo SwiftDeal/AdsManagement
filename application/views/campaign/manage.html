@@ -91,7 +91,6 @@
                                                 <a href="campaign/update/{echo $a->_id}" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" data-original-title="Enable"><i class="fa fa-check"></i></a>
                                                 {/if} {else}
                                                 <a href="campaign/update/{echo $a->_id}" data-send='{echo json_encode(["live" => 0])}' class="update btn btn-xs btn-warning" data-toggle="tooltip" data-placement="top" data-original-title="Disable"><i class="fa fa-times"></i></a>
-                                                <button class="btn btn-xs btn-primary" data-toggle="modal" data-target="#campaignTimer" data-toggle="tooltip" data-placement="top" data-original-title="Campaign Timer"><i class="fa fa-clock-o"></i></button>
                                                 {/else}
                                                 <a href="{echo $a->url}" target="_blank" class="btn btn-purple btn-xs waves-effect waves-light" data-toggle="tooltip" data-placement="top" data-original-title="Landing page"><i class="fa fa-desktop"></i></a>
                                                 <a href="/campaign/edit/{echo $a->_id}" class="btn btn-xs btn-default" data-toggle="tooltip" data-placement="top" data-original-title="Edit"><i class="fa fa-edit"></i></a>

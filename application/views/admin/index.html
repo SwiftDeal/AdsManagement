@@ -126,7 +126,7 @@
                                 <tbody>
                                     {foreach $tc in $topCampaigns}
                                     <tr>
-                                        <td><a href="/campaign/info/{echo $tc['_id']}.html" target="_blank">{echo $tc["title"]}</a></td>
+                                        <td><a href="/campaign/details/{echo $tc['_id']}.html" target="_blank">{echo $tc["title"]}</a></td>
                                         <td>{echo Shared\Markup::nice_number($tc["clicks"])}</td>
                                     </tr>
                                     {/foreach}
