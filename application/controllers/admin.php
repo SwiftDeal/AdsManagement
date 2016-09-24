@@ -131,6 +131,7 @@ class Admin extends Auth {
             switch ($action) {
                 case 'commission':
                     $meta = [
+                        'coverage' => RequestMethods::post('coverage', ['ALL']),
                         'model' => RequestMethods::post('model'),
                         'rate' => $this->currency(RequestMethods::post('rate'))
                     ];

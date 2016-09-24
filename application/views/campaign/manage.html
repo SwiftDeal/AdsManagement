@@ -7,6 +7,7 @@
                 <div class="col-sm-12">
                     <div class="page-title-box">
                         <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#createCampaign"><i class="fa fa-plus"></i> New Campaign</button>
+                        <a href="/campaign/manage.csv" download="campaign.csv" class="btn btn-inverse pull-right"><i class="fa fa-download"></i> Export to CSV</a>
                         <h4 class="page-title">
                             Campaigns <small><a href="/campaign/manage.html?property=live&amp;value=1">Active({echo $active})</a> | 
                             <a href="/campaign/manage.html?property=live&amp;value=0" data-toggle="tooltip" data-placement="top" data-original-title="When campaign is 'INACTIVE/Disabled' clicks will not be counted">Inactive({echo $inactive})</a></small>
