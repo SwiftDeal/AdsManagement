@@ -1,8 +1,3 @@
-<script>
-    var currency = "{echo $user->currency}";
-    currency = currency.toLowerCase();
-    var advertisers = JSON.parse('{echo json_encode($advertisers)}');
-</script>
 <div class="content-page">
     <!-- Start content -->
     <div class="content">
@@ -15,172 +10,139 @@
                             <li><a href="/campaign/manage.html">All campaigns</a></li>
                             <li class="active">Create Campaign</li>
                         </ol>
-                        <h4 class="page-title">Welcome !</h4>
+                        <h4 class="page-title">Create Campaign</h4>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                {if isset($message)}
-                <div class="alert alert-info alert-dismissible fade in" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-                    {echo $message}
-                </div>
-                {/if}
-                <div class="card">
-                    <div class="card-body no-padding">
-                        <form method="post" action="" enctype="multipart/form-data">
-                            <div class="panel panel-default panel-body">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="Advertiser">Advertiser</label>
-                                        <small class="pull-right"><u><a href="/advertiser/add.html" target="_blank">Add new advertiser</a></u></small>
-                                        <select name="advert_id" id="advertiserSelect" class="form-control" required="">
-                                            {foreach $a in $advertisers}
-                                            <option value="{echo $a->_id}">{echo $a->name}</option>
-                                            {/foreach}
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Device</label>
-                                        <select name="device[]" class="form-control selectpicker" multiple="" data-live-search=true title="Choose a device target">
-                                            <option value="all" selected="">All</option>
-                                            <option value="android">Android</option>
-                                            <option value="iphone">iPhone</option>
-                                            <option value="winphone">Windows Phone</option>
-                                            <option value="linux">Linux</option>
-                                            <option value="windows">Windows</option>
-                                            <option value="mac">Mac OS</option>
-                                            <option value="ipad">iPad</option>
-                                        </select>
-                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "device")}</span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Original URL</label>
-                                        <input type="url" class="form-control" name="url" required="" value="{echo $meta['url']}">
-                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "url")}</span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Title</label>
-                                        <input type="text" name="title" class="form-control" maxlength="100" required="" value="{echo $meta['title']}">
-                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "title")}</span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Description</label>
-                                        <textarea class="form-control" name="description" rows="3">{echo $meta['description']}</textarea>
-                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "description")}</span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Image <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Image should be 650px X 315px for good reach on Social Media"></i></label>
-                                        {script $im = $meta['image']}
-                                        {if $im}
-                                        <img src="{echo $im}" class="img-thumbnail">
-                                        <input type="hidden" name="image_url" value="{echo $im}">
-                                        {/if}
-                                        <input type="file" class="form-control" name="image" {if !$im}required=""{/if}>
-                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "image")}</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Category <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="A customized category you choose for the offer, usually the vertical of the product or service, such as “Utility”, “Games”, and “Entertainment” etc. You can also create a new Category."></i></label>
-                                        <small class="pull-right"><u><a href="/admin/settings.html" target="_blank">Add more categoryies</a></u></small>
-                                        <select name="category[]" class="selectpicker form-control" multiple="" data-live-search=true title="Choose a campaign category">
-                                            {foreach $cat in $categories}
-                                            <option value="{echo $cat->_id}">{echo $cat->name}</option>
-                                            {/foreach}
-                                        </select>
-                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "category")}</span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Coverage</label>
-                                        <select name="coverage[]" class="form-control selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
-                                            {include auth/country.html}
-                                        </select>
-                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "coverage")}</span>
-                                    </div>
-                                    {script $adv = array_values($advertisers)[0]}
-                                    {script $camp = isset($adv->meta['campaign']) ? $adv->meta['campaign'] : ['rate' => '0.20', 'model' => 'cpc']}
-                                    <div class="form-group">
-                                        <label>Model <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="How advertiser pays for the offers:CPA,CPC,CPI etc. Change offer pricing type will remove revenue, offer payout, offer cap and affiliate cap,and also delete affiliate payout and volume based tiers which related to this offer."></i></label>
-                                        <select name="model" required="" class="selectVal form-control" data-value='{echo json_encode([$camp["model"]])}' id="model">
-                                            <option value="cpc" selected="">CPC (Cost per one Click)</option>
-                                            <option value="cpm">CPM (Cost per thousand Impressions)</option>
-                                            <option value="cpa">CPA (Cost per Action)</option>
-                                            <option value="cpi">CPI (Cost per Install)</option>
-                                        </select>
-                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "model")}</span>
-                                    </div>
-                                    <div class="form-group hidden" id="comm_desc">
-                                        <label>CPA Description</label>
-                                        <textarea class="form-control" name="comm_desc" rows="2"></textarea>
-                                        <small class="help-block">Details for successful conversion</small>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Revenue <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The amount you receive from the advertiser for one promotion unit."></i></label>
-                                        <div class="input-group">
-                                            <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                            <input type="text" id="advertiserRate" name="revenue" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" value="{echo $user->convert($camp['rate'], false)}" class="form-control" placeholder="Rate Charged from advertiser. Eg: 0.20" required="">
-                                        </div>
-                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "revenue")}</span>
-                                    </div>
-                                    {script $payout = isset($org->meta['rate']) ? $org->meta['rate'] : '0.3'}
-                                    <div class="form-group">
-                                        <label for="Rate">Payout <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The amount of cost you pay your affiliates or publishers for one promotion unit."></i></label>
-                                        <div class="input-group">
-                                            <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                            <input type="text" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" class="form-control" placeholder="Rate for revenue model. Eg: 0.3" value="{echo $user->convert($payout, false)}" required="">
-                                        </div>
-                                        <small class="help-block">You can add different cpc for different country later</small>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>End Date (Optional) <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The date on which your Campaign goes inactive"></i></label>
-                                        <input type="date" name="expiry" class="form-control">
-                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "expiry")}</span>
-                                    </div>
-                                </div>
-                                <input type="hidden" name="action" value="save">
-                                <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Create</button>
+            {if isset($message)}
+            <div class="alert alert-info alert-dismissible fade in" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                {echo $message}
+            </div>
+            {/if}
+            <form method="post" action="" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="card-box">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Advertiser">Advertiser</label>
+                                <small class="pull-right"><u><a href="/advertiser/add.html" target="_blank">Add new advertiser</a></u></small>
+                                <select name="advert_id" id="advertiserSelect" class="form-control" required="">
+                                    {foreach $a in $advertisers}
+                                    <option value="{echo $a->_id}">{echo $a->name}</option>
+                                    {/foreach}
+                                </select>
                             </div>
-                        </form>
+                            <div class="form-group">
+                                <label>Device</label>
+                                <select name="device[]" class="form-control selectpicker" multiple="" data-live-search=true title="Choose a device target">
+                                    <option value="all" selected="">All</option>
+                                    <option value="android">Android</option>
+                                    <option value="iphone">iPhone</option>
+                                    <option value="winphone">Windows Phone</option>
+                                    <option value="linux">Linux</option>
+                                    <option value="windows">Windows</option>
+                                    <option value="mac">Mac OS</option>
+                                    <option value="ipad">iPad</option>
+                                </select>
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "device")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Original URL</label>
+                                <input type="url" class="form-control" name="url" required="" value="{echo $meta['url']}">
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "url")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" name="title" class="form-control" maxlength="100" required="" value="{echo $meta['title']}">
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "title")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea class="form-control" name="description" rows="3">{echo $meta['description']}</textarea>
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "description")}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Category <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="A customized category you choose for the offer, usually the vertical of the product or service, such as “Utility”, “Games”, and “Entertainment” etc. You can also create a new Category."></i></label>
+                                <small class="pull-right"><u><a href="/admin/settings.html" target="_blank">Add more categoryies</a></u></small>
+                                <select name="category[]" class="selectpicker form-control" multiple="" data-live-search=true title="Choose a campaign category">
+                                    {foreach $cat in $categories}
+                                    <option value="{echo $cat->_id}">{echo $cat->name}</option>
+                                    {/foreach}
+                                </select>
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "category")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>End Date (Optional) <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The date on which your Campaign goes inactive"></i></label>
+                                <input type="date" name="expiry" class="form-control">
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "expiry")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Image <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Image should be 650px X 315px for good reach on Social Media"></i></label>
+                                {script $im = $meta['image']}
+                                {if $im}
+                                <img src="{echo $im}" class="img-thumbnail">
+                                <input type="hidden" name="image_url" value="{echo $im}">
+                                {/if}
+                                <input type="file" class="form-control" name="image" {if !$im}required=""{/if}>
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "image")}</span>
+                            </div>
+                        </div>
+                        <h4 class="m-t-0 header-title"><b>Commission Details</b></h4>
                     </div>
                 </div>
-                
-            </div>
+                <div class="row">
+                    <div class="card-box">
+                        <h4 class="m-t-0 header-title"><b>Commission Details</b></h4>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Model <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="How advertiser pays for the offers:CPA,CPC,CPI etc. Change offer pricing type will remove revenue, offer payout, offer cap and affiliate cap,and also delete affiliate payout and volume based tiers which related to this offer."></i></label>
+                                <select name="model" required="" class="form-control" id="model" data-live-search="false">
+                                    <option value="cpc" selected="">CPC (Cost per one Click)</option>
+                                    <option value="cpm">CPM (Cost per thousand Impressions)</option>
+                                    <option value="cpa">CPA (Cost per Action)</option>
+                                    <option value="cpi">CPI (Cost per Install)</option>
+                                    <option value="cps">CPS (Cost per Sale)</option>
+                                    <option value="cpl">CPL (Cost per Lead)</option>
+                                </select>
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "model")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Revenue <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The amount you receive from the advertiser for one promotion unit."></i></label>
+                                <div class="input-group">
+                                    <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                    <input type="text" id="advertiserRate" name="revenue" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" class="form-control" required="">
+                                </div>
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "revenue")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="Rate">Payout <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The amount of cost you pay your affiliates or publishers for one promotion unit."></i></label>
+                                <div class="input-group">
+                                    <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                    <input type="text" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" class="form-control" required="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Coverage</label>
+                                <select name="coverage[]" class="form-control" multiple="" data-live-search=true title="Choose a campaign category" required="">
+                                    {include auth/country.html}
+                                </select>
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "coverage")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label data-toggle="tooltip" data-placement="top" data-original-title="Details for successful conversion">Description <small>(Optional)</small></label>
+                                <textarea class="form-control" name="comm_desc" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <input type="hidden" name="action" value="save">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-check-circle"></i> Create</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-<script type="text/javascript">
-$('#advertiserSelect').on('change', function () {
-    var id = $(this).val(),
-        advert = advertisers[id];
-
-    var campaign = advert.meta.campaign;
-
-    if (!campaign)
-        $('#advertiserRate').val('Rate for advertiser: ' + advert.name + ' not setup');
-    if (!campaign)
-        return false;
-        
-    var model = campaign.model,
-        rate = Number(campaign.rate),
-        places = 6;
-
-    if (currency === "inr")
-        rate = rate * 66;
-    if (currency === "inr")
-        places = 3;
-
-    var power = Math.pow(10, places);
-
-    $('#model').val(rate);
-    $('#advertiserRate').val(Math.round(rate * power) / power);
-});
-
-$('#model').change(function() {
-    if ($('#model').val() == 'cpa')
-        $('#comm_desc').removeClass('hidden');
-    else
-        if (!$('#comm_desc').hasClass('hidden'))
-            $('#comm_desc').addClass('hidden');
-});
-</script>
