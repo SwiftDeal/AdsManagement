@@ -317,6 +317,9 @@ $(document).ready(function() {
     $("input[type=date]").datepicker({
         format: 'yyyy-mm-dd'
     });
+    $("input[type=date]").on('changeDate', function(ev){
+        $(this).datepicker('hide');
+    });
 
 	// creates a new Resource by sending a POST request to the server
 	$(document.body).on("click", ".newResource", function (e) {

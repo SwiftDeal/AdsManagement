@@ -222,8 +222,8 @@ function($) {
 
     var App = function() {
         this.VERSION = "1.6.0",
-            this.AUTHOR = "Coderthemes",
-            this.SUPPORT = "coderthemes@gmail.com",
+            this.AUTHOR = "CloudStuff",
+            this.SUPPORT = "info@cloudstuff.tech",
             this.pageScrollElement = "html, body",
             this.$body = $("body")
     };
@@ -591,6 +591,9 @@ $(document).ready(function() {
     $.fn.datepicker.defaults.format = "yyyy-mm-dd";
     $("input[type=date]").datepicker({
         format: 'yyyy-mm-dd'
+    });
+    $("input[type=date]").on('changeDate', function(ev){
+        $(this).datepicker('hide');
     });
     
 	$('.update').on('click', function (e) {
