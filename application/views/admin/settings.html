@@ -1,3 +1,4 @@
+{include campaign/modals/commission.html}
 <div class="content-page">
     <div class="content">
         <div class="container">
@@ -41,88 +42,116 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane active" id="payout">
-                        <h4 class="m-t-0 header-title">Default Commission Payout Settings</h4>
+                        <h4 class="m-t-0 header-title text-center">Default Commission Payout Settings</h4>
+                        {if(!empty($org->meta["commission"]))}
                         <form action="" method="post">
-                            <div class="form-group">
-                                {script $model = isset($org->meta['model']) ? $org->meta['model'] : null}
-                                <label>Model</label>
-                                <select name="model" required="" value="{echo $model}" class="form-control">
-                                    <option value="cpc">CPC (Cost per Click)</option>
-                                    <option value="cpm">CPM (Cost per thousand impressions)</option>
-                                    <option value="cpa">CPA (Cost per action)</option>
-                                    <option value="cpi">CPI (Cost per Install)</option>
-                                    <option value="cps">CPS (Cost per Sale)</option>
-                                    <option value="cpl">CPL (Cost per Lead)</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                {script $rate = isset($org->meta['rate']) ? $org->meta['rate'] : null}
-                                <label>Model Rate</label>
-                                <div class="input-group">
-                                    <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                    <input type="text" value="{echo $user->convert($rate, false, 4)}" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,4})?$" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" required="">
-                                </div>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <th><label>Coverage</label></th>
+                                        <th><label>Model</label></th>
+                                        <th><label>Rate</label></th>
+                                        <th><label>Action</label></th>
+                                    </tr>
+                                    {foreach $c in $org->meta["commission"]}
+                                    <tr>
+                                        <td>
+                                            <div class="form-group">
+                                                <select name="coverage[]" class="form-control selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
+                                                    {foreach $country in $countries["countries"]}
+                                                    <option value="{echo $country['code']}" {if(in_array($country['code'], $c["coverage"]))}selected{/if}>{echo $country['name']}</option>
+                                                    {/foreach}
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <select name="model" required="" value="{echo $c['model']}" class="form-control">
+                                                    <option value="cpc">CPC (Cost per Click)</option>
+                                                    <option value="cpm">CPM (Cost per thousand impressions)</option>
+                                                    <option value="cpa">CPA (Cost per action)</option>
+                                                    <option value="cpi">CPI (Cost per Install)</option>
+                                                    <option value="cps">CPS (Cost per Sale)</option>
+                                                    <option value="cpl">CPL (Cost per Lead)</option>
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                                    <input type="text" value="{echo $user->convert($c['rate'], false, 4)}" name="rate" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" required="">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="#" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</a>
+                                        </td>
+                                    </tr>
+                                    {/foreach}
+                                </table>
                             </div>
                             <input type="hidden" name="action" value="commission">
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Save</button>
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addCommisson"><i class="fa fa-plus"></i> New Commission</button> 
+                        </form>
+                        {/if} {else}
+                        <p class="text-center">
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addCommisson"><i class="fa fa-plus"></i> New Commission</button> 
+                        </p>
+                        {/else}
+                    </div>
+                    <div class="tab-pane" id="category">
+                        <h4 class="m-t-0 header-title text-center"><b>Campaign Category</b></h4>
+                        <form action="" method="post">
+                            <div class="form-group">
+                                {if count($categories) == 0}
+                                <div class="input-group">
+                                   <input type="text" name="category[]" class="form-control" placeholder="Enter Category Name" id="categoryBox">
+                                   <span class="input-group-btn">
+                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
+                                   </span>
+                                </div>
+                                {/if} {script $i = 1}
+                                {foreach $c in $categories}
+                                <div class="input-group">
+                                   <input type="text" name="category[]" value="{echo $c->name}" class="form-control" placeholder="Enter Category Name" {if $i++ == 1} id="categoryBox" {/if}>
+                                   <span class="input-group-btn">
+                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
+                                   </span>
+                                </div>
+                                {/foreach}
+                            </div>
+                            <input type="hidden" name="action" value="categories">
+                            <button type="button" id="addCategory" class="btn btn-primary"><i class="fa fa-plus"></i> Add More</button>
                             <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
                         </form>
                     </div>
-                    <div class="tab-pane" id="category">
-                        <div class="card-box">
-                            <h4 class="m-t-0 header-title"><b>Campaign Category</b></h4>
-                            <form action="" method="post">
-                                <div class="form-group">
-                                    {if count($categories) == 0}
-                                    <div class="input-group">
-                                       <input type="text" name="category[]" class="form-control" placeholder="Enter Category Name" id="categoryBox">
-                                       <span class="input-group-btn">
-                                            <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
-                                       </span>
-                                    </div>
-                                    {/if} {script $i = 1}
-                                    {foreach $c in $categories}
-                                    <div class="input-group">
-                                       <input type="text" name="category[]" value="{echo $c->name}" class="form-control" placeholder="Enter Category Name" {if $i++ == 1} id="categoryBox" {/if}>
-                                       <span class="input-group-btn">
-                                            <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
-                                       </span>
-                                    </div>
-                                    {/foreach}
-                                </div>
-                                <input type="hidden" name="action" value="categories">
-                                <button type="button" id="addCategory" class="btn btn-primary"><i class="fa fa-plus"></i> Add More</button>
-                                <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
-                            </form>
-                        </div>
-                    </div>
                     <div class="tab-pane" id="domain">
-                        <div class="card-box">
-                            <h4 class="m-t-0 header-title"><b>Tracking Domains</b></h4>
-                            <form action="" method="post">
-                                <div class="form-group">
-                                    {if count($org->tdomains) == 0}
-                                    <div class="input-group">
-                                       <input type="text" name="tdomains[]" class="form-control" placeholder="Enter Tracking Domain" id="trackingDomain">
-                                       <span class="input-group-btn">
-                                            <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
-                                       </span>
-                                    </div>
-                                    {/if} {script $i = 1}
-                                    {foreach $t in $org->tdomains}
-                                    <div class="input-group">
-                                       <input type="text" name="tdomains[]" value="{echo $t}" class="form-control" placeholder="Enter Tracking Domain" {if $i == 1} id="trackingDomain" {/if}>
-                                       <span class="input-group-btn">
-                                            <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
-                                       </span>
-                                    </div>
-                                    {script ++$i} {/foreach}
+                        <h4 class="m-t-0 header-title text-center"><b>Tracking Domains</b></h4>
+                        <form action="" method="post">
+                            <div class="form-group">
+                                {if count($org->tdomains) == 0}
+                                <div class="input-group">
+                                   <input type="text" name="tdomains[]" class="form-control" placeholder="Enter Tracking Domain" id="trackingDomain">
+                                   <span class="input-group-btn">
+                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
+                                   </span>
                                 </div>
-                                <input type="hidden" name="action" value="domains">
-                                <button type="button" id="addDomain" class="btn btn-primary"><i class="fa fa-plus"></i> Add More</button>
-                                <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
-                            </form>
-                        </div>
+                                {/if} {script $i = 1}
+                                {foreach $t in $org->tdomains}
+                                <div class="input-group">
+                                   <input type="text" name="tdomains[]" value="{echo $t}" class="form-control" placeholder="Enter Tracking Domain" {if $i == 1} id="trackingDomain" {/if}>
+                                   <span class="input-group-btn">
+                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
+                                   </span>
+                                </div>
+                                {script ++$i} {/foreach}
+                            </div>
+                            <input type="hidden" name="action" value="domains">
+                            <button type="button" id="addDomain" class="btn btn-primary"><i class="fa fa-plus"></i> Add More</button>
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
+                        </form>
                     </div>
                 </div>
             </div>

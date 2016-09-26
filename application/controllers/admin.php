@@ -130,14 +130,11 @@ class Admin extends Auth {
             $action = RequestMethods::post('action', '');
             switch ($action) {
                 case 'commission':
-                    $meta = [
-                        'coverage' => RequestMethods::post('coverage', ['ALL']),
-                        'model' => RequestMethods::post('model'),
-                        'rate' => $this->currency(RequestMethods::post('rate'))
-                    ];
-                    $org->meta = $meta;
-                    $org->save();
-                    $view->set('message', 'Commission Settings updated!!');
+                    $view->set('message', 'Commission updated!!');
+                    break;
+
+                case 'commadd':
+                    $this->addCommisson($org);
                     break;
 
                 case 'domains':
@@ -154,7 +151,32 @@ class Admin extends Auth {
             $this->setUser($user);
         }
         $categories = \Category::all(['org_id' => $this->org->_id]);
-        $view->set('categories', $categories);
+        $view->set('categories', $categories)
+            ->set("countries", Shared\Markup::countries());
+    }
+
+    protected function addCommisson($org) {
+        $meta = $org->meta;
+        if (array_key_exists('commission', $meta)) {
+            $arr = $meta["commission"];
+            array_push($arr, [
+                'coverage' => RequestMethods::post('coverage', ['ALL']),
+                'model' => RequestMethods::post('model'),
+                'rate' => $this->currency(RequestMethods::post('rate'))
+            ]);
+            $meta["commission"] = $arr;
+        } else {
+            $arr = [];
+            $arr[] = [
+                'coverage' => RequestMethods::post('coverage', ['ALL']),
+                'model' => RequestMethods::post('model'),
+                'rate' => $this->currency(RequestMethods::post('rate'))
+            ];
+            $meta["commission"] = $arr;
+        }
+        
+        $org->meta = $meta;
+        $org->save();
     }
 
     /**

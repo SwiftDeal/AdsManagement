@@ -1,51 +1,40 @@
-<div class="modal fade" id="uploadByCSV" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="addCommisson" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
-        <form action="/campaign/import.html" method="post" class="modal-content" enctype="multipart/form-data">
+        <form action="" method="post" class="modal-content">
             <div class="modal-header text-center">
                 <h4 class="m-t-0 header-title">Add new commission</h4>
             </div>
-            <form method="post" action="" class="panel panel-default panel-body modal-body">
-                <div class="form-group">
-                    <label>Model</label>
-                    <select name="model" required="" value="{echo $comm->model}" class="form-control">
-                        <option value="cpc">CPC (Cost per one Click)</option>
-                        <option value="cpm">CPM (Cost per thousand Impressions)</option>
-                        <option value="cpa">CPA (Cost per Action)</option>
-                    </select>
-                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "model")}</span>
-                </div>
-                <div class="form-group">
-                    <label>Description (Optional)</label>
-                    <input type="text" class="form-control" name="description" value="{echo $comm->description}">
-                </div>
+            <div class="modal-body row">
                 <div class="form-group">
                     <label>Coverage</label>
-                    <select name="coverage[]" class="form-control selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
-                        {foreach $country in $countries["countries"]}
-                        <option value="{echo $country['code']}" {if(in_array($country['code'], $countries["keyvalue"]))}selected{/if}>{echo $country['name']}</option>
-                        {/foreach}
+                    <select name="coverage[]" class="form-control" multiple="" data-live-search=true title="Choose a campaign category" required="" style="width: 500px;">
+                        {include auth/country.html}
                     </select>
-                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "coverage")}</span>
                 </div>
-                <div class="form-group">
-                    <label>Revenue (Charged from Advertiser)</label>
-                    <div class="input-group">
-                        <span class="add-on input-group-addon">{echo $user->currency}</span>
-                        <input type="text" name="revenue" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" value="{echo $user->convert($comm->revenue, false)}" class="form-control" placeholder="Rate Charged from advertiser. Eg: 0.3" required="">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Model <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="How advertiser pays for the offers:CPA,CPC,CPI etc. Change offer pricing type will remove revenue, offer payout, offer cap and affiliate cap,and also delete affiliate payout and volume based tiers which related to this offer."></i></label>
+                        <select name="model" required="" class="form-control" id="model" data-live-search=false style="width: 260px;">
+                            <option value="cpc" selected="">CPC (Cost per one Click)</option>
+                            <option value="cpm">CPM (Cost per thousand Impressions)</option>
+                            <option value="cpa">CPA (Cost per Action)</option>
+                            <option value="cpi">CPI (Cost per Install)</option>
+                            <option value="cps">CPS (Cost per Sale)</option>
+                            <option value="cpl">CPL (Cost per Lead)</option>
+                        </select>
                     </div>
-                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "revenue")}</span>
                 </div>
-                <div class="form-group">
-                    <label>Payout Rate</label>
-                    <div class="input-group">
-                        <span class="add-on input-group-addon">{echo $user->currency}</span>
-                        <input type="text" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" value="{echo $user->convert($comm->rate, false)}" class="form-control" placeholder="Rate for revenue model. Eg: 0.3" required="">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="Rate">Payout <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The amount of cost you pay your affiliates or publishers for one promotion unit."></i></label>
+                        <div class="input-group">
+                            <span class="add-on input-group-addon">{echo $user->currency}</span>
+                            <input type="text" name="rate" class="form-control" required="">
+                        </div>
                     </div>
-                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "rate")}</span>
                 </div>
-                <input type="hidden" name="action" value="commedit">
-                <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Save</button>
-            </form>
+                <input type="hidden" name="action" value="commadd">
+            </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

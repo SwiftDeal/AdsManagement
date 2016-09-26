@@ -48,6 +48,7 @@ class Advertiser extends Auth {
         $limit = RequestMethods::get("limit", 20);
         $page = RequestMethods::get("page", 1);
 
+        $in = [];
         $query = [
             "user_id" => $this->user->id
         ];
