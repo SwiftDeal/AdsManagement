@@ -51,7 +51,6 @@
                                         <th><label>Coverage</label></th>
                                         <th><label>Model</label></th>
                                         <th><label>Rate</label></th>
-                                        <th><label>Action</label></th>
                                     </tr>
                                     {foreach $c in $org->meta["commission"]}
                                     <tr>
@@ -84,16 +83,16 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>
-                                            <a href="#" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</a>
-                                        </td>
                                     </tr>
                                     {/foreach}
                                 </table>
                             </div>
                             <input type="hidden" name="action" value="commission">
                             <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Save</button>
-                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addCommisson"><i class="fa fa-plus"></i> New Commission</button> 
+                            <span class="pull-right">
+                                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addCommisson"><i class="fa fa-plus"></i> New Commission</button> 
+                                <a href="/account/commdel.html" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</a>
+                            </span>
                         </form>
                         {/if} {else}
                         <p class="text-center">

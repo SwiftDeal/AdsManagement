@@ -53,4 +53,17 @@ class Account extends Admin {
     public function delete($id) {
         $this->noview();
     }
+
+    /**
+     * @before _secure
+     */
+    public function commdel() {
+        $this->noview();
+        $org = $this->org;
+        $meta = $org->meta;
+        unset($meta["commission"]);
+        $org->meta = $meta;
+        $org->save();
+        $this->redirect("/admin/settings.html");
+    }
 }
