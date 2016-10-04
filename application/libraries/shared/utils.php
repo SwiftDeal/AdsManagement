@@ -185,13 +185,13 @@ class Utils {
 
 		if (isset($opts['start'])) {
 			$start = (int) strtotime($opts['start'] . ' 00:00:00');	// this returns in seconds
-			$start = $start * 1000;	// we need time in milliseconds
 		}
+		$start = $start * 1000;	// we need time in milliseconds
 
 		if (isset($opts['end'])) {
 			$end = (int) strtotime($opts['end'] . ' 23:59:59');
-			$end = ($end * 1000) + 999;
 		}
+		$end = ($end * 1000) + 999;
 
 		return [
 			'start' => new \MongoDB\BSON\UTCDateTime($start),

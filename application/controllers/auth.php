@@ -323,25 +323,21 @@ class Auth extends Controller {
         }
     }
 
-    protected function perf($clicks, $p, $org, $dateQuery = []) {
+    protected function perf($clicks, $p, $org, $dq = []) {
         $perf = new Performance();
         $adsInfo = [];
         $classify = \Click::classify($clicks, 'adid');
         foreach ($classify as $key => $value) {
-            $adClicks = count($value);
+            $adClicks = count($value); $updateData = [];
 
-            $info = \Commission::campaignRate($key, $adsInfo, $org, [
-                'type' => 'publisher', 'dateQuery' => $dateQuery, 'publisher' => $p
-            ]);
-            $rate = $info['rate'];
-
-            if ($info['conversions'] !== false) {    // not a CPC campaign
-                $adClicks = $info['conversions'];
-            }
+            $extra = [ 'type' => 'publisher', 'publisher' => $p ];
+            $extra = array_merge($extra, $dq);
+            $info = \Commission::campaignRate($key, $adsInfo, $org, $extra);
             
-            $revenue = $rate * $adClicks; $perf->clicks += $adClicks;
-            $perf->revenue += round($revenue, 6);
-            $perf->impressions += \Impression::getStats($key, $p->_id, $dateQuery);
+            $earning = \Ad::earning($info, $adClicks);
+            \Framework\ArrayMethods::copy($earning, $updateData);
+            $updateData['impressions'] = \Impression::getStats($key, $p->_id, $dq);
+            $perf->update($updateData);
         }
 
         return $perf;

@@ -9,6 +9,7 @@ use Framework\Registry as Registry;
 use Shared\Mail as Mail;
 use Shared\Utils as Utils;
 use Framework\ArrayMethods as ArrayMethods;
+use Shared\Services\Db as Db;
 
 class Publisher extends Auth {
 
@@ -21,12 +22,12 @@ class Publisher extends Auth {
 
         $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('now')));
         $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
-        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
+        $dateQuery = Utils::dateQuery($start, $end);
         $clickCol = Registry::get("MongoDB")->clicks;
-        $clicks = $clickCol->find([
-            "pid" => Utils::mongoObjectId($this->user->id), "is_bot" => false,
-            "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]
-        ], ['projection' => ['adid' => 1]]);
+        $clicks = Db::query('Click', [
+            "pid" => $this->user->_id, "is_bot" => false,
+            "created" => Db::dateQuery($start, $end)
+        ], ['adid']);
 
         $notifications = Notification::all(["org_id = ?" => $this->org->id], [], "created", "desc", 5, 1);
         $total = Performance::overall(
@@ -48,7 +49,7 @@ class Publisher extends Auth {
             ->set("notifications", $notifications)
             ->set("total", $total)
             ->set("yesterday", strftime("%B %d, %Y", strtotime('-1 day')))
-            ->set("performance", $this->perf($clicks, $this->user, $this->org, $dateQuery));
+            ->set("performance", $this->perf($clicks, $this->user, $this->org, ['start' => $start, 'end' => $end]));
     }
 
     /**

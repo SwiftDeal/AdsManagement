@@ -70,16 +70,15 @@ class Cron extends Shared\Controller {
     }
 
     protected function _test() {
-        $start = date('Y-m-d', strtotime('-3 day'));
-        $end = date('Y-m-d', strtotime('-3 day'));
+        $start = date('Y-m-d', strtotime('-1 day'));
+        $end = date('Y-m-d', strtotime('now'));
 
         $diff = date_diff(date_create($start), date_create($end));
         for ($i = 0; $i <= $diff->format("%a"); $i++) {
             $date = date('Y-m-d', strtotime($start . " +{$i} day"));
             var_dump($date);
 
-            // $this->_pubPerf($date);
-            // $this->_advertPerf($date);
+            // $this->_performance($date);
             // $this->_webPerf($date);
         }
     }
@@ -134,60 +133,64 @@ class Cron extends Shared\Controller {
 
     protected function _performance($date = null) {
         if (!$date) {
-            $date = date('Y-m-d');
+            $date = date('Y-m-d', strtotime('-1 day'));
         }
         // find the publishers
         $publishers = \User::all(['type = ?' => 'publisher', 'live = ?' => true], ['_id', 'email', 'meta', 'org_id']);
-        $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
+        $dq = ['start' => $date, 'end' => $date];
+        $dateQuery = Utils::dateQuery($dq);
         $start = $dateQuery['start']; $end = $dateQuery['end'];
 
         // store AD commission info
-        $adsInfo = []; $orgs = []; $advPerfs = []; $advertisers = [];
+        $commInfo = []; $orgs = []; $advPerfs = [];
+        $advertisers = []; $adsInfo = [];
         foreach ($publishers as $p) {
             $org = \Organization::find($orgs, $p->org_id);
             
             // find the clicks for the publisher
             $clicks = Db::query('Click', [
                 'pid' => $p->_id, 'is_bot' => false,
-                'created' => ['$gte' => $start, '$lte' => $end]
-            ], ['adid']);
+                'created' => Db::dateQuery($date, $date)
+            ], ['adid', 'country']);
 
             $perf = Performance::exists($p, $date);
             
             // classify the clicks according to AD ID
             $classify = \Click::classify($clicks, 'adid');
             foreach ($classify as $key => $value) {
-                $adClicks = count($value); $conversions = 0;
-                $ad = \Ad::first(['_id' => $key], ['user_id']);
+                $ad = \Ad::find($adsInfo, $key, ['user_id', 'url']);
                 $advert = Usr::find($advertisers, $ad->user_id, ['_id', 'meta', 'email', 'org_id']);
                 $advertPerf = Usr::findPerf($advPerfs, $advert, $date);
 
-                $updateData = [];
+                $countries = \Click::classify($value, 'country');
+                foreach ($countries as $country => $records) {
+                    $updateData = []; $adClicks = count($records);
 
-                $pComm = \Commission::campaignRate($key, $adsInfo, $org, [
-                    'type' => 'publisher', 'dateQuery' => $dateQuery, 'publisher' => $p
-                ]);
-                
-                $earning = \Ad::earning($pComm, $adClicks); ArrayMethods::copy($earning, $updateData);
-                $updateData['impressions'] = \Impression::getStats($key, $p->_id, $dateQuery);
-                $perf->update($updateData);
+                    $pComm = \Commission::campaignRate($key, $commInfo, $org, array_merge([
+                        'type' => 'publisher', 'publisher' => $p, 'country' => $country
+                    ], $dq));
+                    
+                    $earning = \Ad::earning($pComm, $adClicks); ArrayMethods::copy($earning, $updateData);
+                    $updateData['impressions'] = \Impression::getStats($key, $p->_id, $dq);
+                    $perf->update($updateData);
 
-                $aComm = \Commission::campaignRate($key, $adsInfo, $org, [
-                    'type' => 'advertiser', 'dateQuery' => $dateQuery, 'advertiser' => $advert
-                ]);
-                $earning = \Ad::earning($aComm, $adClicks); ArrayMethods::copy($earning, $updateData);
-                $updateData['impressions'] = \Impression::getStats($key, null, $dateQuery);
-                $advertPerf->update($updateData);
+                    $aComm = \Commission::campaignRate($key, $commInfo, $org, array_merge([
+                        'type' => 'advertiser', 'advertiser' => $advert, 'country' => $country
+                    ], $dq));
+                    $earning = \Ad::earning($aComm, $adClicks); ArrayMethods::copy($earning, $updateData);
+                    $updateData['impressions'] = \Impression::getStats($key, null, $dq);
+                    $advertPerf->update($updateData);
+                }
             }
 
             $msg = 'Performance saved for user: ' . $p->email. ' with clicks: ' . $perf->clicks . ' impressions: ' . $perf->impressions;
             $this->log($msg);
             $perf->save();
-
         }
 
         foreach ($advPerfs as $key => $perf) {
             $msg = 'Saving performance for advertiser: ' . $key . ' with clicks: ' . $perf->clicks . ' earning: '. $perf->revenue .' impressions: ' . $perf->impressions;
+            $this->log($msg);
             $perf->save();
         }
     }

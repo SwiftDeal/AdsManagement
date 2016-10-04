@@ -124,6 +124,7 @@ class Click extends Shared\Model {
             switch ($type) {
                 case 'adid':
                 case 'pid':
+                case 'country':
                     $key = Utils::getMongoID($c->$type);
                     break;
                 

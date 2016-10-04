@@ -56,14 +56,14 @@ class Impression extends Shared\Model {
      */
     protected $_hits;
 
-    public static function getStats($adid, $pid = null, $dateQuery = []) {
+    public static function getStats($adid, $pid = null, $dq = []) {
         $query = ['adid' => $adid];
         if ($pid) {
             $query['pid'] = $pid;
         }
 
-        if (count($dateQuery) > 0) {
-            $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
+        if (count($dq) > 0) {
+            $query['created'] = \Shared\Services\Db::dateQuery($dq['start'], $dq['end']);
         }
         $records = self::all($query, ['hits']);
         $total = 0;

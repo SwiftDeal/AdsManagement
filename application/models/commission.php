@@ -3,6 +3,7 @@
 /**
  * @author Faizan Ayubi
  */
+use Shared\Services\Db as Db;
 class Commission extends \Shared\Model {
     
     /**
@@ -74,26 +75,20 @@ class Commission extends \Shared\Model {
      * @param  String $type        Advertiser | Publisher
      * @return array
      */
-    public static function campaignRate($adid, &$commissions = [], $org = null, $extra = []) {
-        $rate = 0;
-        
-        $comm = self::find($commissions, $adid);
-        $info = ['adsInfo' => $commissions, 'conversions' => false, 'rate' => 0];
-        if (!is_object($comm)) {
-            return $info;
-        }
+    public static function campaignRate($adid, &$commissions = [], $org = null, $extra = []) {        
+        $comm = self::find($commissions, $adid); $rate = 0;
+        $info = ['conversions' => false, 'rate' => $rate];
+        if (!is_object($comm)) return $info;
 
-        $dateQuery = $extra['dateQuery'];
         $cpaQuery = [
-            'adid' => $adid,
-            'created' => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]
+            'adid' => $adid, 'created' => Db::dateQuery($extra['start'], $extra['end'])
         ];
         switch ($extra['type']) {
             case 'advertiser':
                 $advert = (isset($extra['advertiser'])) ? $extra['advertiser'] : (object) ['meta' => []];
                 if ($comm->revenue) {
                     $rate = $comm->revenue;
-                } else if (isset($advert->meta['campaign'])) {
+                } else if (isset($advert->meta['campaign']) && $advert->meta['campaign']['model'] == 'cpc') {
                     $rate = $advert->meta['campaign']['rate'];
                 } else {
                     $rate = isset($org->meta['rate']) ? $org->meta['rate'] : 0;
@@ -102,7 +97,7 @@ class Commission extends \Shared\Model {
             
             case 'publisher':
                 $pub = $extra['publisher'];
-                if (isset($pub->meta['campaign']) && !is_null($pub->meta['campaign']['rate'])) {
+                if (isset($pub->meta['campaign']) && $pub->meta['campaign']['model'] == 'cpc' && !is_null($pub->meta['campaign']['rate'])) {
                     $rate = $pub->meta['campaign']['rate'];
                 } else {
                     $rate = $comm->rate;

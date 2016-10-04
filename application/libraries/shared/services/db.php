@@ -22,6 +22,30 @@ class Db {
 		return $mongoDB;
 	}
 
+	public static function dateQuery($start = null, $end = null) {
+		$changed = false;
+		if ($start && $end) {
+			if (is_object($start) && is_object($end) && is_a($start, 'MongoDB\BSON\UTCDateTime') && is_a($end, 'MongoDB\BSON\UTCDateTime')) {
+				$dq = ['start' => $start, 'end' => $end];
+				$changed = true;
+			}
+		}
+
+		if (!$changed) {
+			$dq = \Shared\Utils::dateQuery(['start' => $start, 'end' => $start]);	
+		}
+
+		$result = [];
+		if ($start) {
+			$result['$gte'] = $dq['start'];
+		}
+
+		if ($end) {
+			$result['$lte'] = $dq['end'];
+		}
+		return $result;
+	}
+
 	public static function opts($fields = [], $order = null, $direction = null, $limit = null, $page = null) {
 		$opts = [];
 

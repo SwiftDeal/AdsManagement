@@ -3,6 +3,7 @@
 /**
  * @author Faizan Ayubi
  */
+use Shared\Utils as Utils;
 class Ad extends Shared\Model {
 
     /**
@@ -173,5 +174,16 @@ class Ad extends Shared\Model {
             'revenue' => $revenue,
             'conversions' => (int) $conversions
         ];
+    }
+
+    public static function find(&$search, $key, $fields = []) {
+        $key = Utils::getMongoID($key);
+        if (!array_key_exists($key, $search)) {
+            $ad = self::first(['_id' => $key], $fields);
+            $search[$key] = $ad;
+        } else {
+            $ad = $search[$key];
+        }
+        return $ad;
     }
 }
