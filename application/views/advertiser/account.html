@@ -24,19 +24,21 @@
                         <h4 class="m-t-0 header-title">Campaign Settings</h4>
                         <form action="" method="post">
                             <div class="form-group">
-                                {script $model = isset($user->meta['model']) ? $user->meta['model'] : null}
+                                {script $campaign = isset($user->meta['campaign']) ? $user->meta['campaign'] : ['model' => 'cpc', 'rate' => '']}
+                                {script $model = $campaign['model']}
                                 <label>Model</label>
-                                <select name="model" required="" class="form-control">
-                                    <option>Select</option>
+                                <select name="model" required="" class="form-control selectVal" data-value='{echo json_encode(["$model"])}'>
                                     <option value="cpc">CPC</option>
+                                    <option value="cpm">CPM</option>
+                                    <option value="cpa">CPA</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                {script $rate = isset($user->meta['rate']) ? $user->meta['rate'] : null}
+                                {script $rate = $campaign['rate']}
                                 <label for="Rate">Rate</label>
                                 <div class="input-group">
-                                    <span class="add-on input-group-addon"><i class="fa fa-usd fa-fw"></i> USD</span>
-                                    <input type="text" value="{echo $rate}" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" class="form-control" placeholder="Rate for revenue model. Eg: 0.0012" required="">
+                                    <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                    <input type="text" value="{echo $user->convert($rate, false)}" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" class="form-control" placeholder="Rate for revenue model. Eg: 0.0012" required="">
                                 </div>
                             </div>
                             <input type="hidden" name="action" value="campaign">

@@ -215,4 +215,13 @@ class Utils {
 	public static function mongoRegex($val) {
 		return new \MongoDB\BSON\Regex($val, 'i');
 	}
+
+	public static function dateArray($arr) {
+		$result = [];
+		foreach ($arr as $key => $value) {
+			$date = \Framework\StringMethods::only_date($key);
+			$result[$date] = $value;
+		}
+		return $result;
+	}
 }

@@ -106,7 +106,8 @@ class Performance extends Shared\Model {
         $performances = self::all($q, ['revenue', 'clicks', 'created', 'impressions']);
         foreach ($performances as $p) {
             //calculating datewise
-            $date = \Framework\StringMethods::only_date($p->created);
+            $date = date('Y-m-d', $p->created->getTimestamp());
+
             $total_clicks += $p->clicks;
             if (array_key_exists($date, $clicks)) {
                 $clicks[$date] += $p->clicks;
@@ -130,6 +131,9 @@ class Performance extends Shared\Model {
         }
 
         ksort($clicks); ksort($impressions); ksort($payouts);
+        $clicks = Utils::dateArray($clicks);
+        $impressions = Utils::dateArray($impressions);
+        $payouts = Utils::dateArray($payouts);
 
         return [
             "impressions" => $impressions,

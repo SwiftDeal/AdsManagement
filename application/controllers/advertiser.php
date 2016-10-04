@@ -119,9 +119,10 @@ class Advertiser extends Auth {
             switch ($action) {
                 case 'campaign':
                     $meta = $user->meta;
+                    $rate = RequestMethods::post('rate', 0.25);
                     $meta['campaign'] = [
                         'model' => RequestMethods::post('model', 'cpc'),
-                        'rate' => RequestMethods::post('rate', round(0.25 / 66.76, 6)),
+                        'rate' => $this->currency($rate),
                     ];
                     $user->meta = $meta;
                     $user->save();
