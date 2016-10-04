@@ -147,7 +147,7 @@ namespace Shared {
          * @param misc $value
          * @param string $type
          */
-        protected function _convertToType($value, $type) {
+        public function _convertToType($value, $type) {
             if (is_object($value) && is_a($value, 'MongoDB\BSON\Regex')) {
                 return $value;
             }
@@ -173,15 +173,16 @@ namespace Shared {
                 case 'date':
                     if (is_array($value)) {
                         break;
-                    }
-                    if (is_object($value)) {
+                    } else if (is_object($value)) {
                         if (is_a($value, 'MongoDB\BSON\UTCDateTime')) {
                            break;
                         } else if (is_a($value, 'DateTime')) {
-                            $value = $value->format('Y-m-d');
+                            $date = $value->format('Y-m-d');
                         }
+                        $value = new \MongoDB\BSON\UTCDateTime(strtotime($date) * 1000);
+                    } else {
+                        $value = new \MongoDB\BSON\UTCDateTime(strtotime($value) * 1000);
                     }
-                    $value = new \MongoDB\BSON\UTCDateTime(strtotime($value) * 1000);
                     break;
 
                 case 'autonumber':
@@ -239,7 +240,7 @@ namespace Shared {
         /**
          * Updates the MongoDB query
          */
-        protected function _updateQuery($where) {
+        public function _updateQuery($where) {
             $columns = $this->getColumns();
 
             $query = [];
@@ -262,7 +263,7 @@ namespace Shared {
          * Checks for correct property "id" and "_id"
          * Also accounts for "*" in MySql
          */
-        protected function _updateFields($fields) {
+        public function _updateFields($fields) {
             $f = [];
             foreach ($fields as $key => $value) {
                 if ($value == "*" || !is_string($value)) {
@@ -296,34 +297,7 @@ namespace Shared {
         protected function _all($where = array(), $fields = array(), $order = null, $direction = null, $limit = null, $page = null) {
             $collection = $this->getTable();
 
-            $opts = [];
-
-            if (!empty($fields)) {
-                $opts['projection'] = $fields;
-            }
-            
-            if ($order && $direction) {
-                switch ($direction) {
-                    case 'desc':
-                    case 'DESC':
-                        $direction = -1;
-                        break;
-                    
-                    case 'asc':
-                    case 'ASC':
-                        $direction = 1;
-                        break;
-                }
-                $opts['sort'] = [$order => $direction];
-            }
-
-            if ($page) {
-                $opts['skip'] = $limit * ($page - 1);
-            }
-
-            if ($limit) {
-                $opts['limit'] = (int) $limit;
-            }
+            $opts = Services\Db::opts($fields, $order, $direction, $limit, $page);
 
             $cursor = $collection->find($where, $opts);
             $results = [];
@@ -358,29 +332,10 @@ namespace Shared {
             $collection = $this->getTable();
 
             if ($order && $direction) {
-                switch ($direction) {
-                    case 'desc':
-                    case 'DESC':
-                        $direction = -1;
-                        break;
-                    
-                    case 'asc':
-                    case 'ASC':
-                        $direction = 1;
-                        break;
+                $results = self::_all($where, $fields, $order, $direction, 1);
+                $record = null;
 
-                    default:
-                        $direction = 1;
-                        break;
-                }
-                $cursor = $collection->find($where, [
-                    'projection' => $fields,
-                    'sort' => [$order => $direction],
-                    'limit' => 1
-                ]);
-
-                $record = [];
-                foreach ($cursor as $c) {
+                foreach ($results as $c) {
                     $record = $c;
                 }
             } else {
@@ -417,9 +372,9 @@ namespace Shared {
                         $c->$raw = $this->getMongoID($value);
                     } else if (is_a($value, 'MongoDB\BSON\UTCDatetime')) {
                         $c->$raw = $value->toDateTime();
-                    } else if (is_a($value, 'MongoDB\Model\BSONArray') || is_a($value, 'MongoDB\Model\BSONDocument')) {    // fallback case
+                    } else if (is_a($value, 'MongoDB\Model\BSONArray') || is_a($value, 'MongoDB\Model\BSONDocument')) {
                         $c->$raw = Utils::toArray($value);
-                    } else {
+                    } else {    // fallback case
                         $c->$raw = (object) $value;
                     }
                 } else {
