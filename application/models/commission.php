@@ -74,15 +74,10 @@ class Commission extends \Shared\Model {
      * @param  String $type        Advertiser | Publisher
      * @return array
      */
-    public static function campaignRate($adid, $commissions = [], $org = null, $extra = []) {
+    public static function campaignRate($adid, &$commissions = [], $org = null, $extra = []) {
         $rate = 0;
-        if (!array_key_exists($adid, $commissions)) {
-            $comm = self::first(['ad_id' => $adid], ['rate', 'revenue', 'model']);
-            $commissions[$adid] = $comm;
-        } else {
-            $comm = $commissions[$adid];
-        }
-
+        
+        $comm = self::find($commissions, $adid);
         $info = ['adsInfo' => $commissions, 'conversions' => false, 'rate' => 0];
         if (!is_object($comm)) {
             return $info;
@@ -125,5 +120,15 @@ class Commission extends \Shared\Model {
         }
         $rate = (float) $rate; $info['rate'] = $rate;
         return $info;
+    }
+
+    public static function find(&$search, $key) {
+        if (!array_key_exists($key, $search)) {
+            $comm = self::first(['ad_id' => $key], ['rate', 'revenue', 'model', 'coverage']);
+            $search[$key] = $comm;
+        } else {
+            $comm = $search[$key];
+        }
+        return $comm;
     }
 }

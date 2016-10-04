@@ -333,7 +333,7 @@ class Auth extends Controller {
             $info = \Commission::campaignRate($key, $adsInfo, $org, [
                 'type' => 'publisher', 'dateQuery' => $dateQuery, 'publisher' => $p
             ]);
-            $adsInfo = $info['adsInfo']; $rate = $info['rate'];
+            $rate = $info['rate'];
 
             if ($info['conversions'] !== false) {    // not a CPC campaign
                 $adClicks = $info['conversions'];

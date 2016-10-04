@@ -9,9 +9,6 @@ class User {
 	/**
 	 * Function will calculate the top publisher results
 	 * from the performance table
-	 * @param array $query Query to filter Users
-	 * @param  array   $dateQuery Result of Shared\Utils::dateQuery()
-	 * @param  integer $count     Top Publisher Count
 	 * @return  Array of Top Earners
 	 */
 	public static function topEarners($users, $dateQuery = [], $count = 10) {
@@ -21,9 +18,7 @@ class User {
 			$perf = \Performance::calculate($u, $dateQuery);
 			
 			$clicks = $perf['clicks'];
-			if ($clicks === 0) {
-				continue;
-			}
+			if ($clicks === 0) continue;
 
 			if (!array_key_exists($clicks, $pubClicks)) {
 				$pubClicks[$clicks] = [];
@@ -50,5 +45,27 @@ class User {
 			}
 		}
 		return $result;
+	}
+
+	public static function findPerf(&$perfs, $user, $date) {
+        $uid = \Shared\Utils::getMongoID($user->_id);
+        if (!array_key_exists($uid, $perfs)) {
+        	$p = \Performance::exists($user, $date);
+        	$perfs[$uid] = $p;
+        } else {
+        	$p = $perfs[$uid];
+        }
+
+        return $p;
+	}
+
+	public static function find(&$search, $key, $fields = []) {
+		if (!array_key_exists($key, $search)) {
+			$usr = \User::first(['_id' => $key], $fields);
+			$search[$key] = $usr;
+		} else {
+			$usr = $search[$key];
+		}
+		return $usr;
 	}
 }

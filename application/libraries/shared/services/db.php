@@ -74,4 +74,13 @@ class Db {
 		$opts = self::opts($fields, $order, $direction, $limit, $page);
 		return $collection->find($where, $opts);
 	}
+
+	public static function count($model, $query) {
+		$model = "\\$model";
+		$m = new $model;
+		$where = $m->_updateQuery($query);
+
+		$collection = $m->getTable();
+		return $collection->count($where);
+	}
 }

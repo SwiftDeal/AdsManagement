@@ -9,6 +9,8 @@ use Shared\Utils as Utils;
 use Framework\ArrayMethods as ArrayMethods;
 use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
+use Shared\Services\Db as Db;
+use Shared\Services\User as Usr;
 
 class Cron extends Shared\Controller {
 
@@ -59,8 +61,7 @@ class Cron extends Shared\Controller {
         $this->log("CRON Started");
         $this->log('Starting Memory at: ' . memory_get_usage());
 
-        $this->_pubPerf();
-        $this->_advertPerf();
+        $this->_performance();
         $this->_webPerf();
         $this->_rssFeed();
         $this->log('Peak Memory at: ' . memory_get_peak_usage());
@@ -91,25 +92,21 @@ class Cron extends Shared\Controller {
         $this->log("Widgets Started");
         $start = $end = date('Y-m-d');
         $dateQuery = Utils::dateQuery($start, $end);
-        $clickCol = Registry::get("MongoDB")->selectCollection("clicks");
 
         $orgs = Organization::all(["live = ?" => true]);
         foreach ($orgs as $org) {
-            if(!array_key_exists("widgets", $org->meta)) continue;
+            if (!array_key_exists("widgets", $org->meta)) continue;
 
-            $result = ['publishers' => [], 'ads' => []]; $in = []; $pubClicks = [];
             $pubs = User::all(["org_id = ?" => $org->_id, "type = ?" => "publisher"], ["_id", "name"]);
-            foreach ($pubs as $pb) {
-                $in[] = Utils::mongoObjectId($pb->_id);
-            }
+            $in = array_keys($pubs);
             
-            $records = $clickCol->find([
+            $records = Db::query('Click', [
                 "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']],
                 "is_bot" => false,
                 "pid" => ['$in' => $in]
-            ], ['projection' => ['adid' => 1, 'pid' => 1]]);
+            ], ['adid', 'pid']);
 
-            $uniqClicks = []; $adClicks = []; $pubClicks = [];
+            $adClicks = []; $pubClicks = [];
             foreach ($records as $r) {
                 $c = (object) $r;
 
@@ -129,73 +126,31 @@ class Cron extends Shared\Controller {
                 }
             }
 
-            // No clicks found so no need for further processing
-            if (count($pubClicks) === 0 && count($adClicks) === 0) {
-                continue;
-            }
-
-            $meta = $org->meta;
-            $meta["widget"] = [];
-            // sort publishers based on clicks and find their details
-            if (in_array("top10pubs", $meta["widgets"])) {
-                arsort($pubClicks); array_splice($pubClicks, 10);
-                foreach ($pubClicks as $pid => $count) {
-                    $u = $pubs[$pid];
-                    $result['publishers'][] = [
-                        "_id" => $pid,
-                        "name" => $u->name,
-                        "count" => $count
-                    ];
-                }
-                $meta["widget"]["top10pubs"] = $result['publishers'];
-            }
-
-            if (in_array("top10ads", $meta["widgets"])) {
-                arsort($adClicks); array_splice($adClicks, 10);
-                foreach ($adClicks as $adid => $count) {
-                    $result['ads'][] = [
-                        '_id' => $adid,
-                        'clicks' => $count
-                    ];
-                }
-                $meta["widget"]["top10ads"] = $result['ads'];
-            }
-
-            $org->meta = $meta;
+            $org->widgets($pubClicks, $adClicks, $pubs);
             $this->log("Widget Saved for Org: " . $org->name);
-            $org->save();
         }
         $this->log("Widgets Done");
     }
 
-    protected function _pubPerf($date = null) {
+    protected function _performance($date = null) {
         if (!$date) {
-            $date = date('Y-m-d', strtotime('-1 day'));
+            $date = date('Y-m-d');
         }
         // find the publishers
         $publishers = \User::all(['type = ?' => 'publisher', 'live = ?' => true], ['_id', 'email', 'meta', 'org_id']);
+        $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
+        $start = $dateQuery['start']; $end = $dateQuery['end'];
 
         // store AD commission info
-        $adsInfo = []; $orgs = [];
+        $adsInfo = []; $orgs = []; $advPerfs = []; $advertisers = [];
         foreach ($publishers as $p) {
-            // @todo find a way to cope up with these multiple array_key_exists statements
-            $org_id = Utils::getMongoID($p->org_id);
-            if (!array_key_exists($org_id, $orgs)) {
-                $org = \Organization::first(['_id' => $org_id], ['url']);
-                $orgs[$org_id] = $org;
-            } else {
-                $org = $orgs[$org_id];
-            }
-            // find the clicks for the publisher
-            $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
-            $start = $dateQuery['start']; $end = $dateQuery['end'];
+            $org = \Organization::find($orgs, $p->org_id);
             
-            $clickCol = Registry::get("MongoDB")->clicks;
-            $clicks = $clickCol->find([
-                'pid' => Utils::mongoObjectId($p->_id),
-                'is_bot' => false,
+            // find the clicks for the publisher
+            $clicks = Db::query('Click', [
+                'pid' => $p->_id, 'is_bot' => false,
                 'created' => ['$gte' => $start, '$lte' => $end]
-            ], ['projection' => ['adid' => 1]]);
+            ], ['adid']);
 
             $perf = Performance::exists($p, $date);
             
@@ -203,103 +158,36 @@ class Cron extends Shared\Controller {
             $classify = \Click::classify($clicks, 'adid');
             foreach ($classify as $key => $value) {
                 $adClicks = count($value); $conversions = 0;
+                $ad = \Ad::first(['_id' => $key], ['user_id']);
+                $advert = Usr::find($advertisers, $ad->user_id, ['_id', 'meta', 'email', 'org_id']);
+                $advertPerf = Usr::findPerf($advPerfs, $advert, $date);
 
-                $info = \Commission::campaignRate($key, $adsInfo, $org, [
+                $updateData = [];
+
+                $pComm = \Commission::campaignRate($key, $adsInfo, $org, [
                     'type' => 'publisher', 'dateQuery' => $dateQuery, 'publisher' => $p
                 ]);
-                $adsInfo = $info['adsInfo']; $rate = $info['rate'];
-
-                if ($info['conversions'] !== false) {    // not a CPC campaign
-                    $conversions = $info['conversions'];
-                    $revenue = $conversions * $rate;
-                } else {
-                    $revenue = $rate * $adClicks;    
-                }
                 
-                $perf->clicks += $adClicks; $perf->conversions += $conversions;
-                $perf->revenue += round($revenue, 6);
-                $perf->impressions += \Impression::getStats($key, $p->_id, $dateQuery);
-            }
+                $earning = \Ad::earning($pComm, $adClicks); ArrayMethods::copy($earning, $updateData);
+                $updateData['impressions'] = \Impression::getStats($key, $p->_id, $dateQuery);
+                $perf->update($updateData);
 
-            if ($perf->clicks == 0) {
-                if ($perf->impressions == 0) {
-                    continue;
-                } else {
-                    $avgCpc = "0.00";
-                }
-            } else {
-                $avgCpc = $perf->revenue / $perf->clicks;
+                $aComm = \Commission::campaignRate($key, $adsInfo, $org, [
+                    'type' => 'advertiser', 'dateQuery' => $dateQuery, 'advertiser' => $advert
+                ]);
+                $earning = \Ad::earning($aComm, $adClicks); ArrayMethods::copy($earning, $updateData);
+                $updateData['impressions'] = \Impression::getStats($key, null, $dateQuery);
+                $advertPerf->update($updateData);
             }
-            $perf->cpc = round($avgCpc, 6);
 
             $msg = 'Performance saved for user: ' . $p->email. ' with clicks: ' . $perf->clicks . ' impressions: ' . $perf->impressions;
             $this->log($msg);
             $perf->save();
+
         }
-    }
 
-    protected function _advertPerf($date = null) {
-        if (!$date) {
-            $date = date('Y-m-d', strtotime('-1 day'));
-        }
-        $users = \User::all(['type' => 'advertiser', 'live' => true], ['_id', 'meta', 'email', 'org_id']);
-
-        $adsInfo = [];  $orgs = [];
-        foreach ($users as $u) {
-            $org_id = Utils::getMongoID($u->org_id);
-            if (!array_key_exists($org_id, $orgs)) {
-                $org = \Organization::first(['_id' => $org_id], ['url', 'meta']);
-                $orgs[$org_id] = $org;
-            } else {
-                $org = $orgs[$org_id];
-            }
-            $perf = Performance::exists($u, $date);
-
-            // find ads for the publisher
-            $clickCol = Registry::get("MongoDB")->clicks;
-            $ads = \Ad::all(['user_id' => $u->_id], ['_id', 'title']);
-            $clicksCount = 0; $revenue = 0.00;
-            $imp = 0; $conversions = 0;
-            foreach ($ads as $a) {
-                // find clicks for the ad for the given date
-                $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
-                $start = $dateQuery['start']; $end = $dateQuery['end'];
-
-                $clicks = $clickCol->count([
-                    'adid' => Utils::mongoObjectId($a->_id),
-                    'is_bot' => false,
-                    'created' => ['$gte' => $start, '$lte' => $end]
-                ]);
-                $adid = Utils::getMongoID($a->_id);
-                $info = \Commission::campaignRate($adid, $adsInfo, $org, ['type' => 'advertiser', 'dateQuery' => $dateQuery, 'advertiser' => $u]);
-                $orate = $info['rate']; $adsInfo = $info['adsInfo'];
-
-                $conv = $info['conversions'];
-                if ($conv !== false) {    // not a CPC campaign
-                    $conversions += $conv;
-                    $revenue += $conv * $orate;
-                } else {
-                    $revenue += $clicks * $orate;
-                }
-
-                $clicksCount += $clicks; 
-                $imp += \Impression::getStats($a->_id, null, $dateQuery);
-            }
-            $perf->clicks = $clicksCount; $perf->revenue = round($revenue, 6);
-            $perf->impressions = $imp; $perf->conversions = $conversions;
-            if ($perf->clicks == 0) {
-                if ($perf->impressions === 0) {
-                    continue;
-                } else {
-                    $avgCpc = "0.00";
-                }
-            } else {
-                $avgCpc = abs($perf->revenue) / $perf->clicks;
-            }
-
-            $perf->cpc = round($avgCpc, 6);
-            $msg = 'Saving performance for advertiser: ' . $u->email . ' with clicks: ' . $perf->clicks . ' earning: '. $perf->revenue .' impressions: ' . $perf->impressions;
-            $this->log($msg);
+        foreach ($advPerfs as $key => $perf) {
+            $msg = 'Saving performance for advertiser: ' . $key . ' with clicks: ' . $perf->clicks . ' earning: '. $perf->revenue .' impressions: ' . $perf->impressions;
             $perf->save();
         }
     }

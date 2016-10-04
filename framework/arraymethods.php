@@ -101,6 +101,12 @@ namespace Framework {
             return $file_ary;
         }
 
+        public static function copy(&$from, &$to) {
+            foreach ($from as $key => $value) {
+                $to[$key] = $value;
+            }
+        }
+
     }
 
 }

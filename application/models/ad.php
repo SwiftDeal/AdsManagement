@@ -155,4 +155,23 @@ class Ad extends Shared\Model {
         \Link::deleteAll(['ad_id' => $id]);
         return ['message' => 'Campaign removed successfully!!'];
     }
+
+    public static function earning($opts = [], $clicks) {
+        $rate = $opts['rate'];
+        $conversions = $opts['conversions'];
+
+        if ($conversions === false) {
+            $revenue = $rate * $clicks;
+        } else { // earning will be based on conversions
+            $revenue = $rate * $conversions;
+        }
+
+        $revenue = round($revenue, 6);
+
+        return [
+            'clicks' => $clicks,
+            'revenue' => $revenue,
+            'conversions' => (int) $conversions
+        ];
+    }
 }

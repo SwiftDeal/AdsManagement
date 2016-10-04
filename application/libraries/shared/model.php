@@ -106,7 +106,10 @@ namespace Shared {
                     if (is_a($val, 'MongoDB\BSON\ObjectID')) {
                         $this->$raw = Utils::getMongoID($val);
                     } else if (is_a($val, 'MongoDB\BSON\UTCDatetime')) {
-                        $this->$raw = $val->toDateTime();
+                        $tz = new \DateTimeZone('Asia/Kolkata');
+                        $v = $val->toDateTime();
+                        $v->settimezone($tz);
+                        $this->$raw = $v;
                     }
                 }
             }
@@ -371,7 +374,9 @@ namespace Shared {
                     if (is_a($value, 'MongoDB\BSON\ObjectID')) {
                         $c->$raw = $this->getMongoID($value);
                     } else if (is_a($value, 'MongoDB\BSON\UTCDatetime')) {
-                        $c->$raw = $value->toDateTime();
+                        $v = $value->toDateTime();
+                        $v->settimezone((new \DateTimeZone('Asia/Kolkata')));
+                        $c->$raw = $v;
                     } else if (is_a($value, 'MongoDB\Model\BSONArray') || is_a($value, 'MongoDB\Model\BSONDocument')) {
                         $c->$raw = Utils::toArray($value);
                     } else {    // fallback case

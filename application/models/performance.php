@@ -87,6 +87,26 @@ class Performance extends Shared\Model {
         return $perf;
     }
 
+    public function update($data = []) {
+        $fields = $this->getColumns();
+        foreach ($fields as $key => $value) {
+            if (isset($data[$key])) {
+                $this->$key += $data[$key];
+            }
+        }
+        $this->calAvgCpc();
+    }
+
+    public function calAvgCpc() {
+        if ($this->clicks === 0) {
+            $avgCpc = 0.00;
+        } else {
+            $avgCpc = $this->revenue / $this->clicks;
+        }
+
+        $this->cpc = round($avgCpc, 6);
+    }
+
     public static function overall($dateQuery = [], $user=null) {
         $q = [];$clicks = []; $impressions = []; $payouts = []; $total_clicks = 0; $total_payouts = 0; $total_impressions = 0;
 

@@ -5,6 +5,7 @@
  */
 use Framework\Registry as Registry;
 use Framework\RequestMethods as RequestMethods;
+use Shared\Utils as Utils;
 class Organization extends \Shared\Model {
     
     /**
@@ -94,5 +95,54 @@ class Organization extends \Shared\Model {
             }
         }
         return $message;
+    }
+
+    public static function find(&$orgs, $key) {
+        $key = Utils::getMongoID($key);
+        if (!array_key_exists($key, $orgs)) {
+            $org = self::first(['_id' => $key], ['url', 'meta']);
+            $orgs[$key] = $org;
+        } else {
+            $org = $orgs[$key];
+        }
+
+        return $org;
+    }
+
+    public function widgets($pubClicks = [], $adClicks = [], $pubs = []) {
+        // No clicks found so no need for further processing
+        if (count($pubClicks) === 0 && count($adClicks) === 0) {
+            return false;
+        }
+        $result = ['publishers' => [], 'ads' => []];
+        $meta = $this->meta; $meta["widget"] = [];
+        
+        // sort publishers based on clicks and find their details
+        if (in_array("top10pubs", $meta["widgets"])) {
+            arsort($pubClicks); array_splice($pubClicks, 10);
+            foreach ($pubClicks as $pid => $count) {
+                $u = $pubs[$pid];
+                $result['publishers'][] = [
+                    "_id" => $pid,
+                    "name" => $u->name,
+                    "count" => $count
+                ];
+            }
+            $meta["widget"]["top10pubs"] = $result['publishers'];
+        }
+
+        if (in_array("top10ads", $meta["widgets"])) {
+            arsort($adClicks); array_splice($adClicks, 10);
+            foreach ($adClicks as $adid => $count) {
+                $result['ads'][] = [
+                    '_id' => $adid,
+                    'clicks' => $count
+                ];
+            }
+            $meta["widget"]["top10ads"] = $result['ads'];
+        }
+
+        $this->meta = $meta;
+        $this->save();
     }
 }
