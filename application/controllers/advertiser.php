@@ -279,6 +279,7 @@ class Advertiser extends Auth {
             return $view->set('message', 'Invalid Request!!');
         }
 
+        $updateAble = ['live', 'name'];
         foreach ($_POST as $key => $value) {
             $a->$key = $value;
         }
@@ -324,14 +325,15 @@ class Advertiser extends Auth {
      * @before _admin
      */
     public function delete($pid) {
-        parent::delete($pid);
-        $view = $this->getActionView();
+        parent::delete($pid); $view = $this->getActionView();
+        
         $user = \User::first(["_id" => $pid, 'type' => 'advertiser', 'org_id' => $this->org->_id]);
         if (!$user) $this->_404();
 
         $ads = \Ad::all(['user_id = ?' => $user->_id], ['_id']);
         if (count($ads) === 0) {
             $user->delete();
+            \Platform::deleteAll(['user_id' => $user->_id]);
             $view->set('message', 'Advertiser Deleted successfully!!');
         } else {
             $in = []; $query = ['user_id' => $user->_id];
@@ -345,6 +347,7 @@ class Advertiser extends Auth {
                 \Ad::deleteAll($query);
                 \Commission::deleteAll(['ad_id' => ['$in' => $in]]);
                 \Performance::deleteAll($query);
+                \Platform::deleteAll(['user_id' => $user->_id]);
                 $user->delete();
                 return $view->set('message', 'Advertiser Deleted successfully!!');
             }

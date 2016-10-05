@@ -62,7 +62,7 @@
                                             {/if} {else}
                                             <a href="advertiser/update/{echo $a->_id}" data-send='{echo json_encode(["live" => 0])}' class="update btn btn-xs btn-warning"><i class="fa fa-times"></i></a>
                                             {/else}
-                                            <a href="advertiser/delete/{echo $a->_id}.html" data-message="Are you sure you want to delete this campaign??" class="delete btn btn-xs btn-danger"><i class="fa fa-trash"></i></a>
+                                            <a href="advertiser/delete/{echo $a->_id}" data-message="Are you sure you want to delete this advertiser??" class="delete btn btn-xs btn-danger"><i class="fa fa-trash"></i></a>
                                             <a href="/auth/loginas/{echo $a->_id}" class="btn btn-xs btn-default"><i class="fa fa-sign-in"></i></a>
                                         </td>
                                     </tr>

@@ -47,11 +47,11 @@
                                         <td>{echo Framework\StringMethods::only_date($p->created)}</td>
                                         <td>
                                             {if !$p->live}
-                                            <a href="#{echo $p->_id}" data-send='{echo json_encode(["live" => 1])}' class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" data-original-title="Verify it"><i class="fa fa-check"></i></a>
+                                            <a href="admin/platforms/{echo $p->_id}" data-send='{echo json_encode(["live" => 1])}' class="btn btn-xs btn-success update" data-toggle="tooltip" data-placement="top" data-original-title="Verify it"><i class="fa fa-check"></i></a>
                                             {/if} {else}
-                                            <a href="#{echo $p->_id}" data-send='{echo json_encode(["live" => 0])}' class="btn btn-xs btn-warning" data-toggle="tooltip" data-placement="top" data-original-title="Disapprove"><i class="fa fa-times"></i></a>
+                                            <a href="admin/platforms/{echo $p->_id}" data-send='{echo json_encode(["live" => 0])}' class="btn btn-xs btn-warning update" data-toggle="tooltip" data-placement="top" data-original-title="Disapprove"><i class="fa fa-times"></i></a>
                                             {/else}
-                                            <a href="#{echo $p->_id}.html" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" data-original-title="Delete"><i class="fa fa-trash"></i></a>
+                                            <a href="admin/platforms/{echo $p->_id}" class="btn btn-xs btn-danger delete" data-message="Are you sure you want to remove this platform??" data-toggle="tooltip" data-placement="top" data-original-title="Delete"><i class="fa fa-trash"></i></a>
                                         </td>
                                     </tr>
                                     {/foreach}

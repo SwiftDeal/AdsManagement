@@ -109,6 +109,15 @@ class Organization extends \Shared\Model {
         return $org;
     }
 
+    public function users($type = "publisher") {
+        $publishers = \User::all(["org_id = ?" => $this->_id, "type = ?" => $type], ["_id"]);
+        $in = [];
+        foreach ($publishers as $p) {
+            $in[] = Utils::mongoObjectId($p->_id);
+        }
+        return $in;
+    }
+
     public function widgets($pubClicks = [], $adClicks = [], $pubs = []) {
         // No clicks found so no need for further processing
         if (count($pubClicks) === 0 && count($adClicks) === 0) {

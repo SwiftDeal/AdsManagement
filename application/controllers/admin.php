@@ -272,16 +272,49 @@ class Admin extends Auth {
     /**
      * @before _secure
      */
-    public function platforms() {
+    public function platforms($id = null) {
         $this->seo(array("title" => "Platforms")); $view = $this->getActionView();
 
-        $query['user_id'] = ['$in' => $this->orgusers()];
+        $query['user_id'] = ['$in' => $this->org->users('publisher')];
         $limit = RequestMethods::get("limit", 20);
         $page = RequestMethods::get("page", 1);
-        $property = RequestMethods::get("property");
+        $property = RequestMethods::get("property", '');
         $value = RequestMethods::get("value");
-        if (in_array($property, ["live", "url", "user_id"])) {
+        
+        if (in_array($property, ["live", "user_id"])) {
             $query["{$property} = ?"] = $value;
+        } else if (in_array($property, ["url"])) {
+            $query[$property] = Utils::mongoRegex($value);
+        }
+
+        if (RequestMethods::type() === 'POST') {
+            $p = \Platform::first(['_id' => $id, 'user_id' => $query['user_id']]);
+            if (!$p) {
+                return $view->set('message', "Invalid Request!!");
+            }
+
+            try {
+                $updateAble = ['live', 'user_id', 'url'];
+                foreach ($_POST as $key => $value) {
+                    if (in_array($key, $updateAble)) {
+                        $p->$key = $value;
+                    }
+                }
+                $p->save();
+
+                return $view->set('message', 'Platform updated!!');
+            } catch (\Exception $e) {
+                return $view->set('message', "Invalid Request Parameters!!");
+            }
+        }
+
+        if (RequestMethods::type() === 'DELETE') {
+            $p = \Platform::first(['_id' => $id, 'user_id' => $query['user_id']]);
+            if (!$p) {
+                return $view->set('message', "Invalid Request!!");
+            }
+            $p->delete();
+            return $view->set('message', "Platform Removed!!");
         }
 
         $platforms = Platform::all($query, [], 'created', 'desc', $limit, $page);
