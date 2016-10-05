@@ -73,14 +73,11 @@ class Campaign extends Admin {
         $contests = \Contest::all(["org_id = ?" => $this->org->_id]);
 
         $view->set('contests', $contests);
-    }    
+    }
 
-    /**
-     * @before _secure
-     */
-    public function create() {
-    	$this->seo(['title' => 'Campaign Create', 'description' => 'Create a new campaign']);
-    	$view = $this->getActionView(); $session = Registry::get('session');
+    protected function _create() {
+        $this->seo(['title' => 'Campaign Create', 'description' => 'Create a new campaign']);
+        $session = Registry::get('session'); $view = $this->getActionView();
         $advertisers = \User::isEmpty([ "org_id = ?" => $this->org->_id, 'type = ?' => 'advertiser', 'live' => true ], ['_id', 'name'], [
             'msg' => 'Please Add an Advertiser!!',
             'controller' => $this, 'redirect' => '/advertiser/add.html'
@@ -93,21 +90,28 @@ class Campaign extends Admin {
         ]);
         $view->set('categories', $categories);
 
-    	$link = RequestMethods::get("link");
-    	if (!$link) {
+        $link = RequestMethods::get("link");
+        if (!$link) {
             $session->set('$flashMessage', 'Please give any link!!');
             $this->redirect('/campaign/manage.html');
         }
-    	if ($session->get('$lastFetchedLink') !== $link) {
-    		$session->set('$lastFetchedLink', $link);
-    		$meta = Shared\Utils::fetchCampaign($link);
+        if ($session->get('$lastFetchedLink') !== $link) {
+            $session->set('$lastFetchedLink', $link);
+            $meta = Shared\Utils::fetchCampaign($link);
 
-    		$session->set('Campaign\Create:$meta', $meta);
-    	} else {
-    		$meta = $session->get('Campaign\Create:$meta');
-    	}
-    	$view->set("meta", $meta)
-    		->set("errors", []);
+            $session->set('Campaign\Create:$meta', $meta);
+        } else {
+            $meta = $session->get('Campaign\Create:$meta');
+        }
+        $view->set("meta", $meta)
+            ->set("errors", []);
+    }
+
+    /**
+     * @before _secure
+     */
+    public function create() {
+    	$this->_create(); $view = $this->getActionView();
 
     	if (RequestMethods::type() == 'POST') {
             $img = null;
@@ -131,7 +135,8 @@ class Campaign extends Admin {
     			'image' => $img,
                 'type' => RequestMethods::post('type', 'article'),
                 'device' => RequestMethods::post('device', ['all']),
-    			'live' => false
+    			'live' => false,
+                'expiry' => RequestMethods::post('expiry')
     		]);
 
     		if (!$campaign->validate()) {

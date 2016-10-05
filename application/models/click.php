@@ -90,6 +90,10 @@ class Click extends Shared\Model {
      */
     protected $_device;
 
+    public static function hourly() {
+        self::deleteAll(['is_bot' => true]);
+    }
+
     public static function checkFraud($clicks, $org = null) {
         $cf = Registry::get("configuration")->parse("configuration/cf")->cloudflare;
 

@@ -45,6 +45,10 @@ namespace Shared {
          */
         protected $_modified = null;
 
+        public static function hourly() {
+            // override this method to do cron tasks
+        }
+
         public function getMongoID($field = null) {
             if ($field) {
                 $id = sprintf('%s', $field);
@@ -177,6 +181,7 @@ namespace Shared {
                     if (is_array($value)) {
                         break;
                     } else if (is_object($value)) {
+                        $date = $value;
                         if (is_a($value, 'MongoDB\BSON\UTCDateTime')) {
                            break;
                         } else if (is_a($value, 'DateTime')) {

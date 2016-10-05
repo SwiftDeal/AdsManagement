@@ -281,7 +281,9 @@ class Advertiser extends Auth {
 
         $updateAble = ['live', 'name'];
         foreach ($_POST as $key => $value) {
-            $a->$key = $value;
+            if (in_array($key, $updateAble)) {
+                $a->$key = $value;   
+            }
         }
         $a->save();
         $view->set('message', 'Updated successfully!!');

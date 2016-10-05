@@ -46,7 +46,7 @@ class Cron extends Shared\Controller {
         $this->importCampaigns();
         $this->_contests();
         $this->widgets();
-        $this->_cleanDB();
+        $this->_settings();
     }
 
     protected function _weekly() {
@@ -83,8 +83,10 @@ class Cron extends Shared\Controller {
         }
     }
 
-    protected function _cleanDB() {
-        \Click::deleteAll(['is_bot' => true]);
+    protected function _settings() {
+        // The Model should handle its cron tasks - hourly, daily
+        \Ad::hourly();
+        \Click::hourly();
     }
 
     public function widgets() {
@@ -100,9 +102,8 @@ class Cron extends Shared\Controller {
             $in = array_keys($pubs);
             
             $records = Db::query('Click', [
-                "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']],
-                "is_bot" => false,
-                "pid" => ['$in' => $in]
+                "created" => Db::dateQuery($start, $end),
+                "is_bot" => false, "pid" => ['$in' => $in]
             ], ['adid', 'pid']);
 
             $adClicks = []; $pubClicks = [];

@@ -32,7 +32,7 @@ class Db {
 		}
 
 		if (!$changed) {
-			$dq = \Shared\Utils::dateQuery(['start' => $start, 'end' => $start]);	
+			$dq = \Shared\Utils::dateQuery(['start' => $start, 'end' => $end]);	
 		}
 
 		$result = [];

@@ -101,9 +101,21 @@ class Ad extends Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type datetime
+     * @type date
      */
     protected $_expiry = null;
+
+    public static function hourly() {
+        $today = date('Y-m-d');
+        $dq = \Shared\Services\Db::dateQuery(null, $today);
+
+        // find all the ads whose expiry date is today
+        $ads = self::all(['expiry' => $dq]);
+        foreach ($ads as $a) {
+            $a->live = false;   // Make them disabled
+            $a->save();
+        }
+    }
 
     public static function setCategories($categories = []) {
         $result = [];
