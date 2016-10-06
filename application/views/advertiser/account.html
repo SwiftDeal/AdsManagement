@@ -28,9 +28,12 @@
                                 {script $model = $campaign['model']}
                                 <label>Model</label>
                                 <select name="model" required="" class="form-control selectVal" data-value='{echo json_encode(["$model"])}'>
-                                    <option value="cpc">CPC</option>
-                                    <option value="cpm">CPM</option>
-                                    <option value="cpa">CPA</option>
+                                    <option value="cpc">CPC (Cost per Click)</option>
+                                    <option value="cpm">CPM (Cost per thousand impressions)</option>
+                                    <option value="cpa">CPA (Cost per action)</option>
+                                    <option value="cpi">CPI (Cost per Install)</option>
+                                    <option value="cps">CPS (Cost per Sale)</option>
+                                    <option value="cpl">CPL (Cost per Lead)</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -43,6 +46,50 @@
                             </div>
                             <input type="hidden" name="action" value="campaign">
                             <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
+                        </form>
+                    </div>
+                    <div class="card-box">
+                        <h4 class="m-t-0 header-title"><b>Change Password</b></h4>
+                        <form role="form" method="post">
+                            <div class="form-group">
+                                <label>Old Password</label>
+                                <input type="password" class="form-control" name="password" placeholder="Old Password">
+                            </div>
+                            <div class="form-group">
+                                <label>New Password</label>
+                                <input type="password" class="form-control" name="npassword" placeholder="New Password">
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "password")}</span>
+                            </div>
+                            <input type="hidden" name="action" value="password">
+                            <button type="submit" class="btn btn-info waves-effect waves-light">Change</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="m-t-0 header-title"><b>Basic data</b></h4>
+                        <form role="form" method="post">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" name="name" value="{echo $user->name}" class="form-control" placeholder="Full Name">
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "name")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="text" name="phone" value="{echo $user->phone}" class="form-control" placeholder="Phone Number">
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "phone")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Currency</label>
+                                <select name="currency" class="form-control" value="{echo $user->currency}">
+                                    <option value="INR">INR</option>
+                                    <option value="USD">USD</option>
+                                    <option value="PKR">PKR</option>
+                                </select>
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "currency")}</span>
+                            </div>
+                            <input type="hidden" name="action" value="account">
+                            <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
                         </form>
                     </div>
                 </div>

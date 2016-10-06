@@ -117,6 +117,22 @@ class Advertiser extends Auth {
         if (RequestMethods::type() === 'POST') {
             $action = RequestMethods::post('action');
             switch ($action) {
+                case 'account':
+                    $name = RequestMethods::post('name');
+                    $phone = RequestMethods::post('phone');
+                    $currency = RequestMethods::post('currency', 'INR');
+
+                    $user->name = $name; $user->currency = $currency;
+                    $user->save();
+                    $view->set('message', 'Account Info updated!!');
+                    break;
+
+                case 'password':
+                    $old = RequestMethods::post('password');
+                    $new = RequestMethods::post('npassword');
+                    $view->set($user->updatePassword($old, $new));
+                    break;
+
                 case 'campaign':
                     $meta = $user->meta;
                     $rate = RequestMethods::post('rate', 0.25);
