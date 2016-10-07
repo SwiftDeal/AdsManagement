@@ -53,12 +53,16 @@
                                 {/foreach}
                                 <td>{echo implode(", ", $categories)}</td>
                             </tr>
-                            {script $link = Link::first(["ad_id = ?" => $id, "user_id = ?" => $user->id])} {if($link)}
+                            {script $link = Link::first(["ad_id = ?" => $id, "user_id = ?" => $user->id])} {if ($link)}
                             <tr>
                                 <th>Tracking Link</th>
                                 <td>{echo $link->getUrl()}</td>
                             </tr>
                             {/if}
+                            <tr>
+                                <th>CPA Conversion Pixel</th>
+                                <td><code>&lt;img src='{echo "http://track." . $domain}/pixel?adid={echo $ad->_id}'&gt;</code></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

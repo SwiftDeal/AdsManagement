@@ -295,12 +295,11 @@ class Cron extends Shared\Controller {
 
             // get feed for each platform
             foreach ($platforms as $p) {
-                $meta = $p->meta;
-                $rss = $meta['rss'];
+                $meta = $p->meta; $rss = $meta['rss'];
 
-                if (!$rss['parsing']) {
-                    continue;   // parsing is stopeed
-                }
+                // parsing is stopped
+                if (!$rss['parsing']) continue;
+
                 $lastCrawled = null;
                 if (isset($rss['lastCrawled'])) {
                     $lastCrawled = $rss['lastCrawled'];
@@ -313,7 +312,7 @@ class Cron extends Shared\Controller {
                 $p->save();     // save the lastCrawled time
 
                 $user = \User::first(['org_id' => $o->_id, 'type' => 'admin'], ['_id']);
-                \Meta::campImport($user->_id, $p->user_id, $result['urls']);
+                \Meta::campImport($user->_id, $p->user_id, $result['urls'], $rss['campaign']);
             }
         }
     }
@@ -327,32 +326,16 @@ class Cron extends Shared\Controller {
 
         $users = []; $orgs = [];
         foreach ($metas as $m) {
-            $uid = Utils::getMongoID($m->propid);
-            // find user info
-            if (!array_key_exists($uid, $users)) {
-                $user = \User::first(['_id = ?' => $m->propid], ['_id', 'org_id', 'email', 'meta']);
-                $users[$uid] = $user;
-            } else {
-                $user = $users[$uid];
-            }
-
-            // find organization
-            $orgid = Utils::getMongoID($user->org_id);
-            if (!array_key_exists($orgid, $orgs)) {
-                $org = \Organization::first(['_id = ?' => $user->org_id], ['meta', 'domain', '_id']);
-                $orgs[$orgid] = $org;
-            } else {
-                $org = $orgs[$orgid];
-            }
+            $user = Usr::find($users, $m->propid, ['_id', 'org_id', 'email', 'meta']);
+            $org = \Organization::find($orgs, $user->org_id);
 
             $categories = \Category::all(['org_id' => $org->_id], ['_id', 'name']);
             $categories = array_values($categories);
-            $index = array_rand($categories);
-            $category = $categories[$index];
+            $category = $categories[array_rand($categories)];
 
             // fetch ad info foreach URL
             $advert_id = $m->value['advert_id'];
-            $comm = $org->meta;
+            $comm = $m->value['campaign'] ?? $org->meta;
             $urls = $m->value['urls'];
 
             foreach ($urls as $url) {
@@ -377,11 +360,13 @@ class Cron extends Shared\Controller {
                 ]);
                 if ($ad->validate()) {
                     $ad->save();
+
+                    $rev = $comm['revenue'] ?? (1.25 * (float) $comm['rate']);
                     $commission = new \Commission([
                         'ad_id' => $ad->_id,
                         'model' => $comm['model'],
                         'rate' => $comm['rate'],
-                        'revenue' => @$user->meta['rate'],
+                        'revenue' => round($rev, 6),
                         'coverage' => ['ALL']
                     ]);
                     $commission->save();
@@ -484,7 +469,7 @@ class Cron extends Shared\Controller {
     }
 
     public function generateBills() {
-        $orgs = Organization::all("live = ?" => true);
+        $orgs = Organization::all(["live = ?" => true]);
         foreach ($orgs as $org) {
             $imp_cost = 0; $click_cost = 0;
             $month_ini = new DateTime("first day of last month");

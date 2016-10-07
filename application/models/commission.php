@@ -43,7 +43,7 @@ class Commission extends \Shared\Model {
      * @type decimal
      * @length 6,2
      *
-     * @label payout for model
+     * @label Advertiser Charge
      * @validate required
      */
     protected $_revenue = null;
@@ -118,6 +118,7 @@ class Commission extends \Shared\Model {
     }
 
     public static function find(&$search, $key) {
+        $key = \Shared\Utils::getMongoID($key);
         if (!array_key_exists($key, $search)) {
             $comm = self::first(['ad_id' => $key], ['rate', 'revenue', 'model', 'coverage']);
             $search[$key] = $comm;

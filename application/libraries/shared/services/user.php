@@ -60,6 +60,7 @@ class User {
 	}
 
 	public static function find(&$search, $key, $fields = []) {
+		$key = \Shared\Utils::getMongoID($key);
 		if (!array_key_exists($key, $search)) {
 			$usr = \User::first(['_id' => $key], $fields);
 			$search[$key] = $usr;

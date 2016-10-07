@@ -24,6 +24,8 @@ class Campaign extends Admin {
         $ad = \Ad::first(["_id = ?" => $id]);
         $this->seo(array("title" => $ad->title));
         $view = $this->getActionView();
+        $cf = Registry::get("configuration")->parse("configuration/cf")->cloudflare;
+        $view->set("domain", $cf->api->domain);
 
         $commission = Commission::first(["ad_id = ?" => $id]);
 
@@ -341,7 +343,16 @@ class Campaign extends Admin {
                 try {
                     // Now schedule importing of campaigns
                     $result = \Shared\Rss::getFeed($url);
-                    $rss = [ 'url' => $url, 'parsing' => true, 'lastCrawled' => $result['lastCrawled'] ];
+                    $rate = RequestMethods::post('rate', 0.20);
+                    $revenue = RequestMethods::post('revenue', 0.25);
+                    $rss = [
+                        'url' => $url, 'parsing' => true, 'lastCrawled' => $result['lastCrawled'],
+                        'campaign' => [
+                            'model' => RequestMethods::post('model', 'cpc'),
+                            'rate' => $this->currency($rate),
+                            'revenue' => $this->currency($rate)
+                        ]
+                    ];
 
                     // if platform not found then add new
                     if (!$p) {
@@ -353,7 +364,7 @@ class Campaign extends Admin {
                     $meta = $p->meta; $meta['rss'] = $rss;
                     $p->meta = $meta; $p->save();
 
-                    \Meta::campImport($this->user->_id, $advert_id, $result['urls']);
+                    \Meta::campImport($this->user->_id, $advert_id, $result['urls'], $rss['campaign']);
                 } catch (\Exception $e) {
                     $msg = "Internal Server Error!!";
                 }
