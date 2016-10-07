@@ -235,35 +235,38 @@ class Admin extends Auth {
      */
     public function billing() {
         $this->seo(array("title" => "Billing")); $view = $this->getActionView();
-        $start = RequestMethods::get('start', date('Y-m-d', strtotime('-30 day')));
-        $end = RequestMethods::get('end', date('Y-m-d'));
-        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
+        $bills = Bill::all(["org_id = ?" => $this->org->id]);
+        $invoice = RequestMethods::get("invoice", "current");
+        $imp_cost = 0; $click_cost = 0;
+        switch ($invoice) {
+            case 'current':
+                $start = RequestMethods::get('start', date('Y-m-01'));
+                $end = RequestMethods::get('end', date('Y-m-d'));
+                $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
 
-        // find advertiser performances to get clicks and impressions
-        $performances = \Performance::overall(
-            $dateQuery,
-            User::all(['org_id' => $this->org->_id, 'type' => 'advertiser'], ['_id'])
-        );
-
-        $clicks = $performances['total_clicks'];
-        if ($clicks < 100000) {
-            $price = 15 / 1000;
-        } else {
-            $price = 10 / 1000;
+                // find advertiser performances to get clicks and impressions
+                $performances = \Performance::overall(
+                    $dateQuery,
+                    User::all(['org_id' => $this->org->_id, 'type' => 'advertiser'], ['_id'])
+                );
+                $clicks = $performances['total_clicks'];
+                $impressions = $performances['total_impressions'];
+                break;
+            
+            default:
+                $bill = Bill::first(["org_id = ?" => $this->org->id, "id = ?" => $invoice]);
+                $clicks = $bill->clicks;
+                $impressions = $bill->impressions;
+                break;
         }
-        $click_cost = $price * $clicks;
-
-        $impressions = $performances['total_impressions'];
-        if ($impressions < 100000) {
-            $price = 15 / 1000; // it's in INR
-        } else {
-            $price = 10 / 1000;
+        if ($clicks > 1000) {
+            $click_cost = 0.001*$clicks*$this->org->meta["bill"]["tcc"];
         }
-        $imp_cost = $impressions * $price;
-
+        if ($impressions > 1000000) {
+            $imp_cost = 0.001*0.001*$impressions*$this->org->meta["bill"]["mic"];
+        }
         $view->set([
-            'start' => $start,
-            'end' => $end,
+            'bills' => $bills,
             'clicks' => [ 'total' => $clicks, 'cost' => $click_cost ],
             'impressions' => [ 'total' => $impressions, 'cost' => $imp_cost ]
         ]);

@@ -7,25 +7,16 @@
                     <div class="page-title-box">
                         <form class="form-inline pull-right" role="form" id="range">
                             <div class="form-group">
-                                <div class="input-group">
-                                    <label class="sr-only">From</label>
-                                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> From</span>
-                                    <input type="date" style="width: 180px" name="start" class="form-control" value="{$start}" />
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <label class="sr-only">To</label>
-                                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> To</span>
-                                    <input type="date" style="width: 180px" name="end" class="form-control" value="{$end}" />
-                                </div>
+                                <label>Date: </label>
+                                <select name="invoice" class="form-control" data-live-search=true style="width: 200px;">
+                                    <option value="current">{echo date('F')}</option>
+                                    {foreach $bill in $bills}
+                                    <option></option>
+                                    {/foreach}
+                                </select>
                             </div>
                             <button type="submit" class="btn btn-primary">Show</button>
                         </form>
-                        <ol class="breadcrumb pull-right">
-                            <li><a href="/admin.html">Dashboard</a></li>
-                            <li class="active">Billing</li>
-                        </ol>
                         <h4 class="page-title">Billing</h4>
                     </div>
                 </div>
@@ -34,23 +25,36 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="card-box">
+                        <h4 class="m-t-0 header-title text-center">Summary</h4>
                         <div class="table-rep-plugin">
                             <div class="table-responsive" data-pattern="priority-columns">
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Clicks</th>
-                                            <th>Click Cost</th>
-                                            <th>Impressions</th>
-                                            <th>Impressions Cost</th>
+                                            <th>Item</th>
+                                            <th>Quantity</th>
+                                            <th>Rate</th>
+                                            <th>Amount</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
+                                            <td>Clicks</td>
                                             <td>{echo $clicks['total']}</td>
-                                            <td>INR {echo ($clicks['cost'])}</td>
+                                            <td>{echo $user->convert($org->meta["bill"]["tcc"])} per thousand</td>
+                                            <td>{echo $user->convert($clicks['cost'])}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Impressions</td>
                                             <td>{echo $impressions['total']}</td>
-                                            <td>INR {echo $impressions['cost']}</td>
+                                            <td>{echo $user->convert($org->meta["bill"]["mic"])} per million</td>
+                                            <td>{echo $user->convert($impressions['cost'])}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Total</b></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><b>{echo $user->convert($impressions['cost'] + $clicks['cost'])}</b></td>
                                         </tr>
                                     </tbody>
                                 </table>
