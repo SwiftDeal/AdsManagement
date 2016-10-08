@@ -170,13 +170,27 @@ class Ad extends Shared\Model {
     }
 
     public static function earning($opts = [], $clicks) {
-        $rate = $opts['rate'];
-        $conversions = $opts['conversions'];
+        if ($opts['type'] === 'advertiser') {
+            $rate = $opts['revenue'];
+        } else {
+            $rate = $opts['rate'];
+        }
+        $conversions = (int) ($opts['conversions'] ?? 0);
+        $impressions = (int) ($opts['impressions'] ?? 0);
 
-        if ($conversions === false) {
-            $revenue = $rate * $clicks;
-        } else { // earning will be based on conversions
-            $revenue = $rate * $conversions;
+        switch ($opts['campaign']) {
+            case 'cpi':
+            case 'cpa':
+                $revenue = $conversions * $rate;
+                break;
+
+            case 'cpm':
+                $revenue = $impressions * $rate;
+                break;
+            
+            default:    // cpc
+                $revenue = $clicks * $rate;
+                break;
         }
 
         $revenue = round($revenue, 6);
@@ -184,7 +198,8 @@ class Ad extends Shared\Model {
         return [
             'clicks' => $clicks,
             'revenue' => $revenue,
-            'conversions' => (int) $conversions
+            'conversions' => $conversions,
+            'impressions' => $impressions
         ];
     }
 

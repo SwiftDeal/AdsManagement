@@ -27,7 +27,7 @@ class Publisher extends Auth {
         $clicks = Db::query('Click', [
             "pid" => $this->user->_id, "is_bot" => false,
             "created" => Db::dateQuery($start, $end)
-        ], ['adid']);
+        ], ['adid', 'country']);
 
         $notifications = Notification::all(["org_id = ?" => $this->org->id], [], "created", "desc", 5, 1);
         $total = Performance::overall(

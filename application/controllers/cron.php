@@ -88,7 +88,7 @@ class Cron extends Shared\Controller {
 
     protected function _settings() {
         // The Model should handle its cron tasks - hourly, daily
-        \Ad::hourly();
+        // \Ad::hourly();
         \Click::hourly();
     }
 
@@ -170,19 +170,18 @@ class Cron extends Shared\Controller {
                 foreach ($countries as $country => $records) {
                     $updateData = []; $adClicks = count($records);
 
-                    $pComm = \Commission::campaignRate($key, $commInfo, $org, array_merge([
-                        'type' => 'publisher', 'publisher' => $p, 'country' => $country
+                    $pComm = \Commission::campaignRate($key, $commInfo, $country, array_merge([
+                        'type' => 'publisher', 'publisher' => $p
                     ], $dq));
                     
                     $earning = \Ad::earning($pComm, $adClicks); ArrayMethods::copy($earning, $updateData);
-                    $updateData['impressions'] = \Impression::getStats($key, $p->_id, $dq);
                     $perf->update($updateData);
 
-                    $aComm = \Commission::campaignRate($key, $commInfo, $org, array_merge([
-                        'type' => 'advertiser', 'advertiser' => $advert, 'country' => $country
+                    $aComm = \Commission::campaignRate($key, $commInfo, $country, array_merge([
+                        'type' => 'advertiser'
                     ], $dq));
+                    
                     $earning = \Ad::earning($aComm, $adClicks); ArrayMethods::copy($earning, $updateData);
-                    $updateData['impressions'] = \Impression::getStats($key, null, $dq);
                     $advertPerf->update($updateData);
                 }
             }
@@ -336,6 +335,10 @@ class Cron extends Shared\Controller {
             // fetch ad info foreach URL
             $advert_id = $m->value['advert_id'];
             $comm = $m->value['campaign'] ?? $org->meta;
+
+            if (!isset($comm['model']) || !isset($comm['rate'])) {
+                continue;
+            }
             $urls = $m->value['urls'];
 
             foreach ($urls as $url) {

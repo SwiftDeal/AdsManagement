@@ -71,7 +71,7 @@ namespace Shared {
                 $field = $value['raw'];
                 $current = $this->$field;
                 
-                if (!is_array($current) && !isset($current)) {
+                if (!is_array($current) || is_null($current)) {
                     continue;
                 }
                 $v = $this->_convertToType($current, $value['type']);

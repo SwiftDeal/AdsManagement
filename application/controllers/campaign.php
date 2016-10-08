@@ -24,8 +24,6 @@ class Campaign extends Admin {
         $ad = \Ad::first(["_id = ?" => $id]);
         $this->seo(array("title" => $ad->title));
         $view = $this->getActionView();
-        $cf = Registry::get("configuration")->parse("configuration/cf")->cloudflare;
-        $view->set("domain", $cf->api->domain);
 
         $commission = Commission::first(["ad_id = ?" => $id]);
 
@@ -43,6 +41,9 @@ class Campaign extends Admin {
         $ad = \Ad::first(["_id = ?" => $id]);
         $this->seo(array("title" => $ad->title));
         $view = $this->getActionView();
+
+        $cf = Registry::get("configuration")->parse("configuration/cf")->cloudflare;
+        $view->set("domain", $cf->api->domain);
 
         $commission = Commission::first(["ad_id = ?" => $id]);
         $advertiser = User::first(["id = ?" => $ad->user_id], ['name']);
@@ -127,6 +128,7 @@ class Campaign extends Admin {
     		if (!$img) {
     			return $view->set('message', 'Failed to upload the image');
     		}
+            $expiry = RequestMethods::post('expiry');
     		$campaign = new \Ad([
                 'user_id' => RequestMethods::post('advert_id'),
     			'title' => RequestMethods::post('title'),
@@ -137,9 +139,12 @@ class Campaign extends Admin {
     			'image' => $img,
                 'type' => RequestMethods::post('type', 'article'),
                 'device' => RequestMethods::post('device', ['all']),
-    			'live' => false,
-                'expiry' => RequestMethods::post('expiry')
+    			'live' => false
     		]);
+
+            if ($expiry) {
+                $campaign->expiry = $expiry;
+            }
 
     		if (!$campaign->validate()) {
     			return $view->set("errors", $campaign->errors);

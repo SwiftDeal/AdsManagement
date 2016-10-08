@@ -328,16 +328,19 @@ class Auth extends Controller {
         $adsInfo = [];
         $classify = \Click::classify($clicks, 'adid');
         foreach ($classify as $key => $value) {
-            $adClicks = count($value); $updateData = [];
+            $countryWise = \Click::classify($value, 'country');
 
-            $extra = [ 'type' => 'publisher', 'publisher' => $p ];
-            $extra = array_merge($extra, $dq);
-            $info = \Commission::campaignRate($key, $adsInfo, $org, $extra);
-            
-            $earning = \Ad::earning($info, $adClicks);
-            \Framework\ArrayMethods::copy($earning, $updateData);
-            $updateData['impressions'] = \Impression::getStats($key, $p->_id, $dq);
-            $perf->update($updateData);
+            foreach ($countryWise as $country => $records) {
+                $adClicks = count($records); $updateData = [];
+
+                $extra = [ 'type' => 'publisher', 'publisher' => $p ];
+                $extra = array_merge($extra, $dq);
+                $info = \Commission::campaignRate($key, $adsInfo, $country, $extra);
+
+                $earning = \Ad::earning($info, $adClicks);
+                \Framework\ArrayMethods::copy($earning, $updateData);
+                $perf->update($updateData);
+            }
         }
 
         return $perf;

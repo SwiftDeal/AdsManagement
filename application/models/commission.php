@@ -75,53 +75,76 @@ class Commission extends \Shared\Model {
      * @param  String $type        Advertiser | Publisher
      * @return array
      */
-    public static function campaignRate($adid, &$commissions = [], $org = null, $extra = []) {        
-        $comm = self::find($commissions, $adid); $rate = 0;
-        $info = ['conversions' => false, 'rate' => $rate];
-        if (!is_object($comm)) return $info;
+    public static function campaignRate($adid, &$commissions = [], $country = null, $extra = []) {        
+        $comm = self::find($commissions, $adid);
+        $info = ['campaign' => 'cpc', 'rate' => 0, 'revenue' => 0, 'type' => $extra['type']];
+        if (!is_array($comm)) return $info;
 
-        $cpaQuery = [
+        $commission = (array_key_exists($country, $comm)) ? $comm[$country] : $comm['ALL']; // because commission might not exists if country is null
+
+        if (array_key_exists($country, $comm)) {
+            var_dump($comm);
+        }
+
+        if (!is_object($commission)) {
+            throw new \Exception('Invalid Commission!');
+        }
+
+        $query = [
             'adid' => $adid, 'created' => Db::dateQuery($extra['start'], $extra['end'])
         ];
+
         switch ($extra['type']) {
             case 'advertiser':
-                $advert = (isset($extra['advertiser'])) ? $extra['advertiser'] : (object) ['meta' => []];
-                if ($comm->revenue) {
-                    $rate = $comm->revenue;
-                } else if (isset($advert->meta['campaign']) && $advert->meta['campaign']['model'] == 'cpc') {
-                    $rate = $advert->meta['campaign']['rate'];
-                } else {
-                    $rate = isset($org->meta['rate']) ? $org->meta['rate'] : 0;
-                }
+                $info['revenue'] = (float) $commission->revenue;
                 break;
             
             case 'publisher':
                 $pub = $extra['publisher'];
-                if (isset($pub->meta['campaign']) && $pub->meta['campaign']['model'] == 'cpc' && !is_null($pub->meta['campaign']['rate'])) {
-                    $rate = $pub->meta['campaign']['rate'];
-                } else {
-                    $rate = $comm->rate;
-                }
-                $cpaQuery['pid'] = $pub->_id;
+                $info['rate'] = (float) $commission->rate;
+                $query['pid'] = $pub->_id;
                 break;
         }
 
-        switch (strtolower($comm->model)) {
+        switch (strtolower($commission->model)) {
             case 'cpa':
-                $count = \Conversion::count($cpaQuery);
+                $count = \Conversion::count($query);
                 $info['conversions'] = $count;
+                break;
+
+            case 'cpi':
+                $count = \Conversion::count($query);
+                $info['conversions'] = $count;
+                break;
+
+            case 'cpm':
+                $info['impressions'] = \Impression::getStats($query);
                 break;
             
         }
-        $rate = (float) $rate; $info['rate'] = $rate;
+        $info['campaign'] = strtolower($commission->model);
         return $info;
     }
 
     public static function find(&$search, $key) {
         $key = \Shared\Utils::getMongoID($key);
+
+        $countryWise = [];
         if (!array_key_exists($key, $search)) {
-            $comm = self::first(['ad_id' => $key], ['rate', 'revenue', 'model', 'coverage']);
-            $search[$key] = $comm;
+            $commissions = self::all(['ad_id' => $key], ['rate', 'revenue', 'model', 'coverage']);
+            foreach ($commissions as $c) {
+                $coverage = $c->coverage;
+
+                foreach ($coverage as $country) {
+                    $countryWise[$country] = (object) [
+                        'model' => $c->model,
+                        'rate' => $c->rate,
+                        'revenue' => $c->revenue
+                    ];
+                }
+            }
+            $search[$key] = $countryWise;
+            $comm = $countryWise;
         } else {
             $comm = $search[$key];
         }
