@@ -55,7 +55,8 @@
                                     <p>Pricing Type: {echo strtoupper($c->model)}</p>
                                     <p>GEO: {echo implode(",", $c->coverage)}</p>
                                     <p>Device: {echo implode(",", $ad->device)}</p>
-                                    <p>Postback URL: http://track.vnative.com/acquisition?click_id={click_id}</p>
+                                    <p>Postback URL: <code>http://track.vnative.com/acquisition?click_id={click_id}</code></p>
+                                    <p>CPA Conversion Pixel: <code>&lt;img src='{echo "http://track." . $domain}/pixel?adid={echo $ad->_id}'&gt;</code></p>
                                 </div>
                             </div>
                         </div>

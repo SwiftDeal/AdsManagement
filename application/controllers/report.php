@@ -310,4 +310,28 @@ class Report extends Admin {
             'start' => $start, 'end' => $end
         ]);
     }
+
+    /**
+     * @before _secure
+     */
+    public function conversions() {
+        $this->seo(array("title" => "Conversions"));
+        $view = $this->getActionView();
+    }
+
+    /**
+     * @before _secure
+     */
+    public function installs($campaign_id) {
+        $this->seo(array("title" => "Click Logs"));
+        $view = $this->getActionView();
+    }
+
+    /**
+     * @before _secure
+     */
+    public function impressions($campaign_id) {
+        $this->seo(array("title" => "Click Logs"));
+        $view = $this->getActionView();
+    }
 }
