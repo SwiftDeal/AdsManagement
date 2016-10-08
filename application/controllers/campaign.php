@@ -8,6 +8,7 @@ use Framework\Registry as Registry;
 use WebBot\Core\Bot as Bot;
 use \Curl\Curl;
 use Shared\Utils as Utils;
+use \Shared\Services\Db as Db;
 
 class Campaign extends Admin {
     
@@ -21,7 +22,8 @@ class Campaign extends Admin {
         $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
         $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
 
-        $ad = \Ad::first(["_id = ?" => $id]);
+        $ad = \Ad::first(["_id = ?" => $id, 'org_id' => $this->org->_id]);
+        if (!$ad) $this->_404();
         $this->seo(array("title" => $ad->title));
         $view = $this->getActionView();
 
@@ -38,9 +40,23 @@ class Campaign extends Admin {
      * @before _secure
      */
     public function details($id) {
-        $ad = \Ad::first(["_id = ?" => $id]);
+        $ad = \Ad::first(["_id = ?" => $id, 'org_id' => $this->org->_id]);
+        if (!$ad) $this->_404();
+
         $this->seo(array("title" => $ad->title));
         $view = $this->getActionView();
+
+        $start = RequestMethods::get("start", date('Y-m-d', strtotime("-1 day")));
+        $end = RequestMethods::get("end", date('Y-m-d'));
+
+        $clicks = Db::query('Click', [
+            'adid' => $ad->_id, 'is_bot' => false,
+            'created' => Db::dateQuery($start, $end)
+        ], ['adid', 'country']);
+
+        $advertisers = \User::all(['type' => 'advertiser', 'org_id' => $this->org->_id]);
+        $advertPerf = $this->perf($clicks, ['type' => 'advertiser'], ['start' => $start, 'end' => $end]);
+        $view->set('advertPerf', $advertPerf);
 
         $cf = Registry::get("configuration")->parse("configuration/cf")->cloudflare;
         $view->set("domain", $cf->api->domain);
@@ -53,7 +69,9 @@ class Campaign extends Admin {
             ->set("c", $commission)
             ->set("categories", $categories)
             ->set("advertiser", $advertiser)
-            ->set('commission', $this->user->commission());
+            ->set('commission', $this->user->commission())
+            ->set("start", $start)
+            ->set("end", $end);
     }
 
     

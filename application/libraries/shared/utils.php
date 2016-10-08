@@ -8,7 +8,7 @@ use Framework\ArrayMethods as ArrayMethods;
 class Utils {
 	public static function getMongoID($field) {
 		if (is_object($field)) {
-			$id = sprintf('%s', $field);	
+			$id = sprintf('%s', $field);
 		} else {
 			$id = $field;
 		}

@@ -49,7 +49,7 @@ class Publisher extends Auth {
             ->set("notifications", $notifications)
             ->set("total", $total)
             ->set("yesterday", strftime("%B %d, %Y", strtotime('-1 day')))
-            ->set("performance", $this->perf($clicks, $this->user, $this->org, ['start' => $start, 'end' => $end]));
+            ->set("performance", $this->perf($clicks, ['type' => 'publisher', 'publisher' => $this->user], ['start' => $start, 'end' => $end]));
     }
 
     /**

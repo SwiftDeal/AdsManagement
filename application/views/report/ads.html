@@ -59,7 +59,7 @@
                                                 <img src="{echo $c->image}" alt="" width="70" height="70"><br>
                                                 <a href="{echo $c->url}" target="_blank" class="btn btn-xs btn-default">Landing Page</a>
                                             </td>
-                                            <td>{echo $c->title}</td>
+                                            <td><a href="/campaign/details/{echo $c->id}">{echo $c->title}</a></td>
                                             <td>{echo $c->clicks}</td>
                                             <td>
                                                 {echo $user->convert($cm->rate)} <b>{echo strtoupper($cm->model)}</b>

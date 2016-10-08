@@ -323,7 +323,7 @@ class Auth extends Controller {
         }
     }
 
-    protected function perf($clicks, $p, $org, $dq = []) {
+    protected function perf($clicks, $arr, $dq = []) {
         $perf = new Performance();
         $adsInfo = [];
         $classify = \Click::classify($clicks, 'adid');
@@ -333,8 +333,7 @@ class Auth extends Controller {
             foreach ($countryWise as $country => $records) {
                 $adClicks = count($records); $updateData = [];
 
-                $extra = [ 'type' => 'publisher', 'publisher' => $p ];
-                $extra = array_merge($extra, $dq);
+                $extra = array_merge($arr, $dq);
                 $info = \Commission::campaignRate($key, $adsInfo, $country, $extra);
 
                 $earning = \Ad::earning($info, $adClicks);
