@@ -97,10 +97,8 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Coverage</label>
-                                    <select name="coverage[]" class="form-control selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
-                                        {foreach $country in $countries["countries"]}
-                                        <option value="{echo $country['code']}" {if(in_array($country['code'], $countries["keyvalue"]))}selected{/if}>{echo $country['name']}</option>
-                                        {/foreach}
+                                    <select name="coverage[]" data-value='{echo json_encode($comm->coverage)}' class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
+                                        {include auth/country.html}
                                     </select>
                                     <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "coverage")}</span>
                                 </div>

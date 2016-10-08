@@ -5,6 +5,7 @@
  */
 use Framework\RequestMethods as RequestMethods;
 class User extends Shared\Model {
+    const ROLES = ['afm' => 'Affiliate Manager', 'adm' => 'Advertiser Manager', 'admin' => 'Admin', 'publisher' => 'Publisher', 'advertiser' => 'Advertiser'];
 
     /**
      * @column
@@ -92,6 +93,10 @@ class User extends Shared\Model {
     * @type array
     */
     protected $_meta = [];
+
+    public function setEmail($email) {
+        $this->_email = strtolower($email);
+    }
 
     public function getMeta() {
         if (!$this->_meta) {

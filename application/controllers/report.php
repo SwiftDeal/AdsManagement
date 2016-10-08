@@ -237,7 +237,7 @@ class Report extends Admin {
     /**
      * @before _secure
      */
-    public function platforms() {
+    public function platforms($id = null) {
         $this->seo(["title" => "Platform wise click stats"]);
         $view = $this->getActionView();
 

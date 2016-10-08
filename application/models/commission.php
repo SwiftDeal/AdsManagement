@@ -82,12 +82,8 @@ class Commission extends \Shared\Model {
 
         $commission = (array_key_exists($country, $comm)) ? $comm[$country] : $comm['ALL']; // because commission might not exists if country is null
 
-        if (array_key_exists($country, $comm)) {
-            var_dump($comm);
-        }
-
         if (!is_object($commission)) {
-            throw new \Exception('Invalid Commission!');
+            return $info;
         }
 
         $query = [
