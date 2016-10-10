@@ -34,20 +34,27 @@ class RssTest extends TestCase {
 	 * @depends getPlatforms
 	 */
 	public function getFeed(array $platforms = []) {
-		foreach ($platforms as $p) {
-			$rss = $p->meta['rss'];
+		$failures = 0;
+		try {
+			foreach ($platforms as $p) {
+				$rss = $p->meta['rss'];
 
-			if (!$rss['parsing']) {
-				continue;
+				if (!$rss['parsing']) {
+					continue;
+				}
+
+				$result = \Shared\Rss::getFeed($rss['url'], $rss['lastCrawled']);
+
+				if ($result['lastCrawled'] === $rss['lastCrawled']) {
+					$this->assertEquals(0, count($result['urls']));
+				} else {
+					$this->assertNotEquals(0, count($result['urls']));
+				}
 			}
-
-			$result = \Shared\Rss::getFeed($rss['url'], $rss['lastCrawled']);
-
-			if ($result['lastCrawled'] === $rss['lastCrawled']) {
-				$this->assertEquals(0, count($result['urls']));
-			} else {
-				$this->assertNotEquals(0, count($result['urls']));
-			}
+		} catch (\Exception $e) {
+			$failures++;
 		}
+
+		$this->assertEquals(0, $failures, "Failed to crawl some Rss URL's");
 	}
 }
