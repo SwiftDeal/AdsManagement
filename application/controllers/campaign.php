@@ -185,6 +185,60 @@ class Campaign extends Admin {
     /**
      * @before _secure
      */
+    public function createTest() {
+        $this->_create(); $view = $this->getActionView();
+
+        if (RequestMethods::type() == 'POST') {
+            $img = null;
+            // give preference to uploaded image
+            $img = $this->_upload('image', 'images', ['extension' => 'jpe?g|gif|bmp|png|tif']);
+            if (!$img) {
+                $img_url = RequestMethods::post("image_url");
+                $img = Shared\Utils::downloadImage($img_url);
+            }
+
+            if (!$img) {
+                return $view->set('message', 'Failed to upload the image');
+            }
+            $expiry = RequestMethods::post('expiry');
+            $campaign = new \Ad([
+                'user_id' => RequestMethods::post('advert_id'),
+                'title' => RequestMethods::post('title'),
+                'description' => RequestMethods::post('description'),
+                'org_id' => $this->org->_id,
+                'url' => RequestMethods::post('url'),
+                'category' => \Ad::setCategories(RequestMethods::post('category')),
+                'image' => $img,
+                'type' => RequestMethods::post('type', 'article'),
+                'device' => RequestMethods::post('device', ['all']),
+                'live' => false
+            ]);
+
+            if ($expiry) {
+                $campaign->expiry = $expiry;
+            }
+
+            if (!$campaign->validate()) {
+                return $view->set("errors", $campaign->errors);
+            }
+            $campaign->save();
+            $commission = new \Commission([
+                'ad_id' => $campaign->_id,
+                'description' => RequestMethods::post('comm_desc', null),
+                'model' => RequestMethods::post('model'),
+                'rate' => $this->currency(RequestMethods::post('rate')),
+                'revenue' => $this->currency(RequestMethods::post('revenue')),
+                'coverage' => RequestMethods::post('coverage')
+            ]);
+            $commission->save();
+
+            $this->redirect("/campaign/manage.html");
+        }
+    }
+
+    /**
+     * @before _secure
+     */
     public function manage() {
     	$this->seo(['title' => 'Campaign Manage', 'description' => 'Manage campaigns']);
     	$view = $this->getActionView();

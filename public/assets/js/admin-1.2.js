@@ -584,8 +584,10 @@ $(function () {
 $(document).ready(function() {
 
     //plugins initialized
-    $('select').select2();
-    $('.noselect2').select2('destroy');
+    $('select').selectpicker({
+        size: 4
+    });
+    $('.noselect2').selectpicker('destroy');
 
     //initialize beautiful date picker
     $.fn.datepicker.defaults.format = "yyyy-mm-dd";
