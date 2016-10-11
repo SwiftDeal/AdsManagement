@@ -94,6 +94,13 @@ class User extends Shared\Model {
     */
     protected $_meta = [];
 
+    /**
+     * @column
+     * @readwrite
+     * @type datetime
+     */
+    protected $_login = null;
+
     public function setEmail($email) {
         $this->_email = strtolower($email);
     }

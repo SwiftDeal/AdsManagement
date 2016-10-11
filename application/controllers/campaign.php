@@ -56,7 +56,8 @@ class Campaign extends Admin {
 
         $advertisers = \User::all(['type' => 'advertiser', 'org_id' => $this->org->_id]);
         $advertPerf = $this->perf($clicks, ['type' => 'advertiser'], ['start' => $start, 'end' => $end]);
-        $view->set('advertPerf', $advertPerf);
+        $view->set('advertPerf', $advertPerf)
+            ->set('advertisers', \User::objectArr($advertisers, ['_id', 'name']));
 
         $cf = Registry::get("configuration")->parse("configuration/cf")->cloudflare;
         $view->set("domain", $cf->api->domain);

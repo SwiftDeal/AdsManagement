@@ -1,3 +1,8 @@
+<script>
+    var advertisers = JSON.parse('{echo json_encode($advertisers)}');
+    var link = 'http://track.' + '{echo $domain}' + '/pixel?adid={echo $ad->_id}';
+    var reqData = JSON.parse('{echo json_encode(["property" => live, "value" => 1])}');
+</script>
 <div class="content-page">
     <div class="content">
         <div class="container">
@@ -33,6 +38,12 @@
                             <a href="#stats" data-toggle="tab" aria-expanded="false">
                                 <span class="visible-xs"><i class="fa fa-graph"></i></span>
                                 <span class="hidden-xs">Stats</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#pixelTest" data-toggle="tab" aria-expanded="false">
+                                <span class="visible-xs"><i class="fa fa-graph"></i></span>
+                                <span class="hidden-xs">Test Pixel</span>
                             </a>
                         </li>
                     </ul>
@@ -107,9 +118,67 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="tab-pane" id="pixelTest">
+                            <form action="">
+                                <select name="advertisers" class="form-control selectpicker" id="selectAdvert">
+                                    <option>Select An Advertiser</option>
+                                    {foreach $a in $advertisers}
+                                    <option value="{echo $a->_id}">{echo $a->name}</option>
+                                    {/foreach}
+                                </select>
+                                <br><br>
+                                Steps:
+                                <ol>
+                                    <li>Select any Advertiser from the list</li>
+                                    <li>Get the Tracking Pixel from below and insert it on any page</li>
+                                    <li>Fire up the page in web browser</li>
+                                    <li>Hit this <button class="btn btn-primary" id="checkStatus">Check Status</button> button</li>
+                                    <li>Result: <span id="requestResult" class="label"></span></li>
+                                </ol>
+                                <p>CPA Conversion Pixel: <code id="testingPixel"></code></p>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script src="{echo CDN}js/request.js"></script>
+<script>
+    $('#selectAdvert').on('change', function (e) {
+        e.preventDefault();
+
+        var el = $('#testingPixel');
+        window.currentAdvert = $(this).val();
+        $('#requestResult').html('');
+        el.text('<img src="' + link + '&advert_id=' + window.currentAdvert + '">');
+    });
+
+    $('#checkStatus').on('click', function (e) {
+        e.preventDefault();
+        request.get( {
+            url: 'advertiser/manage', data: reqData
+        }, function (err, d) {
+
+            var resultEl = $('#requestResult');
+            $.each(d.advertisers, function (i, el) {
+                // check for pixel in meta
+                var meta = el._meta || {};
+                var status = meta.pixel, found = false;
+
+                if (status === "working" && el.__id == window.currentAdvert)
+                    found = true;
+                else
+                    resultEl.addClass('label-danger').removeClass('label-success').html('Internal Server Error!! Contact Admin');
+
+                if (found)
+                    resultEl.addClass('label-success').removeClass('label-danger').html('It is working!!');
+
+                if (found)
+                    return false;
+            });
+        }
+        );
+    });
+</script>

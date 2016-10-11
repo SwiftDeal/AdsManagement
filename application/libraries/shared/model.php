@@ -49,6 +49,24 @@ namespace Shared {
             // override this method to do cron tasks
         }
 
+        public static function objectArr($arr = [], $fields = []) {
+            $results = [];
+            foreach ($arr as $key => $a) {
+                $data = [];
+                foreach ($fields as $f) {
+                    $data[$f] = $a->$f;
+                }
+
+                $obj = (object) $data;
+                if ($a->_id === $key) {
+                    $results[$key] = $obj;
+                } else {
+                    $results[] = $obj;
+                }
+            }
+            return $results;
+        }
+
         public function getMongoID($field = null) {
             if ($field) {
                 $id = sprintf('%s', $field);
@@ -86,16 +104,15 @@ namespace Shared {
                 unset($doc['_id']);
             }
 
-            $todayMilli = strtotime('now') * 1000;
             if (empty($this->$raw)) {
                 if (!array_key_exists('created', $doc)) {
-                    $doc['created'] = new \MongoDB\BSON\UTCDateTime($todayMilli);   
+                    $doc['created'] = Services\Db::time();
                 }
 
                 $result = $collection->insertOne($doc);
                 $this->__id = $result->getInsertedId();
             } else {
-                $doc['modified'] = new \MongoDB\BSON\UTCDateTime($todayMilli);
+                $doc['modified'] = Services\Db::time();
 
                 $this->__id = Utils::mongoObjectId($this->__id);
                 $result = $collection->updateOne(['_id' => $this->__id], ['$set' => $doc]);
@@ -187,9 +204,9 @@ namespace Shared {
                         } else if (is_a($value, 'DateTime')) {
                             $date = $value->format('Y-m-d');
                         }
-                        $value = new \MongoDB\BSON\UTCDateTime(strtotime($date) * 1000);
+                        $value = Services\Db::time($date);
                     } else {
-                        $value = new \MongoDB\BSON\UTCDateTime(strtotime($value) * 1000);
+                        $value = Services\Db::time($value);
                     }
                     break;
 

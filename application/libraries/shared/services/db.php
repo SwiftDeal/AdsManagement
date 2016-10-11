@@ -22,6 +22,16 @@ class Db {
 		return $mongoDB;
 	}
 
+	public static function time($date = null) {
+		if ($date) {
+			$time = strtotime($date);
+		} else {
+			$time = strtotime('now');
+		}
+
+		return new \MongoDB\BSON\UTCDateTime($time * 1000);		
+	}
+
 	public static function dateQuery($start = null, $end = null) {
 		$changed = false;
 		if ($start && $end) {

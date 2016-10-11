@@ -75,6 +75,9 @@ class Auth extends Controller {
             return $view->set('message', 'User account deactivated!!');
         }
         $session->erase('Auth\Login:$token');   // erase login token
+
+        $user->login = \Shared\Services\Db::time();
+        $user->save();
         $this->_loginRedirect($user, $org);
     }
 
