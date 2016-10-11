@@ -56,16 +56,15 @@
                                     <tr>
                                         <td>
                                             <div class="form-group">
-                                                <select name="coverage[]" class="form-control selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
-                                                    {foreach $country in $countries["countries"]}
-                                                    <option value="{echo $country['code']}" {if(in_array($country['code'], $c["coverage"]))}selected{/if}>{echo $country['name']}</option>
-                                                    {/foreach}
+                                                <select name="coverage[]" data-value='{echo json_encode($c["coverage"])}' class="form-control selectVal selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
+                                                    {include auth/country.html}
                                                 </select>
                                             </div>
                                         </td>
                                         <td>
                                             <div class="form-group">
-                                                <select name="model" required="" value="{echo $c['model']}" class="form-control">
+                                                {script $model = $c['model']}
+                                                <select name="model" required="" data-value='{echo json_encode(["$model"])}' class="selectVal form-control selectpicker">
                                                     <option value="cpc">CPC (Cost per Click)</option>
                                                     <option value="cpm">CPM (Cost per thousand impressions)</option>
                                                     <option value="cpa">CPA (Cost per action)</option>

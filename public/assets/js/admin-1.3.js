@@ -584,9 +584,6 @@ $(function () {
 $(document).ready(function() {
 
     //plugins initialized
-    $('select').selectpicker({
-        size: 4
-    });
     $('.noselect2').selectpicker('destroy');
 
     //initialize beautiful date picker
@@ -666,7 +663,7 @@ $(document).ready(function() {
         $.each(selectTags, function (i, el) {
             var $el = $(el);
 
-            var optValue = $el.data('value');   // This will contain all the values of select tag
+            var optValue = $el.data('value') || [];   // This will contain all the values of select tag
             optValue.forEach(function (val) {
                 $el.find('option[value="' + val + '"]').attr('selected', true);
             });

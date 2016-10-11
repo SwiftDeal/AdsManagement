@@ -151,8 +151,7 @@ class Admin extends Auth {
             $this->setUser($user);
         }
         $categories = \Category::all(['org_id' => $this->org->_id]);
-        $view->set('categories', $categories)
-            ->set("countries", Shared\Markup::countries());
+        $view->set('categories', $categories);
     }
 
     protected function addCommisson($org) {
