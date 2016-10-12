@@ -456,6 +456,17 @@ class Publisher extends Auth {
     /**
      * @before _admin
      */
+    public function performance($id) {
+        $this->seo(array("title" => "Publisher Performance"));
+        $view = $this->getActionView();
+
+        $publisher = User::first(["id = ?" => $id], ["id", "name"]);
+        $view->set("publisher", $publisher);
+    }
+
+    /**
+     * @before _admin
+     */
     public function delete($pid) {
         parent::delete($pid); $view = $this->getActionView();
         $user = \User::first(["_id" => $pid, 'type' => 'publisher', 'org_id' => $this->org->_id]);
