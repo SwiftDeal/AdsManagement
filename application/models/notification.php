@@ -30,4 +30,11 @@ class Notification extends Shared\Model {
      * @value advertisers, publishers
      */
     protected $_target;
+
+    /**
+    * @column
+    * @readwrite
+    * @type array
+    */
+    protected $_meta = [];
 }

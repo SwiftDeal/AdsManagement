@@ -27,7 +27,7 @@
                     {foreach $t in $transactions}
                     <tr>
                         <td>{echo Framework\StringMethods::only_date($t->created)}</td>
-                        <td>{echo $t->amount . " " . $t->currency}</td>
+                        <td>{echo $user->convert($t->amount, true, 4)}</td>
                     </tr>
                     {/foreach}
                 </tbody>
