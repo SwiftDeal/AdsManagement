@@ -266,9 +266,7 @@ class Campaign extends Admin {
                 $view->set("message", "Commission deleted!!");
             }
         }
-        
-        $comms = \Commission::all(["ad_id = ?" => $c->_id]);
-        
+
         if (RequestMethods::post("action") == "adedit") {
             $img = $c->image;
             if ($_FILES['image']['name']) {
@@ -318,6 +316,8 @@ class Campaign extends Admin {
             $commission->save();
             $view->set("message", "Commission added!!");
         }
+
+        $comms = \Commission::all(["ad_id = ?" => $c->_id]);
 
         $view->set("c", $c)
             ->set('categories', $categories)

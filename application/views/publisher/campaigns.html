@@ -28,7 +28,6 @@
                         <tr>
                             <th>PREVIEW</th>
                             <th>TITLE</th>
-                            <th>TYPE</th>
                             <th>PAYOUT</th>
                             <th>CATEGORY</th>
                         </tr>
@@ -36,7 +35,7 @@
                     <tbody>
                         <tbody>
                         {foreach $a in $ads}
-                            {script $c = Commission::first(["ad_id = ?" => $a->id])}
+                            {script $c = Commission::allRate($a->id, $user)}
                             <tr>
                                 <td>
                                     <img src="{echo CDN}uploads/images/{echo $a->image}" alt="" class="img-responsive" width="150"> {script $id = $a->_id}
@@ -45,12 +44,7 @@
                                     </div>
                                 </td>
                                 <td><a href="/campaign/info/{$a->_id}.html">{echo $a->title}</a></td>
-                                <td>{echo strtoupper($c->model)}</td>
-                                {if($c->model == $model)}
-                                <td>{echo $user->convert($rate)}</td>
-                                {/if} {else}
-                                <td>{echo $user->convert($c->rate)}</td>
-                                {/else}
+                                <td>{echo $c}</td>
                                 <td>
                                 {foreach $cat in $a->category}
                                     {script $key = Shared\Utils::getMongoID($cat)}

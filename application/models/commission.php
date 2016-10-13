@@ -152,4 +152,27 @@ class Commission extends \Shared\Model {
         }
         return $comm;
     }
+
+    public static function allRate($adid, $user) {
+        $payout = '';
+        $commissions = self::all(['ad_id' => $adid], ['rate', 'model', 'coverage']);
+        $defaultPayout = array_key_exists("campaign", $user->meta);
+        foreach ($commissions as $c) {
+            if ($defaultPayout) {
+                $model = $user->meta["campaign"]["model"];
+                $rate = $user->meta["campaign"]["rate"];
+                if($c->model == $model) {
+                    $payout .= $user->convert($rate)." ".strtoupper($c->model)." ".implode(",", $c->coverage);
+                } else {
+                    $payout .= $user->convert($c->rate)." ".strtoupper($c->model)." ".implode(",", $c->coverage);
+                }
+            } else {
+                $payout .= $user->convert($c->rate)." ".strtoupper($c->model)." ".implode(",", $c->coverage);
+            }
+            if (count($commissions) > 1) {
+                $payout .= "<br>";
+            }
+        }
+        return $payout;
+    }
 }

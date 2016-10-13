@@ -27,7 +27,7 @@
                 <div class="col-md-6">
                     <div class="card-box">
                         <h4 class="m-t-0 header-title"><b>User data</b></h4>
-                        <form role="form" method="post">
+                        <form role="form" method="post" action="/publisher/info/{echo $publisher->id}">
                             <div class="form-group">
                                 <label>Name</label>
                                 <input type="text" name="name" value="{echo $publisher->name}" class="form-control" placeholder="Full Name">
@@ -65,7 +65,7 @@
                 <div class="col-md-6">
                     <div class="card-box">
                         <h4 class="m-t-0 header-title"><b>Change Password</b></h4>
-                        <form class="form-horizontal" role="form" method="post">
+                        <form class="form-horizontal" role="form" method="post" action="/publisher/info/{echo $publisher->id}">
                             <div class="form-group">
                                 <label for="inputPassword3" class="col-sm-3 control-label">Old Password</label>
                                 <div class="col-sm-9">
@@ -89,7 +89,7 @@
                     </div>
                     <div class="card-box">
                         <h4 class="m-t-0 header-title"><b>Payout</b></h4>
-                        <form role="form" method="post">
+                        <form role="form" method="post" action="/publisher/info/{echo $publisher->id}">
                             <div class="form-group">
                                 {script $model = isset($publisher->meta['campaign']) ? $publisher->meta['campaign']['model'] : null}
                                 <label for="Model">Model (Optional)</label>
@@ -109,6 +109,7 @@
                                 </div>
                             </div>
                             <input type="hidden" name="action" value="campaign">
+                            <a href="/publisher/info/{echo $publisher->id}.html?action=payoutdel" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</a>
                             <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
                         </form>
                     </div>
