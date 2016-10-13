@@ -51,7 +51,9 @@ class Smtp {
 		// $mail->SMTPDebug = 3;                               // Enable verbose debug output
 		$smtpConf = Meta::first(['prop' => 'orgSmtp', 'propid' => $org->_id]);
 		if (!$smtpConf) {
-			throw new \Exception('No Configuration Found for sending SMTP Mail');
+			// use the Mailgun API to send mail
+			Mail::send($opts);
+			return;
 		}
 
 		$smtpConf = $smtpConf->value;
@@ -59,12 +61,13 @@ class Smtp {
 		$e = new Encrypt(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
 		$password = $e->decrypt($password, $org->_id);
 
+		$mail->isSMTP();
 		$mail->Host = $smtpConf['server'];  // Specify main and backup SMTP servers
 		$mail->SMTPAuth = true;                               // Enable SMTP authentication
 		$mail->Username = $smtpConf['username'];               // SMTP username
 		$mail->Password = $password;                           // SMTP password
-		$mail->SMTPSecure = 'ssl';                            // Enable TLS encryption, `ssl` also accepted
-		$mail->Port = $smtpConf['port'];                                    // TCP port to connect to
+		$mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+		$mail->Port = 587;                                    // TCP port to connect to
 
 		$mail->setFrom($smtpConf['email'], $smtpConf['from']);
 		foreach ($opts['to'] as $email) {

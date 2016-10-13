@@ -34,7 +34,7 @@ class Test extends Auth {
     /**
      * @before _admin
      */
-    public function perf() {
+    public function perf($clicks, $arr, $dq = []) {
         $this->JSONview(); $view = $this->getActionView();
         $date = date('Y-m-d', strtotime('-1 day'));
         $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
