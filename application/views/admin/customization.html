@@ -69,7 +69,7 @@
                 <div class="col-md-6">
                     <div class="card-box">
                         <h4 class="m-t-0 header-title"><b>Network data</b></h4>
-                        <form role="form" method="post">
+                        <form role="form" method="post" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label>Name</label>
                                 <input type="text" name="name" value="{echo $org->name}" class="form-control" placeholder="Network Name">
@@ -84,7 +84,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Widgets</label>
-                                <select name="widgets[]" class="form-control" multiple="">
+                                <select name="widgets[]" class="form-control selectpicker" multiple="">
                                     <option value="top10pubs" {if(in_array("top10pubs", $org->meta["widgets"]))}selected=""{/if}>Top10 Publishers</option>
                                     <option value="top10ads" {if(in_array("top10ads", $org->meta["widgets"]))}selected=""{/if}>Top10 Ads</option>
                                 </select>
@@ -92,6 +92,14 @@
                             <div class="form-group">
                                 <label>Zopim ID</label>
                                 <input type="text" name="zopim" value="{echo $org->meta['zopim']}" class="form-control" placeholder="Zopim Chat Integration ID">
+                            </div>
+                            <div class="form-group">
+                                <label>Image <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Allows you to add logo of your network"></i></label>
+                                {if(strlen($org->logo) > 3)}
+                                <img src="{echo CDN}uploads/images/{echo $org->logo}" class="img-thumbnail">
+                                {/if}
+                                <input type="file" class="form-control" name="image">
+                                <span class="help-block text-info">Image should be 450px X 150px</span>
                             </div>
                             <input type="hidden" name="action" value="org">
                             <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>

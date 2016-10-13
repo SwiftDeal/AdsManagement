@@ -65,6 +65,17 @@ class Organization extends \Shared\Model {
     /**
      * @column
      * @readwrite
+     * @type text
+     * @length 255
+     * 
+     * @validate required, min(3), max(255)
+     * @label network logo
+     */
+    protected $_logo = null;
+
+    /**
+     * @column
+     * @readwrite
      * @type array
      * 
      * @validate required
@@ -75,22 +86,17 @@ class Organization extends \Shared\Model {
         $tdomains = $this->tdomains;
         $newDomains = RequestMethods::post('tdomains');
 
-        $conf = Registry::get("configuration");
-        $cf = $conf->parse("configuration/cf")->cloudflare;
-
         $message = null;
         if (count($newDomains) != count($tdomains)) {
             $this->tdomains = $newDomains;
-            $message = 'Please update the nameservers for the newly added domains to: "' . $cf->account->ns . '"';
+            $message = 'Please follow this guide to add tracking domain. <a href="http://vnative.com/add-custom-tracking-domain-ad-network/" target="_blank">Click here</a>';
 
             $this->save();
         } else {
             $newVal = array_diff($tdomains, $newDomains);
             if (count($newVal) > 0) {
                 $this->tdomains = $newDomains;
-
-                $message = 'Please update the nameservers for the newly added domains to: "' . $cf->account->ns . '"';
-
+                $message = 'Please follow this guide to add tracking domain. <a href="http://vnative.com/add-custom-tracking-domain-ad-network/" target="_blank">Click here</a>';
                 $this->save();
             }
         }
