@@ -459,9 +459,15 @@ class Publisher extends Auth {
     public function performance($id) {
         $this->seo(array("title" => "Publisher Performance"));
         $view = $this->getActionView();
+        $start = RequestMethods::get("start", date('Y-m-d', strtotime("-2 day")));
+        $end = RequestMethods::get("end", date('Y-m-d', strtotime("-1 day")));
 
-        $publisher = User::first(["id = ?" => $id], ["id", "name"]);
-        $view->set("publisher", $publisher);
+        $publisher = User::first(["id = ?" => $id, "org_id = ?" => $this->org->_id], ["id", "name"]);
+        $performances = \Performance::all(['user_id' => $publisher->id, 'created' => Db::dateQuery($start, $end)], [], 'created', 'desc');
+        $view->set("publisher", $publisher)
+            ->set("data", $performances)
+            ->set("start", $start)
+            ->set("end", $end);
     }
 
     /**
