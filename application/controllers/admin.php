@@ -98,12 +98,14 @@ class Admin extends Auth {
                         $meta["widgets"] = RequestMethods::post("widgets");
                         $org->meta = $meta;
                     }
-                    if (RequestMethods::post("zopim")) {
-                        echo "here";
-                        $meta = $org->meta;
-                        $meta["zopim"] = RequestMethods::post("zopim");
-                        $org->meta = $meta;
+                    $zopim = RequestMethods::post("zopim");
+                    $meta = $org->meta;
+                    $meta["zopim"] = $zopim;
+                    if (strlen($zopim) == 0) {
+                        unset($meta["zopim"]);
                     }
+                    $org->meta = $meta;
+                    $org->logo = $this->_upload('logo');
                     $org->url = RequestMethods::post('url');
                     $org->email = RequestMethods::post('email');
                     $org->save(); $this->setOrg($org);
@@ -115,6 +117,12 @@ class Admin extends Auth {
     		}
     		$this->setUser($user);
     	}
+        if (RequestMethods::get("action") == "removelogo") {
+            @unlink(APP_PATH . '/public/assets/uploads/images/' . $org->logo);
+            $org->logo = null;
+            $org->save(); $this->setOrg($org);
+            $this->redirect("/admin/customization.html");
+        }
     }
 
     /**

@@ -1,5 +1,9 @@
 <div class="text-center">
-    <a href="/" class="logo logo-lg"><span>{echo $org->name}</span></a><br>
+    {if($org->logo)}
+    <a href="/" class="logo logo-lg"><img src="{echo CDN}uploads/images/{echo $org->logo}" class="img-responsive"></a>
+    {/if}{else}
+    <a href="/" class="logo logo-lg"><span>{echo $organization->name}</span> </a>
+    {/else}
     <b>Publisher Register</b>
 </div>
 <form class="form-horizontal m-t-20" action="" method="post">

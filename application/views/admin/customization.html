@@ -97,9 +97,11 @@
                                 <label>Image <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Allows you to add logo of your network"></i></label>
                                 {if(strlen($org->logo) > 3)}
                                 <img src="{echo CDN}uploads/images/{echo $org->logo}" class="img-thumbnail">
-                                {/if}
-                                <input type="file" class="form-control" name="image">
+                                <a href="/admin/customization.html?action=removelogo" class="btn btn-danger pull-right btn-xs">Remove Image</a>
+                                {/if} {else}
+                                <input type="file" class="form-control" name="logo">
                                 <span class="help-block text-info">Image should be 450px X 150px</span>
+                                {/else}
                             </div>
                             <input type="hidden" name="action" value="org">
                             <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
