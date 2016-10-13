@@ -257,9 +257,17 @@ class Campaign extends Admin {
         if(!$c) $this->redirect("/campaign/manage.html");
         $this->seo(['title' => 'Edit '.$c->title, 'description' => 'Edit the campaign']);
         $view = $this->getActionView();
-        
-        $comm = \Commission::first(["ad_id = ?" => $c->_id]);
+
         $categories = \Category::all(['org_id' => $this->org->id], ['_id', 'name']);
+        if (RequestMethods::get("action") == "commdel") {
+            $comm = \Commission::first(["id = ?" => RequestMethods::get('id')]);
+            if ($comm) {
+                $comm->delete();
+                $view->set("message", "Commission deleted!!");
+            }
+        }
+        
+        $comms = \Commission::all(["ad_id = ?" => $c->_id]);
         
         if (RequestMethods::post("action") == "adedit") {
             $img = $c->image;
@@ -272,6 +280,11 @@ class Campaign extends Admin {
             $c->title = RequestMethods::post('title');
             $c->description = RequestMethods::post('description');
             $c->device = RequestMethods::post('device', ['all']);
+            
+            $expiry = RequestMethods::post('expiry');
+            if ($expiry) {
+                $c->expiry = $expiry;
+            }
 
             if (!$c->validate()) {
                 $view->set("errors", $c->errors);
@@ -282,6 +295,7 @@ class Campaign extends Admin {
             }
         }
         if (RequestMethods::post("action") == "commedit") {
+            $comm = \Commission::first(["id = ?" => RequestMethods::post('cid')]);
             $comm->model = RequestMethods::post('model');
             $comm->description = RequestMethods::post('description');
             $comm->rate = $this->currency(RequestMethods::post('rate'));
@@ -289,13 +303,26 @@ class Campaign extends Admin {
             $comm->coverage = RequestMethods::post('coverage', ['ALL']);
 
             $comm->save();
-            $view->set("message", "Campaign updated!!");
+            $view->set("message", "Commission updated!!");
+        }
+
+        if (RequestMethods::post("action") == "commadd") {
+            $commission = new \Commission([
+                'ad_id' => $c->_id,
+                'description' => RequestMethods::post('description'),
+                'model' => RequestMethods::post('model'),
+                'rate' => $this->currency(RequestMethods::post('rate')),
+                'revenue' => $this->currency(RequestMethods::post('revenue')),
+                'coverage' => RequestMethods::post('coverage', ['ALL'])
+            ]);
+            $commission->save();
+            $view->set("message", "Commission added!!");
         }
 
         $view->set("c", $c)
             ->set('categories', $categories)
             ->set("countries", Shared\Markup::countries())
-            ->set("comm", $comm);
+            ->set("comms", $comms);
 
     }
 
