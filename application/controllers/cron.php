@@ -140,6 +140,7 @@ class Cron extends Shared\Controller {
         if (!$date) {
             $date = date('Y-m-d', strtotime('-1 day'));
         }
+        $date = date('Y-m-d', strtotime('-1 day'));
         // find the publishers
         $publishers = \User::all(['type = ?' => 'publisher', 'live = ?' => true], ['_id', 'email', 'meta', 'org_id']);
         $dq = ['start' => $date, 'end' => $date];
@@ -156,12 +157,13 @@ class Cron extends Shared\Controller {
             $clicks = Db::query('Click', [
                 'pid' => $p->_id, 'is_bot' => false,
                 'created' => Db::dateQuery($date, $date)
-            ], ['adid', 'country']);
+            ], ['adid', 'country', 'device', 'os', 'referer']);
 
             $perf = Performance::exists($p, $date);
             
             // classify the clicks according to AD ID
             $classify = \Click::classify($clicks, 'adid');
+            $countryWise = []; $deviceWise = []; $osWise = []; $refWise = [];
             foreach ($classify as $key => $value) {
                 $ad = \Ad::find($adsInfo, $key, ['user_id', 'url']);
                 $advert = Usr::find($advertisers, $ad->user_id, ['_id', 'meta', 'email', 'org_id']);
@@ -170,6 +172,7 @@ class Cron extends Shared\Controller {
                 $countries = \Click::classify($value, 'country');
                 foreach ($countries as $country => $records) {
                     $updateData = []; $adClicks = count($records);
+                    ArrayMethods::counter($countryWise, $country, $adClicks);
 
                     $pComm = \Commission::campaignRate($key, $commInfo, $country, array_merge([
                         'type' => 'publisher', 'publisher' => $p
@@ -185,10 +188,24 @@ class Cron extends Shared\Controller {
                     $earning = \Ad::earning($aComm, $adClicks); ArrayMethods::copy($earning, $updateData);
                     $advertPerf->update($updateData);
                 }
+
+                $deviceWise = Click::classifyInfo(['clicks' => $value, 'type' => 'device', 'arr' => $deviceWise]);
+                $osWise = Click::classifyInfo(['clicks' => $value, 'type' => 'os', 'arr' => $osWise]);
+                $refWise = Click::classifyInfo(['clicks' => $value, 'type' => 'referer', 'arr' => $refWise]);
             }
 
             $msg = 'Performance saved for user: ' . $p->email. ' with clicks: ' . $perf->clicks . ' impressions: ' . $perf->impressions;
             $this->log($msg);
+
+            $splitCountry = ArrayMethods::topValues($countryWise);
+            $splitCountry['rest'] = array_sum($countryWise) - array_sum($splitCountry);
+            $meta = [
+                'country' => $splitCountry,
+                'device' => ArrayMethods::topValues($deviceWise, count($deviceWise)),
+                'os' => ArrayMethods::topValues($osWise, count($osWise)),
+                'referer' => ArrayMethods::topValues($refWise, count($refWise))
+            ];
+            $perf->meta = $meta;
             $perf->save();
         }
 

@@ -84,10 +84,9 @@ class Performance extends Shared\Model {
     }
 
     public static function exists($user, $date) {
-        $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
         $perf = self::first([
             'user_id' => $user->_id,
-            'created' => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]
+            'created' => \Shared\Services\Db::dateQuery($date, $date)
         ]);
         if (!$perf) {
             $perf = new self([
@@ -95,9 +94,8 @@ class Performance extends Shared\Model {
                 'created' => $date
             ]);
         }
-        $perf->clicks = 0; $perf->impressions = 0;
-        $perf->revenue = 0.00;
-        $perf->cpc = 0.00; $perf->conversions = 0;
+        $perf->clicks = $perf->impressions = $perf->conversions = 0;
+        $perf->revenue = $perf->cpc = 0.00;
         return $perf;
     }
 

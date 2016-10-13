@@ -129,6 +129,9 @@ class Click extends Shared\Model {
                 case 'adid':
                 case 'pid':
                 case 'country':
+                case 'device':
+                case 'os':
+                case 'referer':
                     $key = Utils::getMongoID($c->$type);
                     break;
                 
@@ -136,11 +139,35 @@ class Click extends Shared\Model {
                     $key = Utils::getMongoID($c->adid);        
                     break;
             }
+            if (strlen($key) == 0) {
+                $key = "Empty";
+            }
+            $key = str_replace(".", "-", $key);
+
             if (!isset($classify[$key]) || !array_key_exists($key, $classify)) {
                 $classify[$key] = [];
             }
             $classify[$key][] = $c;
         }
         return $classify;
+    }
+
+    public static function counter($clicks) {
+        $result = [];
+        foreach ($clicks as $k => $v) {
+            $result[$k] = count($v);
+        }
+        return $result;
+    }
+
+    public static function classifyInfo($opts = []) {
+        $clicks = $opts['clicks']; $type = $opts['type'];
+        $arr = $opts['arr'];
+
+        $deviceClicks = self::classify($clicks, $type);
+        $from = self::counter($deviceClicks);
+        ArrayMethods::add($from, $arr);
+
+        return $arr;
     }
 }

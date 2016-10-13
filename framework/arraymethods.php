@@ -92,7 +92,7 @@ namespace Framework {
             $file_keys = array_keys($array);
             $file_count = count($array[$file_keys[0]]);
             
-            for ($i=0; $i < $file_count; $i++) {
+            for ($i = 0; $i < $file_count; $i++) {
                 foreach ($file_keys as $key) {
                     $file_ary[$i][$key] = $array[$key][$i];
                 }
@@ -105,6 +105,38 @@ namespace Framework {
             foreach ($from as $key => $value) {
                 $to[$key] = $value;
             }
+        }
+
+        public static function counter(&$arr, $key, $count) {
+            if (!array_key_exists($key, $arr)) {
+                $arr[$key] = 0;
+            }
+            $arr[$key] += $count;
+        }
+
+        public static function add(&$from, &$to) {
+            foreach ($from as $key => $value) {
+                if (!array_key_exists($key, $to)) {
+                    $to[$key] = 0;
+                }
+                $to[$key] += $value;
+            }
+        }
+
+        public static function topValues($arr, $count = 10, $order = 'desc') {
+            $result = [];
+            switch ($order) {
+                case 'desc':
+                    arsort($arr);
+                    break;
+                
+                case 'asc':
+                    asort($arr);
+                    break;
+            }
+            
+            $result = array_slice($arr, 0, $count);
+            return $result;
         }
 
     }
