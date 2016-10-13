@@ -4,6 +4,7 @@
  * @author Faizan Ayubi
  */
 use Framework\RequestMethods as RequestMethods;
+
 class User extends Shared\Model {
     const ROLES = ['afm' => 'Affiliate Manager', 'adm' => 'Advertiser Manager', 'admin' => 'Admin', 'publisher' => 'Publisher', 'advertiser' => 'Advertiser'];
 
@@ -101,17 +102,18 @@ class User extends Shared\Model {
      */
     protected $_login = null;
 
-    public function setEmail($email) {
-        $this->_email = strtolower($email);
+    public static function hourly() {
+        $users = self::all(['meta.pixel' => "working"]);
+        foreach ($users as $u) {
+            $meta = $u->meta;
+            unset($meta['pixel']);
+            $u->meta = $meta;
+            $u->save();
+        }
     }
 
-    public function getMeta() {
-        if (!$this->_meta) {
-            $meta = [];
-        } else {
-            $meta = $this->_meta;
-        }
-        return $meta;
+    public function setEmail($email) {
+        $this->_email = strtolower($email);
     }
 
     public function convert($n, $p=true, $places = 2) {

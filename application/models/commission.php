@@ -80,7 +80,7 @@ class Commission extends \Shared\Model {
         $info = ['campaign' => 'cpc', 'rate' => 0, 'revenue' => 0, 'type' => $extra['type']];
         if (!is_array($comm)) return $info;
 
-        $commission = (array_key_exists($country, $comm)) ? $comm[$country] : $comm['ALL']; // because commission might not exists if country is null
+        $commission = (array_key_exists($country, $comm)) ? $comm[$country] : @$comm['ALL']; // because commission might not exists if country is null
 
         if (!is_object($commission)) {
             return $info;
@@ -97,7 +97,13 @@ class Commission extends \Shared\Model {
             
             case 'publisher':
                 $pub = $extra['publisher'];
-                $info['rate'] = (float) $commission->rate;
+                $comm = $pub->meta['commission'] ?? [];
+
+                if (isset($comm['rate'])) {
+                    $info['rate'] = (float) $comm['rate'];
+                } else {
+                    $info['rate'] = (float) $commission->rate;
+                }
                 $query['pid'] = $pub->_id;
                 break;
         }

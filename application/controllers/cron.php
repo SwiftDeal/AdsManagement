@@ -88,8 +88,9 @@ class Cron extends Shared\Controller {
 
     protected function _settings() {
         // The Model should handle its cron tasks - hourly, daily
-        // \Ad::hourly();
+        \Ad::hourly();
         \Click::hourly();
+        \User::hourly();
     }
 
     public function widgets() {

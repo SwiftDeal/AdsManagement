@@ -49,6 +49,15 @@ namespace Shared {
             // override this method to do cron tasks
         }
 
+        public function &getMeta() {
+            if (property_exists($this, '_meta')) {
+                return $this->_meta;
+            } else if (property_exists($this, 'meta')) {
+                return $this->meta;
+            }
+            return [];
+        }
+
         public static function objectArr($arr = [], $fields = []) {
             $results = [];
             foreach ($arr as $key => $a) {
