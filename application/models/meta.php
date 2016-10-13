@@ -11,6 +11,7 @@ class Meta extends Shared\Model {
      * @readwrite
      * @type text
      * @index
+     * @validate required
      */
     protected $_prop;
 
@@ -19,6 +20,7 @@ class Meta extends Shared\Model {
      * @readwrite
      * @type mongoid
      * @index
+     * @validate required
      */
     protected $_propid;
 
@@ -27,6 +29,7 @@ class Meta extends Shared\Model {
      * @readwrite
      * @type array
      * @index
+     * @validate required
      */
     protected $_value;
 

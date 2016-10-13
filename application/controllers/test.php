@@ -11,6 +11,25 @@ use Shared\Utils as Utils;
 use Framework\ArrayMethods as ArrayMethods;
 
 class Test extends Auth {
+    /**
+     * @before _admin
+     */
+    public function sendMail() {
+        $this->noview();
+        $cf = Registry::get("configuration")->parse("configuration/cf")->cloudflare;
+
+        try {
+            \Shared\Services\Smtp::sendMail($this->org, [
+                'template' => 'testmail',
+                'user' => $this->user,
+                'to' => [$cf->api->email],  // this argument expects array value
+                'subject' => "Testing Mail using SMTP"
+            ]);
+            var_dump('Mail sent');
+        } catch (\Exception $e) {
+            var_dump($e->getMessage());
+        }
+    }
 
     /**
      * @before _admin

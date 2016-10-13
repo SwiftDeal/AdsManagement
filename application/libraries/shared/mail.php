@@ -26,7 +26,7 @@ class Mail {
         return self::$_conf['mailgun'];
     }
     
-    protected static function _body($options) {
+    public static function _body($options) {
         $template = $options["template"];
         $view = new \Framework\View(array(
             "file" => APP_PATH . "/application/views/layouts/email/{$template}.html"

@@ -163,32 +163,34 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>SMTP Server</label>
-                                    <input type="text" name="server" class="form-control" required="">
+                                    <input type="text" value="{echo @$mailConf['server']}" name="server" class="form-control" required="">
                                 </div>
                                 <div class="form-group">
                                     <label>SMTP Username</label>
-                                    <input type="text" name="username" class="form-control" required="">
+                                    <input type="text" value="{echo @$mailConf['username']}" name="username" class="form-control" required="">
                                 </div>
                                 <div class="form-group">
                                     <label>From Email Name <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Email name will be shown in email"></i></label>
-                                    <input type="text" name="from" class="form-control" required="">
+                                    <input type="text" value="{echo @$mailConf['from']}" name="from" class="form-control" required="">
                                 </div>
                                 <div class="form-group">
                                     <label>Email</label>
-                                    <input type="email" name="email" class="form-control" required="">
+                                    <input type="email" value="{echo @$mailConf['email']}" name="email" class="form-control" required="">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Security Type</label>
-                                    <select name="security" class="form-control selectpicker" data-live-search=false title="Choose a device target">
+                                    {script $val = $mailConf['security'] ?? 'ssltls'}
+                                    <!-- Note: ASK SSL PORT from the user -->
+                                    <select name="security" data-value='{echo json_encode(["$val"])}' class="selectVal form-control selectpicker" data-live-search=false title="Choose a device target">
                                         <option value="ssltls">SSL/TLS</option>
                                         <option value="starttls">STARTTLS</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <label>PORT</label>
-                                    <input type="text" name="port" class="form-control" required="">
+                                    <input type="text" value="{echo @$mailConf['port']}" name="port" class="form-control" required="">
                                 </div>
                                 <div class="form-group">
                                     <label>Password</label>

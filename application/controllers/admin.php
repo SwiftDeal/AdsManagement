@@ -126,6 +126,8 @@ class Admin extends Auth {
 
         $user = $this->user; $org = $this->org;
         $view->set("errors", []);
+        $mailConf = Meta::first(['prop' => 'orgSmtp', 'propid' => $this->org->_id]) ?? (object) [];
+        $view->set('mailConf', $mailConf->value ?? []);
         if (RequestMethods::type() == 'POST') {
             $action = RequestMethods::post('action', '');
             switch ($action) {
@@ -145,6 +147,12 @@ class Admin extends Auth {
 
                 case 'categories':
                     $msg = Category::updateNow($this->org);
+                    $view->set('message', $msg);
+                    break;
+
+                case 'smtp':
+                    // Ask SSL port from the user
+                    $msg = \Shared\Services\Smtp::create($this->org);
                     $view->set('message', $msg);
                     break;
             }
