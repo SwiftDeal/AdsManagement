@@ -191,7 +191,7 @@ class Auth extends Controller {
             "password" => sha1($pass),
             "phone" => RequestMethods::post("phone"),
             "country" => RequestMethods::server("HTTP_CF_IPCOUNTRY", "IN"),
-            "currency" => "INR",
+            "currency" => "USD",
             "type" => "publisher",
             "live" => false
         ));
@@ -239,7 +239,7 @@ class Auth extends Controller {
             "password" => sha1(RequestMethods::post("password")),
             "phone" => RequestMethods::post("phone"),
             "country" => RequestMethods::server("HTTP_CF_IPCOUNTRY", "IN"),
-            "currency" => "INR",
+            "currency" => "USD",
             "type" => "advertiser",
             "live" => false
         ));
