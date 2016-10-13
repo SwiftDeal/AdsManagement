@@ -51,29 +51,69 @@
                         <div class="tab-pane active" id="home">
                             <div class="row">
                                 <div class="col-md-4">
-                                    <img src="{echo CDN}uploads/images/{echo $ad->image}" alt="" width="300">
+                                    <img src="{echo CDN}uploads/images/{echo $ad->image}" alt="" width="300" class="img-responsive">
                                 </div>
-                                <div class="col-md-4">
-                                    <p>Offer Revenue: {echo $user->convert($c->rate)} {echo strtoupper($c->model)}</p>
-                                    <p>Status: {if($ad->live)}<span class="label label-success">Active</span>{/if}{else}<span class="label label-warning">Inactive</span>{/else}</p>
-                                    <p>Advertiser: {echo $advertiser->name}</p>
-                                    <p>
-                                        Category: 
-                                        {foreach $cat in $ad->category}
-                                            {script $key = Shared\Utils::getMongoID($cat)}
-                                            <label class="label label-info">{echo $categories[$key]->name}</label>
-                                        {/foreach}
-                                    </p>
-                                    <p>Link: <a href="{echo $ad->url}" target="_blank">{echo $ad->url}</a></p>
+                                <div class="col-md-8">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <tr>
+                                                <th>Status</th>
+                                                <td>{if($ad->live)}<span class="label label-success">Active</span>{/if}{else}<span class="label label-warning">Inactive</span>{/else}</td>
+                                                <th>Advertiser</th>
+                                                <td>{echo $advertiser->name}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Category</th>
+                                                <td>
+                                                    {foreach $cat in $ad->category}
+                                                        {script $key = Shared\Utils::getMongoID($cat)}
+                                                        <label class="label label-info">{echo $categories[$key]->name}</label>
+                                                    {/foreach}
+                                                </td>
+                                                <th>Created</th>
+                                                <td>{echo Framework\StringMethods::only_date($ad->created)}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Device Targeted</th>
+                                                <td>{echo implode(",", $ad->device)}</td>
+                                                <th>Link</th>
+                                                <td><a href="{echo $ad->url}" target="_blank">{echo $ad->url}</a></td>
+                                            </tr>
+                                            {if(!in_array("cpc", $models))}
+                                            <tr>
+                                                <th>Postback URL</th>
+                                                <td><code>http://track.vnative.com/acquisition?click_id={click_id}</code></td>
+                                                <th>CPA Conversion Pixel</th>
+                                                <td><code>&lt;img src='{echo "http://track." . $domain}/pixel?adid={echo $ad->_id}'&gt;</code></td>
+                                            </tr>
+                                            {/if}
+                                        </table>
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <p>Offer Payout: {echo $user->convert($c->revenue)} {echo strtoupper($c->model)}</p>
-                                    <p>Created: {echo Framework\StringMethods::only_date($ad->created)}</p>
-                                    <p>Pricing Type: {echo strtoupper($c->model)}</p>
-                                    <p>GEO: {echo implode(",", $c->coverage)}</p>
-                                    <p>Device: {echo implode(",", $ad->device)}</p>
-                                    <p>Postback URL: <code>http://track.vnative.com/acquisition?click_id={click_id}</code></p>
-                                    <p>CPA Conversion Pixel: <code>&lt;img src='{echo "http://track." . $domain}/pixel?adid={echo $ad->_id}'&gt;</code></p>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h3>Commission Details</h3>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <tr>
+                                                <th>Model</th>
+                                                <th>Coverage</th>
+                                                <th>Revenue</th>
+                                                <th>Payout</th>
+                                                <th>Description</th>
+                                            </tr>
+                                            {foreach $comm in $comms}
+                                            <tr>
+                                                <td>{echo strtoupper($comm->model)}</td>
+                                                <td>{echo implode(",", $comm->coverage)}</td>
+                                                <td>{echo $user->convert($comm->revenue)}</td>
+                                                <td>{echo $user->convert($comm->rate)}</td>
+                                                <td>{echo $comm->description}</td>
+                                            </tr>
+                                            {/foreach}
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>

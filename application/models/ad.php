@@ -161,8 +161,10 @@ class Ad extends Shared\Model {
         }
         @unlink(APP_PATH . '/public/assets/uploads/images/' . $this->image);
         parent::delete();
-        $com = \Commission::first(["ad_id = ?" => $id]);
-        $com->delete();
+        $coms = \Commission::all(["ad_id = ?" => $id]);
+        foreach ($coms as $com) {
+            $com->delete();
+        }
 
         // also need to remove the links
         \Link::deleteAll(['ad_id' => $id]);
