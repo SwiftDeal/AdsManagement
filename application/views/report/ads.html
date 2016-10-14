@@ -46,25 +46,27 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {foreach $c in $ads} {script $cm = Commission::first(["ad_id = ?" => $c->id])}
+                                        {foreach $records in $stats}
+                                        {script $ad = Ad::first(['_id' => $records_i], ['_id', 'title', 'url', 'image', 'live'])}
+                                        {script $cm = Commission::first(["ad_id = ?" => $ad->_id])}
                                         <tr>
                                             <td>
-                                                {if $c->live}
+                                                {if $ad->live}
                                                 <span class="label label-success">Active</span>
                                                 {/if} {else}
                                                 <span class="label label-warning">Inactive</span>
                                                 {/else}
                                             </td>
                                             <td>
-                                                <img src="{echo $c->image}" alt="" width="70" height="70"><br>
-                                                <a href="{echo $c->url}" target="_blank" class="btn btn-xs btn-default">Landing Page</a>
+                                                <img src="{echo CDN. 'uploads/images/'.$ad->image}" alt="" width="70" height="70"><br>
+                                                <a href="{echo $ad->url}" target="_blank" class="btn btn-xs btn-default">Landing Page</a>
                                             </td>
-                                            <td><a href="/campaign/details/{echo $c->id}">{echo $c->title}</a></td>
-                                            <td>{echo $c->clicks}</td>
+                                            <td><a href="/campaign/details/{echo $ad->_id}">{echo $ad->title}</a></td>
+                                            <td>{echo $records}</td>
                                             <td>
                                                 {echo $user->convert($cm->rate)} <b>{echo strtoupper($cm->model)}</b>
                                             </td>
-                                            <td>{echo $user->convert($c->clicks*$cm->rate)}</td>
+                                            <td>{echo $user->convert($records * $cm->rate)}</td>
                                         </tr>
                                         {/foreach}
                                     </tbody>

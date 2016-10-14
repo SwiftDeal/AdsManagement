@@ -41,6 +41,7 @@
                                             <th>ID</th>
                                             <th>Name</th>
                                             <th>Clicks</th>
+                                            <th>Traffic</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -49,9 +50,16 @@
                                         {script $p = User::first(['_id' => $records_i], ['_id', 'name', 'live'])}
                                         <tr>
                                             <td># {echo $i++}</td>
-                                            <td><span class="text {echo ($p->live === true) ? 'text-success' : 'text-warning'}">{echo $p->id}</span></td>
+                                            <td><span class="text {echo ($p->live === true) ? 'text-success' : 'text-warning'}">{echo $p->_id}</span></td>
                                             <td>{echo $p->name}</td>
                                             <td>{echo $records}</td>
+                                            {script $traffic = $deviceStats[$p->_id] ?? []}
+                                            {script $traffic = Framework\ArrayMethods::percentage($traffic)}
+                                            <td>
+                                                {foreach $t in $traffic}
+                                                <span class="label label-primary">{echo $t_i} - {echo $t}%</span>
+                                                {/foreach}
+                                            </td>
                                             <td>
                                                 {if !$p->live}
                                                 <a href="/publisher/update/{echo $p->_id}" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" data-original-title="Activate"><i class="fa fa-check"></i></a>

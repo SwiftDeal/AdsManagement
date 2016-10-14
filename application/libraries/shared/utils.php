@@ -16,10 +16,18 @@ class Utils {
 	}
 
 	public static function mongoObjectId($id) {
-		if (!is_object($id) || !is_a($id, 'MongoDB\BSON\ObjectID')) {
-            $id = new \MongoDB\BSON\ObjectID($id);
+		$result = "";
+		if (is_array($id)) {
+			$result = [];
+			foreach ($id as $i) {
+				$result[] = self::mongoObjectId($i);
+			}
+		} else if (!is_object($id) || !is_a($id, 'MongoDB\BSON\ObjectID')) {
+            $result = new \MongoDB\BSON\ObjectID($id);
+        } else {
+        	$result = $id;
         }
-        return $id;
+        return $result;
 	}
 
 	public static function downloadImage($url = null) {

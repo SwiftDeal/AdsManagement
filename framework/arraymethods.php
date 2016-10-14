@@ -139,6 +139,21 @@ namespace Framework {
             return $result;
         }
 
+        public static function percentage($arr) {
+            $arr = self::topValues($arr, count($arr));
+            $total = array_sum($arr);
+            $result = [];
+
+            if ($total == 0) {
+                return $result;
+            }
+
+            foreach ($arr as $key => $value) {
+                $result[$key] = (int) (round($value / $total, 2) * 100);
+            }
+            return $result;
+        }
+
     }
 
 }

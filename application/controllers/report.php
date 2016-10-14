@@ -24,11 +24,8 @@ class Report extends Admin {
         $start = $dateQuery['start']; $end = $dateQuery['end'];
 
         // Only find the ads for this organizations
-        $allAds = \Ad::all(['org_id' => $this->org->_id], ['_id', 'title', 'url', 'image', 'live']);
-        $in = []; $ads = [];
-        foreach ($allAds as $a) {
-            $in[] = Utils::mongoObjectId($a->_id);
-        }
+        $allAds = \Ad::all(['org_id' => $this->org->_id], ['_id']);
+        $in = Utils::mongoObjectId(array_keys($allAds));
 
         $clickCol = Registry::get("MongoDB")->clicks;
         $clicks = $clickCol->find([
@@ -38,25 +35,9 @@ class Report extends Admin {
         ], ['projection' => ['adid' => 1]]);
 
         $classify = \Click::classify($clicks, 'adid');
-        foreach ($classify as $key => $value) {
-            $ads[$key] = count($value);
-        }
-        
-        if (count($ads) == 0) return $view->set('ads', []);
-        arsort($ads, SORT_NUMERIC);
-        $result = [];
-        foreach ($ads as $key => $value) {
-        	$a = $allAds[$key];
-        	$result[] = ArrayMethods::toObject([
-        		'title' => $a->title,
-                'id' => $key,
-        		'image' => CDN. 'uploads/images/'.$a->image,
-        		'live' => $a->live,
-                'url' => $a->url,
-        		'clicks' => $value
-        	]);
-        }
-        $view->set('ads', $result);
+        $stats = Click::counter($classify);
+        $stats = ArrayMethods::topValues($stats, 50);
+        $view->set('stats', $stats);
     }
 
     /**
@@ -107,12 +88,19 @@ class Report extends Admin {
             'created' => ['$gte' => $start, '$lte' => $end],
             'is_bot' => false,
             'pid' => ['$in' => $in]
-        ], ['projection' => ['pid' => 1]]);
+        ], ['projection' => ['pid' => 1, 'device' => 1]]);
         
         $classify = \Click::classify($clicks, 'pid');
         $stats = Click::counter($classify);
         $stats = ArrayMethods::topValues($stats, 50);
-        $view->set('stats', $stats);
+
+        $deviceStats = [];
+        foreach ($stats as $pid => $count) {
+            $device = Click::classifyInfo(['clicks' => $classify[$pid], 'type' => 'device', 'arr' => []]);
+            $deviceStats[$pid] = $device;
+        }
+        $view->set('stats', $stats)
+            ->set('deviceStats', $deviceStats);
     }
 
     /**
