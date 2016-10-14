@@ -29,23 +29,19 @@
                             </a>
                         </li>
                         <li class="">
-                            <a href="#profile" data-toggle="tab" aria-expanded="false">
-                                <span class="visible-xs"><i class="fa fa-user"></i></span>
-                                <span class="hidden-xs">Approved</span>
-                            </a>
-                        </li>
-                        <li class="">
                             <a href="#stats" data-toggle="tab" aria-expanded="false">
                                 <span class="visible-xs"><i class="fa fa-graph"></i></span>
                                 <span class="hidden-xs">Stats</span>
                             </a>
                         </li>
+                        {if(!empty(array_intersect(["cpa", "cps", "cpl"], $models)))}
                         <li class="">
                             <a href="#pixelTest" data-toggle="tab" aria-expanded="false">
                                 <span class="visible-xs"><i class="fa fa-graph"></i></span>
                                 <span class="hidden-xs">Test Pixel</span>
                             </a>
                         </li>
+                        {/if}
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="home">
@@ -79,12 +75,23 @@
                                                 <th>Link</th>
                                                 <td><a href="{echo $ad->url}" target="_blank">{echo $ad->url}</a></td>
                                             </tr>
-                                            {if(!in_array("cpc", $models))}
+                                            {if(!empty(array_intersect(["cpa", "cps", "cpl"], $models)))}
                                             <tr>
                                                 <th>Postback URL</th>
                                                 <td><code>http://track.vnative.com/acquisition?click_id={click_id}</code></td>
                                                 <th>CPA Conversion Pixel</th>
                                                 <td><code>&lt;img src='{echo "http://track." . $domain}/pixel?adid={echo $ad->_id}'&gt;</code></td>
+                                            </tr>
+                                            {/if}
+                                            {if(in_array("cpi", $models))}
+                                            <tr>
+                                                <th>Tracking Integration</th>
+                                                <td><a href="http://vnative.com/how-to-integrate-cpi-tracking-in-android-app/" target="_blank">Instructions</a></td>
+                                                <th>CPI Tracking Pixel</th>
+                                                <td>
+                                                    <a href="https://gist.github.com/faizanayubi/8ec81f04ff57a530e26d0bdf034b2a9a" target="_blank">AndroidManifest.xml</a><br>
+                                                    <a href="#" target="_blank">ManyInstallTrackersReceiver.java</a>
+                                                </td>
                                             </tr>
                                             {/if}
                                         </table>
@@ -116,20 +123,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="tab-pane" id="profile">
-                            <form class="form-inline text-center" role="form" id="range">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" name="value" placeholder="Publisher Id">
-                                </div>
-                                <div class="form-group">
-                                    <select class="form-control" name="live">
-                                        <option value="1">Approve</option>
-                                        <option value="0">Block</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </form>
                         </div>
                         <div class="tab-pane" id="stats">
                             <div class="row">

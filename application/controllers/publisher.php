@@ -450,12 +450,17 @@ class Publisher extends Auth {
                     break;
             }
         }
+
         if (RequestMethods::get("action") == "payoutdel") {
-            $meta = $publisher->getMeta();
+            $meta = $publisher->meta;
             unset($meta['campaign']);
-            $publisher->meta = $meta;
+            if (empty($meta)) {
+                $publisher->meta = "";
+            } else {
+                $publisher->meta = $meta;
+            }
             $publisher->save();
-            $view->set('message', 'Payout Info Updated!!');
+            $view->set('message', 'Payout Deleted!!');
         }
         $view->set("publisher", $publisher);
     }
