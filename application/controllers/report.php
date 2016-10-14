@@ -100,10 +100,7 @@ class Report extends Admin {
 
         // find all the publishers for this organization
         $users = \User::all(['type' => 'publisher', 'org_id' => $this->org->_id], ['_id', 'name']);
-        $in = [];
-        foreach ($users as $u) {
-            $in[] = Utils::mongoObjectId($u->_id);
-        }
+        $in = $this->org->users();
 
         $clickCol = Registry::get("MongoDB")->clicks; $stats = [];
         $clicks = $clickCol->find([
@@ -113,23 +110,9 @@ class Report extends Admin {
         ], ['projection' => ['pid' => 1]]);
         
         $classify = \Click::classify($clicks, 'pid');
-        foreach ($classify as $key => $value) {
-            $stats[$key] = count($value);
-        }
-
-        if (count($stats) == 0) return $view->set('publishers', []);
-        arsort($stats, SORT_NUMERIC);
-        $result = [];
-        foreach ($stats as $key => $value) {
-            $u = $users[$key];
-
-        	$result[] = ArrayMethods::toObject([
-        		'name' => $u->name,
-        		'clicks' => $value
-			]);
-        }
-
-        $view->set('publishers', $result);
+        $stats = Click::counter($classify);
+        $stats = ArrayMethods::topValues($stats, 50);
+        $view->set('stats', $stats);
     }
 
     /**

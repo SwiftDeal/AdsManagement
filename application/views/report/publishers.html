@@ -38,16 +38,29 @@
                                     <thead>
                                         <tr>
                                             <th>Rank</th>
+                                            <th>ID</th>
                                             <th>Name</th>
                                             <th>Clicks</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {script $i = 1} {foreach $p in $publishers}
+                                        {script $i = 1} {foreach $records in $stats}
+                                        {script $p = User::first(['_id' => $records_i], ['_id', 'name', 'live'])}
                                         <tr>
                                             <td># {echo $i++}</td>
+                                            <td><span class="text {echo ($p->live === true) ? 'text-success' : 'text-warning'}">{echo $p->id}</span></td>
                                             <td>{echo $p->name}</td>
-                                            <td>{echo $p->clicks}</td>
+                                            <td>{echo $records}</td>
+                                            <td>
+                                                {if !$p->live}
+                                                <a href="/publisher/update/{echo $p->_id}" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" data-original-title="Activate"><i class="fa fa-check"></i></a>
+                                                {/if} {else}
+                                                <a href="/publisher/update/{echo $p->_id}" data-send='{echo json_encode(["live" => 0])}' class="update btn btn-xs btn-warning" data-toggle="tooltip" data-placement="top" data-original-title="Disable"><i class="fa fa-times"></i></a>
+                                                {/else}
+                                                <a href="/publisher/performance/{echo $p->_id}.html" class="btn btn-xs btn-inverse" data-toggle="tooltip" data-placement="top" data-original-title="Performance"><i class="fa fa-pie-chart"></i></a>
+                                                <a href="/auth/loginas/{echo $p->_id}" class="btn btn-xs btn-default" data-toggle="tooltip" data-placement="top" data-original-title="Sign in to this profile"><i class="fa fa-sign-in"></i></a>
+                                            </td>
                                         </tr>
                                         {/foreach}
                                     </tbody>

@@ -37,7 +37,7 @@
                                         <th>Id</th>
                                         <th>Name</th>
                                         <th>Email</th>
-                                        <th>Created</th>
+                                        <th>Last Login</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -53,7 +53,13 @@
                                         </td>
                                         <td>{echo $p->name}</td>
                                         <td>{echo $p->email}</td>
-                                        <td>{echo Framework\StringMethods::only_date($p->created)}</td>
+                                        <td>
+                                            {if $p->login}
+                                            {echo Framework\StringMethods::datetime_to_text($p->login)}
+                                            {/if} {else}
+                                            --- Empty ---
+                                            {/else}
+                                        </td>
                                         <td>
                                             <a href="/publisher/info/{echo $p->_id}.html" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" data-original-title="Edit"><i class="fa fa-edit"></i></a>
                                             {if !$p->live}

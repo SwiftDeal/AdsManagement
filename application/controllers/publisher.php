@@ -422,11 +422,10 @@ class Publisher extends Auth {
             $action = RequestMethods::post('action', '');
             switch ($action) {
                 case 'account':
-                    $publisher->name = RequestMethods::post('name');
-                    $publisher->email = RequestMethods::post('email');
-                    $publisher->phone = RequestMethods::post('phone');
-                    $publisher->country = RequestMethods::post('country');
-                    $publisher->currency = RequestMethods::post('currency');
+                    $fields = ['name', 'email', 'phone', 'country', 'currency'];
+                    foreach ($fields as $f) {
+                        $publisher->$f = RequestMethods::post($f);
+                    }
                     $publisher->save();
                     $view->set('message', 'Account Info updated!!');
                     break;
@@ -438,12 +437,10 @@ class Publisher extends Auth {
                     break;
 
                 case 'campaign':
-                    $meta = $publisher->getMeta();
-                    $meta['campaign'] = [
+                    $publisher->getMeta()['campaign'] = [
                         'model' => RequestMethods::post('model'),
                         'rate' => $this->currency(RequestMethods::post('rate'))
                     ];
-                    $publisher->meta = $meta;
                     $publisher->save();
                     $view->set('message', 'Payout Info Updated!!');
                     break;
