@@ -69,4 +69,19 @@ class User {
 		}
 		return $usr;
 	}
+
+	public static function trackingLinks($user, $org) {
+		$default = $org->tdomains;
+		switch ($user->type) {
+			case 'publisher':
+				// check if anything set in meta
+				$def = $user->meta['tdomain'] ?? $default;
+				if (is_string($def)) {
+					return [$def];
+				}
+			
+			default:
+				return $default;
+		}
+	}
 }

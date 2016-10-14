@@ -72,29 +72,32 @@
                         <th>STATUS</th>
                         <th>PREVIEW</th>
                         <th>TITLE</th>
-                        <th>TYPE</th>
                         <th>RATE</th>
                         <th>CLICKS</th>
                         <th>EARNINGS</th>
                     </tr>
                 </thead>
                 <tbody>
-                {script $clicks = Click::classify($clicks, 'adid')}
+                {script $adClicks = []} {script $commInfo = []}
+                {foreach $value in $clicks}
+                    {script $revenue = $ck_count = 0} {script $countries = Click::classify($value, 'country')}
+                    {foreach $records in $countries}
+
+                        {script $pComm = Commission::campaignRate($value_i, $commInfo, $records_i, array_merge([
+                            'type' => 'publisher', 'publisher' => $user
+                        ], $dq))}
+                        {script $ck_count += count($records)}
+                        {script $earning = Ad::earning($pComm, count($records))}
+                        {script $revenue += $earning['revenue']}
+                    {/foreach}
+
+                    {script $adClicks[$value_i] = ['revenue' => $revenue, 'clicks' => $ck_count]}
+                {/foreach}
                 {foreach $l in $links}
                     {script $a = Ad::first(["_id = ?" => $l->ad_id], ['_id', 'title', 'image', 'live', 'created'])}
-                    
                     {script $c = Commission::first(["ad_id = ?" => $l->ad_id])}
-
-                    <!-- find ad clicks and filter -->
-                    {script $key = $a->_id}
-                    {if array_key_exists($key, $clicks)}
-                        {script $adClicks = $clicks[$key]}
-                        <!-- Remove check func -->
-                        {script $uniqClicks = $adClicks}
-                    {/if} {else}
-                        {script $uniqClicks = []}
-                    {/else}
                     
+                    {script $data = $adClicks[$a->_id] ?? ['revenue' => 'None', 'clicks' => 'No Clicks']}
                     <tr>
                         <td>
                             {if $a->live}
@@ -109,17 +112,10 @@
                         </td>
                         <td><a href="/campaign/info/{$a->id}.html">{echo $a->title}</a></td>
                         <td>
-                            {echo strtoupper($c->model)} <br>
-                            <small>{echo $c->description}</small>
+                            {echo Commission::allRate($a->_id, $user)}
                         </td>
-                        {if($commission["model"] == $c->model)}
-                            {script $rate = $commission["rate"]}
-                        {/if} {else}
-                            {script $rate = $c->rate}
-                        {/else}
-                        <td>{echo $user->convert($rate)}</td>
-                        <td>{echo Shared\Markup::nice_number(count($uniqClicks))}</td>
-                        <td>{echo $user->convert($rate * count($uniqClicks))}</td>
+                        <td>{echo Shared\Markup::nice_number($data['clicks'])}</td>
+                        <td>{echo $user->convert($data['revenue'])}</td>
                     </tr>
                 {/foreach}
                 </tbody>

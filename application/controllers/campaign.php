@@ -33,7 +33,8 @@ class Campaign extends Admin {
         $view->set("c", $commission);
         $view->set("start", $start);
         $view->set("end", $end);
-        $view->set('commission', $this->user->commission());
+        $view->set('commission', $this->user->commission())
+            ->set('tdomains', \Shared\Services\User::trackingLinks($this->user, $this->org));
     }
 
     /**

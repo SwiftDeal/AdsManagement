@@ -82,7 +82,8 @@ class Publisher extends Auth {
             'limit' => $limit, 'page' => $page,
             'count' => $count, 'ads' => $ads,
             'model' => $model, 'rate' => $rate,
-            'categories' => $categories, 'coverage' => $coverage
+            'categories' => $categories, 'coverage' => $coverage,
+            'tdomains' => \Shared\Services\User::trackingLinks($this->user, $this->org)
         ]);
     }
 
@@ -92,8 +93,8 @@ class Publisher extends Auth {
     public function reports() {
         $this->seo(array("title" => "Campaigns"));$view = $this->getActionView();
         
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-3 day')));
+        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('-1 day')));
         $limit = RequestMethods::get("limit", 20);
         $page = RequestMethods::get("page", 1);
 
@@ -102,7 +103,7 @@ class Publisher extends Auth {
         $links = \Link::all($query, [], 'created', 'desc', $limit, $page);
         $count = \Link::count($query);
 
-        $query["created"] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
+        $query["created"] = Db::dateQuery($start, $end);
         $performances = \Performance::all($query, ['created', 'clicks', 'revenue'], 'created', 'desc');
         
         $in = [];
@@ -111,18 +112,19 @@ class Publisher extends Auth {
         }
         // find clicks
         $clickCol = Registry::get("MongoDB")->clicks;
-        $records = $clickCol->find([
+        $records = Db::query('Click', [
             'adid' => ['$in' => $in], 'is_bot' => false,
             'pid' => $query['user_id'], 'created' => $query['created']
-        ], ['projection' => ['adid' => 1]]);
+        ], ['adid', 'country']);
         
         $view->set([
             'limit' => $limit, 'page' => $page,
             'count' => $count, 'start' => $start,
             'end' => $end, 'links' => $links,
             'performances' => $performances,
-            'clicks' => $records,
-            'commission' => $this->user->commission()
+            'clicks' => Click::classify($records, 'adid'),
+            'commission' => $this->user->commission(),
+            'dq' => $query['created']
         ]);
     }
 
@@ -446,6 +448,16 @@ class Publisher extends Auth {
                     $view->set('message', 'Payout Info Updated!!');
                     break;
                 
+                case 'trackingDomain':
+                    $tdomain = RequestMethods::post('tdomain');
+                    if ($tdomain && in_array($tdomain, $this->org->tdomains)) {
+                        $publisher->getMeta()['tdomain'] = $tdomain;
+                        $publisher->save();
+
+                        $view->set('message', 'Added Tracking Domain for publisher');
+                    } else {
+                        $view->set('message', 'Invalid Request!!');
+                    }
                 default:
                     break;
             }

@@ -115,6 +115,26 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="m-t-0 header-title"><b>Default Tracking Link</b></h4>
+                        <form role="form" method="post" action="/publisher/info/{echo $publisher->id}">
+                            <div class="form-group">
+                                {script $tdomain = $publisher->meta['tdomain'] ?? ''}
+                                <select name="tdomain" class="form-control selectVal selectpicker" data-value='{echo json_encode(["$tdomain"])}' data-live-search="true" title="Select a Default Domain">
+                                    {foreach $domain in $org->tdomains}
+                                    <option value="{echo $domain}">{echo $domain}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                            
+                            <input type="hidden" name="action" value="trackingDomain">
+                            <button type="submit" class="btn btn-purple btn-sm waves-effect waves-light"><i class="fa fa-save"></i> Save</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
