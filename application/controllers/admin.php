@@ -214,17 +214,49 @@ class Admin extends Auth {
      */
     public function notification() {
         $this->seo(array("title" => "Notification"));
-        $view = $this->getActionView();
+        $view = $this->getActionView(); $fields = ['_id', 'name'];
+        
+        $arr = User::all(['org_id' => $this->org->_id, 'type' => 'publisher'], $fields);
+        $publishers = User::objectArr($arr, $fields);
+        $arr = User::all(['org_id' => $this->org->_id, 'type' => 'advertiser'], $fields);
+        $advertisers = User::objectArr($arr, $fields);
+
+        $view->set('publishers', $publishers)
+            ->set('advertisers', $advertisers);
 
         switch (RequestMethods::post("action")) {
             case 'save':
+                $meta = RequestMethods::post("meta");
+                $message = RequestMethods::post("message");
+                $success = "Saved Successfully";
+
+                if ($meta !== "all" && (
+                    !in_array($meta, array_keys($publishers)) &&
+                    !in_array($meta, array_keys($advertisers))
+                )) {
+                    $view->set('message', "Invalid Request!!");
+                    break;
+                } else if ($meta !== "all") {
+                    // send mail to the user
+                    $usr = User::first(['_id' => $meta], ['name', 'email']);
+                    \Shared\Services\Smtp::sendMail($this->org, [
+                        'template' => 'notification',
+                        'user' => $usr,
+                        'notification' => $message,
+                        'to' => [$usr->email],  // this argument expects array value
+                        'subject' => "Notification from " . $this->org->name,
+                        'org' => $this->org
+                    ]);
+                    $success .= " And Mail sent";
+                }
                 $n = new Notification([
                     "org_id" => $this->org->id,
-                    "message" => RequestMethods::post("message"),
-                    "target" => RequestMethods::post("target")
+                    "message" => $message,
+                    "target" => RequestMethods::post("target"),
+                    "meta" => $meta
                 ]);
                 $n->save();
-                $view->set("message", "Saved Successfully");
+                $view->set("message", $success);
                 break;
         }
 

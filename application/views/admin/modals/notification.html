@@ -1,3 +1,7 @@
+<script type="text/javascript">
+    var def = JSON.parse('{echo json_encode(["_id" => "all", "name" => "All"])}');
+</script>
+
 <div class="modal fade" id="createNotify" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <form action="/admin/notification.html" method="post" class="modal-content">
@@ -11,9 +15,18 @@
                 </div>
                 <div class="form-group">
                     <label>Target</label>
-                    <select class="form-control" name="target">
+                    <select class="form-control" id="targetSelect" name="target">
                         <option value="publishers" selected="">Publishers</option>
                         <option value="advertisers">Advertisers</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Meta</label>
+                    <select class="form-control selectpicker" data-live-search="true" id="listUsers" name="meta">
+                        <option value="all" selected="true">All</option>
+                        {foreach $p in $publishers}
+                        <option value="{echo $p->_id}">{echo $p->name}</option>
+                        {/foreach}
                     </select>
                 </div>
             </div>
@@ -25,3 +38,22 @@
         </form>
     </div>
 </div>
+<script type="text/javascript">
+    $('#targetSelect').on('change', function (e) {
+        e.preventDefault();
+
+        
+        var el = $('#listUsers');
+        var type = $(this).val();
+        el.html(' ');
+        el.append('<option value="' + def._id + '">' + def.name + '</option>');
+
+        request.get({url: 'admin/notification'}, function (err, d) {
+            var opts = d[type];
+            opts.forEach(function (opt) {
+                el.append('<option value="' + opt._id + '">' + opt.name + '</option>');
+            });
+            el.selectpicker('refresh');
+        });
+    });
+</script>

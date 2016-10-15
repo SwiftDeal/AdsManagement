@@ -29,7 +29,10 @@ class Publisher extends Auth {
             "created" => Db::dateQuery($start, $end)
         ], ['adid', 'country']);
 
-        $notifications = Notification::all(["org_id = ?" => $this->org->id], [], "created", "desc", 5, 1);
+        $notifications = Notification::all([
+            "org_id = ?" => $this->org->id,
+            "meta = ?" => ['$in' => ['all', $this->user->_id]]
+        ], [], "created", "desc", 5, 1);
         $total = Performance::overall(
             Utils::dateQuery([
                 'start' => strftime("%Y-%m-%d", strtotime('-365 day')),

@@ -24,6 +24,7 @@
                                         <th>Created</th>
                                         <th>Message</th>
                                         <th>Target</th>
+                                        <th>List</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -34,6 +35,7 @@
                                             <td>{echo Framework\StringMethods::only_date($n->created)}</td>
                                             <td>{echo $n->message}</td>
                                             <td>{echo $n->target}</td>
+                                            <td>{echo implode($n->meta)}</td>
                                             <td>
                                                 <a href="?action=delete&id={echo $n->_id}" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i> Remove</a>
                                             </td>
