@@ -7,6 +7,7 @@ use Framework\RequestMethods as RM;
 use Framework\Registry as Registry;
 use Framework\ArrayMethods as ArrayMethods;
 use Shared\Utils as Utils;
+use Shared\Services\Db as Db;
 
 class Report extends Admin {
     
@@ -20,19 +21,16 @@ class Report extends Admin {
         $start = RM::get("start", strftime("%Y-%m-%d", strtotime('now')));
         $end = RM::get("end", strftime("%Y-%m-%d", strtotime('now')));
         $q = ['start' => $start, 'end' => $end]; $view->set($q);
-        $dateQuery = Shared\Utils::dateQuery($q);
-        $start = $dateQuery['start']; $end = $dateQuery['end'];
 
         // Only find the ads for this organizations
         $allAds = \Ad::all(['org_id' => $this->org->_id], ['_id']);
         $in = Utils::mongoObjectId(array_keys($allAds));
 
-        $clickCol = Registry::get("MongoDB")->clicks;
-        $clicks = $clickCol->find([
-            'created' => ['$gte' => $start, '$lte' => $end],
+        $clicks = Db::query('Click', [
+            'created' => Db::dateQuery($start, $end),
             'is_bot' => false,
             'adid' => ['$in' => $in]
-        ], ['projection' => ['adid' => 1]]);
+        ], ['adid']);
 
         $classify = \Click::classify($clicks, 'adid');
         $stats = Click::counter($classify);
@@ -50,14 +48,10 @@ class Report extends Admin {
         $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-5 day')));
         $end = RM::get("end", strftime("%Y-%m-%d", strtotime('now')));
         $q = ['start' => $start, 'end' => $end]; $view->set($q);
-        $dateQuery = Shared\Utils::dateQuery($q);
-        $start = $dateQuery['start']; $end = $dateQuery['end'];
-
         $ad = \Ad::first(['org_id = ?' => $this->org->_id, 'id = ?' => $id]);
 
-        $clickCol = Registry::get("MongoDB")->clicks; $ads = [];
-        $count = $clickCol->count([
-            'created' => ['$gte' => $start, '$lte' => $end],
+        $count = Db::count([
+            'created' => Db::dateQuery($start, $end),
             'adid' => $ad->_id,
             'is_bot' => false
         ]);
@@ -79,16 +73,11 @@ class Report extends Admin {
         $dateQuery = Utils::dateQuery($q);
         $start = $dateQuery['start']; $end = $dateQuery['end'];
 
-        // find all the publishers for this organization
-        $users = \User::all(['type' => 'publisher', 'org_id' => $this->org->_id], ['_id', 'name']);
-        $in = $this->org->users();
-
-        $clickCol = Registry::get("MongoDB")->clicks; $stats = [];
-        $clicks = $clickCol->find([
-            'created' => ['$gte' => $start, '$lte' => $end],
+        $clicks = Db::query('Click', [
+            'created' => Db::dateQuery($start, $end),
             'is_bot' => false,
-            'pid' => ['$in' => $in]
-        ], ['projection' => ['pid' => 1, 'device' => 1]]);
+            'pid' => ['$in' => $this->org->users('publisher')]
+        ], ['pid', 'device']);
         
         $classify = \Click::classify($clicks, 'pid');
         $stats = Click::counter($classify);
@@ -120,12 +109,12 @@ class Report extends Admin {
 
         // Only find the ads for this organizations
         $ads = \Ad::all(['org_id' => $this->org->_id], ['_id']);
-        $in = []; $query = [];
-        foreach ($ads as $a) {
-            $in[] = Utils::mongoObjectId($a->_id);
-        }
+        $query = ['adid' => [
+            '$in' => Utils::mongoObjectId(array_keys($ads))
+            ]
+        ];
 
-        $query['adid'] = ['$in' => $in]; $searching = [];
+        $searching = [];
         foreach ($fields as $key => $value) {
             $search = RM::get($key);
             if (!$search) continue;
@@ -138,8 +127,7 @@ class Report extends Admin {
                 $query[$key] = Utils::mongoRegex($search);
             }
         }
-        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
-        $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
+        $query['created'] = Db::dateQuery($start, $end);
 
         $records = \Click::all($query, [], $orderBy, $sort, $limit, $page);
         $count = \Click::count($query);
@@ -169,14 +157,8 @@ class Report extends Admin {
         $end = RM::get("end", date('Y-m-d', strtotime('-1 day')));
         $fields = (new \Link())->getColumns();
 
-        // Only find the users for this organizations
-        $users = \User::all(['org_id' => $this->org->_id], ['_id']);
-        $in = []; $query = [];
-        foreach ($users as $u) {
-            $in[] = Utils::mongoObjectId($u->_id);
-        }
-
-        $query['user_id'] = ['$in' => $in]; $searching = [];
+        $searching = $query = [];
+        $query['user_id'] = ['$in' => $this->org->users('publisher')];
         foreach ($fields as $key => $value) {
             $search = RM::get($key);
             if (!$search) continue;
@@ -186,7 +168,7 @@ class Report extends Admin {
             if (in_array($key, ['user_id', 'ad_id', '_id'])) {
                 $query[$key] = RM::get($key);
             } else {
-                $query[$key] = new \MongoDB\BSON\Regex("/$search/i");
+                $query[$key] = Utils::mongoRegex($search);
             }
         }
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);

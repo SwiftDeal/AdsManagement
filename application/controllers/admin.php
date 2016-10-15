@@ -7,6 +7,7 @@ use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
 use Shared\Utils as Utils;
 use Framework\ArrayMethods as ArrayMethods;
+use Shared\Services\Db as Db;
 
 class Admin extends Auth {
 
@@ -19,17 +20,14 @@ class Admin extends Auth {
 
         $publishers = User::all([
             "org_id = ?" => $this->org->_id, "type = ?" => "publisher"
-        ], ["_id"]); $in = [];
-        foreach ($publishers as $p) {
-            $in[] = $p->_id;
-        }
-
+        ], ["_id"]);
+        $in = array_keys($publishers);
+        
         $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-4 day')));
         $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
-        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
         $query = [
             'user_id' => ['$in' => $in],
-            "created" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]
+            "created" => Db::dateQuery($start, $end)
         ];
         
         $perf = new Performance([
@@ -41,7 +39,7 @@ class Admin extends Auth {
             $perf->impressions += $p->impressions;
             $perf->revenue += $p->revenue;
         }
-        $topusers = $this->widgets($dateQuery);
+        $topusers = $this->widgets();
         if (array_key_exists("widgets", $this->org->meta)) {
             $d = in_array("top10ads", $this->org->meta["widgets"]) + in_array("top10pubs", $this->org->meta["widgets"]);
         }
@@ -52,15 +50,6 @@ class Admin extends Auth {
             ->set("links", \Link::count(['user_id' => ['$in' => $in]]))
             ->set("platforms", \Platform::count(['user_id' => ['$in' => $in]]))
             ->set("performance", $perf);
-    }
-
-    protected function orgusers($type = "publisher") {
-        $publishers = User::all(["org_id = ?" => $this->org->_id, "type = ?" => $type], ["_id"]);
-        $in = [];
-        foreach ($publishers as $p) {
-            $in[] = Utils::mongoObjectId($p->_id);
-        }
-        return $in;
     }
 
     /**
@@ -133,9 +122,10 @@ class Admin extends Auth {
         $view = $this->getActionView();
 
         $user = $this->user; $org = $this->org;
-        $view->set("errors", []);
         $mailConf = Meta::first(['prop' => 'orgSmtp', 'propid' => $this->org->_id]) ?? (object) [];
-        $view->set('mailConf', $mailConf->value ?? []);
+        $view->set('mailConf', $mailConf->value ?? [])
+            ->set("errors", []);
+        
         if (RequestMethods::type() == 'POST') {
             $action = RequestMethods::post('action', '');
             switch ($action) {
@@ -159,7 +149,6 @@ class Admin extends Auth {
                     break;
 
                 case 'smtp':
-                    // Ask SSL port from the user
                     $msg = \Shared\Services\Smtp::create($this->org);
                     $view->set('message', $msg);
                     break;
@@ -389,8 +378,11 @@ class Admin extends Auth {
         $transaction = \Transaction::first(['user_id' => $user->_id], [], 'created', 'desc');
         $dateQuery = [];
         if ($transaction) {
-            $dateQuery['start'] = $transaction->created;
-            $dateQuery['end'] = new \MongoDB\BSON\UTCDateTime(strtotime('now') * 1000);
+            $lastCreated = $transaction->created->format('Y-m-d');
+            $dateQuery = [
+                'start' => Db::time($lastCreated)
+                'end' => Db::time()
+            ];
         }
         $perf = \Performance::overall($dateQuery, $user);
 

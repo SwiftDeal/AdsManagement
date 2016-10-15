@@ -307,11 +307,8 @@ class Auth extends Controller {
         }
     }
 
-    protected function widgets($dateQuery = null) {
-        if (!$dateQuery) {
-            $date = RequestMethods::get("date", date('Y-m-d'));
-            $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
-        } $meta = $this->org->meta;
+    protected function widgets() {
+        $meta = $this->org->meta;
         if (isset($meta['widget']) && isset($meta['widget']['top10pubs']) && count($meta['widget']['top10pubs']) > 0) {
             $widgets = $meta['widget'];
             return [

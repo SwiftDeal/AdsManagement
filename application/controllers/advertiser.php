@@ -7,6 +7,7 @@ use Framework\ArrayMethods as ArrayMethods;
 use Framework\Registry as Registry;
 use Shared\Mail as Mail;
 use Shared\Utils as Utils;
+use Shared\Services\Db as Db;
 
 class Advertiser extends Auth {
 
@@ -19,11 +20,9 @@ class Advertiser extends Auth {
         $start = RequestMethods::get("start", date('Y-m-d', strtotime('-7 day')));
         $end = RequestMethods::get("end", date('Y-m-d'));
 
-        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
-
         $transactions = \Transaction::all([
             "user_id = ?" => $this->user->_id,
-            "created = ?" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]
+            "created = ?" => Db::dateQuery($start, $end)
         ], ['amount']);
 
         $paid = 0.00;
@@ -43,36 +42,27 @@ class Advertiser extends Auth {
         $this->seo(array("title" => "Campaigns"));$view = $this->getActionView();
         $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
         $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
-        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
 
         $limit = RequestMethods::get("limit", 20);
         $page = RequestMethods::get("page", 1);
 
-        $in = [];
-        $query = [
-            "user_id" => $this->user->id
-        ];
+        $query = [ "user_id" => $this->user->id ];
         $ads = \Ad::all($query, ['title', 'image', 'category', '_id', 'live', 'created'], 'created', 'desc', $limit, $page);
         $count = \Ad::count($query);
+        $in = Utils::mongoObjectId(array_keys($ads));
 
-        foreach ($ads as $a) {
-            $in[] = Utils::mongoObjectId($a->_id);
-        }
-
-        $query["created"] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
-        $clickCol = Registry::get("MongoDB")->clicks;
-        $records = $clickCol->find([
+        $query["created"] = Db::dateQuery($start, $end);
+        $records = Db::query('Click', [
             'adid' => ['$in' => $in],
             'is_bot' => false,
             'created' => $query["created"]
-        ], ['projection' => ['adid' => 1]]);
+        ], ['adid']);
 
         $view->set("ads", $ads);
         $view->set("start", $start);
         $view->set("end", $end);
         $view->set([
-            'count' => $count,
-            'page' => $page,
+            'count' => $count, 'page' => $page,
             'limit' => $limit,
             'dateQuery' => $query['created'],
             'clicks' => Click::classify($records, 'adid')
@@ -157,10 +147,11 @@ class Advertiser extends Auth {
 
         $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
         $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
-        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
 
-        $query = ['user_id = ?' => $this->user->_id];
-        $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
+        $query = [
+            'user_id = ?' => $this->user->_id,
+            'created = ?' => Db::dateQuery($start, $end)
+        ];
 
         $performances = \Performance::all($query, [], 'created', 'desc');
         $transactions = \Transaction::all($query, ['amount', 'currency', 'ref', 'created']);
@@ -252,11 +243,10 @@ class Advertiser extends Auth {
             $action = RequestMethods::post('action', '');
             switch ($action) {
                 case 'account':
-                    $advertiser->name = RequestMethods::post('name');
-                    $advertiser->email = RequestMethods::post('email');
-                    $advertiser->phone = RequestMethods::post('phone');
-                    $advertiser->country = RequestMethods::post('country');
-                    $advertiser->currency = RequestMethods::post('currency');
+                    $fields = ['name', 'email', 'phone', 'country', 'currency'];
+                    foreach ($fields as $f) {
+                        $advertiser->$f = RequestMethods::post($f);
+                    }
                     $advertiser->save();
                     $view->set('message', 'Account Info updated!!');
                     break;
@@ -268,12 +258,10 @@ class Advertiser extends Auth {
                     break;
 
                 case 'campaign':
-                    $meta = $advertiser->getMeta();
-                    $meta['campaign'] = [
+                    $advertiser->getMeta['campaign'] = [
                         'model' => RequestMethods::post('model'),
                         'rate' => $this->currency(RequestMethods::post('rate'))
                     ];
-                    $advertiser->meta = $meta;
                     $advertiser->save();
                     $view->set('message', 'Payout Info Updated!!');
                     break;

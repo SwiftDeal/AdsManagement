@@ -33,6 +33,7 @@ class Publisher extends Auth {
             "org_id = ?" => $this->org->id,
             "meta = ?" => ['$in' => ['all', $this->user->_id]]
         ], [], "created", "desc", 5, 1);
+        
         $total = Performance::overall(
             Utils::dateQuery([
                 'start' => strftime("%Y-%m-%d", strtotime('-365 day')),
