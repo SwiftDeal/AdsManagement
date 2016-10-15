@@ -77,21 +77,40 @@ class Report extends Admin {
             'created' => Db::dateQuery($start, $end),
             'is_bot' => false,
             'pid' => ['$in' => $this->org->users('publisher')]
-        ], ['pid', 'device']);
+        ], ['pid', 'device', 'adid']);
         
         $classify = \Click::classify($clicks, 'pid');
         $stats = Click::counter($classify);
         $stats = ArrayMethods::topValues($stats, 50);
 
-        $deviceStats = [];
+        $deviceStats = []; $bounceRate = [];
         foreach ($stats as $pid => $count) {
             $pubClicks = $classify[$pid];
+            $adClicks = Click::classify($pubClicks, 'adid');
+
+            $br = 0; $total = count($adClicks);
+            foreach ($adClicks as $adid => $records) {
+                $pageViews = Db::query('PageView', ['pid' => $pid, 'adid' => $adid], ['cookie']);
+                // Create a counter based on cookie and select only the values whose 
+                // counter is less than 2
+                $multiPageSessions = 0; $totalClicks = count($records);
+                $pageViews = Click::classify($pageViews, 'cookie');
+                foreach ($pageViews as $ckid => $rows) {
+                    if (count($rows) >= 2) {
+                        $multiPageSessions++;
+                    }
+                }
+                $bounce = 1 - ($multiPageSessions / $totalClicks);
+                $br += $bounce;
+            }
+            $bounceRate[$pid] = (int) (round($br / $total, 2) * 100);
 
             $device = Click::classifyInfo(['clicks' => $pubClicks, 'type' => 'device', 'arr' => []]);
             $deviceStats[$pid] = $device;
         }
         $view->set('stats', $stats)
-            ->set('deviceStats', $deviceStats);
+            ->set('deviceStats', $deviceStats)
+            ->set('bounceRate', $bounceRate);
     }
 
     /**

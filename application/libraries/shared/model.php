@@ -8,6 +8,7 @@
 
 namespace Shared {
     use Framework\Registry as Registry;
+    use \Shared\Services\Db as Db;
 
     class Model extends \Framework\Model {
         /**
@@ -115,13 +116,13 @@ namespace Shared {
 
             if (empty($this->$raw)) {
                 if (!array_key_exists('created', $doc)) {
-                    $doc['created'] = Services\Db::time();
+                    $doc['created'] = Db::time();
                 }
 
                 $result = $collection->insertOne($doc);
                 $this->__id = $result->getInsertedId();
             } else {
-                $doc['modified'] = Services\Db::time();
+                $doc['modified'] = Db::time();
 
                 $this->__id = Utils::mongoObjectId($this->__id);
                 $result = $collection->updateOne(['_id' => $this->__id], ['$set' => $doc]);
@@ -132,15 +133,13 @@ namespace Shared {
             foreach ($columns as $key => $value) {
                 $raw = "_{$key}"; $val = $this->$raw;
 
-                if (is_object($val)) {
-                    if (is_a($val, 'MongoDB\BSON\ObjectID')) {
-                        $this->$raw = Utils::getMongoID($val);
-                    } else if (is_a($val, 'MongoDB\BSON\UTCDatetime')) {
-                        $tz = new \DateTimeZone('Asia/Kolkata');
-                        $v = $val->toDateTime();
-                        $v->settimezone($tz);
-                        $this->$raw = $v;
-                    }
+                if (Db::isType($val, 'id')) {
+                    $this->$raw = Utils::getMongoID($val);
+                } else if (Db::isType($val, 'date')) {
+                    $tz = new \DateTimeZone('Asia/Kolkata');
+                    $v = $val->toDateTime();
+                    $v->settimezone($tz);
+                    $this->$raw = $v;
                 }
             }
         }
@@ -181,7 +180,7 @@ namespace Shared {
          * @param string $type
          */
         public function _convertToType($value, $type) {
-            if (is_object($value) && is_a($value, 'MongoDB\BSON\Regex')) {
+            if (Db::isType($value, 'regex')) {
                 return $value;
             }
 
@@ -208,28 +207,25 @@ namespace Shared {
                         break;
                     } else if (is_object($value)) {
                         $date = $value;
-                        if (is_a($value, 'MongoDB\BSON\UTCDateTime')) {
+                        if (Db::isType($value, 'date')) {
                            break;
                         } else if (is_a($value, 'DateTime')) {
                             $date = $value->format('Y-m-d');
                         }
-                        $value = Services\Db::time($date);
+                        $value = Db::time($date);
                     } else {
-                        $value = Services\Db::time($value);
+                        $value = Db::time($value);
                     }
                     break;
 
                 case 'autonumber':
                 case 'mongoid':
-                    if ((is_object($value) && is_a($value, 'MongoDB\BSON\ObjectID'))) {
+                    if (Db::isType($value, 'id')) {
                         break;
                     } else if (is_array($value)) {
                         $copy = $value; $value = [];
                         foreach ($copy as $key => $val) {
-                            $value[$key] = [];
-                            foreach ($val as $v) {
-                                $value[$key][] = Utils::mongoObjectId($v);
-                            }
+                            $value[$key] = Utils::mongoObjectId($val);
                         }
                     } else {
                         $value = Utils::mongoObjectId($value);
@@ -331,7 +327,7 @@ namespace Shared {
         protected function _all($where = array(), $fields = array(), $order = null, $direction = null, $limit = null, $page = null) {
             $collection = $this->getTable();
 
-            $opts = Services\Db::opts($fields, $order, $direction, $limit, $page);
+            $opts = Db::opts($fields, $order, $direction, $limit, $page);
 
             $cursor = $collection->find($where, $opts);
             $results = [];
@@ -402,13 +398,13 @@ namespace Shared {
                 $raw = "_{$key}";
 
                 if (is_object($value)) {
-                    if (is_a($value, 'MongoDB\BSON\ObjectID')) {
+                    if (Db::isType($value, 'id')) {
                         $c->$raw = $this->getMongoID($value);
-                    } else if (is_a($value, 'MongoDB\BSON\UTCDatetime')) {
+                    } else if (Db::isType($value, 'date')) {
                         $v = $value->toDateTime();
                         $v->settimezone((new \DateTimeZone('Asia/Kolkata')));
                         $c->$raw = $v;
-                    } else if (is_a($value, 'MongoDB\Model\BSONArray') || is_a($value, 'MongoDB\Model\BSONDocument')) {
+                    } else if (Db::isType($value, 'document')) {
                         $c->$raw = Utils::toArray($value);
                     } else {    // fallback case
                         $c->$raw = (object) $value;

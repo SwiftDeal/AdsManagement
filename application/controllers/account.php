@@ -17,18 +17,13 @@ class Account extends Admin {
         $this->seo(array("title" => "Manage Account"));
         $view = $this->getActionView();
 
-        $in = ["admin", "adm", "afm"]; $u = [];
-        $db = Registry::get("MongoDB")->users;
-        $users = $db->find([
+        $in = ["admin", "adm", "afm"];
+        $users = User::all([
             'type' => ['$in' => $in],
-            "org_id" => Utils::mongoObjectId($this->org->_id)
+            "org_id" => $this->org->_id
         ]);
-
-        foreach ($users as $result) {
-            $u[] = $result;
-        }
         
-        $view->set('users', $u);
+        $view->set('users', $users);
     }
 
     /**

@@ -132,6 +132,7 @@ class Click extends Shared\Model {
                 case 'device':
                 case 'os':
                 case 'referer':
+                case 'cookie':
                     $key = Utils::getMongoID($c->$type);
                     break;
                 

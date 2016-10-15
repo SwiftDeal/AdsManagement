@@ -74,47 +74,6 @@ class Test extends Auth {
     /**
      * @before _admin
      */
-    public function newdata() {
-        $this->JSONview(); $view = $this->getActionView();
-        $date = date('Y-m-d', strtotime('-1 day'));
-        $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
-
-        $sec = strtotime($date . ' 00:00:00') * 1000;
-        $clickCol = Registry::get("MongoDB")->clicks;
-        $start = new \MongoDB\BSON\UTCDateTime($sec);
-        $records = $clickCol->find([
-            'created' => ['$gte' => $start, '$lte' => $dateQuery['end']]
-        ], ['adid', 'is_bot', 'ipaddr', 'referer']);
-
-        $classify = \Click::classify($records, 'adid');
-        $referer_filtered = 0; $fraud = 0;
-        $javascript_filtered = 0; $js_ref_filtered = 0;
-        foreach ($classify as $key => $value) {
-            $fraud += count($value);
-            foreach ($value as $c) {
-                if (!$c->is_bot) {
-                    $javascript_filtered++;
-                    if ($c->referer) {
-                        $js_ref_filtered++;
-                    }
-                }
-            }
-
-            $uniqClicks = \Click::checkFraud($value);
-            $referer_filtered += count($uniqClicks);
-        }
-
-        $view->set([
-            'unverified' => $fraud,
-            'referer_filtered' => $referer_filtered,
-            'javascript_filtered' => $javascript_filtered,
-            'js_ref_filtered' => $js_ref_filtered
-        ]);
-    }
-
-    /**
-     * @before _admin
-     */
     public function publishers() {
         $this->JSONview(); $view = $this->getActionView();
         $date = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-1 day')));
@@ -155,7 +114,6 @@ class Test extends Auth {
                 'javascript_filtered' => $javascript_filtered
             ]);
         }
-
 
         $view->set('publishers', $pubClicks);
     }

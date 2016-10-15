@@ -16,7 +16,7 @@ class Api extends \Shared\Controller {
 			$name = APP_PATH . '/public/assets/img/_blue.gif';
 			$fp = fopen($name, 'rb');
 
-			header('Content-Type: image/gif');
+			header("Content-Type: image/gif");
 			header("Content-Length: " . filesize($name));
 			
 			fpassthru($fp);

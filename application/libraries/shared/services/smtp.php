@@ -5,6 +5,7 @@ use Framework\RequestMethods as RequestMethods;
 use \Meta as Meta;
 use \PHPMailer as PHPMailer;
 use Shared\Mail as Mail;
+use Shared\Utils as Utils;
 
 class Smtp {
 	public static function create(\Organization $org) {
@@ -30,10 +31,7 @@ class Smtp {
 			$value[$key] = $v;
 		}
 
-		$e = new Encrypt(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
-		$password = $e->encrypt($value['password'], $org->_id);
-
-		$value['password'] = utf8_encode($password);
+		$value['password'] = Utils::encrypt($value['password'], $org->_id);
 		$meta->value = $value;
 
 		if ($meta->validate()) {
@@ -52,14 +50,13 @@ class Smtp {
 		$smtpConf = Meta::first(['prop' => 'orgSmtp', 'propid' => $org->_id]);
 		if (!$smtpConf) {
 			// use the Mailgun API to send mail
+			$opts['org'] = $org;
 			Mail::send($opts);
 			return;
 		}
 
 		$smtpConf = $smtpConf->value;
-		$password = utf8_decode($smtpConf['password']);
-		$e = new Encrypt(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
-		$password = $e->decrypt($password, $org->_id);
+		$password = Utils::decrypt($smtpConf['password'], $org->_id);
 
 		$mail->isSMTP();
 		$mail->Host = $smtpConf['server'];  // Specify main and backup SMTP servers

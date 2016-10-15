@@ -233,8 +233,7 @@ class Admin extends Auth {
                         'user' => $usr,
                         'notification' => $message,
                         'to' => [$usr->email],  // this argument expects array value
-                        'subject' => "Notification from " . $this->org->name,
-                        'org' => $this->org
+                        'subject' => "Notification from " . $this->org->name
                     ]);
                     $success .= " And Mail sent";
                 }

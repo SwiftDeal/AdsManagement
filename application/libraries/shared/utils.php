@@ -22,7 +22,7 @@ class Utils {
 			foreach ($id as $i) {
 				$result[] = self::mongoObjectId($i);
 			}
-		} else if (!is_object($id) || !is_a($id, 'MongoDB\BSON\ObjectID')) {
+		} else if (!Services\Db::isType($value, 'id')) {
             $result = new \MongoDB\BSON\ObjectID($id);
         } else {
         	$result = $id;
@@ -211,7 +211,7 @@ class Utils {
 		$arr = [];
 		$obj = (array) $object;
 		foreach ($obj as $key => $value) {
-			if (is_object($value) && (is_a($value, 'MongoDB\Model\BSONArray') || is_a($value, 'MongoDB\Model\BSONDocument') || is_a($value, 'stdClass'))) {
+			if (Services\Db::isType($value, 'document')) {
 				$arr[$key] = self::toArray($value);
 			} else {
 				$arr[$key] = $value;
@@ -231,5 +231,20 @@ class Utils {
 			$result[$date] = $value;
 		}
 		return $result;
+	}
+
+	public static function encrypt($data, $key) {
+		$e = new Services\Encrypt(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
+		$hashed = $e->encrypt($data, $key);
+
+		return utf8_encode($hashed);
+	}
+
+	public static function decrypt($data, $key) {
+		$data = utf8_decode($data);
+		$e = new Services\Encrypt(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
+		$normal = $e->decrypt($data, $key);
+
+		return $normal;
 	}
 }
