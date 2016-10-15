@@ -10,10 +10,7 @@ use Shared\Utils as Utils;
 class Smtp {
 	public static function create(\Organization $org) {
 		$msg = 'Added STMP details!!';
-		$search = [
-			'prop' => 'orgSmtp',
-			'propid' => $org->_id
-		];
+		$search = [ 'prop' => 'orgSmtp', 'propid' => $org->_id ];
 
 		$meta = Meta::first($search);
 		if (!$meta) {

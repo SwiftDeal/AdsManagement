@@ -22,7 +22,7 @@ class Utils {
 			foreach ($id as $i) {
 				$result[] = self::mongoObjectId($i);
 			}
-		} else if (!Services\Db::isType($value, 'id')) {
+		} else if (!Services\Db::isType($id, 'id')) {
             $result = new \MongoDB\BSON\ObjectID($id);
         } else {
         	$result = $id;

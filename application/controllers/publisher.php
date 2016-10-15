@@ -146,11 +146,10 @@ class Publisher extends Auth {
             $action = RequestMethods::post('action', '');
             switch ($action) {
                 case 'account':
-                    $name = RequestMethods::post('name');
-                    $phone = RequestMethods::post('phone');
-                    $currency = RequestMethods::post('currency', 'INR');
-
-                    $user->name = $name; $user->currency = $currency;
+                    $fields = ['name', 'phone', 'currency'];
+                    foreach ($fields as $f) {
+                        $user->$f = RequestMethods::post($f);
+                    }
                     $user->save();
                     $view->set('message', 'Account Info updated!!');
                     break;
@@ -162,26 +161,23 @@ class Publisher extends Auth {
                     break;
 
                 case 'bank':
-                    $meta = $user->getMeta();
-                    $meta['bank'] = [
+                    $user->getMeta()['bank'] = [
                         'name' => RequestMethods::post('account_bank', ''),
                         'ifsc' => RequestMethods::post('account_code', ''),
                         'account_no' => RequestMethods::post('account_number', ''),
                         'account_owner' => RequestMethods::post('account_owner', '')
                     ];
-                    $user->meta = $meta; $user->save();
-                    $view->set('message', 'Bank
-                     Info Updated!!');
+                    $user->save();
+                    $view->set('message', 'Bank Info Updated!!');
                     break;
 
                 case 'payout':
-                    $meta = $user->getMeta();
-                    $meta['payout'] = [
+                    $user->getMeta()['payout'] = [
                         'paypal' => RequestMethods::post('paypal', ''),
                         'payoneer' => RequestMethods::post('payoneer', ''),
                         'paytm' => RequestMethods::post('paytm', '')
                     ];
-                    $user->meta = $meta; $user->save();
+                    $user->save();
                     $view->set('message', 'Payout Info Updated!!');
                     break;
                 
@@ -219,13 +215,11 @@ class Publisher extends Auth {
         }
 
         $link = new Link([
-            'user_id' => $this->user->_id,
-            'ad_id' => $ad->_id,
-            'domain' => $domain,
-            'live' => true
+            'user_id' => $this->user->_id, 'ad_id' => $ad->_id,
+            'domain' => $domain, 'live' => true
         ]);
         $link->save();
-        $view->set('message', $ad->title.'<br><a href="'.$link->getUrl().'" target="_blank">'.$link->getUrl().'<a>');
+        $view->set('message', $ad->title . '<br><a href="' . $link->getUrl() . '" target="_blank">' . $link->getUrl() . '<a>');
 
     }
 
@@ -255,7 +249,7 @@ class Publisher extends Auth {
 
             $query = ['user_id = ?' => $u->_id];
             if ($lastTransaction) {
-                $query['created'] = ['$gt' => $lastTransaction->created];
+                $query['created'] = Db::dateQuery($lastTransaction->created->format('Y-m-d'), null);
             }
             $performances = \Performance::all($query);
             $payment = 0.00;

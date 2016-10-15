@@ -82,13 +82,12 @@ class Admin extends Auth {
     				break;
 
                 case 'org':
-                    if (RequestMethods::post("widgets")) {
-                        $meta = $org->meta;
+                    $meta = $org->meta;
+                    if (RequestMethods::post("widgets")) {    
                         $meta["widgets"] = RequestMethods::post("widgets");
                         $org->meta = $meta;
                     }
                     $zopim = RequestMethods::post("zopim");
-                    $meta = $org->meta;
                     $meta["zopim"] = $zopim;
                     if (strlen($zopim) == 0) {
                         unset($meta["zopim"]);

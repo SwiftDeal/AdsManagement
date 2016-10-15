@@ -108,11 +108,10 @@ class Advertiser extends Auth {
             $action = RequestMethods::post('action');
             switch ($action) {
                 case 'account':
-                    $name = RequestMethods::post('name');
-                    $phone = RequestMethods::post('phone');
-                    $currency = RequestMethods::post('currency', 'INR');
-
-                    $user->name = $name; $user->currency = $currency;
+                    $fields = ['name', 'phone', 'currency'];
+                    foreach ($fields as $f) {
+                        $user->$f = RequestMethods::post($f);
+                    }
                     $user->save();
                     $view->set('message', 'Account Info updated!!');
                     break;
@@ -124,13 +123,11 @@ class Advertiser extends Auth {
                     break;
 
                 case 'campaign':
-                    $meta = $user->meta;
                     $rate = RequestMethods::post('rate', 0.25);
-                    $meta['campaign'] = [
+                    $user->getMeta()['campaign'] = [
                         'model' => RequestMethods::post('model', 'cpc'),
                         'rate' => $this->currency($rate),
                     ];
-                    $user->meta = $meta;
                     $user->save();
                     $view->set('message', 'Campaign Settings Updated!!');
                     break;
