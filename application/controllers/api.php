@@ -3,7 +3,7 @@
 use Framework\RequestMethods as RequestMethods;
 use Shared\Utils as Utils;
 
-class Api extends Auth {
+class Api extends \Shared\Controller {
 	public function __construct($options = []) {
 		parent::__construct($options);
 		$this->JSONView();
@@ -13,8 +13,14 @@ class Api extends Auth {
 		$this->willRenderLayoutView = $this->willRenderActionView = false;
 
 		$output = function () {
-			$file = APP_PATH . '/public/assets/img/_blue.gif';
-			echo file_get_contents($file);
+			$name = APP_PATH . '/public/assets/img/_blue.gif';
+			$fp = fopen($name, 'rb');
+
+			header('Content-Type: image/gif');
+			header("Content-Length: " . filesize($name));
+			
+			fpassthru($fp);
+			exit;
 		};
 		$clickId = RequestMethods::get('ckid');
 		$link = base64_decode(RequestMethods::get('link', ''));
@@ -25,16 +31,15 @@ class Api extends Auth {
 		}
 
 		// Find cookie from DB
-		$click = Click::first(['_id' => $clickId]);
+		$click = Click::first(['_id' => $clickId], ['adid', 'cookie', 'pid']);
 		if (!$click) return $output();
+
+		$search = ['cookie' => $click->cookie, 'url' => $link, 'adid' => $click->adid, 'pid' => $click->pid];
 		
-		$pageView = PageView::first(['cookie' => $click->cookie, 'url' => $link]);
+		$pageView = PageView::first($search);
 		if (!$pageView) {
-			$pageView = new PageView([
-				'cookie' => $click->cookie,
-				'url' => $link,
-				'view' => 0
-			]);
+			$pageView = new PageView($search);
+			$pageView->view = 0;
 		}
 		$pageView->view++;
 		$pageView->save();

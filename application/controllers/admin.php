@@ -380,7 +380,7 @@ class Admin extends Auth {
         if ($transaction) {
             $lastCreated = $transaction->created->format('Y-m-d');
             $dateQuery = [
-                'start' => Db::time($lastCreated)
+                'start' => Db::time($lastCreated),
                 'end' => Db::time()
             ];
         }

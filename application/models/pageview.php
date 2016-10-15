@@ -27,6 +27,15 @@ class PageView extends Shared\Model {
     /**
      * @column
      * @readwrite
+     * @type mongoid
+     * @length 255
+     * @index
+     */
+    protected $_pid;
+
+    /**
+     * @column
+     * @readwrite
      * @type text
      * @index
      *

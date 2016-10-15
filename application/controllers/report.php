@@ -85,7 +85,9 @@ class Report extends Admin {
 
         $deviceStats = [];
         foreach ($stats as $pid => $count) {
-            $device = Click::classifyInfo(['clicks' => $classify[$pid], 'type' => 'device', 'arr' => []]);
+            $pubClicks = $classify[$pid];
+
+            $device = Click::classifyInfo(['clicks' => $pubClicks, 'type' => 'device', 'arr' => []]);
             $deviceStats[$pid] = $device;
         }
         $view->set('stats', $stats)
