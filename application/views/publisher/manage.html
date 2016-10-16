@@ -34,7 +34,7 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Id</th>
+                                        <th></th>
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Last Login</th>
@@ -44,14 +44,16 @@
                                 <tbody>
                                     {foreach $p in $publishers}
                                     <tr>
+                                        <td><img src="{echo Shared\Markup::get_gravatar($p->email, 40)}"></td>
                                         <td>
+                                            {echo $p->name}<br>
+                                            <small>(ID: 
                                             {if $p->live}
                                             <span class="text text-success">{echo $p->_id}</span>
                                             {/if} {else}
                                             <span class="text text-warning">{echo $p->_id}</span>
-                                            {/else}
+                                            {/else})</small>
                                         </td>
-                                        <td>{echo $p->name}</td>
                                         <td>{echo $p->email}</td>
                                         <td>
                                             {if $p->login}

@@ -35,7 +35,7 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Id</th>
+                                        <th></th>
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Created</th>
@@ -45,14 +45,16 @@
                                 <tbody>
                                     {foreach $a in $advertisers}
                                     <tr>
+                                        <td><img src="{echo Shared\Markup::get_gravatar($p->email, 40)}"></td>
                                         <td>
+                                            {echo $a->name}<br>
+                                            <small>(ID: 
                                             {if $a->live}
                                             <span class="text text-success">{echo $a->_id}</span>
                                             {/if} {else}
                                             <span class="text text-warning">{echo $a->_id}</span>
-                                            {/else}
+                                            {/else})</small>
                                         </td>
-                                        <td>{echo $a->name}</td>
                                         <td>{echo $a->email}</td>
                                         <td>{echo Framework\StringMethods::only_date($a->created)}</td>
                                         <td>

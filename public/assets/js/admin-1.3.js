@@ -244,7 +244,7 @@ function($) {
 
             // right side-bar toggle
             $('.right-bar-toggle').on('click', function(e) {
-
+                e.preventDefault();
                 $('#wrapper').toggleClass('right-bar-enabled');
             });
 

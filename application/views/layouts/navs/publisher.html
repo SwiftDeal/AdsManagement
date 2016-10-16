@@ -21,7 +21,7 @@
                     <li><a href="/publisher/contests.html"><i class="fa fa-trophy"></i> Contests</a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle waves-effect waves-light profile" data-toggle="dropdown" aria-expanded="true">
-                            <i class="fa fa-user"></i> {echo $user->name} <span class="caret"></span>
+                            <img src="{echo Shared\Markup::get_gravatar($user->email, 30)}"> {echo $user->name} <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="/publisher/account.html">Account</a></li>

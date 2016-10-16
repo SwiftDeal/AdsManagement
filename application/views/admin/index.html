@@ -28,62 +28,100 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-4">
-                    <ul class="list-group">
-                        <li class="list-group-item list-group-item-success text-center">
-                            <b>Network</b> <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Total number of clicks, impressions, conversions, revenue from {$start} to {$end}"></i>
-                        </li>
-                        <a href="/report/clicks.html" class="list-group-item">
-                            Clicks<span class="badge">{echo $performance->clicks}</span>
-                        </a>
-                        <li class="list-group-item">
-                            Impressions<span class="badge">{echo $performance->impressions}</span>
-                        </li>
-                        <li class="list-group-item">
-                            Conversions<span class="badge">0</span>
-                        </li>
-                        <a href="/publisher/payments.html" class="list-group-item">
-                            Payout<span class="badge">{echo $user->convert($performance->revenue, false)}</span>
-                        </a>
-                    </ul>
+                <div class="col-md-3">
+                    <div class="panel panel-border panel-success">
+                        <div class="panel-heading">
+                            <h3 class="panel-title text-center">Network <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Total number of clicks, impressions, conversions, revenue from {$start} to {$end}"></i></h3>
+                        </div>
+                        <div class="table-responsive panel-body">
+                            <table class="table">
+                                <tr>
+                                    <th>Clicks</th>
+                                    <td><span class="badge">{echo Shared\Markup::nice_number($performance->clicks)}</span></td>
+                                </tr>
+                                <tr>
+                                    <th>Impressions</th>
+                                    <td><span class="badge">{echo Shared\Markup::nice_number($performance->impressions)}</span></td>
+                                </tr>
+                                <tr>
+                                    <th>Conversions</th>
+                                    <td><span class="badge">{echo Shared\Markup::nice_number($performance->conversions)}</span></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <ul class="list-group">
-                        <li class="list-group-item list-group-item-success text-center">
-                            <b>Total</b> <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Total number of affiliates, advertisers, platforms, campaigns"></i>
-                        </li>
-                        <a href="/publisher/manage.html" class="list-group-item">
-                            Affiliates<span class="badge">{echo User::count(["org_id = ?" => $org->id, "type = ?" => "publisher"])}</span>
-                        </a>
-                        <a href="/campaign/manage.html" class="list-group-item">
-                            Campaigns<span class="badge">{echo Ad::count(["org_id = ?" => $org->id])}</span>
-                        </a>
-                        <a href="/advertiser/manage.html" class="list-group-item">
-                            Advertisers<span class="badge">{echo User::count(["org_id = ?" => $org->id, "type = ?" => "advertiser"])}</span>
-                        </a>
-                        <li class="list-group-item">
-                            Links<span class="badge">{echo $links}</span>
-                        </li>
-                    </ul>
+                <div class="col-md-3">
+                    <div class="panel panel-border panel-inverse">
+                        <div class="panel-heading">
+                            <h3 class="panel-title text-center">Finance <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Total number of clicks, impressions, conversions, revenue from {$start} to {$end}"></i></h3>
+                        </div>
+                        <div class="table-responsive panel-body">
+                            <table class="table">
+                                <tr>
+                                    <th>Revenue</th>
+                                    <td><span class="badge">{echo Shared\Markup::nice_number()}</span></td>
+                                </tr>
+                                <tr>
+                                    <th>Payout</th>
+                                    <td><span class="badge">{echo $user->convert($performance->revenue, false)}</span></td>
+                                </tr>
+                                <tr>
+                                    <th>Profit</th>
+                                    <td><span class="badge">{echo Shared\Markup::nice_number()}</span></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <ul class="list-group">
-                        <li class="list-group-item list-group-item-success text-center">
-                            <b>To be Approved</b> <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Pending affiliates, campaigns, advertisers, platforms to be approved"></i>
-                        </li>
-                        <a href="/publisher/manage.html" class="list-group-item">
-                            Affiliates<span class="badge">{echo User::count(["org_id = ?" => $org->id, "type = ?" => "publisher", "live = ?" => 0])}</span>
-                        </a>
-                        <a href="/campaign/manage.html" class="list-group-item">
-                            Campaigns<span class="badge">{echo Ad::count(["org_id = ?" => $org->id, "live = ?" => 0])}</span>
-                        </a>
-                        <a href="/advertiser/manage.html" class="list-group-item">
-                            Advertisers<span class="badge">{echo User::count(["org_id = ?" => $org->id, "type = ?" => "advertiser", "live = ?" => 0])}</span>
-                        </a>
-                        <a href="/admin/platforms.html" class="list-group-item">
-                            Platforms<span class="badge">{echo $platforms}</span>
-                        </a>
-                    </ul>
+                <div class="col-md-3">
+                    <div class="panel panel-border panel-purple">
+                        <div class="panel-heading">
+                            <h3 class="panel-title text-center">Stats <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Total number of clicks, impressions, conversions, revenue from {$start} to {$end}"></i></h3>
+                        </div>
+                        <div class="table-responsive panel-body">
+                            <table class="table">
+                                <tr>
+                                    <th>Contest</th>
+                                    <td><span class="badge">{echo Shared\Markup::nice_number(Contest::count(["org_id = ?" => $org->id]))}</span></td>
+                                </tr>
+                                <tr>
+                                    <th>Platform</th>
+                                    <td><span class="badge">{echo Shared\Markup::nice_number($platforms)}</span></td>
+                                </tr>
+                                <tr>
+                                    <th>Links</th>
+                                    <td><span class="badge">{echo Shared\Markup::nice_number($links)}</span></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="panel panel-border panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title text-center">Total <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Total number of affiliates, advertisers, platforms, campaigns and pending"></i></h3>
+                        </div>
+                        <div class="table-responsive panel-body">
+                            <table class="table">
+                                <tr>
+                                    <th><a href="/publisher/manage.html">Affiliates</a></th>
+                                    <td><span class="badge">{echo Shared\Markup::nice_number(User::count(["org_id = ?" => $org->id, "type = ?" => "publisher"]))}</span></td>
+                                    <td><span class="badge badge-warning">{echo Shared\Markup::nice_number(User::count(["org_id = ?" => $org->id, "type = ?" => "publisher", "live = ?" => 0]))}</span></td>
+                                </tr>
+                                <tr>
+                                    <th><a href="/campaign/manage.html">Campaigns</a></th>
+                                    <td><span class="badge">{echo Shared\Markup::nice_number(Ad::count(["org_id = ?" => $org->id]))}</span></td>
+                                    <td><span class="badge badge-warning">{echo Shared\Markup::nice_number(Ad::count(["org_id = ?" => $org->id, "live = ?" => 0]))}</span></td>
+                                </tr>
+                                <tr>
+                                    <th><a href="/advertiser/manage.html">Advertisers</a></th>
+                                    <td><span class="badge">{echo Shared\Markup::nice_number(User::count(["org_id = ?" => $org->id, "type = ?" => "advertiser"]))}</span></td>
+                                    <td><span class="badge badge-warning">{echo Shared\Markup::nice_number(User::count(["org_id = ?" => $org->id, "type = ?" => "advertiser", "live = ?" => 0]))}</span></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- end row -->
