@@ -121,8 +121,10 @@ class Admin extends Auth {
         $view = $this->getActionView();
 
         $user = $this->user; $org = $this->org;
+        $apikey = Apikey::first(["org_id = ?" => $org->id]);
         $mailConf = Meta::first(['prop' => 'orgSmtp', 'propid' => $this->org->_id]) ?? (object) [];
         $view->set('mailConf', $mailConf->value ?? [])
+            ->set("apikey", $apikey)
             ->set("errors", []);
         
         if (RequestMethods::type() == 'POST') {
