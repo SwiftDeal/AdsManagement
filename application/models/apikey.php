@@ -3,7 +3,9 @@
 /**
  * @author Faizan Ayubi
  */
-class Apikey extends Shared\Model {
+use Framework\RequestMethods as RequestMethods;
+use Framework\ArrayMethods as ArrayMethods;
+class ApiKey extends Shared\Model {
 
     /**
      * @column
@@ -21,12 +23,29 @@ class Apikey extends Shared\Model {
      * @label whitelisted IPs
      * @value array of ips
      */
-    protected $_ips;
+    protected $_ips = [];
 
     /**
-    * @column
-    * @readwrite
-    * @type array
-    */
+     * @column
+     * @readwrite
+     * @type text
+     * @length 50
+     */
+    protected $_key;
+
+    /**
+     * @column
+     * @readwrite
+     * @type array
+     *
+     * @label Meta
+     */
     protected $_meta = [];
+
+    public function updateIps() {
+        $request = RequestMethods::post('ips');
+        $ips = ArrayMethods::clean($request);
+
+        $this->_ips = $ips;
+    }
 }

@@ -242,12 +242,24 @@
                             </div>
                         </div>
                         {/if}{else}
-                        <form method="post" action="">
+                        <form method="post" class="form" action="">
+                            {if !$apiKey}
                             <div class="form-group">
                                 <label>API Key</label>
                                 <button type="submit" class="btn btn-primary">Generate</button>
                             </div>
-                            <input type="hidden" name="action" value="categories">
+                            {/if} {else}
+                            API KEY: <span class="label label-success">{echo $apiKey->key}</span><br><br>
+                            <div class="input-group">
+                                <label for="ip">Allowed IP's</label>
+                                {foreach $ip in $apiKey->ips}
+                                    <input type="text" name="ips[]" value="{echo $ip}" class="form-control">
+                                {/foreach}
+                                <input type="text" name="ips[]" placeholder="Add IP from which you want request to be done" class="form-control">
+                            </div>
+                            {/else}
+                            <input type="hidden" name="action" value="apikey">
+                            <button type="submit" class="btn btn-primary">Go</button>
                         </form>
                         {/else}
                     </div>

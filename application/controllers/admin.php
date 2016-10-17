@@ -121,10 +121,9 @@ class Admin extends Auth {
         $view = $this->getActionView();
 
         $user = $this->user; $org = $this->org;
-        $apikey = Apikey::first(["org_id = ?" => $org->id]);
+        $apikey = ApiKey::first(["org_id = ?" => $org->id]);
         $mailConf = Meta::first(['prop' => 'orgSmtp', 'propid' => $this->org->_id]) ?? (object) [];
         $view->set('mailConf', $mailConf->value ?? [])
-            ->set("apikey", $apikey)
             ->set("errors", []);
         
         if (RequestMethods::type() == 'POST') {
@@ -153,11 +152,25 @@ class Admin extends Auth {
                     $msg = \Shared\Services\Smtp::create($this->org);
                     $view->set('message', $msg);
                     break;
+
+                case 'apikey':
+                    $view->set('message', "Api Key Updated!!");
+                    if (!$apikey) {
+                        $apikey = new ApiKey([
+                            'org_id' => $this->org->_id,
+                            'key' => uniqid() . uniqid() . uniqid()
+                        ]);
+                        $view->set('message', "Api Key Created!!");
+                    }
+                    $apikey->updateIps();
+                    $apikey->save();
+                    break;
             }
             $this->setUser($user);
         }
         $categories = \Category::all(['org_id' => $this->org->_id]);
-        $view->set('categories', $categories);
+        $view->set('categories', $categories)
+            ->set("apiKey", $apikey);
     }
 
     protected function addCommisson($org) {
