@@ -249,7 +249,7 @@ class Publisher extends Auth {
 
             $query = ['user_id = ?' => $u->_id];
             if ($lastTransaction) {
-                $query['created'] = Db::dateQuery($lastTransaction->created->format('Y-m-d'), null);
+                // $query['created'] = Db::dateQuery($lastTransaction->created->format('Y-m-d'), null);
             }
             $performances = \Performance::all($query);
             $payment = 0.00;

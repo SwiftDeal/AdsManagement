@@ -28,6 +28,9 @@ namespace Framework {
 
         public static function post($key, $default = "") {
             if (isset($_POST[$key])) {
+                if (is_array($_POST[$key])) {
+                    return $_POST[$key];
+                }
                 return htmlentities($_POST[$key]);
             } return $default;
         }
