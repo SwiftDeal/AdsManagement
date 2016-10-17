@@ -21,6 +21,9 @@ namespace Framework {
         
         public static function get($key, $default = "") {
             if (!empty($_GET[$key])) {
+                if (is_array($_GET[$key])) {
+                    return $_GET[$key];
+                }
                 return htmlentities($_GET[$key]);
             }
             return $default;

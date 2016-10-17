@@ -4,6 +4,7 @@
  * @author Faizan Ayubi
  */
 use Shared\Utils as Utils;
+use Shared\Services\Db as Db;
 class Ad extends Shared\Model {
 
     /**
@@ -107,7 +108,7 @@ class Ad extends Shared\Model {
 
     public static function hourly() {
         $today = date('Y-m-d');
-        $dq = \Shared\Services\Db::dateQuery(null, $today);
+        $dq = Db::dateQuery(null, $today);
 
         // find all the ads whose expiry date is today
         $ads = self::all(['expiry' => $dq]);
@@ -118,12 +119,13 @@ class Ad extends Shared\Model {
     }
 
     public static function setCategories($categories = []) {
-        $result = [];
-        foreach ($categories as $c) {
-            if (!is_object($c) || !is_a($c, 'MongoDB\BSON\ObjectID')) {
-                $result[] = new \MongoDB\BSON\ObjectID($c);
-            }
+        try {
+            $result = Utils::mongoObjectId($categories);    
+        } catch (\Exception $e) {
+            // while converting to bson ID - the id may not be valid
+            $result = [];
         }
+        
         return $result;
     }
 

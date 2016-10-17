@@ -360,13 +360,13 @@ namespace Shared {
 
         protected function _first($where = array(), $fields = array(), $order = null, $direction = null) {
             $collection = $this->getTable();
+            $record = null;
 
             if ($order && $direction) {
                 $results = self::_all($where, $fields, $order, $direction, 1);
-                $record = null;
-
-                foreach ($results as $c) {
-                    $record = $c;
+                
+                if (count($results) === 1) {
+                    $record = array_shift($results);   
                 }
             } else {
                 if (count($fields) === 0) {
@@ -374,9 +374,11 @@ namespace Shared {
                 } else {
                     $record = $collection->findOne($where, ['projection' => $fields]);
                 }
+
+                $record = $this->_convert($record);    
             }
 
-            return $this->_convert($record);
+            return $record;
         }
 
         /**

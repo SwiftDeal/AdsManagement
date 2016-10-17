@@ -64,12 +64,12 @@ class Publisher extends Auth {
 
         $limit = RequestMethods::get("limit", 20);
         $page = RequestMethods::get("page", 1);
-        $coverage = RequestMethods::get("coverage", []);
+        $category = RequestMethods::get("category", []);
         $query = ["live = ?" => true, "org_id = ?" => $this->org->_id];
 
-        if ($coverage) {
+        if (count($category) > 0) {
             // if you want AND query instead of OR query then replace '$in' --> '$all'
-            $query["category"] = ['$in' => Ad::setCategories($coverage)];
+            $query["category"] = ['$in' => Ad::setCategories($category)];
         }
     	
         $ads = \Ad::all($query, [], 'created', 'desc', $limit, $page);
@@ -86,7 +86,7 @@ class Publisher extends Auth {
             'limit' => $limit, 'page' => $page,
             'count' => $count, 'ads' => $ads,
             'model' => $model, 'rate' => $rate,
-            'categories' => $categories, 'coverage' => $coverage,
+            'categories' => $categories, 'coverage' => $category,
             'tdomains' => \Shared\Services\User::trackingLinks($this->user, $this->org)
         ]);
     }
@@ -245,25 +245,23 @@ class Publisher extends Auth {
         $users = \User::all(['type = ?' => 'publisher', 'org_id' => $this->org->_id]);
         $payments = [];
         foreach ($users as $u) {
-            $lastTransaction = \Transaction::first(['user_id = ?' => $u->_id], [], 'created', 'desc');
+            $lastTran = \Transaction::first(['user_id = ?' => $u->_id], ['created', '_id'], 'created', 'desc');
 
-            $query = ['user_id = ?' => $u->_id];
-            if ($lastTransaction) {
-                // $query['created'] = Db::dateQuery($lastTransaction->created->format('Y-m-d'), null);
+            $query = ['user_id = ?' => $u->_id]; $payment = 0.00;
+            if ($lastTran) {
+                $query['created'] = Db::dateQuery($lastTran->created->format('Y-m-d'), null);
             }
+            
             $performances = \Performance::all($query);
-            $payment = 0.00;
             foreach ($performances as $p) {
                 $payment += $p->revenue;
             }
 
             $payments[] = ArrayMethods::toObject([
-                'user_id' => $u->getMongoID(),
-                'name' => $u->name,
-                'email' => $u->email,
-                'phone' => $u->phone,
+                'user_id' => $u->_id, 'name' => $u->name,
+                'email' => $u->email, 'phone' => $u->phone,
                 'amount' => $payment,
-                'bank' => isset($u->meta['bank']) ? $u->meta['bank'] : []
+                'bank' => $u->meta['bank'] ?? []
             ]);
         }
         

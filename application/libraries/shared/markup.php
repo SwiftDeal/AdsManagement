@@ -53,7 +53,7 @@ namespace Shared {
             return $model;
         }
 
-        public function nice_number($n) {
+        public function nice_number($n = null) {
             if (!isset($n)) return 0;
             // strip any formatting;
             $n = (0+str_replace(",", "", $n));

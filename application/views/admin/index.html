@@ -134,7 +134,8 @@
                 </div>
             </div>
             <div class="row">
-                {if (in_array("top10pubs", $org->meta["widgets"]))}
+                {script $widgets = $org->meta["widgets"] ?? []}
+                {if in_array("top10pubs", $widgets)}
                 <div class="col-md-{echo $d}">
                     {script $topEarners = $topusers['publishers']}
                     <div class="card-box widget-user">
@@ -154,7 +155,7 @@
                     </div>
                 </div>
                 {/if}
-                {if (in_array("top10ads", $org->meta["widgets"]))}
+                {if in_array("top10ads", $widgets)}
                 <div class="col-md-{echo $d}">
                     {script $topCampaigns = $topusers['ads']}
                     <div class="card-box widget-user">
