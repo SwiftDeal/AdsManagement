@@ -38,7 +38,7 @@
                                     <thead>
                                         <tr>
                                             <th>Rank</th>
-                                            <th>ID</th>
+                                            <th></th>
                                             <th>Name</th>
                                             <th>Clicks</th>
                                             <th>Traffic</th>
@@ -47,11 +47,14 @@
                                     </thead>
                                     <tbody>
                                         {script $i = 1} {foreach $records in $stats}
-                                        {script $p = User::first(['_id' => $records_i], ['_id', 'name', 'live'])}
+                                        {script $p = User::first(['_id' => $records_i], ['_id', 'name', 'live', 'email'])}
                                         <tr>
                                             <td># {echo $i++}</td>
-                                            <td><span class="text {echo ($p->live === true) ? 'text-success' : 'text-warning'}">{echo $p->_id}</span></td>
-                                            <td>{echo $p->name}</td>
+                                            <td><img src="{echo Shared\Markup::get_gravatar($p->email, 40)}"></td>
+                                            <td>
+                                                {echo $p->name}<br>
+                                                <small>(ID: <span class="text {echo ($p->live === true) ? 'text-success' : 'text-warning'}">{echo $p->_id}</span>)</small>
+                                            </td>
                                             <td>{echo $records}</td>
                                             {script $traffic = $deviceStats[$p->_id] ?? []}
                                             {script $traffic = Framework\ArrayMethods::percentage($traffic)}

@@ -1,71 +1,93 @@
-<!-- Page-Title -->
 <div class="row">
-    <div class="col-sm-12">
-        <h4 class="page-title">Dashboard</h4>
-    </div>
-</div>
-<!-- Page-Title -->
-<div class="row">
-    <div class="col-lg-4">
-        <div class="card-box">
-            <h4 class="text-dark header-title m-t-0 m-b-30 text-center">Clicks</h4>
-            <div class="widget-chart text-center">
-                <ul class="list-inline m-t-15">
-                    <li>
-                        <h5 class="text-muted m-t-20">Today</h5>
-                        <h4 class="m-b-0">{echo Shared\Markup::nice_number($performance->clicks)}</h4>
-                    </li>
-                    <li>
-                        <h5 class="text-muted m-t-20" data-toggle="tooltip" data-placement="top" data-original-title="Yesterday Clicks recieved, updated everyday 1:00 AM (IST)">Yesterday</h5>
-                        <h4 class="m-b-0">{echo Shared\Markup::nice_number($total["clicks"][$yesterday])}</h4>
-                    </li>
-                    <li>
-                        <h5 class="text-muted m-t-20">Overall</h5>
-                        <h4 class="m-b-0">{echo Shared\Markup::nice_number($total["total_clicks"] + $performance->clicks)}</h4>
-                    </li>
-                </ul>
+    <div class="col-lg-3">
+        <div class="panel panel-default panel-border">
+            <div class="panel-heading">
+                <h3 class="panel-title">Clicks</h3>
+            </div>
+            <div class="table-responsive panel-body">
+                <table class="table">
+                    <tr>
+                        <th>Today</th>
+                        <td>{echo Shared\Markup::nice_number($performance->clicks)}</td>
+                    </tr>
+                    <tr>
+                        <th data-toggle="tooltip" data-placement="top" data-original-title="Yesterday Clicks recieved, updated everyday 1:00 AM (IST)">Yesterday</th>
+                        <td>{echo Shared\Markup::nice_number($total["clicks"][$yesterday])}</td>
+                    </tr>
+                    <tr>
+                        <th>Overall</th>
+                        <td>{echo Shared\Markup::nice_number($total["total_clicks"] + $performance->clicks)}</td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>
-    <div class="col-lg-4">
-        <div class="card-box">
-            <h4 class="text-dark header-title m-t-0 m-b-30 text-center">Revenue</h4>
-            <div class="widget-chart text-center">
-                <ul class="list-inline m-t-15">
-                    <li>
-                        <h5 class="text-muted m-t-20">Today</h5>
-                        <h4 class="m-b-0">{echo $user->convert($performance->revenue)}</h4>
-                    </li>
-                    <li>
-                        <h5 class="text-muted m-t-20">Yesterday</h5>
-                        <h4 class="m-b-0">{echo $user->convert($total["payouts"][$yesterday])}</h4>
-                    </li>
-                    <li>
-                        <h5 class="text-muted m-t-20">Overall</h5>
-                        <h4 class="m-b-0">{echo $user->convert($total["total_payouts"] + $performance->revenue)}</h4>
-                    </li>
-                </ul>
+    <div class="col-lg-3">
+        <div class="panel panel-border panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Impressions</h3>
+            </div>
+            <div class="table-responsive panel-body">
+                <table class="table">
+                    <tr>
+                        <th>Today</th>
+                        <td>{echo Shared\Markup::nice_number($performance->impressions)}</td>
+                    </tr>
+                    <tr>
+                        <th>Yesterday</th>
+                        <td>{echo Shared\Markup::nice_number($total["impressions"][$yesterday])}</td>
+                    </tr>
+                    <tr>
+                        <th>Overall</th>
+                        <td>{echo Shared\Markup::nice_number($total["total_impressions"] + $performance->impressions)}</td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>
-    <div class="col-lg-4">
-        <div class="card-box">
-            <h4 class="text-dark header-title m-t-0 m-b-30 text-center">Ad Impressions</h4>
-            <div class="widget-chart text-center">
-                <ul class="list-inline m-t-15">
-                    <li>
-                        <h5 class="text-muted m-t-20">Today</h5>
-                        <h4 class="m-b-0">{echo Shared\Markup::nice_number($performance->impressions)}</h4>
-                    </li>
-                    <li>
-                        <h5 class="text-muted m-t-20">Yesterday</h5>
-                        <h4 class="m-b-0">{echo Shared\Markup::nice_number($total["impressions"][$yesterday])}</h4>
-                    </li>
-                    <li>
-                        <h5 class="text-muted m-t-20">Overall</h5>
-                        <h4 class="m-b-0">{echo Shared\Markup::nice_number($total["total_impressions"] + $performance->impressions)}</h4>
-                    </li>
-                </ul>
+    <div class="col-lg-3">
+        <div class="panel panel-border panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">Conversions</h3>
+            </div>
+            <div class="table-responsive panel-body">
+                <table class="table">
+                    <tr>
+                        <th>Today</th>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <th>Yesterday</th>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <th>Overall</th>
+                        <td>0</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="panel panel-border panel-inverse">
+            <div class="panel-heading">
+                <h3 class="panel-title">Revenue</h3>
+            </div>
+            <div class="table-responsive panel-body">
+                <table class="table">
+                    <tr>
+                        <th>Today</th>
+                        <td>{echo $user->convert($performance->revenue)}</td>
+                    </tr>
+                    <tr>
+                        <th>Yesterday</th>
+                        <td>{echo $user->convert($total["payouts"][$yesterday])}</td>
+                    </tr>
+                    <tr>
+                        <th>Overall</th>
+                        <td>{echo $user->convert($total["total_payouts"] + $performance->revenue)}</td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>
