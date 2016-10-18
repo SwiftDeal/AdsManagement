@@ -1,7 +1,8 @@
 <?php
 
-use Framework\RequestMethods as RequestMethods;
 use Shared\Utils as Utils;
+use Keyword\Scrape as Scraper;
+use Framework\RequestMethods as RequestMethods;
 
 class Api extends \Shared\Controller {
 	public function __construct($options = []) {
@@ -45,5 +46,16 @@ class Api extends \Shared\Controller {
 		$pageView->save();
 
 		$output();
+	}
+
+	public function scrape() {
+		$view = $this->getActionView();
+		$url = RequestMethods::get("link");
+		if (!$url) {
+			$view->set('error', 'Invalid Request Parameters!!');
+		}
+
+		$scraper = new Scraper($url);
+		$view->set('words', $scraper->fetch());
 	}
 }

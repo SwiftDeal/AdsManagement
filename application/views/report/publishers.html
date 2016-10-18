@@ -57,7 +57,7 @@
                                             </td>
                                             <td>{echo $records}</td>
                                             {script $traffic = $deviceStats[$p->_id] ?? []}
-                                            {script $traffic = Framework\ArrayMethods::percentage($traffic)}
+                                            {script $traffic = Framework\ArrayMethods::percentage($traffic, 0)}
                                             <td>
                                                 {foreach $t in $traffic}
                                                 <span class="label label-primary">{echo $t_i} - {echo $t}%</span>

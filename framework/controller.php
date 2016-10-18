@@ -197,7 +197,7 @@ namespace Framework {
                         if ($data) {
                             $obj = $this->renderJSONFields($data);
                         }
-                        echo json_encode($obj, JSON_PRETTY_PRINT);
+                        echo json_encode($obj);
                     } else if ($this->defaultExtension == "csv") {
                         // parse the data
                         $csv = new \Shared\Services\Csv($data);

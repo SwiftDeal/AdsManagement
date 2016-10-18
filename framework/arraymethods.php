@@ -139,7 +139,7 @@ namespace Framework {
             return $result;
         }
 
-        public static function percentage($arr) {
+        public static function percentage($arr, $places = 2) {
             $arr = self::topValues($arr, count($arr));
             $total = array_sum($arr);
             $result = [];
@@ -149,7 +149,7 @@ namespace Framework {
             }
 
             foreach ($arr as $key => $value) {
-                $result[$key] = (int) (round($value / $total, 2) * 100);
+                $result[$key] = number_format(($value / $total) * 100, $places);
             }
             return $result;
         }
