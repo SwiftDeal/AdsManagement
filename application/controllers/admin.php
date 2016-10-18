@@ -66,10 +66,9 @@ class Admin extends Auth {
     		$action = RequestMethods::post('action', '');
     		switch ($action) {
     			case 'account':
-    				$name = RequestMethods::post('name');
-    				$currency = RequestMethods::post('currency', 'INR');
-
-    				$user->name = $name; $user->currency = $currency;
+    				$user->name = RequestMethods::post('name');
+                    $user->currency = RequestMethods::post('currency', 'INR');
+                    $user->phone = RequestMethods::post('phone');
 
     				$user->save();
     				$view->set('message', 'Account Updated!!');
@@ -80,6 +79,18 @@ class Admin extends Auth {
     				$new = RequestMethods::post('npassword');
     				$view->set($user->updatePassword($old, $new));
     				break;
+
+                case 'billing':
+                    $billing = $org->billing;
+                    $billing["aff"]["auto"] = RequestMethods::post("autoinvoice", false);
+                    $billing["aff"]["freq"] = RequestMethods::post("freq");
+                    $billing["aff"]["minpay"] = $this->currency(RequestMethods::post('minpay'));
+                    $billing["aff"]["ptypes"] = RequestMethods::post("ptypes");
+                    $billing["adv"]["paypal"] = RequestMethods::post("paypal");
+                    $org->billing = $billing;
+                    $org->save(); $this->setOrg($org);
+                    $view->set('message', 'Network Settings updated!!');
+                    break;
 
                 case 'org':
                     $meta = $org->meta;

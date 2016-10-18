@@ -253,7 +253,7 @@
                             <div class="input-group">
                                 <label for="ip">Allowed IP's</label>
                                 {foreach $ip in $apiKey->ips}
-                                    <input type="text" name="ips[]" value="{echo $ip}" class="form-control">
+                                    <input type="text" name="ips[]" value="{echo $ip}" class="form-control" data-mask="999.999.999.9999">
                                 {/foreach}
                                 <input type="text" name="ips[]" placeholder="Add IP from which you want request to be done" class="form-control">
                             </div>

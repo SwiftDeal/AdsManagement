@@ -183,8 +183,8 @@ class User extends Shared\Model {
     public static function addNew($type, $org, $view) {
         $fields = ['name', 'email', 'password', 'country'];
         $user = new self([
-            'country' => 'IN',
-            'currency' => 'INR'
+            'country' => RequestMethods::server("HTTP_CF_IPCOUNTRY", "IN"),
+            'currency' => 'USD'
         ]);
 
         foreach ($fields as $f) {

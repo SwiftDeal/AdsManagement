@@ -34,9 +34,9 @@
                             </a>
                         </li>
                         <li class="">
-                            <a href="#terms" data-toggle="tab" aria-expanded="false">
-                                <span class="visible-xs"><i class="fa fa-list"></i></span>
-                                <span class="hidden-xs">Terms&amp;Conditions</span>
+                            <a href="#billing" data-toggle="tab" aria-expanded="false">
+                                <span class="visible-xs"><i class="fa fa-money"></i></span>
+                                <span class="hidden-xs">Network Billing</span>
                             </a>
                         </li>
                     </ul>
@@ -58,6 +58,10 @@
                                             <input type="email" name="email" value="{echo $org->email}" class="form-control" placeholder="Support email for affilliates">
                                         </div>
                                         <div class="form-group">
+                                            <label>Terms and Conditions URL(Optional)</label>
+                                            <input type="text" name="termsurl" value="{echo $org->meta['termsurl']}" class="form-control">
+                                        </div>
+                                        <div class="form-group">
                                             <label>Widgets</label>
                                             <select name="widgets[]" class="form-control selectpicker" multiple="">
                                                 <option value="top10pubs" {if(in_array("top10pubs", $org->meta["widgets"]))}selected=""{/if}>Top10 Publishers</option>
@@ -67,11 +71,11 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>Zopim ID</label>
+                                            <label>Zopim ID(Optional)</label>
                                             <input type="text" name="zopim" value="{echo $org->meta['zopim']}" class="form-control" placeholder="Zopim Chat Integration ID">
                                         </div>
                                         <div class="form-group">
-                                            <label>Image <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Allows you to add logo of your network"></i></label>
+                                            <label>Network Image (Optional)<i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Allows you to add logo of your network"></i></label>
                                             {if(strlen($org->logo) > 3)}
                                             <img src="{echo CDN}uploads/images/{echo $org->logo}" class="img-thumbnail">
                                             <a href="/admin/customization.html?action=removelogo" class="btn btn-danger pull-right btn-xs">Remove Image</a>
@@ -82,8 +86,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                
-                                
                                 <input type="hidden" name="action" value="org">
                                 <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
                             </form>
@@ -94,8 +96,13 @@
                                     <form role="form" method="post">
                                         <div class="form-group">
                                             <label>Name</label>
-                                            <input type="text" name="name" value="{echo $user->name}" class="form-control" placeholder="Full Name">
+                                            <input type="text" name="name" value="{echo $user->name}" class="form-control" placeholder="Full Name" required="">
                                             <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "name")}</span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Phone</label>
+                                            <input type="tel" name="phone" value="{echo $user->phone}" class="form-control" required="">
+                                            <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "phone")}</span>
                                         </div>
                                         <div class="form-group">
                                             <label>Currency</label>
@@ -136,20 +143,66 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane" id="terms">
-                            <form class="form-horizontal" role="form" method="post">
-                                <div class="form-group">
-                                    <label for="inputPassword3" class="col-sm-3 control-label">Terms and Conditions URL</label>
-                                    <div class="col-sm-9">
-                                        <input type="url" class="form-control" name="termsurl">
+                        <div class="tab-pane" id="billing">
+                            <form role="form" method="post">
+                                <div class="row">
+                                    <div class="col-md-6 form-horizontal">
+                                        <h4 class="m-t-0 header-title text-center"><b>Affiliate</b></h4>
+                                        <div class="form-group">
+                                            <label class="col-sm-4 control-label"></label>
+                                            <div class="col-sm-8">
+                                                <div class="checkbox checkbox-primary">
+                                                    <input id="affoption" type="checkbox" name="auto" value="true">
+                                                    <label for="affoption">
+                                                        Auto Generate Invoices
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-4 control-label">Invoice Frequency</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" name="freq" class="form-control" placeholder="Enter number of Days e.g 30" required="">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-4 control-label">Minimum Invoice Payments</label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                                    <input type="text" name="minpay" class="form-control" placeholder="eg. 50" required="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-4 control-label">Payment Types</label>
+                                            <div class="col-sm-8">
+                                                <select name="ptypes[]" class="form-control selectpicker" multiple="">
+                                                    <option value="wire">Wire Transfer</option>
+                                                    <option value="paypal">PayPal</option>
+                                                    <option value="payquicker">PayQuicker</option>
+                                                    <option value="payoneer">Payoneer</option>
+                                                    <option value="paytm">Paytm</option>
+                                                    <option value="mobicash">Mobicash</option>
+                                                    <option value="easypaisa">EasyPaisa</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 form-horizontal">
+                                        <h4 class="m-t-0 header-title text-center"><b>Advertiser</b></h4>
+                                        <div class="form-group">
+                                            <label class="col-sm-4 control-label">Company PayPal</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" name="paypal" class="form-control" placeholder="Your company paypal email address" required="">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="form-group m-b-0">
-                                    <div class="col-sm-offset-3 col-sm-9">
-                                        <input type="hidden" name="action" value="terms">
-                                        <button type="submit" class="btn btn-info waves-effect waves-light">Update</button>
-                                    </div>
-                                </div>
+                                <input type="hidden" name="action" value="billing">
+                                <p class="text-center">
+                                    <button type="submit" class="btn btn-purple waves-effect waves-light">Save</button>
+                                </p>
                             </form>
                         </div>
                     </div>

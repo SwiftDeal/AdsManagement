@@ -80,6 +80,15 @@ class Organization extends \Shared\Model {
      * 
      * @validate required
      */
+    protected $_billing = [];
+
+    /**
+     * @column
+     * @readwrite
+     * @type array
+     * 
+     * @validate required
+     */
     protected $_meta = [];
 
     public function updateDomains() {
