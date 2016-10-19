@@ -236,36 +236,30 @@ class Publisher extends Auth {
     /**
      * @before _admin
      */
-    public function payments() {
-        $this->seo(array("title" => "Payments"));
+    public function billing() {
+        $this->seo(array("title" => "Billing"));
         $view = $this->getActionView();
         $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
         $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
 
-        $users = \User::all(['type = ?' => 'publisher', 'org_id' => $this->org->_id]);
-        $payments = [];
-        foreach ($users as $u) {
-            $lastTran = \Transaction::first(['user_id = ?' => $u->_id], ['created', '_id'], 'created', 'desc');
+        $invoices = \Invoice::all(['utype = ?' => 'publisher', 'org_id' => $this->org->_id]);
 
-            $query = ['user_id = ?' => $u->_id]; $payment = 0.00;
-            if ($lastTran) {
-                $query['created'] = Db::dateQuery($lastTran->created->format('Y-m-d'), null);
-            }
-            
-            $performances = \Performance::all($query);
-            foreach ($performances as $p) {
-                $payment += $p->revenue;
-            }
+        $view->set('invoices', $invoices)
+            ->set('start', $start)
+            ->set('end', $end);
+    }
 
-            $payments[] = ArrayMethods::toObject([
-                'user_id' => $u->_id, 'name' => $u->name,
-                'email' => $u->email, 'phone' => $u->phone,
-                'amount' => $payment,
-                'bank' => $u->meta['bank'] ?? []
-            ]);
+    /**
+     * @before _admin
+     */
+    public function createinvoice($user_id = null) {
+        $this->seo(array("title" => "Create Invoice"));
+        $view = $this->getActionView();
+
+        if($user_id) {
+            $affiliate = \User::first(['utype = ?' => 'publisher', 'org_id' => $this->org->_id, 'user_id = ?' => $user_id]);
+            $view->set('affiliate', $affiliate);
         }
-        
-        $view->set('payments', $payments);
     }
 
     /**
