@@ -65,7 +65,12 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="card-box">
-            <h4 class="m-t-0 header-title"><b>Tracking Links Summary</b><small> Total: {echo $count} Links</small></h4>
+            <h4 class="m-t-0 header-title">
+                <b>Tracking Links Summary</b><small> Total: {echo $count} Links</small>
+                <div class="pull-right">
+                    <a href="/publisher/links.csv"><span class="label label-primary">Download Links CSV</span></a>
+                </div>
+            </h4>
             <table class="tablesaw m-t-20 table m-b-0" data-tablesaw-mode="stack">
                 <thead>
                     <tr>

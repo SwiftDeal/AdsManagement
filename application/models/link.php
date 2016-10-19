@@ -34,17 +34,4 @@ class Link extends Shared\Model {
         return 'http://' . $this->domain . '/'. $this->getMongoID();
     }
 
-    public function clicks() {
-        $count = 0;
-        $clicks = Click::all([
-            'adid' => $this->ad_id,
-            'pid' => $this->user_id
-        ], ['ipaddr', 'referer', 'ua']);
-        foreach ($clicks as $c) {
-            if (!$c->fraud()) {
-                $count++;
-            }
-        }
-        return $count;
-    }
 }

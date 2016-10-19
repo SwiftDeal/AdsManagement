@@ -265,7 +265,7 @@ namespace Shared {
                     $this->layoutView->set($key, $this->user);
                 }
             }
-            if ($this->org) {
+            if ($this->_org) {
                 if ($this->actionView) {
                     $key = "org";
                     if ($this->actionView->get($key, false)) {

@@ -4,12 +4,12 @@
  *
  * @author Faizan Ayubi
  */
-use Framework\RequestMethods as RequestMethods;
-use Framework\Registry as Registry;
 use Shared\Mail as Mail;
 use Shared\Utils as Utils;
-use Framework\ArrayMethods as ArrayMethods;
 use Shared\Services\Db as Db;
+use Framework\Registry as Registry;
+use Framework\ArrayMethods as ArrayMethods;
+use Framework\RequestMethods as RequestMethods;
 
 class Publisher extends Auth {
 
@@ -65,11 +65,15 @@ class Publisher extends Auth {
         $limit = RequestMethods::get("limit", 20);
         $page = RequestMethods::get("page", 1);
         $category = RequestMethods::get("category", []);
+        $keyword = RequestMethods::get("keyword", '');
         $query = ["live = ?" => true, "org_id = ?" => $this->org->_id];
 
         if (count($category) > 0) {
             // if you want AND query instead of OR query then replace '$in' --> '$all'
             $query["category"] = ['$in' => Ad::setCategories($category)];
+        }
+        if ($keyword) {
+            $query["title"] = Utils::mongoRegex($keyword);
         }
     	
         $ads = \Ad::all($query, [], 'created', 'desc', $limit, $page);
@@ -87,15 +91,42 @@ class Publisher extends Auth {
             'count' => $count, 'ads' => $ads,
             'model' => $model, 'rate' => $rate,
             'categories' => $categories, 'coverage' => $category,
-            'tdomains' => \Shared\Services\User::trackingLinks($this->user, $this->org)
+            'tdomains' => \Shared\Services\User::trackingLinks($this->user, $this->org),
+            'keyword' => $keyword
         ]);
+    }
+
+    public function links() {
+        $this->seo(array("title" => "Tracking Links")); $view = $this->getActionView();
+        $links = Link::all(['user_id' => $this->user->_id], ['ad_id', 'domain', '_id']);
+
+        $in = [];
+        foreach ($links as $l) {
+            $in[] = $l->ad_id;
+        }
+        $ads = Ad::all(['_id' => ['$in' => $in]], ['title', '_id']);
+
+        $result = [];
+        foreach ($links as $l) {
+            $adid = $l->ad_id;
+            $result[] = ArrayMethods::toObject([
+                'title' => $ads[$adid]->title,
+                'url' => $l->getUrl()
+            ]);
+        }
+        $view->set('links', $result);
+
+        if ($this->defaultExtension === "csv") {
+            $view->erase('start')->erase('end');
+            $this->_org = $this->_user = null;
+        }
     }
 
     /**
      * @before _secure
      */
     public function reports() {
-        $this->seo(array("title" => "Campaigns"));$view = $this->getActionView();
+        $this->seo(array("title" => "Campaign Reports")); $view = $this->getActionView();
         
         $query = [ "user_id" => Utils::mongoObjectId($this->user->_id) ];
         $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-3 day')));
