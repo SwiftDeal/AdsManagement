@@ -433,19 +433,17 @@ class Advertiser extends Auth {
         $this->setLayout("layouts/advertiser");
     }
 
+    /**
+     * @after _csrfToken
+     */
     public function register() {
         $this->seo(array("title" => "Advertiser Register", "description" => "Register"));
-        $view = $this->getActionView(); $session = Registry::get("session");
+        $view = $this->getActionView();
 
         $view->set('errors', []);
-        $csrf_token = $session->get('Advertiser\Register:$token');
         $token = RequestMethods::post("token", '');
-        if (RequestMethods::post("action") == "register" && $csrf_token && $token === $csrf_token) {
+        if (RequestMethods::post("action") == "register" && $this->verifyToken($token)) {
             $this->_advertiserRegister($this->org, $view);
         }
-        $csrf_token = Framework\StringMethods::uniqRandString(44);
-        $session->set('Advertiser\Register:$token', $csrf_token);
-        $view->set('__token', $csrf_token);
-        $view->set('organization', $this->org);
     }
 }

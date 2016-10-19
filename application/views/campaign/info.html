@@ -10,7 +10,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <p class="text-center">
-                        <img src="{echo CDN}uploads/images/{echo $ad->image}" alt="" width="300">
+                        <img src="{echo Ad::displayImg($ad->image)}" alt="" width="300">
                     </p>
                     <p class="text-center">
                         <a href="{echo $ad->url}" target="_blank" class="btn btn-default waves-effect waves-light">View Landing Page</a> {script $id = $ad->_id}

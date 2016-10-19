@@ -1,9 +1,5 @@
 <div class="text-center">
-    {if(!empty($org->logo))}
-    <a href="/" class="logo logo-lg"><img src="{echo CDN}uploads/images/{echo $org->logo}" class="img-responsive"></a>
-    {/if}{else}
-    <a href="/" class="logo logo-lg"><span>{echo $organization->name}</span> </a>
-    {/else}
+    {echo $org->displayLogo()}
 </div>
 <form class="form-horizontal m-t-20" action="" method="post">
     {if isset($message)}

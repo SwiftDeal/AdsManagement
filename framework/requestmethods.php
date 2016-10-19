@@ -18,11 +18,23 @@ namespace Framework {
         private function __clone() {
             // do nothing
         }
+
+        protected static function _clean($arr = []) {
+            $result = [];
+            foreach ($arr as $value) {
+                if (is_array($value)) {
+                    $result[] = self::_clean($value);
+                } else {
+                    $result[] = htmlentities($value);
+                }
+            }
+            return $result;
+        }
         
         public static function get($key, $default = "") {
             if (!empty($_GET[$key])) {
                 if (is_array($_GET[$key])) {
-                    return $_GET[$key];
+                    return self::_clean($_GET[$key]);
                 }
                 return htmlentities($_GET[$key]);
             }
@@ -32,7 +44,7 @@ namespace Framework {
         public static function post($key, $default = "") {
             if (isset($_POST[$key])) {
                 if (is_array($_POST[$key])) {
-                    return $_POST[$key];
+                    return self::_clean($_POST[$key]);
                 }
                 return htmlentities($_POST[$key]);
             } return $default;

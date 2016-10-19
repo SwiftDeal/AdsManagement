@@ -50,6 +50,11 @@ namespace Shared {
             // override this method to do cron tasks
         }
 
+        public static function displayImg($name = '', $folder = "images") {
+            $file = CDN . 'uploads/' . $folder . '/' . $name;
+            return $file;
+        }
+
         public function &getMeta() {
             if (property_exists($this, '_meta')) {
                 return $this->_meta;

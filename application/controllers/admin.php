@@ -54,6 +54,7 @@ class Admin extends Auth {
 
     /**
      * @before _secure
+     * @after _csrfToken
      */
     public function customization() {
     	$this->seo(array("title" => "Account Settings"));
@@ -116,7 +117,9 @@ class Admin extends Auth {
     		}
     		$this->setUser($user);
     	}
-        if (RequestMethods::get("action") == "removelogo") {
+        
+        $img = RequestMethods::get("img");
+        if (RequestMethods::get("action") == "removelogo" && $img === $org->logo) {
             @unlink(APP_PATH . '/public/assets/uploads/images/' . $org->logo);
             $org->logo = null;
             $org->save(); $this->setOrg($org);

@@ -36,6 +36,20 @@ class ApiKey extends Shared\Model {
     /**
      * @column
      * @readwrite
+     * @type integer
+     */
+    protected $_hits = 0;
+
+    /**
+     * @column
+     * @readwrite
+     * @type date
+     */
+    protected $_lastAccess = null;
+
+    /**
+     * @column
+     * @readwrite
      * @type array
      *
      * @label Meta

@@ -73,7 +73,7 @@
                                                 {/else}
                                             </td>
                                             <td>
-                                                <img src="{echo CDN}uploads/images/{echo $a->image}" alt="" class="img-responsive" width="70" height="70"> {script $id = $a->_id}
+                                                <img src="{echo Ad::displayImg($a->image)}" alt="" class="img-responsive" width="70" height="70"> {script $id = $a->_id}
                                             </td>
                                             <td><a href="/campaign/details/{$a->_id}.html">{echo $a->title}</a></td>
                                             <td>

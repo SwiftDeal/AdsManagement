@@ -124,6 +124,19 @@ class Organization extends \Shared\Model {
         return $org;
     }
 
+    public function displayLogo() {
+        $html = '<a href="/" class="logo logo-lg">';
+        
+        if (!$this->_logo || strlen($this->_logo) < 3) {
+            $html .= '<span>'. $this->_name .'</span>';
+        } else {
+            $html .= '<img src="'.CDN.'uploads/images/'. $this->_logo .'" class="img-responsive">';
+        }
+
+        $html .= '</a>';
+        return $html;
+    }
+
     public function users($type = "publisher") {
         $publishers = \User::all(["org_id = ?" => $this->_id, "type = ?" => $type], ["_id"]);
 

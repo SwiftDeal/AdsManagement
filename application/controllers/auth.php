@@ -2,14 +2,36 @@
 /**
  * @author Faizan Ayubi
  */
-use Shared\Controller as Controller;
-use Framework\RequestMethods as RequestMethods;
-use Framework\Registry as Registry;
 use \Curl\Curl;
 use Shared\Utils as Utils;
 use Shared\Mail as Mail;
+use Framework\Registry as Registry;
+use Shared\Controller as Controller;
+use Framework\RequestMethods as RequestMethods;
 
 class Auth extends Controller {
+    /**
+     * @protected
+     */
+    public function _csrfToken() {
+        $session = Registry::get("session");
+        $csrf_token = Framework\StringMethods::uniqRandString(44);
+        $session->set('Auth\Request:$token', $csrf_token);
+
+        if ($this->actionView) {
+            $this->actionView->set('__token', $csrf_token);
+        }
+    }
+
+    public function verifyToken($token = null) {
+        $session = Registry::get("session");
+        $csrf = $session->get('Auth\Request:$token');
+
+        if ($csrf && $csrf === $token) {
+            return true;
+        }
+        return false;
+    }
 
     public function __construct($options = []) {
         parent::__construct($options);
@@ -32,7 +54,6 @@ class Auth extends Controller {
         }
         $this->domain = $domain;
 
-
         if (!is_object($this->org) || !property_exists($this->org, '__id')) {
             $org = \Organization::first($q);
 
@@ -46,20 +67,16 @@ class Auth extends Controller {
     
     /**
      * @before _session
+     * @after _csrfToken
      */
     public function login() {
         $this->seo(array("title" => "Login", "view" => $this->getLayoutView()));
-        $view = $this->getActionView(); $session = Registry::get("session");
+        $view = $this->getActionView();
 
-        $csrf_token = $session->get('Auth\Login:$token');
         $token = RequestMethods::post("token", '');
-        if (RequestMethods::post("action") == "login" && $csrf_token && $token === $csrf_token) {
+        if (RequestMethods::post("action") == "login" && $this->verifyToken($token)) {
             $this->_login($this->org, $view);
         }
-        $csrf_token = Framework\StringMethods::uniqRandString(44);
-        $session->set('Auth\Login:$token', $csrf_token);
-        $view->set('__token', $csrf_token);
-        $view->set('organization', $this->org);
     }
 
     protected function _login($org, $view) {
@@ -126,7 +143,6 @@ class Auth extends Controller {
     public function resetpassword($token) {
         $this->seo(array("title" => "Forgot Password", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
-        $view->set('organization', $this->org);
 
         $meta = Meta::first(array("value = ?" => $token, "prop = ?" => "resetpass"));
         if (!isset($meta)) {

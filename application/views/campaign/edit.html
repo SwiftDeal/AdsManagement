@@ -81,7 +81,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Image</label>
-                                        <img src="{echo CDN}uploads/images/{echo $c->image}" class="img-thumbnail">
+                                        <img src="{echo Ad::displayImg($c->image)}" class="img-thumbnail">
                                         <input type="file" class="form-control" name="image" {if !$c->image}required=""{/if}>
                                         <span class="help-block text-info">Image should be 650px X 315px for good reach on Social Media<br>{echo Shared\Markup::errors($errors, "image")}</span>
                                     </div>

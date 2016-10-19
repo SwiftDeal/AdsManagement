@@ -528,16 +528,11 @@ class Publisher extends Auth {
     public function register() {
         $this->seo(array("title" => "Publisher Register", "description" => "Register"));
         $view = $this->getActionView(); $view->set('errors', []);
-        $session = Registry::get("session");
 
-        $csrf_token = $session->get('Publisher\Register:$token');
         $token = RequestMethods::post("token", '');
-        if (RequestMethods::post("action") == "register" && $csrf_token && $token === $csrf_token) {
+        if (RequestMethods::post("action") == "register" && $this->verifyToken($token)) {
             $this->_publisherRegister($this->org, $view);
         }
-        $csrf_token = Framework\StringMethods::uniqRandString(44);
-        $session->set('Publisher\Register:$token', $csrf_token);
-        $view->set('__token', $csrf_token);
     }
 
     /**
