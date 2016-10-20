@@ -214,4 +214,20 @@ class User extends Shared\Model {
         }
         return false;
     }
+
+    public function delete() {
+        switch ($this->_type) {
+            case 'publisher':
+                $clicks = Click::count(['pid' => $this->_id]);
+                if ($clicks === 0) {
+                    $query = ['user_id' => $this->_id];
+                    parent::delete();
+                    Link::deleteAll($query);
+                    Performance::deleteAll($query);
+                    return true;
+                }
+                return false;
+                break;
+        }
+    }
 }

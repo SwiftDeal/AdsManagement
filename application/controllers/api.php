@@ -5,6 +5,44 @@ use Keyword\Scrape as Scraper;
 use Framework\RequestMethods as RequestMethods;
 
 class Api extends \Shared\Controller {
+	const ERROR_CODES = [
+		'12' => 'Unauthorized Request',
+		'13' => 'Invalid API Key',
+		'20' => 'Request Parameter Error',
+		'30' => 'Bad Request',
+		'41' => 'Request IP Not Whitelisted',
+		'42' => 'Account is locked'
+	];
+
+	public function failure($code = '12') {
+		$view = $this->getActionView();
+
+		$msg = self::ERROR_CODES[$code] ?? self::ERROR_CODES['12'];
+		return $view->set('error', [
+			'code' => $code,
+			'message' => $msg
+		]);
+	}
+
+	/**
+	 * @protected
+	 * Check API Key
+	 */
+	public function _secure() {
+		$headers = getallheaders();
+		$key = $headers['X-Api-Key'];
+		
+		if (!$key) {
+			$this->redirect('/api/failure/12');
+		}
+
+		$apiKey = ApiKey::first(['key' => $key]);
+		if (!$apiKey) {
+			$this->redirect('/api/failure/13');
+		}
+		$this->_org = Organization::first(['_id' => $apiKey->org_id]);
+	}
+
 	public function __construct($options = []) {
 		parent::__construct($options);
 		$this->JSONView();
@@ -46,6 +84,42 @@ class Api extends \Shared\Controller {
 		$pageView->save();
 
 		$output();
+	}
+
+	/**
+	 * @before _secure
+	 */
+	public function affiliate($id = null) {
+		// check request type
+		$org = $this->_org; $view = $this->getActionView();
+		$requestType = RequestMethods::type();
+
+		switch ($requestType) {
+			case 'DELETE':
+				$publisher = User::first(['org_id' => $org->_id, 'type' => 'publisher', '_id' => $id]);
+				$result = $publisher->delete();
+				if ($result) {
+				    $view->set('message', 'Affiliate removed successfully!!');
+				} else {
+				    $view->set('message', 'Failed to delete. Affiliate has already given clicks!!');   
+				}
+				break;
+			
+			case 'POST':
+				$publisher = User::first(['org_id' => $org->_id, 'type' => 'publisher', '_id' => $id]);
+				$allowedFields = ['name', 'phone', 'country', 'currency'];
+				foreach ($allowedFields as $f) {
+					$publisher->$f = RequestMethods::post($f, $publisher->$f);
+				}
+				$publisher->save();
+				$view->set('success', 'Affiliate Updated!!');
+				break;
+
+			case 'GET':
+				$users = User::all(['org_id' => $org->_id]);
+				$view->set('publishers', $users);
+				break;
+		}
 	}
 
 	public function scrape() {

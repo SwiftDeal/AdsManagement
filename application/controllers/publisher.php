@@ -542,16 +542,12 @@ class Publisher extends Auth {
         if (!$user) {
             $this->_404();
         }
-        $clicks = \Click::count(["pid = ?" => $user->_id]);
-        if ($clicks === 0) {
-            $query = ['user_id' => $user->_id];
-            $user->delete();
-            \Link::deleteAll($query);
-            \Performance::deleteAll($query);
 
+        $result = $user->delete();
+        if ($result) {
             $view->set('message', 'Publisher removed successfully!!');
         } else {
-            $view->set('message', 'Failed to delete. Publisher has already given clicks!!');
+            $view->set('message', 'Failed to delete. Publisher has already given clicks!!');   
         }
     }
 
