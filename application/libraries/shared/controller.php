@@ -78,6 +78,18 @@ namespace Shared {
                 case 'pkr':
                     $v = $n/104;
                     break;
+
+                case 'aud':
+                    $v = $n/1.3;
+                    break;
+
+                case 'eur':
+                    $v = $n/0.9;
+                    break;
+
+                case 'gbp':
+                    $v = $n/0.8;
+                    break;
                 
                 default:
                     $v = $n;

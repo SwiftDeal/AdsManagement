@@ -107,9 +107,12 @@
                                         <div class="form-group">
                                             <label>Currency</label>
                                             <select name="currency" class="form-control" value="{echo $user->currency}">
-                                                <option value="INR">INR</option>
-                                                <option value="USD">USD</option>
-                                                <option value="PKR">PKR</option>
+                                                <option value="INR">INR <i class="fa fa-inr"></i></option>
+                                                <option value="USD">USD <i class="fa fa-usd"></i></option>
+                                                <option value="PKR">PKR <i class="fa fa-inr"></i></option>
+                                                <option value="AUD">AUD <i class="fa fa-usd"></i></option>
+                                                <option value="EUR">EUR <i class="fa fa-eur"></i></option>
+                                                <option value="GBP">GBP <i class="fa fa-gbp"></i></option>
                                             </select>
                                             <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "currency")}</span>
                                         </div>

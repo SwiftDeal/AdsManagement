@@ -133,6 +133,24 @@ class User extends Shared\Model {
                 $n = (float) ($n * 104);
                 $prefix = '<i class="fa fa-inr"></i> ';
                 break;
+
+            case 'aud':
+                $places = 3;
+                $n = (float) ($n * 1.3);
+                $prefix = '<i class="fa fa-usd"></i> ';
+                break;
+
+            case 'eur':
+                $places = 3;
+                $n = (float) ($n * 0.9);
+                $prefix = '<i class="fa fa-eur"></i> ';
+                break;
+
+            case 'gbp':
+                $places = 3;
+                $n = (float) ($n * 0.8);
+                $prefix = '<i class="fa fa-gbp"></i> ';
+                break;
             
             default:
                 $places = 6;
