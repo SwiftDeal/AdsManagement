@@ -4,6 +4,7 @@ namespace Shared;
 use WebBot\Core\Bot as Bot;
 use Framework\Registry as Registry;
 use Framework\ArrayMethods as ArrayMethods;
+use Framework\RequestMethods as RequestMethods;
 
 class Utils {
 	public static function getMongoID($field) {
@@ -231,6 +232,25 @@ class Utils {
 			$result[$date] = $value;
 		}
 		return $result;
+	}
+
+	public static function getClientIp() {
+		$headers = getallheaders();
+		$ip = '';
+		if (isset($headers['Cf-Connecting-Ip'])) {
+			$ipaddr = $headers['Cf-Connecting-Ip'];
+			$ip = explode(",", $ipaddr);
+
+			$ip = $ip[0];
+		} else if (isset($headers['X-Forwarded-For'])) {
+			$ipaddr = $headers['Cf-Connecting-Ip'];
+			$ip = explode(",", $ipaddr);
+
+			$ip = array_pop($ip);
+		} else {
+			$ip = RequestMethods::server('HTTP_CLIENT_IP') ?? RequestMethods::server('REMOTE_ADDR');
+		}
+		return $ip;
 	}
 
 	public static function encrypt($data, $key) {

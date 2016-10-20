@@ -181,6 +181,7 @@ namespace Shared {
         public function JSONview() {
             $this->willRenderLayoutView = false;
             $this->defaultExtension = "json";
+            $this->defaultContentType = "application/json";
         }
         
         /**

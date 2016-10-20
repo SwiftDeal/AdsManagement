@@ -40,6 +40,13 @@ class Api extends \Shared\Controller {
 		if (!$apiKey) {
 			$this->redirect('/api/failure/13');
 		}
+		
+		$ip = Utils::getClientIp();
+
+		if (!in_array($ip, $apiKey->ips)) {
+			$this->redirect('/api/failure/41');
+		}
+
 		$this->_org = Organization::first(['_id' => $apiKey->org_id]);
 	}
 
@@ -94,9 +101,18 @@ class Api extends \Shared\Controller {
 		$org = $this->_org; $view = $this->getActionView();
 		$requestType = RequestMethods::type();
 
+		if ($id) {
+			$publisher = User::first(['org_id' => $org->_id, 'type' => 'publisher', '_id' => $id]);	
+		} else {
+			$publisher = null;
+		}
+
+		if ($id && !$publisher) {
+			$this->redirect('/api/failure/30');
+		}
+
 		switch ($requestType) {
 			case 'DELETE':
-				$publisher = User::first(['org_id' => $org->_id, 'type' => 'publisher', '_id' => $id]);
 				$result = $publisher->delete();
 				if ($result) {
 				    $view->set('message', 'Affiliate removed successfully!!');
@@ -106,13 +122,30 @@ class Api extends \Shared\Controller {
 				break;
 			
 			case 'POST':
-				$publisher = User::first(['org_id' => $org->_id, 'type' => 'publisher', '_id' => $id]);
-				$allowedFields = ['name', 'phone', 'country', 'currency'];
-				foreach ($allowedFields as $f) {
-					$publisher->$f = RequestMethods::post($f, $publisher->$f);
+				if (!$id) {
+					$usr = User::addNew('publisher', $org, $view);
+					if ($usr === false) return $view->set('success', false);
+
+					$pass = $user->password;
+					$user->password = sha1($pass);
+					$user->save();
+
+					Mail::send([
+					    'user' => $user, 'org' => $org,
+					    'template' => 'pubRegister', 'pass' => $pass,
+					    'subject' => $org->name . ' Support'
+					]);
+					$view->set('message', 'Affiliate Added!!')
+						->set('success', true);
+				} else {
+					$allowedFields = ['name', 'phone', 'country', 'currency'];
+					foreach ($allowedFields as $f) {
+						$publisher->$f = RequestMethods::post($f, $publisher->$f);
+					}
+					$publisher->save();
+					$view->set('message', 'Affiliate Updated!!')
+						->set('success', true);
 				}
-				$publisher->save();
-				$view->set('success', 'Affiliate Updated!!');
 				break;
 
 			case 'GET':

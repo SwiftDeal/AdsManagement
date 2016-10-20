@@ -199,17 +199,16 @@ class User extends Shared\Model {
     }
 
     public static function addNew($type, $org, $view) {
-        $fields = ['name', 'email', 'password', 'country'];
+        $fields = ['name', 'email', 'phone', 'password', 'country'];
         $user = new self([
             'country' => RequestMethods::server("HTTP_CF_IPCOUNTRY", "IN"),
-            'currency' => 'USD'
+            'currency' => 'USD', 'org_id' => $org->_id,
+            'type' => $type, 'live' => false
         ]);
 
         foreach ($fields as $f) {
             $user->$f = RequestMethods::post($f, $user->$f);
         }
-        $user->org_id = $org->_id;
-        $user->type = $type;
 
         if (!$user->validate()) {
             $view->set("errors", $user->errors);

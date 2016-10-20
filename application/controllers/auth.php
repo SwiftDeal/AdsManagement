@@ -173,24 +173,18 @@ class Auth extends Controller {
                 "value" => uniqid()
             ));
             $meta->save();
-            Shared\Mail::send(array(
+            Mail::send(array(
                 "template" => "forgotpass",
                 "subject" => "New Password Requested",
                 "user" => $exist,
-                "meta" => $meta,
-                "org" => $this->org
+                "meta" => $meta, "org" => $this->org
             ));
         }
         return "Password Reset Email Sent Check Your Email. Check in Spam too.";
     }
 
     protected function _publisherRegister($org, $view) {
-        $email = RequestMethods::post("email");
         $platformUrl = RequestMethods::post("platform", '');
-        $exist = \User::first(['email = ?' => $email, 'org_id = ?' => $org->_id]);
-        if ($exist) {
-            return $view->set('message', 'Email already exists!!');
-        }
 
         try {
             $platform = new \Platform([
@@ -199,46 +193,27 @@ class Auth extends Controller {
         } catch (\Exception $e) {
             return $view->set('message', $e->getMessage());
         }
-        $pass = RequestMethods::post("password");
-        $user = new User(array(
-            "org_id" => $org->id,
-            "name" => RequestMethods::post("name"),
-            "email" => $email,
-            "password" => sha1($pass),
-            "phone" => RequestMethods::post("phone"),
-            "country" => RequestMethods::server("HTTP_CF_IPCOUNTRY", "IN"),
-            "currency" => "USD",
-            "type" => "publisher",
-            "live" => false
-        ));
-        if ($user->validate()) {
-            $user->save();
+        
+        $user = User::addNew('publisher', $org, $view);
+        if ($user === false) return;
+        $pass = $user->password;
 
-            Mail::send([
-                'user' => $user,
-                'template' => 'pubRegister',
-                'subject' => $this->org->name . 'Support',
-                'org' => $this->org,
-                'pass' => $pass
-            ]);
-            
-            $platform->user_id = $user->_id;
-            $platform->meta = null;
-            $platform->save();
-            return $view->set('message', "Registered Successfully");
-        } else {
-            return $view->set('errors', $user->getErrors());
-        }
+        $user->password = sha1($pass);
+        $user->save();
+
+        Mail::send([
+            'user' => $user, 'org' => $this->org,
+            'template' => 'pubRegister', 'pass' => $pass,
+            'subject' => $this->org->name . ' Support'
+        ]);
+        
+        $platform->user_id = $user->_id;
+        $platform->save();
+        $view->set('message', "Registered Successfully");
     }
 
     protected function _advertiserRegister($org, $view) {
-        $pass = Shared\Utils::randomPass();
-        $email = RequestMethods::post("email");
         $platformUrl = RequestMethods::post("platform", '');
-        $exist = \User::first(['email = ?' => $email, 'org_id = ?' => $org->_id]);
-        if ($exist) {
-            return $view->set('message', "Email already exists!!");
-        }
 
         try {
             $platform = new \Platform([
@@ -248,26 +223,21 @@ class Auth extends Controller {
             return $view->set('message', $e->getMessage());
         }
 
-        $user = new User(array(
-            "org_id" => $org->id,
-            "name" => RequestMethods::post("name"),
-            "email" => $email,
-            "password" => sha1(RequestMethods::post("password")),
-            "phone" => RequestMethods::post("phone"),
-            "country" => RequestMethods::server("HTTP_CF_IPCOUNTRY", "IN"),
-            "currency" => "USD",
-            "type" => "advertiser",
-            "live" => false
-        ));
-        if ($user->validate()) {
-            $user->save();
-        } else {
-            return $view->set('errors', $user->getErrors());
-        }
+        $user = User::addNew('advertiser', $org, $view);
+        if ($user === false) return;
+        $pass = $user->password;
+
+        $user->password = sha1($pass);
+        $user->save();
         
         $platform->user_id = $user->_id;
-        $platform->meta = null;
         $platform->save();
+
+        Mail::send([
+            'user' => $user, 'org' => $this->org,
+            'template' => 'advertReg', 'pass' => $pass,
+            'subject' => $this->org->name . ' Support'
+        ]);
         return $view->set('message', "Registered Successfully");
     }
 
@@ -306,8 +276,7 @@ class Auth extends Controller {
     public function _publisher() {
         parent::_secure();
         if ($this->user->type !== 'publisher' || !$this->org) {
-            $this->noview();
-            throw new \Framework\Router\Exception\Controller("Invalid Request");
+            $this->_404();
         }
         $this->setLayout("layouts/publisher");
     }
