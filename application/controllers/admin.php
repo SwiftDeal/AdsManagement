@@ -120,9 +120,11 @@ class Admin extends Auth {
         
         $img = RequestMethods::get("img");
         if (RequestMethods::get("action") == "removelogo" && $img === $org->logo) {
-            @unlink(APP_PATH . '/public/assets/uploads/images/' . $org->logo);
-            $org->logo = null;
-            $org->save(); $this->setOrg($org);
+            if (file_exists(APP_PATH . '/public/assets/uploads/images/' . $org->logo)) {
+                @unlink(APP_PATH . '/public/assets/uploads/images/' . $org->logo);
+            }
+            $org->logo = '';
+            $org->save(); //$this->setOrg($org);
             $this->redirect("/admin/customization.html");
         }
     }

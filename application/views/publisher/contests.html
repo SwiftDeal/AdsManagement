@@ -1,26 +1,22 @@
 <div class="row">
     <div class="col-sm-12">
-        <h4 class="page-title">Contests</h4>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
         <ul class="nav nav-tabs navtab-custom">
             <li class="active">
                 <a href="#home" data-toggle="tab" aria-expanded="true">
-                    <span class="visible-xs"><i class="fa fa-home"></i></span>
-                    <span class="hidden-xs">Contest</span>
+                    <span class="visible-xs"><i class="fa fa-trophy"></i></span>
+                    <span class="hidden-xs">All Contests</span>
                 </a>
             </li>
             <li class="">
-                <a href="#profile" data-toggle="tab" aria-expanded="false">
-                    <span class="visible-xs"><i class="fa fa-user"></i></span>
+                <a href="#leaderboard" data-toggle="tab" aria-expanded="false">
+                    <span class="visible-xs"><i class="fa fa-users"></i></span>
                     <span class="hidden-xs">Leader Board</span>
                 </a>
             </li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="home">
+            {if($contests)}
             {script $users = []}
             {script $campId = 1} {foreach $contest in $contests}
                 {script $query = ['start' => $contest->start->format('Y-m-d'), 'end' => $contest->end->format('Y-m-d')]}
@@ -89,8 +85,12 @@
                     {/elseif}
                 </table>
             {/foreach}
+            {/if} {else}
+            <p class="text-center">There are no active contests now, Please visit Later</p>
+            {/else}
             </div>
-            <div class="tab-pane" id="profile">
+            <div class="tab-pane" id="leaderboard">
+            {if($contests)}
             {script $pubs = \User::all(['type' => 'publisher', 'org_id' => $org->_id], ['_id', 'name'])}
             {script $campId = 1} {foreach $contest in $contests}
                 <h4 class="m-t-0 header-title">{echo $campId++}. <b>{echo $contest->title}</b> <small>({echo Framework\StringMethods::only_date($contest->start)} - {echo Framework\StringMethods::only_date($contest->end)}) (Excluding Today)</small></h4>
@@ -122,6 +122,9 @@
                     </tbody>
                 </table>
             {/foreach}
+            {/if} {else}
+            <p class="text-center">There are no active contests now, Please visit Later</p>
+            {/else}
             </div>
         </div>
     </div>

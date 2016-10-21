@@ -22,119 +22,128 @@
 </div>
 <div class="row">
     <div class="col-sm-12">
-        <div class="card-box">
-            <h4 class="m-t-0 header-title"><b>Revenue Table</b></h4>
-            <table class="tablesaw m-t-20 table m-b-0" data-tablesaw-mode="stack">
-                <thead>
-                    <tr>
-                        <th>Day</th>
-                        <th>Clicks</th>
-                        <th>Conversions</th>
-                        <th>Earning</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {script $total = 0.00} {script $totalClicks = 0} {foreach $p in $performances}
-                    <tr>
-                        <td>{echo Framework\StringMethods::only_date($p->created)}</td>
-                        {script $totalClicks += $p->clicks}
-                        <td>{echo Shared\Markup::nice_number($p->clicks)}</td>
-                        <td>{echo Shared\Markup::nice_number($p->conversions)}</td>
-                        <td>{echo $user->convert($p->revenue)}</i></td>
-                        {script $total += $p->revenue}
-                    </tr>
+        <ul class="nav nav-tabs navtab-custom">
+            <li class="active">
+                <a href="#home" data-toggle="tab" aria-expanded="true">
+                    <span class="visible-xs"><i class="fa fa-trophy"></i></span>
+                    <span class="hidden-xs">Tracking Report <small>({echo $count} Links)</small></span>
+                </a>
+            </li>
+            <li class="">
+                <a href="#earnings" data-toggle="tab" aria-expanded="false">
+                    <span class="visible-xs"><i class="fa fa-money"></i></span>
+                    <span class="hidden-xs">Earnings Report</span>
+                </a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="home">
+                <h4 class="m-t-0 header-title">
+                    <b>Tracking Links Summary</b>
+                    <div class="pull-right">
+                        <a href="/publisher/links.csv"><span class="label label-primary">Download Links CSV</span></a>
+                    </div>
+                </h4>
+                <table class="tablesaw m-t-20 table m-b-0" data-tablesaw-mode="stack">
+                    <thead>
+                        <tr>
+                            <th>STATUS</th>
+                            <th>PREVIEW</th>
+                            <th>TITLE</th>
+                            <th>RATE</th>
+                            <th>PERFORMANCE</th>
+                            <th>EARNINGS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {script $adClicks = []} {script $commInfo = []}
+                    {foreach $value in $clicks}
+                        {script $revenue = $ck_count = 0} {script $countries = Click::classify($value, 'country')}
+                        {foreach $records in $countries}
+
+                            {script $pComm = Commission::campaignRate($value_i, $commInfo, $records_i, array_merge([
+                                'type' => 'publisher', 'publisher' => $user
+                            ], $dq))}
+                            {script $ck_count += count($records)}
+                            {script $earning = Ad::earning($pComm, count($records))}
+                            {script $revenue += $earning['revenue']}
+                        {/foreach}
+
+                        {script $adClicks[$value_i] = ['revenue' => $revenue, 'clicks' => $ck_count]}
                     {/foreach}
-                    <tr>
-                        <td></td>
-                        <td>Total: {echo Shared\Markup::nice_number($totalClicks)}</td>
-                        <td></td>
-                        <td>Revenue: {echo $user->convert($total)}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="card-box">
-        <div class="text-center">
-                <code>Note: When campaign is 'INACTIVE' clicks will not be counted</code>
-            </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="card-box">
-            <h4 class="m-t-0 header-title">
-                <b>Tracking Links Summary</b><small> Total: {echo $count} Links</small>
-                <div class="pull-right">
-                    <a href="/publisher/links.csv"><span class="label label-primary">Download Links CSV</span></a>
+                    {foreach $l in $links}
+                        {script $a = Ad::first(["_id = ?" => $l->ad_id], ['_id', 'title', 'image', 'live', 'created'])}
+                        {script $c = Commission::first(["ad_id = ?" => $l->ad_id])}
+                        
+                        {script $data = $adClicks[$a->_id] ?? ['revenue' => 'None', 'clicks' => 'No Clicks']}
+                        <tr>
+                            <td>
+                                {if $a->live}
+                                <span class="label label-success">Active</span>
+                                {/if} {else}
+                                <span class="label label-warning">Inactive</span>
+                                {/else}<br>
+                                <small>{echo Framework\StringMethods::only_date($a->created)}</small>
+                            </td>
+                            <td>
+                                <img src="{echo Ad::displayImg($a->image)}" alt="" class="img-responsive" width="100" height="100">
+                            </td>
+                            <td><a href="/campaign/info/{$a->id}.html">{echo $a->title}</a></td>
+                            <td>
+                                <small>{echo Commission::allRate($a->_id, $user)}</small>
+                            </td>
+                            <td>
+                                {echo Shared\Markup::nice_number($data['clicks'])} Click
+                            </td>
+                            <td>{echo $user->convert($data['revenue'])}</td>
+                        </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
+
+                <div class="text-center">
+                    <ul class="pager">
+                        {if ($page != 1)}
+                        <li><a href="{echo Shared\Markup::pagination($page - 1)}">Previous</a></li>
+                        {/if} {if ($page < $count/$limit)}
+                        <li><a href="{echo Shared\Markup::pagination($page + 1)}">Next</a></li>
+                        {/if}
+                    </ul>
                 </div>
-            </h4>
-            <table class="tablesaw m-t-20 table m-b-0" data-tablesaw-mode="stack">
-                <thead>
-                    <tr>
-                        <th>STATUS</th>
-                        <th>PREVIEW</th>
-                        <th>TITLE</th>
-                        <th>RATE</th>
-                        <th>CLICKS</th>
-                        <th>EARNINGS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {script $adClicks = []} {script $commInfo = []}
-                {foreach $value in $clicks}
-                    {script $revenue = $ck_count = 0} {script $countries = Click::classify($value, 'country')}
-                    {foreach $records in $countries}
+            </div>
+            <div class="tab-pane" id="earnings">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Performance</th>
+                                <th>Earning</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {script $total = 0.00} {script $totalClicks = 0} {foreach $p in $performances}
+                            <tr>
+                                <td>{echo Framework\StringMethods::only_date($p->created)}</td>
+                                {script $totalClicks += $p->clicks}
 
-                        {script $pComm = Commission::campaignRate($value_i, $commInfo, $records_i, array_merge([
-                            'type' => 'publisher', 'publisher' => $user
-                        ], $dq))}
-                        {script $ck_count += count($records)}
-                        {script $earning = Ad::earning($pComm, count($records))}
-                        {script $revenue += $earning['revenue']}
-                    {/foreach}
-
-                    {script $adClicks[$value_i] = ['revenue' => $revenue, 'clicks' => $ck_count]}
-                {/foreach}
-                {foreach $l in $links}
-                    {script $a = Ad::first(["_id = ?" => $l->ad_id], ['_id', 'title', 'image', 'live', 'created'])}
-                    {script $c = Commission::first(["ad_id = ?" => $l->ad_id])}
-                    
-                    {script $data = $adClicks[$a->_id] ?? ['revenue' => 'None', 'clicks' => 'No Clicks']}
-                    <tr>
-                        <td>
-                            {if $a->live}
-                            <span class="label label-success">Active</span>
-                            {/if} {else}
-                            <span class="label label-warning">Inactive</span>
-                            {/else}<br>
-                            <small>{echo Framework\StringMethods::only_date($a->created)}</small>
-                        </td>
-                        <td>
-                            <img src="{echo Ad::displayImg($a->image)}" alt="" class="img-responsive" width="100" height="100">
-                        </td>
-                        <td><a href="/campaign/info/{$a->id}.html">{echo $a->title}</a></td>
-                        <td>
-                            {echo Commission::allRate($a->_id, $user)}
-                        </td>
-                        <td>{echo Shared\Markup::nice_number($data['clicks'])}</td>
-                        <td>{echo $user->convert($data['revenue'])}</td>
-                    </tr>
-                {/foreach}
-                </tbody>
-            </table>
-
-            <div class="text-center">
-            <ul class="pager">
-                {if ($page != 1)}
-                <li><a href="{echo Shared\Markup::pagination($page - 1)}">Previous</a></li>
-                {/if} {if ($page < $count/$limit)}
-                <li><a href="{echo Shared\Markup::pagination($page + 1)}">Next</a></li>
-                {/if}
-            </ul>
-        </div>
+                                <td>
+                                    Clicks: {echo Shared\Markup::nice_number($p->clicks)}
+                                    {if($p->conversions)}<br>Conersions: {echo Shared\Markup::nice_number($p->conversions)}{/if}
+                                </td>
+                                <td>{echo $user->convert($p->revenue)}</i></td>
+                                {script $total += $p->revenue}
+                            </tr>
+                            {/foreach}
+                            <tr>
+                                <td></td>
+                                <td>{echo Shared\Markup::nice_number($totalClicks)} Clicks</td>
+                                <td>Revenue: {echo $user->convert($total)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>

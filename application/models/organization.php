@@ -57,7 +57,7 @@ class Organization extends \Shared\Model {
      * @type text
      * @length 255
      * 
-     * @validate required, min(3), max(255)
+     * @validate max(255)
      * @label default support email
      */
     protected $_email = null;
@@ -68,7 +68,6 @@ class Organization extends \Shared\Model {
      * @type text
      * @length 255
      * 
-     * @validate required, min(3), max(255)
      * @label network logo
      */
     protected $_logo = null;
