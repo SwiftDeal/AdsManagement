@@ -50,6 +50,13 @@ class Api extends \Shared\Controller {
 		$this->_org = Organization::first(['_id' => $apiKey->org_id]);
 	}
 
+	/**
+	 * @protected
+	 */
+	public function _cleanUp() {
+		$this->_org = null;
+	}
+
 	public function __construct($options = []) {
 		parent::__construct($options);
 		$this->JSONView();
@@ -95,22 +102,27 @@ class Api extends \Shared\Controller {
 
 	/**
 	 * @before _secure
+	 * @after _cleanUp
 	 */
 	public function affiliate($id = null) {
 		// check request type
 		$org = $this->_org; $view = $this->getActionView();
+
+		try {
+			if ($id) {
+				$publisher = User::first(['org_id' => $org->_id, 'type' => 'publisher', '_id' => $id]);	
+			} else {
+				$publisher = null;
+			}
+
+			if ($id && !$publisher) {
+				return $this->failure('30');
+			}
+		} catch (\Exception $e) {
+			return $this->failure('30');
+		}
+
 		$requestType = RequestMethods::type();
-
-		if ($id) {
-			$publisher = User::first(['org_id' => $org->_id, 'type' => 'publisher', '_id' => $id]);	
-		} else {
-			$publisher = null;
-		}
-
-		if ($id && !$publisher) {
-			$this->redirect('/api/failure/30');
-		}
-
 		switch ($requestType) {
 			case 'DELETE':
 				$result = $publisher->delete();
@@ -153,6 +165,73 @@ class Api extends \Shared\Controller {
 				$view->set('publishers', $users);
 				break;
 		}
+	}
+
+	/**
+	 * @before _secure
+	 * @after _cleanUp
+	 */
+	public function campaign($id = null) {
+		$view = $this->getActionView(); $org = $this->_org;
+		$active = RequestMethods::get('active', 1);
+
+		$fields = ['_id', 'title', 'image', 'url', 'device', 'expiry', 'created'];
+		$commFields = ['model', 'rate', 'revenue', 'coverage'];
+
+		try {
+			if ($id) {
+				$campaign = Ad::first(['_id' => $id, 'org_id' => $org->_id], $fields);
+			} else {
+				$campaign = null;
+			}
+
+			if ($id && !$campaign) {
+				return $this->failure('30');
+			}
+		} catch (\Exception $e) {
+			return $this->failure('30');
+		}
+
+		$type = RequestMethods::type();
+		switch ($type) {
+			case 'GET':
+				if (!$id) {
+					// display list of campaigns
+					$ads = Ad::all(['org_id' => $org->_id, 'live' => $active], $fields);
+					$ads = Ad::objectArr($ads, $fields);
+					
+					$results = [];
+					foreach ($ads as $id => $a) {
+						$arr = Utils::toArray($a);
+						$comms = Commission::all(['ad_id' => $a->_id], $commFields);
+
+						$arr['commissions'] = Ad::objectArr($comms, $commFields);
+						$results[$id] = $arr;
+					}
+					$view->set('campaigns', $results);	
+				} else {
+					$ads = Ad::objectArr([$campaign], $fields);
+					$ad = array_shift($ads);
+					$comm = Commission::all(['ad_id' => $campaign->_id], $commFields);
+					$view->set('campaign', $ad)
+						->set('commissions', Commission::objectArr($comm, $commFields));
+				}
+				break;
+
+			case 'POST':
+				if ($id) { // edit a particular campaign
+
+				} else { // create a new campaign
+
+				}
+				break;
+			
+			case 'DELETE':
+				$message = $campaign->delete();
+				$view->set('message', $message);
+				break;
+		}
+
 	}
 
 	public function scrape() {

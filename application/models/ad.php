@@ -154,7 +154,6 @@ class Ad extends Shared\Model {
     }
 
     public function delete() {
-        $clickCol = \Framework\Registry::get("MongoDB")->clicks;
         $id = \Shared\Utils::mongoObjectId($this->_id);
         
         $count = \Click::count(['adid' => $id]);
@@ -163,12 +162,7 @@ class Ad extends Shared\Model {
         }
         @unlink(APP_PATH . '/public/assets/uploads/images/' . $this->image);
         parent::delete();
-        $coms = \Commission::all(["ad_id = ?" => $id]);
-        foreach ($coms as $com) {
-            $com->delete();
-        }
-
-        // also need to remove the links
+        \Commission::deleteAll(['ad_id' => $id]);
         \Link::deleteAll(['ad_id' => $id]);
         return ['message' => 'Campaign removed successfully!!'];
     }

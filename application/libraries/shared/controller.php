@@ -284,14 +284,14 @@ namespace Shared {
                     if ($this->actionView->get($key, false)) {
                         $key = "__org";
                     }
-                    $this->actionView->set($key, $this->org);
+                    $this->actionView->set($key, $this->_org);
                 }
                 if ($this->layoutView) {
                     $key = "org";
                     if ($this->layoutView->get($key, false)) {
                         $key = "__org";
                     }
-                    $this->layoutView->set($key, $this->org);
+                    $this->layoutView->set($key, $this->_org);
                 }
             }
             parent::render();
