@@ -436,6 +436,7 @@ class Advertiser extends Auth {
     }
 
     /**
+     * @before _session
      * @after _csrfToken
      */
     public function register() {

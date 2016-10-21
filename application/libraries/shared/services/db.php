@@ -1,6 +1,7 @@
 <?php
 namespace Shared\Services;
 use Framework\Registry;
+use Shared\Utils as Utils;
 
 class Db {
 	public static function connect() {
@@ -21,6 +22,33 @@ class Db {
 		    Registry::set("MongoDB", $mongoDB);
 		}
 		return $mongoDB;
+	}
+
+	public static function convertType($value, $type = 'id') {
+		switch ($type) {
+			case 'id':
+				return Utils::mongoObjectId($value);
+
+			case 'regex':
+				return Utils::mongoRegex($value);
+			
+			case 'data':
+			case 'datetime':
+			case 'time':
+				return self::time($value);
+		}
+		return '';
+	}
+
+	public static function updateRaw($table, $find, $set, $opts = []) {
+		$collection = Registry::get("MongoDB")->$table;
+		
+		$many = $opts['many'] ?? false;
+		if ($many) {
+			$collection->updateMany($find, $set);
+		} else {
+			$collection->updateOne($find, $set);
+		}
 	}
 
 	public static function time($date = null) {

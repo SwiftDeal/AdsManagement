@@ -57,29 +57,29 @@ class Admin extends Auth {
      * @after _csrfToken
      */
     public function customization() {
-    	$this->seo(array("title" => "Account Settings"));
-    	$view = $this->getActionView();
+        $this->seo(array("title" => "Account Settings"));
+        $view = $this->getActionView();
 
-    	$user = $this->user; $org = $this->org;
+        $user = $this->user; $org = $this->org;
 
-    	$view->set("errors", []);
-    	if (RequestMethods::type() == 'POST') {
-    		$action = RequestMethods::post('action', '');
-    		switch ($action) {
-    			case 'account':
-    				$user->name = RequestMethods::post('name');
+        $view->set("errors", []);
+        if (RequestMethods::type() == 'POST') {
+            $action = RequestMethods::post('action', '');
+            switch ($action) {
+                case 'account':
+                    $user->name = RequestMethods::post('name');
                     $user->currency = RequestMethods::post('currency', 'INR');
                     $user->phone = RequestMethods::post('phone');
 
-    				$user->save();
-    				$view->set('message', 'Account Updated!!');
-    				break;
+                    $user->save();
+                    $view->set('message', 'Account Updated!!');
+                    break;
 
-    			case 'password':
-    				$old = RequestMethods::post('password');
-    				$new = RequestMethods::post('npassword');
-    				$view->set($user->updatePassword($old, $new));
-    				break;
+                case 'password':
+                    $old = RequestMethods::post('password');
+                    $new = RequestMethods::post('npassword');
+                    $view->set($user->updatePassword($old, $new));
+                    break;
 
                 case 'billing':
                     $billing = $org->billing;
@@ -111,20 +111,18 @@ class Admin extends Auth {
                     $org->save(); $this->setOrg($org);
                     $view->set('message', 'Network Settings updated!!');
                     break;
-    			
-    			default:
-    				break;
-    		}
-    		$this->setUser($user);
-    	}
+                
+                default:
+                    break;
+            }
+            $this->setUser($user);
+        }
         
         $img = RequestMethods::get("img");
         if (RequestMethods::get("action") == "removelogo" && $img === $org->logo) {
-            if (file_exists(APP_PATH . '/public/assets/uploads/images/' . $org->logo)) {
-                @unlink(APP_PATH . '/public/assets/uploads/images/' . $org->logo);
-            }
-            $org->logo = '';
-            $org->save(); //$this->setOrg($org);
+            @unlink(APP_PATH . '/public/assets/uploads/images/' . $org->logo);
+            $org->logo = null; $this->setOrg($org);
+            Db::updateRaw('organizations', ['_id' => Db::convertType($org->_id, 'id')], ['$unset' => ['logo' => 1]]);
             $this->redirect("/admin/customization.html");
         }
     }

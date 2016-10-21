@@ -573,6 +573,7 @@ class Publisher extends Auth {
 
     /**
      * @before _session
+     * @after _csrfToken
      */
     public function register() {
         $this->seo(array("title" => "Publisher Register", "description" => "Register"));
