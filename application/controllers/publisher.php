@@ -211,8 +211,11 @@ class Publisher extends Auth {
                 case 'payout':
                     $user->getMeta()['payout'] = [
                         'paypal' => RequestMethods::post('paypal', ''),
+                        'payquicker' => RequestMethods::post('payquicker', ''),
                         'payoneer' => RequestMethods::post('payoneer', ''),
-                        'paytm' => RequestMethods::post('paytm', '')
+                        'paytm' => RequestMethods::post('paytm', ''),
+                        'mobicash' => RequestMethods::post('mobicash', ''),
+                        'easypaisa' => RequestMethods::post('easypaisa', '')
                     ];
                     $user->save();
                     $view->set('message', 'Payout Info Updated!!');
