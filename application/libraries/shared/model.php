@@ -65,6 +65,12 @@ namespace Shared {
         }
 
         public static function objectArr($arr = [], $fields = []) {
+            if (!is_array($arr)) {
+                $newArr = [];
+                $newArr[] = $arr;
+                $arr = $newArr;
+            }
+
             $results = [];
             foreach ($arr as $key => $a) {
                 $data = [];

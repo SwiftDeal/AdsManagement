@@ -108,17 +108,13 @@ class Api extends \Shared\Controller {
 		// check request type
 		$org = $this->_org; $view = $this->getActionView();
 
-		try {
-			if ($id) {
-				$publisher = User::first(['org_id' => $org->_id, 'type' => 'publisher', '_id' => $id]);	
-			} else {
-				$publisher = null;
-			}
+		if ($id) {
+			$publisher = User::first(['org_id' => $org->_id, 'type' => 'publisher', '_id' => $id]);	
+		} else {
+			$publisher = null;
+		}
 
-			if ($id && !$publisher) {
-				return $this->failure('30');
-			}
-		} catch (\Exception $e) {
+		if ($id && !$publisher) {
 			return $this->failure('30');
 		}
 
@@ -161,8 +157,16 @@ class Api extends \Shared\Controller {
 				break;
 
 			case 'GET':
-				$users = User::all(['org_id' => $org->_id]);
-				$view->set('publishers', $users);
+				$columns = (new User)->getColumns();
+				$fields = array_keys($columns);
+				if ($id) {
+					$users = User::objectArr($publisher, $fields);
+
+					$view->set('publisher', $users[0]);
+				} else {
+					$users = User::all(['org_id' => $org->_id]);
+					$view->set('publishers', User::objectArr($users, $fields));
+				}
 				break;
 		}
 	}
@@ -178,17 +182,13 @@ class Api extends \Shared\Controller {
 		$fields = ['_id', 'title', 'image', 'url', 'device', 'expiry', 'created'];
 		$commFields = ['model', 'rate', 'revenue', 'coverage'];
 
-		try {
-			if ($id) {
-				$campaign = Ad::first(['_id' => $id, 'org_id' => $org->_id], $fields);
-			} else {
-				$campaign = null;
-			}
+		if ($id) {
+			$campaign = Ad::first(['_id' => $id, 'org_id' => $org->_id], $fields);
+		} else {
+			$campaign = null;
+		}
 
-			if ($id && !$campaign) {
-				return $this->failure('30');
-			}
-		} catch (\Exception $e) {
+		if ($id && !$campaign) {
 			return $this->failure('30');
 		}
 

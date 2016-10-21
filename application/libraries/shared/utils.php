@@ -24,7 +24,11 @@ class Utils {
 				$result[] = self::mongoObjectId($i);
 			}
 		} else if (!Services\Db::isType($id, 'id')) {
-            $result = new \MongoDB\BSON\ObjectID($id);
+			if (strlen($id) === 24) {
+				$result = new \MongoDB\BSON\ObjectID($id);	
+			} else {
+				$result = "";
+			}
         } else {
         	$result = $id;
         }

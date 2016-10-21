@@ -230,11 +230,13 @@ class Advertiser extends Auth {
     /**
      * @before _admin
      */
-    public function info($id) {
+    public function info($id = null) {
         $this->seo(array("title" => "Advertiser Edit"));
         $view = $this->getActionView();
 
         $advertiser = User::first(["_id = ?" => $id, "type = ?" => "advertiser", "org_id = ?" => $this->org->id]);
+        if (!$advertiser) $this->_404();
+
         $view->set("errors", []);
         if (RequestMethods::type() == 'POST') {
             $action = RequestMethods::post('action', '');

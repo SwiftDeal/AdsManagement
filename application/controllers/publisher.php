@@ -457,11 +457,13 @@ class Publisher extends Auth {
     /**
      * @before _admin
      */
-    public function info($id) {
+    public function info($id = null) {
         $this->seo(array("title" => "Publisher Edit"));
         $view = $this->getActionView();
 
         $publisher = User::first(["_id = ?" => $id, "type = ?" => "publisher", "org_id = ?" => $this->org->id]);
+        if (!$publisher) $this->_404();
+        
         $view->set("errors", []);
         if (RequestMethods::type() == 'POST') {
             $action = RequestMethods::post('action', '');
@@ -522,13 +524,15 @@ class Publisher extends Auth {
     /**
      * @before _admin
      */
-    public function performance($id) {
+    public function performance($id = null) {
         $this->seo(array("title" => "Publisher Performance"));
         $view = $this->getActionView();
         $start = RequestMethods::get("start", date('Y-m-d', strtotime("-2 day")));
         $end = RequestMethods::get("end", date('Y-m-d', strtotime("-1 day")));
 
         $publisher = User::first(["id = ?" => $id, "org_id = ?" => $this->org->_id], ["id", "name"]);
+        if (!$publisher) $this->_404();
+
         $performances = \Performance::all(['user_id' => $publisher->id, 'created' => Db::dateQuery($start, $end)], [], 'created', 'desc');
         $view->set("publisher", $publisher)
             ->set("data", $performances)
