@@ -22,6 +22,11 @@ $routes = array(
         "pattern" => "index",
         "controller" => "auth",
         "action" => "login"
+    ),
+    array(
+        "pattern" => "api/affiliate/:id/earning",
+        "controller" => "api",
+        "action" => "earning"
     )
 );
 

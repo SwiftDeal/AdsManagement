@@ -32,7 +32,7 @@ class Db {
 			case 'regex':
 				return Utils::mongoRegex($value);
 			
-			case 'data':
+			case 'date':
 			case 'datetime':
 			case 'time':
 				return self::time($value);

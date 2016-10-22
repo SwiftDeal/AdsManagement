@@ -84,4 +84,13 @@ class User {
 				return $default;
 		}
 	}
+
+	public static function fields($model = 'User') {
+		$cl = "\\" . $model;
+		$m = new $cl;
+		$columns = $m->getColumns();
+		$fields = array_keys($columns);
+
+		return $fields;
+	}
 }

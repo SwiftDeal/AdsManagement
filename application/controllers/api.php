@@ -2,6 +2,9 @@
 
 use Shared\Utils as Utils;
 use Keyword\Scrape as Scraper;
+use Shared\Services\Db as Db;
+use Shared\Services\User as Usr;
+use Framework\ArrayMethods as ArrayMethods;
 use Framework\RequestMethods as RequestMethods;
 
 class Api extends \Shared\Controller {
@@ -206,7 +209,7 @@ class Api extends \Shared\Controller {
 						$comms = Commission::all(['ad_id' => $a->_id], $commFields);
 
 						$arr['commissions'] = Ad::objectArr($comms, $commFields);
-						$results[$id] = $arr;
+						$results[$id] = (object) $arr;
 					}
 					$view->set('campaigns', $results);	
 				} else {
@@ -232,6 +235,39 @@ class Api extends \Shared\Controller {
 				break;
 		}
 
+	}
+
+	/**
+	 * @before _secure
+	 * @after _cleanUp
+	 */
+	public function earning($id = null) {
+		$view = $this->getActionView();
+		if (!$id) return $this->failure('20');
+
+		$org = $this->_org; $perfFields = ['clicks', 'revenue', 'impressions', 'conversions', 'created'];
+		$publisher = User::first(['_id' => $id, 'org_id' => $org->_id, 'type' => "publisher"]);
+		if (!$publisher) return $this->failure('30');
+
+		$start = RequestMethods::get("start", date('Y-m-d', strtotime("-5 day")));
+		$end = RequestMethods::get("end", date('Y-m-d', strtotime('-1 day')));
+
+		$data = Performance::all([
+			'user_id' => $publisher->_id,
+			'created' => Db::dateQuery($start, $end)
+		], $perfFields, 'created', 'desc');
+
+		$total = [];
+		$perf = Performance::objectArr($data, $perfFields);
+		foreach ($perf as $key => $p) {
+			$arr = (array) $p; unset($arr['created']);
+			ArrayMethods::add($arr, $total);
+		}
+
+		$pub = User::objectArr($publisher, Usr::fields());
+		$view->set('affiliate', $pub[0])
+			->set('earnings', $perf)
+			->set('total', $total);
 	}
 
 	public function scrape() {

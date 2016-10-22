@@ -64,7 +64,13 @@ namespace Shared {
             return [];
         }
 
-        public static function objectArr($arr = [], $fields = []) {
+        /**
+         * Converts array of \Shared\Model objects to array of stdClass objects
+         * Also converts DateTime class to simple string, pass an extra key in
+         * the last parameter to stop this datetime conversion
+         * @return array         Array of Objects
+         */
+        public static function objectArr($arr = [], $fields = [], $opts = []) {
             if (!is_array($arr)) {
                 $newArr = [];
                 $newArr[] = $arr;
@@ -75,7 +81,12 @@ namespace Shared {
             foreach ($arr as $key => $a) {
                 $data = [];
                 foreach ($fields as $f) {
-                    $data[$f] = $a->$f;
+                    $convert = $opts['convert'] ?? true;
+                    if ($convert && is_object($a->$f) && is_a($a->$f, 'DateTime')) {
+                        $data[$f] = $a->$f->format('Y-m-d');
+                    } else {
+                        $data[$f] = $a->$f;
+                    }
                 }
 
                 $obj = (object) $data;
