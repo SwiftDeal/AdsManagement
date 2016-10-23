@@ -4,6 +4,7 @@
  * @author Faizan Ayubi
  */
 use Shared\Utils as Utils;
+use Framework\ArrayMethods as ArrayMethods;
 class Performance extends Shared\Model {
 
     /**
@@ -135,31 +136,19 @@ class Performance extends Shared\Model {
         if (count($dateQuery) > 0) {
             $q["created"] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];   
         }
-        $performances = self::all($q, ['revenue', 'clicks', 'created', 'impressions']);
+        $performances = self::all($q, ['revenue', 'clicks', 'created', 'impressions', 'conversions']);
         foreach ($performances as $p) {
             //calculating datewise
-            $date = date('Y-m-d', $p->created->getTimestamp());
+            $date = $p->created->format('Y-m-d');
 
             $total_clicks += $p->clicks;
-            if (array_key_exists($date, $clicks)) {
-                $clicks[$date] += $p->clicks;
-            } else {
-                $clicks[$date] = $p->clicks;
-            }
+            ArrayMethods::counter($clicks, $date, $p->clicks);
 
             $total_impressions += $p->impressions;
-            if (array_key_exists($date, $impressions)) {
-                $impressions[$date] += $p->impressions;
-            } else {
-                $impressions[$date] = $p->impressions;
-            }
+            ArrayMethods::counter($impressions, $date, $p->impressions);
 
             $total_payouts += $p->revenue;
-            if (array_key_exists($date, $payouts)) {
-                $payouts[$date] += $p->revenue;
-            } else {
-                $payouts[$date] = $p->revenue;
-            }
+            ArrayMethods::counter($payouts, $date, $p->revenue);
         }
 
         ksort($clicks); ksort($impressions); ksort($payouts);

@@ -47,7 +47,7 @@ class Api extends \Shared\Controller {
 		$ip = Utils::getClientIp();
 
 		if (!in_array($ip, $apiKey->ips)) {
-			$this->redirect('/api/failure/41');
+			// $this->redirect('/api/failure/41');
 		}
 
 		$this->_org = Organization::first(['_id' => $apiKey->org_id]);
@@ -112,7 +112,7 @@ class Api extends \Shared\Controller {
 		$org = $this->_org; $view = $this->getActionView();
 
 		if ($id) {
-			$publisher = User::first(['org_id' => $org->_id, 'type' => 'publisher', '_id' => $id]);	
+			$publisher = User::first(['org_id' => $org->_id, 'type' => 'publisher', '_id' => $id]);
 		} else {
 			$publisher = null;
 		}
@@ -165,10 +165,12 @@ class Api extends \Shared\Controller {
 				if ($id) {
 					$users = User::objectArr($publisher, $fields);
 
-					$view->set('publisher', $users[0]);
+					$data = ['publisher' => (array) $users[0]];
+					$view->set('data', $data);
 				} else {
-					$users = User::all(['org_id' => $org->_id]);
-					$view->set('publishers', User::objectArr($users, $fields));
+					$users = User::all(['org_id' => $org->_id, 'type' => 'publisher']);
+					$data = ['publishers' => User::objectArr($users, $fields)];
+					$view->set('data', $data);
 				}
 				break;
 		}
@@ -211,13 +213,16 @@ class Api extends \Shared\Controller {
 						$arr['commissions'] = Ad::objectArr($comms, $commFields);
 						$results[$id] = (object) $arr;
 					}
-					$view->set('campaigns', $results);	
+
+					$data = ['campaigns' => $results];
+					$view->set('data', $data);	
 				} else {
 					$ads = Ad::objectArr([$campaign], $fields);
 					$ad = array_shift($ads);
 					$comm = Commission::all(['ad_id' => $campaign->_id], $commFields);
-					$view->set('campaign', $ad)
-						->set('commissions', Commission::objectArr($comm, $commFields));
+
+					$data = ['campaign' => (array) $ad, 'commissions' => Commission::objectArr($comm, $commFields)];
+					$view->set('data', $data);
 				}
 				break;
 
@@ -234,6 +239,66 @@ class Api extends \Shared\Controller {
 				$view->set('message', $message);
 				break;
 		}
+	}
+
+	/**
+	 * @before _secure
+	 * @after _cleanUp
+	 */
+	public function quickStats($type = 'user', $id = '') {
+		$org = $this->_org; $view = $this->getActionView();
+		if (!in_array($type, ['user', 'organization', 'ad'])) {
+			return $this->failure('20');
+		}
+		$perfFields = ['clicks', 'impressions', 'conversions', 'revenue', 'created'];
+		$start = RequestMethods::get("start", date('Y-m-d', strtotime("-5 day")));
+		$end = RequestMethods::get("end", date('Y-m-d', strtotime('-1 day')));
+
+		switch ($type) {
+			case 'user':
+				return $this->earning($id);
+			
+			case 'organization':
+				$publishers = $org->users('publisher'); $advertisers = $org->users('advertiser');
+				$pubPerf = Performance::all([
+					'user_id' => ['$in' => $publishers],
+					'created' => Db::dateQuery($start, $end)
+				], $perfFields, 'created', 'desc');
+				$pubPerf = Performance::objectArr($pubPerf, $perfFields);
+				
+				$advertPerf = Performance::all([
+					'user_id' => ['$in' => $advertisers],
+					'created' => Db::dateQuery($start, $end)
+				], ['revenue', 'created'], 'created', 'desc');
+				$advertPerf = Performance::objectArr($advertPerf, ['revenue', 'created']);
+
+				$total = []; $perf = [];
+				foreach ($pubPerf as $key => $value) {
+					$from = (array) $value; $date = $value->created;
+					unset($from['created']); unset($from['revenue']);
+					$from['payout'] = $value->revenue;
+
+					if (!isset($perf[$date])) {
+						$perf[$date] = [];
+					}
+					ArrayMethods::add($from, $perf[$date]);
+				}
+
+				foreach ($advertPerf as $key => $value) {
+					$date = $value->created;
+					$from = ['revenue' => $value->revenue];
+
+					if (!isset($perf[$date])) {
+						$perf[$date] = [];
+					}
+					ArrayMethods::add($from, $perf[$date]);
+				}
+				foreach ($perf as $key => $value) {
+					ArrayMethods::add($value, $total);
+				}
+				$view->set('data', ['stats' => $perf, 'total' => $total]);
+				break;
+		}
 
 	}
 
@@ -246,7 +311,7 @@ class Api extends \Shared\Controller {
 		if (!$id) return $this->failure('20');
 
 		$org = $this->_org; $perfFields = ['clicks', 'revenue', 'impressions', 'conversions', 'created'];
-		$publisher = User::first(['_id' => $id, 'org_id' => $org->_id, 'type' => "publisher"]);
+		$publisher = User::first(['_id' => $id, 'org_id' => $org->_id]);
 		if (!$publisher) return $this->failure('30');
 
 		$start = RequestMethods::get("start", date('Y-m-d', strtotime("-5 day")));
@@ -257,17 +322,18 @@ class Api extends \Shared\Controller {
 			'created' => Db::dateQuery($start, $end)
 		], $perfFields, 'created', 'desc');
 
-		$total = [];
+		$total = []; $earnings = [];
 		$perf = Performance::objectArr($data, $perfFields);
 		foreach ($perf as $key => $p) {
 			$arr = (array) $p; unset($arr['created']);
+			$earnings[$p->created] = $arr;
 			ArrayMethods::add($arr, $total);
 		}
 
 		$pub = User::objectArr($publisher, Usr::fields());
-		$view->set('affiliate', $pub[0])
-			->set('earnings', $perf)
-			->set('total', $total);
+
+		$data = ['user' => $pub[0], 'earnings' => $earnings, 'total' => $total];
+		$view->set('data', $data);
 	}
 
 	public function scrape() {
