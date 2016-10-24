@@ -133,6 +133,7 @@ class Admin extends Auth {
 
                     $fields = $meta->value; $fields[] = $field;
                     $meta->value = $fields; $meta->save();
+                    $view->set('fields', $meta->value ?? []);
                     $view->set('message', 'Extra Field Added!!');
                     break;
             }

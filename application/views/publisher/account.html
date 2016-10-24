@@ -67,6 +67,13 @@
                                 </select>
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "currency")}</span>
                             </div>
+                            {foreach $f in $afields}
+                            <div class="form-group">
+                                <div class="col-xs-12">
+                                    <input class="form-control" type="{echo $f['type']}" name="{echo $f['name']}" {if $f['required']} required="" {/if} placeholder="{echo $f['label']}">
+                                </div>
+                            </div>
+                            {/foreach}
                             <input type="hidden" name="action" value="account">
                             <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
                         </form>
