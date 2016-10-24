@@ -463,6 +463,8 @@ class Publisher extends Auth {
 
         $publisher = User::first(["_id = ?" => $id, "type = ?" => "publisher", "org_id = ?" => $this->org->id]);
         if (!$publisher) $this->_404();
+        $platforms = Platform::all(["user_id = ?" => $publisher->id]);
+        $view->set("platforms", $platforms);
         
         $view->set("errors", []);
         if (RequestMethods::type() == 'POST') {

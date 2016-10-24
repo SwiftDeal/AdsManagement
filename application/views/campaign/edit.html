@@ -58,14 +58,9 @@
                                         <span class="help-block">{echo Shared\Markup::errors($errors, "description")}</span>
                                     </div>
                                     <div class="form-group">
-                                        <label for="Advertiser">The Campaign will be <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The Status of the campaign will be changed automatically according to your settings"></i></label>
-                                        <select name="trigger" required="" class="form-control">
-                                            <option value="paused">Paused</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Effective time <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The time will be effective according to your settings."></i></label>
-                                        <input type="datetime" required="" name="rss_link" class="form-control">
+                                        <label>End Date (Optional) <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The date on which your Campaign goes inactive"></i></label>
+                                        <input type="date" name="expiry" class="form-control" value="{echo $c->expiry}">
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "expiry")}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">

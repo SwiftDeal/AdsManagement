@@ -13,7 +13,7 @@
                             <a href="/publisher/delete/{echo $publisher->_id}" data-message="Are you sure you want to delete this publisher??" class="delete btn btn-danger" data-toggle="tooltip" data-placement="top" data-original-title="Delete"><i class="fa fa-trash"></i> Delete</a>
                             <a href="/auth/loginas/{echo $publisher->_id}" class="btn btn-default" data-toggle="tooltip" data-placement="top" data-original-title="Sign in to this profile"><i class="fa fa-sign-in"></i> Login as</a>
                         </div>
-                        <h4 class="page-title">{echo $publisher->name}'s account</h4>
+                        <h4 class="page-title"><img src="{echo Shared\Markup::get_gravatar($publisher->email, 30)}"> {echo $publisher->name}'s account</h4>
                     </div>
                 </div>
             </div>
@@ -24,71 +24,107 @@
                     {echo $message}
                 </div>
                 {/if}
-                <div class="col-md-6">
-                    <div class="card-box">
-                        <h4 class="m-t-0 header-title"><b>User data</b></h4>
-                        <form role="form" method="post" action="/publisher/info/{echo $publisher->id}">
-                            <div class="form-group">
-                                <label>Name</label>
-                                <input type="text" name="name" value="{echo $publisher->name}" class="form-control" placeholder="Full Name">
-                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "name")}</span>
+                <ul class="nav nav-tabs navtab-custom">
+                    <li class="active">
+                        <a href="#profile" data-toggle="tab" aria-expanded="true">
+                            <span class="visible-xs"><i class="fa fa-user"></i></span>
+                            <span class="hidden-xs">Profile</span>
+                        </a>
+                    </li>
+                    <li class="">
+                        <a href="#payout" data-toggle="tab" aria-expanded="false">
+                            <span class="visible-xs"><i class="fa fa-bank"></i></span>
+                            <span class="hidden-xs">Payout</span>
+                        </a>
+                    </li>
+                    <li class="">
+                        <a href="#platforms" data-toggle="tab" aria-expanded="false">
+                            <span class="visible-xs"><i class="fa fa-globe"></i></span>
+                            <span class="hidden-xs">Platforms</span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="profile">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <form role="form" method="post" action="/publisher/info/{echo $publisher->id}">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" name="name" value="{echo $publisher->name}" class="form-control" placeholder="Full Name">
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "name")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="text" name="email" value="{echo $publisher->email}" class="form-control" placeholder="Email">
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "email")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Phone</label>
+                                        <input type="text" name="phone" value="{echo $publisher->phone}" class="form-control" placeholder="Phone">
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "phone")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Country</label>
+                                        <input type="text" name="country" value="{echo $publisher->country}" class="form-control" placeholder="country">
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "country")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Currency</label>
+                                        <select name="currency" class="form-control" value="{echo $publisher->currency}">
+                                            <option value="INR">INR</option>
+                                            <option value="USD">USD</option>
+                                            <option value="PKR">PKR</option>
+                                        </select>
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "currency")}</span>
+                                    </div>
+                                    <input type="hidden" name="action" value="account">
+                                    <p class="text-center">
+                                        <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
+                                    </p>
+                                </form>
                             </div>
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input type="text" name="email" value="{echo $publisher->email}" class="form-control" placeholder="Email">
-                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "email")}</span>
-                            </div>
-                            <div class="form-group">
-                                <label>Phone</label>
-                                <input type="text" name="phone" value="{echo $publisher->phone}" class="form-control" placeholder="Phone">
-                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "phone")}</span>
-                            </div>
-                            <div class="form-group">
-                                <label>Country</label>
-                                <input type="text" name="country" value="{echo $publisher->country}" class="form-control" placeholder="country">
-                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "country")}</span>
-                            </div>
-                            <div class="form-group">
-                                <label>Currency</label>
-                                <select name="currency" class="form-control" value="{echo $publisher->currency}">
-                                    <option value="INR">INR</option>
-                                    <option value="USD">USD</option>
-                                    <option value="PKR">PKR</option>
-                                </select>
-                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "currency")}</span>
-                            </div>
-                            <input type="hidden" name="action" value="account">
-                            <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
-                        </form>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card-box">
-                        <h4 class="m-t-0 header-title"><b>Change Password</b></h4>
-                        <form class="form-horizontal" role="form" method="post" action="/publisher/info/{echo $publisher->id}">
-                            <div class="form-group">
-                                <label for="inputPassword3" class="col-sm-3 control-label">Old Password</label>
-                                <div class="col-sm-9">
-                                    <input type="password" class="form-control" name="password" placeholder="Old Password">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="inputPassword4" class="col-sm-3 control-label">New Password</label>
-                                <div class="col-sm-9">
-                                    <input type="password" class="form-control" name="npassword" placeholder="New Password">
-                                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "password")}</span>
-                                </div>
-                            </div>
-                            <div class="form-group m-b-0">
-                                <div class="col-sm-offset-3 col-sm-9">
+                            <div class="col-md-6">
+                                <h4 class="m-t-0 header-title"><b>Change Password</b></h4>
+                                <form class="form-horizontal" role="form" method="post" action="/publisher/info/{echo $publisher->id}">
+                                    <div class="form-group">
+                                        <label for="inputPassword3" class="col-sm-3 control-label">Old Password</label>
+                                        <div class="col-sm-9">
+                                            <input type="password" class="form-control" name="password" placeholder="Old Password">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputPassword4" class="col-sm-3 control-label">New Password</label>
+                                        <div class="col-sm-9">
+                                            <input type="password" class="form-control" name="npassword" placeholder="New Password">
+                                            <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "password")}</span>
+                                        </div>
+                                    </div>
                                     <input type="hidden" name="action" value="password">
-                                    <button type="submit" class="btn btn-info waves-effect waves-light">Change</button>
-                                </div>
+                                    <p class="text-center">
+                                        <button type="submit" class="btn btn-purple waves-effect waves-light">Change</button>
+                                    </p>
+                                </form>
+                                <hr>
+                                <h4 class="m-t-0 header-title"><b>Default Tracking Link</b></h4>
+                                <form role="form" method="post" action="/publisher/info/{echo $publisher->id}">
+                                    <div class="form-group">
+                                        {script $tdomain = $publisher->meta['tdomain'] ?? ''}
+                                        <select name="tdomain" class="form-control selectVal selectpicker" data-value='{echo json_encode(["$tdomain"])}' data-live-search="true" title="Select a Default Domain">
+                                            {foreach $domain in $org->tdomains}
+                                            <option value="{echo $domain}">{echo $domain}</option>
+                                            {/foreach}
+                                        </select>
+                                    </div>
+                                    <input type="hidden" name="action" value="trackingDomain">
+                                    <p class="text-center">
+                                        <button type="submit" class="btn btn-purple waves-effect waves-light">Save</button>
+                                    </p>
+                                </form>
                             </div>
-                        </form>
+                        </div>
                     </div>
-                    <div class="card-box">
-                        <h4 class="m-t-0 header-title"><b>Payout</b></h4>
+                    <div class="tab-pane" id="payout">
                         <form role="form" method="post" action="/publisher/info/{echo $publisher->id}">
                             <div class="form-group">
                                 {script $model = isset($publisher->meta['campaign']) ? $publisher->meta['campaign']['model'] : null}
@@ -113,25 +149,34 @@
                             <button type="submit" class="btn btn-purple btn-sm waves-effect waves-light"><i class="fa fa-save"></i> Save Payout</button>
                         </form>
                     </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card-box">
-                        <h4 class="m-t-0 header-title"><b>Default Tracking Link</b></h4>
-                        <form role="form" method="post" action="/publisher/info/{echo $publisher->id}">
-                            <div class="form-group">
-                                {script $tdomain = $publisher->meta['tdomain'] ?? ''}
-                                <select name="tdomain" class="form-control selectVal selectpicker" data-value='{echo json_encode(["$tdomain"])}' data-live-search="true" title="Select a Default Domain">
-                                    {foreach $domain in $org->tdomains}
-                                    <option value="{echo $domain}">{echo $domain}</option>
+                    <div class="tab-pane" id="platforms">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>URL</th>
+                                        <th>Created</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {foreach $p in $platforms}
+                                    <tr>
+                                        <td><a href="$p->url" target="_blank">{echo $p->url}</a></td>
+                                        <td>{echo Framework\StringMethods::only_date($p->created)}</td>
+                                        <td>
+                                            {if !$p->live}
+                                            <a href="admin/platforms/{echo $p->_id}" data-send='{echo json_encode(["live" => 1])}' class="btn btn-xs btn-success update" data-toggle="tooltip" data-placement="top" data-original-title="Verify it"><i class="fa fa-check"></i></a>
+                                            {/if} {else}
+                                            <a href="admin/platforms/{echo $p->_id}" data-send='{echo json_encode(["live" => 0])}' class="btn btn-xs btn-warning update" data-toggle="tooltip" data-placement="top" data-original-title="Disapprove"><i class="fa fa-times"></i></a>
+                                            {/else}
+                                            <a href="admin/platforms/{echo $p->_id}" class="btn btn-xs btn-danger delete" data-message="Are you sure you want to remove this platform??" data-toggle="tooltip" data-placement="top" data-original-title="Delete"><i class="fa fa-trash"></i></a>
+                                        </td>
+                                    </tr>
                                     {/foreach}
-                                </select>
-                            </div>
-                            
-                            <input type="hidden" name="action" value="trackingDomain">
-                            <button type="submit" class="btn btn-purple btn-sm waves-effect waves-light"><i class="fa fa-save"></i> Save</button>
-                        </form>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
