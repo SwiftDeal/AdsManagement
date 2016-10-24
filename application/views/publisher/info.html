@@ -43,6 +43,12 @@
                             <span class="hidden-xs">Platforms</span>
                         </a>
                     </li>
+                    <li class="">
+                        <a href="#custom" data-toggle="tab" aria-expanded="false">
+                            <span class="visible-xs"><i class="fa fa-list"></i></span>
+                            <span class="hidden-xs">Custom</span>
+                        </a>
+                    </li>
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane active" id="profile">
@@ -177,6 +183,38 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                    <div class="tab-pane" id="custom">
+                    {if($afields)}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Submission</th>
+                                </tr>
+                                {foreach $f in $afields}
+                                {script $val = $publisher->meta["afields"][$f["name"]]}
+                                <tr>
+                                    <td>{echo $f["label"]}</td>
+                                    <td>
+                                    {if($f["type"] == "text")}
+                                        {echo $val}
+                                    {/if} {else}
+                                        <a href="http://cdn.vnative.com/images/{echo $val}" target="_blank">{echo $val}</a>
+                                    {/else}
+                                    </td>
+                                </tr>
+                                {/foreach}
+                            </table>
+                        </div>
+                        <p class="text-center">
+                            <a href="#" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete Custom Records</a>
+                        </p>
+                    {/if} {else}
+                        <p class="text-center">
+                            <a href="/admin/customization.html#affiliate" class="btn btn-info btn-sm"><i class="fa fa-plus"></i> Add Custom Fields</a>
+                        </p>
+                    {/else}
                     </div>
                 </div>
             </div>

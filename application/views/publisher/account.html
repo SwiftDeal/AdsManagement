@@ -67,13 +67,29 @@
                                 </select>
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "currency")}</span>
                             </div>
-                            {foreach $f in $afields}
-                            <div class="form-group">
-                                <div class="col-xs-12">
-                                    <input class="form-control" type="{echo $f['type']}" name="{echo $f['name']}" {if $f['required']} required="" {/if} placeholder="{echo $f['label']}">
-                                </div>
+                            {if($afields)}
+                            <div class="table-responsive">
+                                <table class="table">
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Submission</th>
+                                </tr>
+                                {foreach $f in $afields}
+                                {script $val = $user->meta["afields"][$f["name"]]}
+                                <tr>
+                                    <td>{echo $f["label"]}</td>
+                                    <td>
+                                    {if($f["type"] == "text")}
+                                        {echo $val}
+                                    {/if} {else}
+                                        <a href="http://cdn.vnative.com/images/{echo $val}" target="_blank">{echo $val}</a>
+                                    {/else}
+                                    </td>
+                                </tr>
+                                {/foreach}
+                                </table>
                             </div>
-                            {/foreach}
+                            {/if}
                             <input type="hidden" name="action" value="account">
                             <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
                         </form>

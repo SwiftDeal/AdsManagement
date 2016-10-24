@@ -226,6 +226,8 @@ class Publisher extends Auth {
             }
             $this->setUser($user);
         }
+        $afields = Meta::search('customField', $this->org);
+        $view->set('afields', $afields);
     }
 
     /**
@@ -521,6 +523,8 @@ class Publisher extends Auth {
             $view->set('message', 'Payout Deleted!!');
         }
         $view->set("publisher", $publisher);
+        $afields = Meta::search('customField', $this->org);
+        $view->set('afields', $afields);
     }
 
     /**
