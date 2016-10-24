@@ -193,7 +193,8 @@
                                     <th>Submission</th>
                                 </tr>
                                 {foreach $f in $afields}
-                                {script $val = $publisher->meta["afields"][$f["name"]]}
+                                {script $fields = $publisher->meta["afields"] ?? []}
+                                {script $val = $fields[$f["name"]] ?? ''}
                                 <tr>
                                     <td>{echo $f["label"]}</td>
                                     <td>
@@ -208,7 +209,7 @@
                             </table>
                         </div>
                         <p class="text-center">
-                            <a href="#" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete Custom Records</a>
+                            <a href="publisher/info/{echo $publisher->_id}" data-message="Are you sure you want to remove the custom data??" class="delete btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete Custom Records</a>
                         </p>
                     {/if} {else}
                         <p class="text-center">

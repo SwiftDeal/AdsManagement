@@ -271,4 +271,43 @@ class Utils {
 
 		return $normal;
 	}
+
+	public static function upload($name, $type = "images", $opts = []) {
+	    if (isset($_FILES[$name])) {
+	        $file = $_FILES[$name];
+	        $path = APP_PATH . "/public/assets/uploads/{$type}/";
+	        $extension = pathinfo($file["name"], PATHINFO_EXTENSION);
+
+	        if (isset($opts['extension'])) {
+	            $ex = $opts['extension'];
+
+	            if (!preg_match("/^".$ex."$/", $extension)) {
+	                return false;
+	            }
+	        }
+
+	        if (isset($opts['name'])) {
+	            $filename = $opts['name'];
+	        } else {
+	            $filename = uniqid() . ".{$extension}";
+	        }
+
+	        if (move_uploaded_file($file["tmp_name"], $path . $filename)) {
+	            return $filename;
+	        }
+	    }
+	    return false;
+	}
+
+	public static function image($name, $task = 'show') {
+		$folder = APP_PATH . '/public/assets/uploads/images/';
+		switch ($task) {
+			case 'remove':
+				@unlink($folder . $name);
+				break;
+			
+			case 'show':
+				return $folder . $name;
+		}
+	}
 }

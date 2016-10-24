@@ -1,6 +1,8 @@
 <?php
 namespace Shared\Services;
 use Framework\ArrayMethods as AM;
+use Framework\RequestMethods as RequestMethods;
+use Shared\Utils as Utils;
 
 class User {
 	private function __construct() {}
@@ -92,5 +94,44 @@ class User {
 		$fields = array_keys($columns);
 
 		return $fields;
+	}
+
+	public static function customFields($user, $org) {
+		$afields = \Meta::search('customField', $org);
+        if (count($afields) > 0) {
+            $meta = $user->meta ?? [];
+            $extraFields = [];
+            foreach ($afields as $value) {
+                $key = $value['name']; $type = $value['type'];
+                $message = $value['label'] . " is required!!";
+
+                switch ($type) {
+                	case 'file':
+                		$v = Utils::upload($key, 'images', ['extension' => 'jpe?g|gif|bmp|png|tif|pdf']);
+                		if (!$v) {
+                			$message = "Please Upload a valid image or pdf file";
+                		}
+                		break;
+                	
+                	case 'text':
+                		$v = RequestMethods::post($key);
+                		break;
+
+                	default:
+                		$v = '';
+                		break;
+                }
+
+                if (!$v && $value['required']) {
+                	return ["message" => $message, "success" => false];
+                }
+                
+                $extraFields[$key] = $v;
+            }
+            $meta['afields'] = $extraFields;
+            $user->meta = $meta;
+        }
+        $user->save();
+        return ["success" => true];
 	}
 }

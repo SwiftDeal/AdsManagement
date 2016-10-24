@@ -139,6 +139,13 @@ class Admin extends Auth {
             }
             $this->setUser($user);
         }
+
+        if (RequestMethods::type() === 'DELETE') {
+            if (is_a($meta, 'Meta')) {
+                $meta->delete();
+            }
+            $view->set('message', 'Extra Fields removed!!');
+        }
         
         $img = RequestMethods::get("img");
         if (RequestMethods::get("action") == "removelogo" && $img === $org->logo) {

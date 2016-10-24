@@ -199,22 +199,8 @@ class Auth extends Controller {
         $pass = $user->password;
 
         $user->password = sha1($pass);
-        $afields = Meta::search('customField', $org);
-        if (count($afields) > 0) {
-            $meta = $user->meta ?? [];
-            $extraFields = [];
-            foreach ($afields as $value) {
-                $key = $value['name'];
-                $v = RequestMethods::post($key);
-
-                if (!$v && $value['required']) {
-                    return $view->set('message', $value['labe'] . " is required!!");
-                }
-                $extraFields[$key] = $v;
-            }
-            $meta['afields'] = $extraFields;
-            $user->meta = $meta;
-        }
+        $output = Shared\Services\User::customFields($user, $org);
+        if (!$output['success']) return $view->set($output);
         $user->save();
 
         Mail::send([

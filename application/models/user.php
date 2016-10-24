@@ -4,6 +4,7 @@
  * @author Faizan Ayubi
  */
 use Framework\RequestMethods as RequestMethods;
+use Shared\Utils as Utils;
 
 class User extends Shared\Model {
     const ROLES = ['afm' => 'Affiliate Manager', 'adm' => 'Advertiser Manager', 'admin' => 'Admin', 'publisher' => 'Publisher', 'advertiser' => 'Advertiser'];
@@ -234,6 +235,13 @@ class User extends Shared\Model {
         return false;
     }
 
+    public function removeFields() {
+        $meta = $this->_meta; $afields = $meta['afields'] ?? [];
+        foreach ($meta['afields'] as $key => $value) {
+            Utils::image($value, 'remove');
+        }
+    }
+
     public function delete() {
         $deleteList = ['Link', 'Platform', 'Performance', 'Invoice', 'Transaction', 'Adaccess'];
         $query = ['user_id' => $this->_id];
@@ -246,6 +254,8 @@ class User extends Shared\Model {
                     return false;
                 }
                 $delete = true;
+
+                $this->removeFields();
                 parent::delete();
         }
 

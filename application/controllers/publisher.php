@@ -511,6 +511,15 @@ class Publisher extends Auth {
             }
         }
 
+        if (RequestMethods::type() === 'DELETE') {
+            $meta = $publisher->meta; $publisher->removeFields();
+            unset($meta['afields']);
+            Db::updateRaw('users', [
+                '_id' => Db::convertType($publisher->_id, 'id')
+            ], ['$set' => ['meta' => $meta]]);
+            $view->set('message', 'Data Removed!!');
+        }
+
         if (RequestMethods::get("action") == "payoutdel") {
             $meta = $publisher->meta;
             unset($meta['campaign']);

@@ -61,9 +61,9 @@
                         {script $revenue = $ck_count = 0} {script $countries = Click::classify($value, 'country')}
                         {foreach $records in $countries}
 
-                            {script $pComm = Commission::campaignRate($value_i, $commInfo, $records_i, array_merge([
-                                'type' => 'publisher', 'publisher' => $user
-                            ], $dq))}
+                            {script $pComm = Commission::campaignRate($value_i, $commInfo, $records_i, [
+                                'type' => 'publisher', 'publisher' => $user, 'start' => $start, 'end' => $end
+                            ])}
                             {script $ck_count += count($records)}
                             {script $earning = Ad::earning($pComm, count($records))}
                             {script $revenue += $earning['revenue']}

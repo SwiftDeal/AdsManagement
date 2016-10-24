@@ -2,7 +2,7 @@
     {echo $org->displayLogo()}<br>
     <b>Publisher Register</b>
 </div>
-<form class="form-horizontal m-t-20" action="" method="post">
+<form class="form-horizontal m-t-20" enctype="multipart/form-data" action="" method="post">
     {if isset($message)}
     <div class="alert alert-info alert-dismissible fade in" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -40,6 +40,9 @@
     <div class="form-group">
         <div class="col-xs-12">
             <input class="form-control" type="{echo $f['type']}" name="{echo $f['name']}" {if $f['required']} required="" {/if} placeholder="{echo $f['label']}">
+            {if $f['type'] === "file"}
+            <span class="help-block text-center">{echo $f['label']}</span>
+            {/if}
         </div>
     </div>
     {/foreach}
