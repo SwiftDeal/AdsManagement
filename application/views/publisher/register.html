@@ -28,7 +28,7 @@
     </div>
     <div class="form-group">
         <div class="col-xs-12">
-            <input class="form-control" type="text" name="phone" required="" placeholder="Mobile Number">
+            <input class="form-control" type="text" name="phone" placeholder="Mobile Number (Optional)">
         </div>
     </div>
     <div class="form-group">
@@ -36,14 +36,14 @@
             <input class="form-control" type="text" name="platform" required="" placeholder="Facebook/Website/App Link">
         </div>
     </div>
-    <hr>
     {foreach $f in $afields}
     <div class="form-group">
         <div class="col-xs-12">
-            <input class="form-control" type="text" name="platform" required="" placeholder="Facebook/Website/App Link">
+            <input class="form-control" type="{echo $f['type']}" name="{echo $f['name']}" {if $f['required']} required="" {/if} placeholder="{echo $f['label']}">
         </div>
     </div>
     {/foreach}
+    <hr>
     <div class="form-group">
         <div class="col-xs-12">
             <div class="checkbox checkbox-primary">

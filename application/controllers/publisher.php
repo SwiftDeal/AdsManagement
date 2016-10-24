@@ -581,6 +581,8 @@ class Publisher extends Auth {
         $this->seo(array("title" => "Publisher Register", "description" => "Register"));
         $view = $this->getActionView(); $view->set('errors', []);
 
+        $afields = Meta::search('customField', $this->org);
+        $view->set('afields', $afields ?? []);
         $token = RequestMethods::post("token", '');
         if (RequestMethods::post("action") == "register" && $this->verifyToken($token)) {
             $this->_publisherRegister($this->org, $view);

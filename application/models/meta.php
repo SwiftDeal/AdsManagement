@@ -53,4 +53,14 @@ class Meta extends Shared\Model {
         $meta->save();
         return $meta;
     }
+
+    public static function search($type, $obj) {
+        switch ($type) {
+            case 'customField':
+                $meta = self::first(['prop' => 'customField', 'propid' => $obj->_id]);
+                return $meta->value ?? [];
+               
+        }
+        return (object) [];
+    }
 }

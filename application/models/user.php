@@ -113,7 +113,9 @@ class User extends Shared\Model {
     }
 
     public function setEmail($email) {
-        $this->_email = strtolower($email);
+        $e = strtolower($email);
+        $e = str_replace(" ", "", $e);
+        $this->_email = $e;
     }
 
     public function convert($n, $p=true, $places = 2) {
@@ -233,18 +235,25 @@ class User extends Shared\Model {
     }
 
     public function delete() {
+        $deleteList = ['Link', 'Platform', 'Performance', 'Invoice', 'Transaction', 'Adaccess'];
+        $query = ['user_id' => $this->_id];
+
+        $delete = false;
         switch ($this->_type) {
             case 'publisher':
                 $clicks = Click::count(['pid' => $this->_id]);
-                if ($clicks === 0) {
-                    $query = ['user_id' => $this->_id];
-                    parent::delete();
-                    Link::deleteAll($query);
-                    Performance::deleteAll($query);
-                    return true;
+                if ($clicks !== 0) {
+                    return false;
                 }
-                return false;
-                break;
+                $delete = true;
+                parent::delete();
         }
+
+        if ($delete) {
+            foreach ($deleteList as $table) {
+                $table::deleteAll($query);
+            }
+        }
+        return $delete;
     }
 }

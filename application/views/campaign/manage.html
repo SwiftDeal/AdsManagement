@@ -63,7 +63,7 @@
                                 </thead>
                                 <tbody>
                                     <tbody>
-                                        {foreach $a in $campaigns} {script $c = Commission::first(["ad_id = ?" => $a->id])}
+                                        {foreach $a in $campaigns}
                                         <tr>
                                             <td>
                                                 {if $a->live}
@@ -76,11 +76,8 @@
                                                 <img src="{echo Ad::displayImg($a->image)}" alt="" class="img-responsive" width="70" height="70"> {script $id = $a->_id}
                                             </td>
                                             <td><a href="/campaign/details/{$a->_id}.html">{echo $a->title}</a></td>
-                                            <td>
-                                                <b>{echo strtoupper($c->model)}</b> {echo $user->convert($c->rate)} 
-                                                <br>
-                                                <small>{echo $c->description}</small>
-                                            </td>
+                                            {script $c = Commission::allRate($a->id, $user)}
+                                            <td>{echo $c}</td>
                                             <td>
                                                 {foreach $cat in $a->category}
                                                     {script $key = Shared\Utils::getMongoID($cat)}

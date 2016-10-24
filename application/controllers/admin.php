@@ -61,6 +61,9 @@ class Admin extends Auth {
         $view = $this->getActionView();
 
         $user = $this->user; $org = $this->org;
+        $search = ['prop' => 'customField', 'propid' => $org->_id];
+        $meta = Meta::first($search) ?? (object) [];
+        $view->set('fields', $meta->value ?? []);
 
         $view->set("errors", []);
         if (RequestMethods::type() == 'POST') {
@@ -112,7 +115,25 @@ class Admin extends Auth {
                     $view->set('message', 'Network Settings updated!!');
                     break;
                 
-                default:
+                case 'customField':
+                    $label = RequestMethods::post("fname");
+                    $type = RequestMethods::post("ftype", "text");
+                    $required = RequestMethods::post("frequired", 1);
+                    $name = strtolower(str_replace(" ", "_", $label));
+
+                    $field = [
+                        'label' => ucwords($label), 'type' => $type,
+                        'name' => $name, 'required' => (boolean) $required
+                    ];
+
+                    if (!$label) break;
+                    if (!is_object($meta) || !is_a($meta, 'Meta')) {
+                        $meta = new Meta($search);
+                    }
+
+                    $fields = $meta->value; $fields[] = $field;
+                    $meta->value = $fields; $meta->save();
+                    $view->set('message', 'Extra Field Added!!');
                     break;
             }
             $this->setUser($user);

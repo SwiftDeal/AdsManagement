@@ -36,7 +36,7 @@ class Platform extends Shared\Model {
         }
 
         if (!Utils::urlRegex($url)) {
-            throw new \Exception('Invalid URL');
+            // throw new \Exception('Invalid URL');
         }
         $this->_url = $url;
     }

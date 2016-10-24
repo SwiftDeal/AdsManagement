@@ -67,16 +67,16 @@ class Report extends Admin {
         $this->seo(array("title" => "Publisher Rankings"));
         $view = $this->getActionView();
 
-        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('now')));
-        $end = RM::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        $start = RM::get("start", date('Y-m-d'));
+        $end = RM::get("end", date('Y-m-d'));
         $q = ['start' => $start, 'end' => $end]; $view->set($q);
         $dateQuery = Utils::dateQuery($q);
         $start = $dateQuery['start']; $end = $dateQuery['end'];
 
         $clicks = Db::query('Click', [
-            'created' => Db::dateQuery($start, $end),
+            'pid' => ['$in' => $this->org->users('publisher')],
             'is_bot' => false,
-            'pid' => ['$in' => $this->org->users('publisher')]
+            'created' => Db::dateQuery($start, $end)
         ], ['pid', 'device', 'adid']);
         
         $classify = \Click::classify($clicks, 'pid');
@@ -86,7 +86,8 @@ class Report extends Admin {
         $deviceStats = []; $bounceRate = [];
         foreach ($stats as $pid => $count) {
             $pubClicks = $classify[$pid];
-            $adClicks = Click::classify($pubClicks, 'adid');
+            // taking a lot of time @todo (do something about it)
+            /*$adClicks = Click::classify($pubClicks, 'adid');
 
             $br = 0; $total = count($adClicks);
             foreach ($adClicks as $adid => $records) {
@@ -103,11 +104,12 @@ class Report extends Admin {
                 $bounce = 1 - ($multiPageSessions / $totalClicks);
                 $br += $bounce;
             }
-            $bounceRate[$pid] = (int) (round($br / $total, 2) * 100);
+            $bounceRate[$pid] = (int) (round($br / $total, 2) * 100);*/
 
             $device = Click::classifyInfo(['clicks' => $pubClicks, 'type' => 'device', 'arr' => []]);
             $deviceStats[$pid] = $device;
         }
+
         $view->set('stats', $stats)
             ->set('deviceStats', $deviceStats)
             ->set('bounceRate', $bounceRate);
