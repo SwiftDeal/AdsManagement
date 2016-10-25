@@ -25,20 +25,8 @@ class Admin extends Auth {
         
         $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-4 day')));
         $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
-        $query = [
-            'user_id' => ['$in' => $in],
-            "created" => Db::dateQuery($start, $end)
-        ];
         
-        $perf = new Performance([
-            'clicks' => 0, 'revenue' => 0.00, 'impressions' => 0
-        ]);
-        $networkStats = \Performance::all($query, ['clicks', 'revenue', 'impressions']);
-        foreach ($networkStats as $p) {
-            $perf->clicks += $p->clicks;
-            $perf->impressions += $p->impressions;
-            $perf->revenue += $p->revenue;
-        }
+        $data = Shared\Services\Performance::stats($this->org, ['start' => $start, 'end' => $end]);
         $topusers = $this->widgets();
         if (array_key_exists("widgets", $this->org->meta)) {
             $d = in_array("top10ads", $this->org->meta["widgets"]) + in_array("top10pubs", $this->org->meta["widgets"]);
@@ -49,7 +37,7 @@ class Admin extends Auth {
             ->set("topusers", $topusers)
             ->set("links", \Link::count(['user_id' => ['$in' => $in]]))
             ->set("platforms", \Platform::count(['user_id' => ['$in' => $in]]))
-            ->set("performance", $perf);
+            ->set("performance", (object) $data['total']);
     }
 
     /**

@@ -259,44 +259,8 @@ class Api extends \Shared\Controller {
 				return $this->earning($id);
 			
 			case 'organization':
-				$publishers = $org->users('publisher'); $advertisers = $org->users('advertiser');
-				$pubPerf = Performance::all([
-					'user_id' => ['$in' => $publishers],
-					'created' => Db::dateQuery($start, $end)
-				], $perfFields, 'created', 'desc');
-				$pubPerf = Performance::objectArr($pubPerf, $perfFields);
-				
-				$advertPerf = Performance::all([
-					'user_id' => ['$in' => $advertisers],
-					'created' => Db::dateQuery($start, $end)
-				], ['revenue', 'created'], 'created', 'desc');
-				$advertPerf = Performance::objectArr($advertPerf, ['revenue', 'created']);
-
-				$total = []; $perf = [];
-				foreach ($pubPerf as $key => $value) {
-					$from = (array) $value; $date = $value->created;
-					unset($from['created']); unset($from['revenue']);
-					$from['payout'] = $value->revenue;
-
-					if (!isset($perf[$date])) {
-						$perf[$date] = [];
-					}
-					ArrayMethods::add($from, $perf[$date]);
-				}
-
-				foreach ($advertPerf as $key => $value) {
-					$date = $value->created;
-					$from = ['revenue' => $value->revenue];
-
-					if (!isset($perf[$date])) {
-						$perf[$date] = [];
-					}
-					ArrayMethods::add($from, $perf[$date]);
-				}
-				foreach ($perf as $key => $value) {
-					ArrayMethods::add($value, $total);
-				}
-				$view->set('data', ['stats' => $perf, 'total' => $total]);
+				$data = Shared\Services\Performance::stats($org, ['start' => $start, 'end' => $end]);
+				$view->set('data', $data);
 				break;
 		}
 

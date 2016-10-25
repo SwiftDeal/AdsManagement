@@ -128,6 +128,11 @@ class Commission extends \Shared\Model {
         return $info;
     }
 
+    /**
+     * Finds the commission based on the "ad_id"
+     * @param  array &$search Array of Commission (to prevent querying from database again and again)
+     * @param  mixed $key     Object|String representing Ad ID
+     */
     public static function find(&$search, $key) {
         $key = \Shared\Utils::getMongoID($key);
 

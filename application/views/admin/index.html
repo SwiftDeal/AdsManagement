@@ -60,15 +60,15 @@
                             <table class="table">
                                 <tr>
                                     <th>Revenue</th>
-                                    <td><span class="badge">{echo Shared\Markup::nice_number()}</span></td>
-                                </tr>
-                                <tr>
-                                    <th>Payout</th>
                                     <td><span class="badge">{echo $user->convert($performance->revenue, false)}</span></td>
                                 </tr>
                                 <tr>
+                                    <th>Payout</th>
+                                    <td><span class="badge">{echo $user->convert($performance->payout, false)}</span></td>
+                                </tr>
+                                <tr>
                                     <th>Profit</th>
-                                    <td><span class="badge">{echo Shared\Markup::nice_number()}</span></td>
+                                    <td><span class="badge">{echo $user->convert($performance->revenue - $performance->payout, false)}</span></td>
                                 </tr>
                             </table>
                         </div>
