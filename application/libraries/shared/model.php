@@ -261,7 +261,7 @@ namespace Shared {
                     break;
                 
                 default:
-                    $value = (string) $value;
+                    $value = $value;
                     break;
             }
             return $value;
@@ -305,7 +305,12 @@ namespace Shared {
                 if ($key == "id" && !property_exists($this, '_id')) {
                     $key = "_id";
                 }
-                $query[$key] = $this->_convertToType($value, $columns[$key]['type']);
+
+                if (isset($columns[$key])) {
+                    $query[$key] = $this->_convertToType($value, $columns[$key]['type']);   
+                } else {
+                    $query[$key] = $value;
+                }
             }
             return $query;
         }

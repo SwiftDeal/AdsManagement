@@ -107,6 +107,13 @@ class Ad extends Shared\Model {
      */
     protected $_expiry = null;
 
+    /**
+     * @column
+     * @readwrite
+     * @type array
+     */
+    protected $_meta = [];
+
     public static function hourly() {
         $today = date('Y-m-d');
         $dq = Db::dateQuery(null, $today);

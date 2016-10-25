@@ -165,6 +165,11 @@ class Campaign extends Admin {
     			'live' => false
     		]);
 
+            $visibility = RequestMethods::post('visibility', 'public');
+            if ($visibility === "private") {
+                $campaign->meta = ['private' => true];
+            }
+
             if ($expiry) {
                 $campaign->expiry = $expiry;
             }

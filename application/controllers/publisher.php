@@ -75,6 +75,7 @@ class Publisher extends Auth {
         if ($keyword) {
             $query["title"] = Utils::mongoRegex($keyword);
         }
+        $query["meta.private"] = ['$ne' => true];
     	
         $ads = \Ad::all($query, [], 'created', 'desc', $limit, $page);
         $count = \Ad::count($query); $cats = [];

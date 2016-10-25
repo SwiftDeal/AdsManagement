@@ -90,10 +90,10 @@ class User extends Shared\Model {
     protected $_type;
 
     /**
-    * @column
-    * @readwrite
-    * @type array
-    */
+     * @column
+     * @readwrite
+     * @type array
+     */
     protected $_meta = [];
 
     /**

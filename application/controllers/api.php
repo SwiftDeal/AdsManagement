@@ -310,4 +310,36 @@ class Api extends \Shared\Controller {
 		$scraper = new Scraper($url);
 		$view->set('words', $scraper->fetch());
 	}
+
+	protected function _ga($ad, $ckid, $client, $link) {
+		$params = array(
+			'v' => 1,
+			'tid' => MGAID,
+			'ds' => $ad->user_id,
+			'cid' => $ckid,
+			'uip' => $client->ip,
+			'ua' => $client->ua,
+			'dr' => $client->referer,
+			'ci' => $ad->_id,
+			'cn' => $ad->title,
+			'cs' => $link->user_id,
+			'cm' => 'click',
+			'cc' => $ad->title,
+			't' => 'pageview',
+			'dl' => URL,
+			'dh' => $_SERVER['HTTP_HOST'],
+			'dp' => $_SERVER['REQUEST_URI'],
+			'dt' => $ad->title
+		);
+		
+		$curl = curl_init();
+		$gaurl = 'https://www.google-analytics.com/collect?'.http_build_query($params);
+		curl_setopt_array($curl, array(
+		    CURLOPT_RETURNTRANSFER => 1,
+		    CURLOPT_URL => $gaurl,
+		    CURLOPT_USERAGENT => $client->ua,
+		));
+		$resp = curl_exec($curl);
+		curl_close($curl);
+	}
 }
