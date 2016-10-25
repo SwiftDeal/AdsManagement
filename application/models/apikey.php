@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * Stores Api Key for access to users
  * @author Faizan Ayubi
  */
 use Framework\RequestMethods as RequestMethods;

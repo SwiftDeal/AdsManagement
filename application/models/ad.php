@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * All basic info to create an ad
  * @author Faizan Ayubi
  */
 use Shared\Utils as Utils;

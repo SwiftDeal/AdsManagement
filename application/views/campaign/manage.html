@@ -77,7 +77,7 @@
                                             </td>
                                             <td><a href="/campaign/details/{$a->_id}.html">{echo $a->title}</a></td>
                                             {script $c = Commission::allRate($a->id, $user)}
-                                            <td>{echo $c}</td>
+                                            <td><small>{echo $c}</small></td>
                                             <td>
                                                 {foreach $cat in $a->category}
                                                     {script $key = Shared\Utils::getMongoID($cat)}

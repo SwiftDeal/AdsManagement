@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * Platforms only Stat Of any advertiser
  * @author Hemant Mann
  */
 class Stat extends Shared\Model {

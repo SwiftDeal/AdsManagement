@@ -107,6 +107,7 @@ class Admin extends Auth {
                     if (strlen($zopim) == 0) {
                         unset($meta["zopim"]);
                     }
+                    $org->name = RequestMethods::post('name');
                     $org->meta = $meta;
                     $org->logo = $this->_upload('logo');
                     $org->url = RequestMethods::post('url');
