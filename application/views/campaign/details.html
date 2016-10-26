@@ -42,6 +42,14 @@
                             </a>
                         </li>
                         {/if}
+                        {if(array_key_exists("private", $ad->meta))}
+                        <li class="">
+                            <a href="#access" data-toggle="tab" aria-expanded="false">
+                                <span class="visible-xs"><i class="fa fa-graph"></i></span>
+                                <span class="hidden-xs">Campaign Access</span>
+                            </a>
+                        </li>
+                        {/if}
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="home">
@@ -170,6 +178,24 @@
                                 </ol>
                                 <p>CPA Conversion Pixel: <code id="testingPixel"></code></p>
                             </form>
+                        </div>
+                        <div class="tab-pane" id="access">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <th>Affiliate</th>
+                                        <th>Added On</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    {foreach $aff in $affs}
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    {/foreach}
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

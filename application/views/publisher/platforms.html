@@ -5,7 +5,16 @@
     <div class="col-sm-12">
         <span class="pull-right">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createPlatform"><i class="fa fa-plus"></i> Add New</button>
-            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#nativeCode">Native AD Code</button>
+            <!-- Single button -->
+            <div class="btn-group">
+                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Native AD <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li data-toggle="modal" data-target="#nativeCode"><a href="#">Get Code</a></li>
+                    <li><a href="https://wordpress.org/plugins/vnative/" target="_blank">Wordpress Plugin</a></li>
+                </ul>
+            </div>
             <button type="button" class="btn btn-info" data-toggle="modal" data-target="#bannerCode">Banner AD Code</button>
         </span>
         <h4 class="page-title">Platforms</h4>

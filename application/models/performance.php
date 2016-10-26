@@ -55,6 +55,8 @@ class Performance extends Shared\Model {
      * @column
      * @readwrite
      * @type array
+     *
+     * @value 3 keys for referer, os, device
      */
     protected $_meta = [];
 

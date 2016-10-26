@@ -77,7 +77,7 @@ class Publisher extends Auth {
         }
         $query["meta.private"] = ['$ne' => true];
     	
-        $ads = \Ad::all($query, [], 'created', 'desc', $limit, $page);
+        $ads = \Ad::all($query, [], 'modified', 'desc', $limit, $page);
         $count = \Ad::count($query); $cats = [];
         $categories = \Category::all(["org_id = ?" => $this->org->_id], ['name', '_id']);
         $user = $this->user; $model = null; $rate = null;
@@ -274,22 +274,6 @@ class Publisher extends Auth {
             $r[] = $arr[$i];
         }
         return $num == 1 ? $r[0] : $r;
-    }
-
-    /**
-     * @before _admin
-     */
-    public function billing() {
-        $this->seo(array("title" => "Billing"));
-        $view = $this->getActionView();
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
-
-        $invoices = \Invoice::all(['utype = ?' => 'publisher', 'org_id' => $this->org->_id]);
-
-        $view->set('invoices', $invoices)
-            ->set('start', $start)
-            ->set('end', $end);
     }
 
     /**
