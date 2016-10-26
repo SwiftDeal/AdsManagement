@@ -275,35 +275,7 @@ class Publisher extends Auth {
         }
         return $num == 1 ? $r[0] : $r;
     }
-
-    /**
-     * @before _admin
-     */
-    public function createinvoice() {
-        $this->seo(array("title" => "Create Invoice"));
-        $view = $this->getActionView();
-        $user_id = RequestMethods::get("user_id", null);
-        $start = RequestMethods::get("start");
-        $end = RequestMethods::get("end");
-        $query = [ "user_id" => Utils::mongoObjectId($user_id)];
-        $limit = RequestMethods::get("limit", 10000);
-        $page = RequestMethods::get("page", 1);
-
-        if($user_id) {
-            $affiliate = \User::first(['type = ?' => 'publisher', 'org_id' => $this->org->_id, 'id = ?' => $user_id]);
-            $view->set('affiliate', $affiliate);
-            $this->_reportspub($query, $start, $end, $limit, $page);
-        } else {
-            $affiliates = \User::all(['type = ?' => 'publisher', 'org_id' => $this->org->_id], ['id', 'name']);
-            $view->set('affiliates', $affiliates);
-        }
-
-        if (RequestMethods::post("action") == "cinvoice") {
-            
-        }
-        $view->set('user_id', $user_id);
-    }
-
+    
     /**
      * @before _admin
      */

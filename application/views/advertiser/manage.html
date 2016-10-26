@@ -38,12 +38,14 @@
                                         <th></th>
                                         <th>Name</th>
                                         <th>Email</th>
+                                        <th>Amount Due</th>
                                         <th>Created</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {foreach $a in $advertisers}
+                                    {script $perf = Performance::calculate($a)}
                                     <tr>
                                         <td><img src="{echo Shared\Markup::get_gravatar($p->email, 40)}"></td>
                                         <td>
@@ -56,7 +58,8 @@
                                             {/else})</small>
                                         </td>
                                         <td>{echo $a->email}</td>
-                                        <td>{echo Framework\StringMethods::only_date($a->created)}</td>
+                                        <td>{echo $user->convert($perf['revenue'])}</td>
+                                        <td><small>{echo Framework\StringMethods::only_date($a->created)}</small></td>
                                         <td>
                                             <a href="/advertiser/info/{echo $a->_id}.html" class="btn btn-xs btn-primary"><i class="fa fa-edit"></i></a>
                                             {if !$a->live}

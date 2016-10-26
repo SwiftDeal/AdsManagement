@@ -70,33 +70,6 @@ class Advertiser extends Auth {
     }
 
     /**
-     * @before _admin
-     */
-    public function billing() {
-        $this->seo(array("title" => "Billing"));$view = $this->getActionView();
-
-        $start = date('Y-m-d', strtotime('-7 day')); $end = date('Y-m-d', strtotime('-1 day'));
-        $start = RequestMethods::get('start', $start);
-        $end = RequestMethods::get('end', $end);
-        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
-
-        $users = \User::all(['type' => 'advertiser', 'org_id' => $this->org->_id]);
-        $advertisers = [];
-        foreach ($users as $u) {
-            $perf = \Performance::calculate($u, $dateQuery);
-
-            $advertisers[] = ArrayMethods::toObject([
-                'name' => $u->name,
-                'email' => $u->email,
-                'phone' => $u->phone,
-                'amount' => $perf['revenue']
-            ]);
-        }
-
-        $view->set('advertisers', $advertisers);
-    }
-
-    /**
      * @before _secure
      */
     public function account() {
@@ -212,7 +185,7 @@ class Advertiser extends Auth {
             $query["{$property} = ?"] = Utils::mongoRegex($value);
         }
 
-        $advertisers = \User::all($query, [], 'created', 'desc');
+        $advertisers = \User::all($query, ['_id', 'name', 'live', 'email', 'created'], 'created', 'desc');
         $count = \User::count($query);
         $active = \User::count(["type = ?" => "advertiser", "org_id = ?" => $this->org->_id, "live = ?" => 1]);
         $inactive = \User::count(["type = ?" => "advertiser", "org_id = ?" => $this->org->_id, "live = ?" => 0]);
