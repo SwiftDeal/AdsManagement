@@ -35,26 +35,44 @@ class Billing extends Admin {
     public function createinvoice() {
         $this->seo(array("title" => "Create Invoice"));
         $view = $this->getActionView();
-        $user_id = RequestMethods::get("user_id", null);
+
         $start = RequestMethods::get("start");
         $end = RequestMethods::get("end");
+
+        $diff = date_diff(new DateTime($start), new DateTime($end));
+        $dateQuery = Utils::dateQuery($start, $end);
+        $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
+
+        $user_id = RequestMethods::get("user_id", null);
         $query = [ "user_id" => Utils::mongoObjectId($user_id)];
-        $limit = RequestMethods::get("limit", 10000);
-        $page = RequestMethods::get("page", 1);
 
         if($user_id) {
-            $affiliate = \User::first(['type = ?' => 'publisher', 'org_id' => $this->org->_id, 'id = ?' => $user_id]);
-            $view->set('affiliate', $affiliate);
-            $this->_reportspub($query, $start, $end, $limit, $page);
+            $user = \User::first(['type = ?' => 'publisher', 'org_id' => $this->org->_id, 'id = ?' => $user_id]);
+            $view->set('affiliate', $user);
+            $performances = Performance::all(["user_id = ?" => $user_id]);
+            $view->set('performances', $performances);
         } else {
             $affiliates = \User::all(['type = ?' => 'publisher', 'org_id' => $this->org->_id], ['id', 'name']);
             $view->set('affiliates', $affiliates);
         }
 
         if (RequestMethods::post("action") == "cinvoice") {
-            
+            $invoice = new Invoice([
+                "org_id" => $this->org->id,
+                "user_id" => $this->user->id,
+                "utype" => $user->type,
+                "start" => $start,
+                "end" => $end,
+                "period" => $diff->format("%a"),
+                "amount" => RequestMethods::post("amount")
+            ]);
+            $invoice->save();
+
+            $this->redirect("/billing/affiliates.html");
         }
-        $view->set('user_id', $user_id);
+        $view->set('user_id', $user_id)
+            ->set('start', $start)
+            ->set('end', $end);
     }
 
     /**

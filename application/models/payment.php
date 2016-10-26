@@ -3,7 +3,7 @@
 /**
  * @author Faizan Ayubi
  */
-class Invoice extends Shared\Model {
+class Payment extends Shared\Model {
 
     /**
      * @column
@@ -36,32 +36,14 @@ class Invoice extends Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type date
-     *
+     * @type text
+     * @length 255
+     * 
      * @validate required
-     * @label invoice start date
+     * @label payment type
+     * @value wire, paypal, paytm etc
      */
-    protected $_start;
-
-    /**
-     * @column
-     * @readwrite
-     * @type date
-     *
-     * @validate required
-     * @label invoice end date
-     */
-    protected $_end;
-
-    /**
-     * @column
-     * @readwrite
-     * @type integer
-     *
-     * @validate required
-     * @label period for invoice
-     */
-    protected $_period;
+    protected $_type = null;
 
     /**
      * @column
@@ -70,4 +52,11 @@ class Invoice extends Shared\Model {
      * @length 10,2
      */
     protected $_amount;
+
+    /**
+    * @column
+    * @readwrite
+    * @type array
+    */
+    protected $_meta = [];
 }

@@ -78,8 +78,8 @@
                                                 <span class="text text-warning">Inactive</span>
                                                 {/else}
                                             </td>
-                                            <td>{echo $i->ptype}</td>
-                                            <td>{echo $i->amount}</td>
+                                            <td>{echo $i->utype}</td>
+                                            <td>{echo $user->convert($i->amount)}</td>
                                         </tr>
                                         {/foreach}
                                     </tbody>

@@ -17,121 +17,193 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <div class="panel panel-border panel-primary">
+                    <div class="panel panel-border panel-success">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Details</h3>
+                            <h3 class="panel-title">Affiliate</h3>
+                            <p class="text-muted m-b-30 font-13">
+                                Select any Affiliate and the date range to which you want to pay affiliates.
+                            </p>
                         </div>
-                        <form class="panel-body table-responsive" action="">
-                            <table class="table">
-                                <tr>
-                                    <th>Account: </th>
-                                    <td>
+                        <div class="panel-body">
+                            <form class="form-inline text-center" role="form" id="range">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <label class="sr-only">Account: </label>
+                                        <span class="add-on input-group-addon"><i class="fa fa-user fa-fw"></i> Account: </span>
                                         {if($affiliates)}
                                         <select name="user_id" class="form-control" style="max-width: 300px;" value="{echo $user_id}">
                                         {foreach $a in $affiliates}
                                         <option value="{echo $a->id}">{echo $a->name}</option>
                                         {/foreach}
                                         {/if}{else}
-                                            {echo $affiliate->name}
+                                            <input type="text" style="width: 180px" class="form-control" value="{echo $affiliate->name}" disabled="" />
                                         {/else}
                                         </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Start Date</th>
-                                    <td>
-                                        <div class="input-group">
-                                            <label class="sr-only">From</label>
-                                            <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i></span>
-                                            <input type="date" style="width: 180px" name="start" class="form-control" required="" />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>End Date</th>
-                                    <td>
-                                        <div class="input-group">
-                                            <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i></span>
-                                            <input type="date" style="width: 180px" name="end" class="form-control" required="" />
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                            <p class="text-center">
-                                <button class="btn btn-default">Update</button>
-                            </p>
-                        </form>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <label class="sr-only">From</label>
+                                        <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> From</span>
+                                        <input type="date" style="width: 180px" name="start" class="form-control" value="{$start}" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <label class="sr-only">To</label>
+                                        <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> To</span>
+                                        <input type="date" style="width: 180px" name="end" class="form-control" value="{$end}" />
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Fetch Details</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 {if($affiliate)}
                 <div class="col-md-12">
-                    <div class="panel panel-border panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">Optional</h3>
+                    <ul class="nav nav-tabs navtab-custom">
+                        <li class="active">
+                            <a href="#performance" data-toggle="tab" aria-expanded="false">
+                                <span class="visible-xs"><i class="fa fa-pie-chart"></i></span>
+                                <span class="hidden-xs">Performance</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#details" data-toggle="tab" aria-expanded="true">
+                                <span class="visible-xs"><i class="fa fa-list"></i></span>
+                                <span class="hidden-xs">Details</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#memo" data-toggle="tab" aria-expanded="true">
+                                <span class="visible-xs"><i class="fa fa-note"></i></span>
+                                <span class="hidden-xs">Memo</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="performance">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>DATE</th>
+                                            <th>ACTIONS</th>
+                                            <th>PAYOUT</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {script $total = 0.00}{script $totalClk = 0}{script $totalImpr = 0}{script $totalConvr = 0}{foreach $p in $performances}
+                                        {script $totalClk += $p->clicks}{script $totalImpr += $p->impressions}{script $totalConvr += $p->conversions}
+                                        <tr>
+                                            <td>{echo Framework\StringMethods::only_date($p->created)}</td>
+                                            <td>
+                                                Clicks: {echo Shared\Markup::nice_number($p->clicks)}
+                                                {if($p->conversions)}<br>Conersions: {echo Shared\Markup::nice_number($p->conversions)}{/if}
+                                                {if($p->impressions)}<br>Impressions: {echo Shared\Markup::nice_number($p->impressions)}{/if}
+                                            </td>
+                                            <td>{echo $user->convert($p->revenue)}</i></td>
+                                            {script $total += $p->revenue}
+                                        </tr>
+                                        {/foreach}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        <div class="panel-body table-responsive">
-                            <tr>
-                                <th>Affiliate Memo: </th>
-                                <td>
-                                    <input type="text" name="memo" class="form-control">
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Notes: </th>
-                                <td>
-                                    <input type="text" name="notes" class="form-control">
-                                </td>
-                            </tr>
+                        <div class="tab-pane" id="details">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <th>Campaign</th>
+                                        <th>Payout</th>
+                                        <th>Actions</th>
+                                        <th>Amount</th>
+                                        <th>Total Revenue</th>
+                                    </tr>
+                                    {script $adClicks = []} {script $commInfo = []}
+                                    {foreach $value in $clicks}
+                                        {script $revenue = $ck_count = 0} {script $countries = Click::classify($value, 'country')}
+                                        {foreach $records in $countries}
+
+                                            {script $pComm = Commission::campaignRate($value_i, $commInfo, $records_i, array_merge([
+                                                'type' => 'publisher', 'publisher' => $user
+                                            ], $dq))}
+                                            {script $ck_count += count($records)}
+                                            {script $earning = Ad::earning($pComm, count($records))}
+                                            {script $revenue += $earning['revenue']}
+                                        {/foreach}
+
+                                        {script $adClicks[$value_i] = ['revenue' => $revenue, 'clicks' => $ck_count]}
+                                    {/foreach}
+                                    {foreach $l in $links}
+                                        {script $a = Ad::first(["_id = ?" => $l->ad_id], ['_id', 'title'])}
+                                        {script $c = Commission::first(["ad_id = ?" => $l->ad_id])}
+                                        
+                                        {script $data = $adClicks[$a->_id] ?? ['revenue' => 'None', 'clicks' => 'No Clicks']}
+                                        {if($data['revenue'] > 0)}
+                                        <tr>
+                                            <td><a href="/campaign/details/{$a->id}.html">{echo $a->title}</a></td>
+                                            <td>
+                                                {echo Commission::allRate($a->_id, $user)}
+                                            </td>
+                                            <td>{echo Shared\Markup::nice_number($data['clicks'])}</td>
+                                            <td>{echo $user->convert($data['revenue'])}</td>
+                                            <td></td>
+                                        </tr>
+                                        {/if}
+                                    {/foreach}
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="memo">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <th>DATE</th>
+                                        <th>ACTIONS</th>
+                                        <th>PAYOUT</th>
+                                    </tr>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="panel panel-border panel-success">
+                    <div class="panel panel-border panel-info">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Invoice Details</h3>
+                            <h3 class="panel-title">Summary</h3>
                         </div>
-                        <div class="panel-body table-responsive">
-                            <table class="table">
-                                <tr>
-                                    <th>Campaign</th>
-                                    <th>Payout</th>
-                                    <th>Actions</th>
-                                    <th>Amount</th>
-                                    <th>Total Revenue</th>
-                                </tr>
-                                {script $adClicks = []} {script $commInfo = []}
-                                {foreach $value in $clicks}
-                                    {script $revenue = $ck_count = 0} {script $countries = Click::classify($value, 'country')}
-                                    {foreach $records in $countries}
-
-                                        {script $pComm = Commission::campaignRate($value_i, $commInfo, $records_i, array_merge([
-                                            'type' => 'publisher', 'publisher' => $user
-                                        ], $dq))}
-                                        {script $ck_count += count($records)}
-                                        {script $earning = Ad::earning($pComm, count($records))}
-                                        {script $revenue += $earning['revenue']}
-                                    {/foreach}
-
-                                    {script $adClicks[$value_i] = ['revenue' => $revenue, 'clicks' => $ck_count]}
-                                {/foreach}
-                                {foreach $l in $links}
-                                    {script $a = Ad::first(["_id = ?" => $l->ad_id], ['_id', 'title'])}
-                                    {script $c = Commission::first(["ad_id = ?" => $l->ad_id])}
-                                    
-                                    {script $data = $adClicks[$a->_id] ?? ['revenue' => 'None', 'clicks' => 'No Clicks']}
-                                    {if($data['revenue'] > 0)}
-                                    <tr>
-                                        <td><a href="/campaign/details/{$a->id}.html">{echo $a->title}</a></td>
-                                        <td>
-                                            {echo Commission::allRate($a->_id, $user)}
-                                        </td>
-                                        <td>{echo Shared\Markup::nice_number($data['clicks'])}</td>
-                                        <td>{echo $user->convert($data['revenue'])}</td>
-                                        <td></td>
-                                    </tr>
-                                    {/if}
-                                {/foreach}
-                            </table>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Clicks</th>
+                                            <th>Conversions</th>
+                                            <th>Impressions</th>
+                                            <th>Payout</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{echo Shared\Markup::nice_number($totalClk)}</td>
+                                            <td>{echo Shared\Markup::nice_number($totalConvr)}</td>
+                                            <td>{echo Shared\Markup::nice_number($totalImpr)}</td>
+                                            <td>{echo $user->convert($total)}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <form method="post" action="">
+                                <input type="hidden" name="clicks" value="{echo $totalClk}">
+                                <input type="hidden" name="conversions" value="{echo $totalConvr}">
+                                <input type="hidden" name="impressions" value="{echo $totalImpr}">
+                                <input type="hidden" name="action" value="cinvoice">
+                                <input type="hidden" name="amount" value="{echo $total}">
+                                <p class="text-center">
+                                    <button type="submit" class="btn btn-success">Create Invoice</button>
+                                </p>
+                            </form>
+                            
                         </div>
                     </div>
                 </div>
