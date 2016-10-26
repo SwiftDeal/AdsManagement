@@ -15,6 +15,34 @@ class Test extends Auth {
     /**
      * @before _admin
      */
+    public function index() {
+        $this->JSONview(); $i = 0; $view = $this->getActionView();
+        $ads = Ad::all(['_id' => '57eb8aa51d41c8676b74b044']);
+        foreach ($ads as $a) {
+            foreach ($a->category as $id) {
+                $cat = Category::first(['_id' => $id]);
+
+                $catCol = Registry::get("MongoDB")->categories;
+                if (!$cat) {
+                    // $catCol->insertOne([
+                    //     '_id' => Db::convertType($id, 'id'),
+                    //     'name' => 'hot',
+                    //     'org_id' => Db::convertType($a->org_id, 'id')
+                    // ]);
+                } else {
+                    $cat->created = date('Y-m-d');
+                    $cat->name = 'hot';
+                    // $cat->save();
+                }
+            }
+            
+        }
+        $view->set('i', $i);
+    }
+
+    /**
+     * @before _admin
+     */
     public function sendMail() {
         $this->noview();
         $cf = Registry::get("configuration")->parse("configuration/cf")->cloudflare;

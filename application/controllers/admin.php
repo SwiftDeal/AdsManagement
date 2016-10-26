@@ -176,7 +176,12 @@ class Admin extends Auth {
                     break;
 
                 case 'categories':
-                    $msg = Category::updateNow($this->org);
+                    $success = Category::updateNow($this->org);
+                    if ($success) {
+                        $msg = 'Categories updated Successfully!!';
+                    } else {
+                        $msg = 'Failed to delete some categories because in use by campaigns!!';
+                    }
                     $view->set('message', $msg);
                     break;
 

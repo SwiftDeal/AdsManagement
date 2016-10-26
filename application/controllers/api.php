@@ -217,11 +217,11 @@ class Api extends \Shared\Controller {
 					$data = ['campaigns' => $results];
 					$view->set('data', $data);	
 				} else {
-					$ads = Ad::objectArr([$campaign], $fields);
-					$ad = array_shift($ads);
+					$ads = Ad::objectArr($campaign, $fields);
+					$campaign = array_shift($ads);
 					$comm = Commission::all(['ad_id' => $campaign->_id], $commFields);
 
-					$data = ['campaign' => (array) $ad, 'commissions' => Commission::objectArr($comm, $commFields)];
+					$data = ['campaign' => $campaign, 'commissions' => Commission::objectArr($comm, $commFields)];
 					$view->set('data', $data);
 				}
 				break;
@@ -237,6 +237,54 @@ class Api extends \Shared\Controller {
 			case 'DELETE':
 				$message = $campaign->delete();
 				$view->set('message', $message);
+				break;
+		}
+	}
+
+	/**
+	 * @before _secure
+	 * @after _cleanUp
+	 */
+	public function countries() {
+		$view = $this->getActionView();
+		$view->set('countries', Shared\Markup::countries());
+	}
+
+	/**
+	 * @before _secure
+	 * @after _cleanUp
+	 */
+	public function categories($id = null) {
+		$view = $this->getActionView(); $fields = ['_id', 'name'];
+		$type = RequestMethods::type(); $org = $this->_org;
+		$categories = Category::all(['org_id' => $org->_id], $fields);
+		
+		switch ($type) {
+			case 'GET':
+				$data = ['categories' => Category::objectArr($categories, $fields)];
+				$view->set('data', $data);
+				break;
+			
+			case 'POST':
+				$updated = Category::addNew($categories, $org);
+				$data = ['categories' => Category::objectArr($updated, $fields)];
+				$view->set('data', $data);
+				break;
+
+			case 'DELETE':
+				$cat = Category::first(['_id' => $id, 'org_id' => $org->_id]);
+				if (!$id || !$cat) {
+					return $this->failure('30');
+				}
+				if (!$cat->inUse()) {
+					$cat->delete();
+					$view->set('message', 'Category deleted!!');
+				} else {
+					$view->set('message', 'Failed to delete category because it is in use');
+				}
+				unset($categories[$id]);
+				$data = ['categories' => Category::objectArr($categories, $fields)];
+				$view->set('data', $data);
 				break;
 		}
 	}

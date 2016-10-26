@@ -5,6 +5,7 @@
  */
 use Shared\Utils as Utils;
 use Framework\Registry as Registry;
+use Framework\ArrayMethods as ArrayMethods;
 use Framework\RequestMethods as RequestMethods;
 class Category extends Shared\Model {
 
@@ -32,16 +33,14 @@ class Category extends Shared\Model {
         return ucfirst($this->_name);
     }
 
-    public static function updateNow($org) {
-        $cat = RequestMethods::post("category");
-
-        // find all the categories in advance
-        $records = self::all(['org_id' => $org->_id], ['name', '_id']);
-        $categories = [];
-        foreach ($records as $r) {
-            $categories[$r->getMongoID()] = $r;
-        }
-
+    /**
+     * Adds New AD Categories by checking if that category already exists in 
+     * the database to prevent duplicate
+     */
+    public static function addNew(&$categories, $org, $newCat = []) {
+        $result = []; ArrayMethods::copy($categories, $result);
+        
+        $cat = RequestMethods::post("category") ?? $newCat;
         foreach ($cat as $c) {
             $found = self::first(['name' => strtolower($c), 'org_id' => $org->_id], ['_id', 'name']);
             // remove those which are found
@@ -50,34 +49,45 @@ class Category extends Shared\Model {
                 continue;
             }
 
-            $category = new self([
-                'name' => $c,
-                'org_id' => $org->_id
-            ]);
+            $category = new self([ 'name' => $c, 'org_id' => $org->_id ]);
             $category->save();
+            $result[$category->_id] = $category;
         }
+        return $result;
+    }
 
-        // Now remove those categories which are removed by the user
+    public static function remove(&$categories) {
         $success = true;
         foreach ($categories as $c) {
-            // check if any AD contains this category
-            $adsCol = Registry::get("MongoDB")->ads;
-            $count = $adsCol->count([
-                'org_id' => Utils::mongoObjectId($org->_id),
-                'category' => ['$elemMatch' => ['$eq' => Utils::mongoObjectId($c->_id)]]
-            ]);
-
-            if ($count === 0) {
+            if (!$c->inUse()) {
+                unset($categories[Utils::getMongoID($c->_id)]);
                 $c->delete();
             } else {
                 $success = false;
             }
         }
+        return $success;
+    }
 
-        if ($success) {
-            return 'Categories updated Successfully!!';
+    public static function updateNow($org) {
+        // find all the categories in advance
+        $categories = self::all(['org_id' => $org->_id], ['name', '_id', 'org_id']);
+        self::addNew($categories, $org);
+
+        // Now remove those categories which are removed by the user (i.e not unset in $categories)
+        return self::remove($categories);
+    }
+
+    public function inUse() {
+        $count = Ad::count([
+            'org_id' => $this->org_id,
+            'category' => ['$elemMatch' => ['$eq' => Utils::mongoObjectId($this->_id)]]
+        ]);
+        
+        if ($count === 0) {
+            return false;
         } else {
-            return 'Failed to delete some categories because in use by campaigns!!';
+            return true;
         }
     }
 }
