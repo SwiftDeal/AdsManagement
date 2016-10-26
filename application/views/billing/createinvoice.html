@@ -7,7 +7,7 @@
                     <div class="page-title-box">
                         <ol class="breadcrumb pull-right">
                             <li><a href="/publisher/manage.html">Affiliates</a></li>
-                            <li><a href="/publisher/billing.html">Billing</a></li>
+                            <li><a href="/billing/affiliates.html">Billing</a></li>
                             <li class="active">Invoices</li>
                             <li class="active">Create Invoice</li>
                         </ol>
@@ -26,6 +26,9 @@
                         </div>
                         <div class="panel-body">
                             <form class="form-inline text-center" role="form" id="range">
+                                {if($affiliate)}
+                                <a href="/billing/createinvoice.html" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Change</a>
+                                {/if}
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="sr-only">Account: </label>

@@ -1,0 +1,145 @@
+<div class="content-page">
+    <div class="content">
+        <div class="container">
+            <!-- Page-Title -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="page-title-box">
+                        <ol class="breadcrumb pull-right">
+                            <li><a href="/publisher/manage.html">Affiliates</a></li>
+                            <li><a href="/billing/affiliates.html">Billing</a></li>
+                            <li class="active">Payment</li>
+                            <li class="active">Create Payment</li>
+                        </ol>
+                        <h4 class="page-title">Create: Payment</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-border panel-success">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Affiliate</h3>
+                            <p class="text-muted m-b-30 font-13">
+                                Select any Affiliate and the date range to which you want to pay affiliates.
+                            </p>
+                        </div>
+                        <div class="panel-body">
+                            <form class="form-inline text-center" role="form" id="range">
+                                {if($affiliate)}
+                                <a href="/billing/createpayment.html" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Change</a>
+                                {/if}
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <label class="sr-only">Account: </label>
+                                        <span class="add-on input-group-addon"><i class="fa fa-user fa-fw"></i> Account: </span>
+                                        {if($affiliates)}
+                                        <select name="user_id" class="form-control" style="max-width: 300px;" value="{echo $user_id}" required="">
+                                        {foreach $a in $affiliates}
+                                        <option value="{echo $a->id}">{echo $a->name}</option>
+                                        {/foreach}
+                                        {/if}{else}
+                                            <input type="text" style="width: 180px" class="form-control" value="{echo $affiliate->name}" disabled="" />
+                                            <input type="hidden" name="user_id" value="{echo $affiliate->id}" />
+                                        {/else}
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {if($affiliate)}
+                <div class="col-md-12">
+                    <div class="panel panel-border panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Transaction Details</h3>
+                        </div>
+                        <div class="panel-body">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="panel panel-border panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Summary</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Invoice ID</th>
+                                            <th>Account</th>
+                                            <th>Start Date</th>
+                                            <th>End Date</th>
+                                            <th>Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {foreach $i in $invoices}
+                                    {script $u = User::first(["id = ?" => $i->user_id], ['id', 'name'])}
+                                        <tr>
+                                            <td><small>{echo $i->id}</small></td>
+                                            <td>{echo $u->name}</td>
+                                            <td>{echo Framework\StringMethods::datetime_to_text($i->start)}</td>
+                                            <td>{echo Framework\StringMethods::datetime_to_text($i->end)}</td>
+                                            <td>{echo $i->amount}</td>
+                                        </tr>
+                                    {/foreach}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <hr>
+                            <h4 class="m-t-0 header-title text-center"><b>Other Items (Optional)</b><button type="button" id="addmore" class="btn btn-primary btn-xs">Add more</button></h4>
+                            <form method="post" action="" class="text-center">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <tbody id="addmform">
+                                            <tr id="item">
+                                                <th>Item</th>
+                                                <td><input type="text" name="item[]" class="form-control" /></td>
+                                                <th>Amount</th>
+                                                <td><input type="text" name="amount[]" class="form-control" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Payment Type</th>
+                                                <td>
+                                                    <select name="type" class="form-control">
+                                                        <option value="paypal">PayPal</option>
+                                                        <option value="wire">Wire Transfer</option>
+                                                        <option value="payquicker">PayQuicker</option>
+                                                        <option value="payoneer">Payoneer</option>
+                                                        <option value="paytm">Paytm</option>
+                                                        <option value="mobicash">Mobicash</option>
+                                                        <option value="easypaisa">EasyPaisa</option>
+                                                    </select>
+                                                </td>
+                                                <th>Reference ID</th>
+                                                <td><input type="text" name="refer_id" class="form-control" /></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <input type="hidden" name="action" value="cpayment"><hr>
+                                <p class="text-center">
+                                    <button type="submit" class="btn btn-success">Make Payment</button>
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+$("#addmore").click(function (e) {
+    e.preventDefault();
+    var item = $("#item").html();
+    $("#addmform").prepend("<tr>" + item + "</tr>");
+});
+</script>

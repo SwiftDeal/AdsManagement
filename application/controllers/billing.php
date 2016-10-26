@@ -49,7 +49,7 @@ class Billing extends Admin {
         if($user_id) {
             $user = \User::first(['type = ?' => 'publisher', 'org_id' => $this->org->_id, 'id = ?' => $user_id]);
             $view->set('affiliate', $user);
-            $performances = Performance::all(["user_id = ?" => $user_id]);
+            $performances = Performance::all($query);
             $view->set('performances', $performances);
         } else {
             $affiliates = \User::all(['type = ?' => 'publisher', 'org_id' => $this->org->_id], ['id', 'name']);
@@ -59,7 +59,7 @@ class Billing extends Admin {
         if (RequestMethods::post("action") == "cinvoice") {
             $invoice = new Invoice([
                 "org_id" => $this->org->id,
-                "user_id" => $this->user->id,
+                "user_id" => $user->id,
                 "utype" => $user->type,
                 "start" => $start,
                 "end" => $end,
@@ -67,6 +67,50 @@ class Billing extends Admin {
                 "amount" => RequestMethods::post("amount")
             ]);
             $invoice->save();
+
+            $this->redirect("/billing/affiliates.html");
+        }
+        $view->set('user_id', $user_id)
+            ->set('start', $start)
+            ->set('end', $end);
+    }
+
+    /**
+     * @before _secure
+     */
+    public function createpayment() {
+        $this->seo(array("title" => "Create Payment")); $view = $this->getActionView();
+        $user_id = RequestMethods::get("user_id", null);
+
+        if($user_id) {
+            $user = \User::first(['type = ?' => 'publisher', 'org_id' => $this->org->_id, 'id = ?' => $user_id]);
+            $view->set('affiliate', $user);
+            $invoices = Invoice::all(['org_id' => $this->org->_id, 'user_id = ?' => $user_id]);
+            $view->set('invoices', $invoices);
+        } else {
+            $affiliates = \User::all(['type = ?' => 'publisher', 'org_id' => $this->org->_id], ['id', 'name']);
+            $view->set('affiliates', $affiliates);
+        }
+
+        if (RequestMethods::post("action") == "cpayment") {
+            $meta = [];$items = RequestMethods::post("item");
+            if ($items) {
+                $amounts = RequestMethods::post("amount");
+                foreach ($items as $key => $item) {
+                    $meta["items"][] = ['name' => $item, 'amount' => $amounts[$key]];
+                }
+            }
+            $meta["note"] = RequestMethods::post("note");
+            $meta["refer_id"] = RequestMethods::post("refer_id");
+            $payment = new Payment([
+                "org_id" => $this->org->id,
+                "user_id" => $user->id,
+                "utype" => $user->type,
+                "type" => RequestMethods::post("type"),
+                "amount" => RequestMethods::post("amount"),
+                "meta" => $meta
+            ]);
+            $payment->save();
 
             $this->redirect("/billing/affiliates.html");
         }
