@@ -67,6 +67,7 @@ class Publisher extends Auth {
         $category = RequestMethods::get("category", []);
         $keyword = RequestMethods::get("keyword", '');
         $query = ["live = ?" => true, "org_id = ?" => $this->org->_id];
+        $today = date('Y-m-d');
 
         if (count($category) > 0) {
             // if you want AND query instead of OR query then replace '$in' --> '$all'
@@ -75,10 +76,37 @@ class Publisher extends Auth {
         if ($keyword) {
             $query["title"] = Utils::mongoRegex($keyword);
         }
+        $orderBy = RequestMethods::get("orderBy", 'desc'); $order = 'desc';
+
+        if (in_array($orderBy, ['asc', 'desc'])) {
+            $count = \Ad::count($query); $cats = [];
+            $order = $orderBy;
+            $ads = \Ad::all($query, [], 'modified', $order, $limit, $page);
+        } else if ($orderBy == "viral") {
+            $ads = \Ad::all($query, [], 'modified', $order, $limit, $page);
+            $fields = Shared\Services\User::fields('Ad');
+            $ids = array_keys($ads); $ads = Ad::objectArr($ads, $fields);
+
+            $clickCol = Registry::get("MongoDB")->clicks;
+            $results = $clickCol->aggregate([
+                ['$match' => ['created' => Db::dateQuery($today, $today), 'adid' => ['$in' => Db::convertType($ids, 'id')]]],
+                ['$project' => ['adid' => 1, '_id' => 1]],
+                ['$group' => ['_id' => '$adid', 'count' => ['$sum' => 1]]],
+                ['$sort' => ['count' => -1]],
+                ['$limit' => 30]
+            ]);
+
+            $ans = []; 
+            foreach ($results as $r) {
+                $a = (object) $r; $key = Utils::getMongoID($a->_id);
+                $obj = $ads[$key];
+                $obj->count = $r->count;
+                $ans[$key] = $obj;
+            }
+            $ads = $ans; $count = 30;
+        }
         $query["meta.private"] = ['$ne' => true];
     	
-        $ads = \Ad::all($query, [], 'modified', 'desc', $limit, $page);
-        $count = \Ad::count($query); $cats = [];
         $categories = \Category::all(["org_id = ?" => $this->org->_id], ['name', '_id']);
         $user = $this->user; $model = null; $rate = null;
 
@@ -93,7 +121,7 @@ class Publisher extends Auth {
             'model' => $model, 'rate' => $rate,
             'categories' => $categories, 'coverage' => $category,
             'tdomains' => \Shared\Services\User::trackingLinks($this->user, $this->org),
-            'keyword' => $keyword
+            'keyword' => $keyword, 'orderBy' => $orderBy
         ]);
     }
 

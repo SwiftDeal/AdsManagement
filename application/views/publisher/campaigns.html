@@ -27,10 +27,10 @@
                     <div class="input-group">
                         <label class="sr-only">Sort</label>
                         <span class="add-on input-group-addon"><i class="fa fa-list fa-fw"></i> Sort By</span>
-                        <select class="form-control">
-                            <option>Newly added</option>
-                            <option>Viral</option>
-                            <option>Old</option>
+                        <select class="form-control selectVal" data-value='{echo json_encode(["$orderBy"])}' name="orderBy">
+                            <option value="desc">Newly added</option>
+                            <option value="viral">Viral</option>
+                            <option value="asc">Old</option>
                         </select>
                     </div>
                 </div>
@@ -43,13 +43,16 @@
                             <th>PREVIEW</th>
                             <th>TITLE</th>
                             <th>PAYOUT</th>
+                            {if $orderBy === "viral"}
+                            <th>COUNT</th>
+                            {/if}
                             <th>CATEGORY</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tbody>
                         {foreach $a in $ads}
-                            {script $c = Commission::allRate($a->id, $user)}
+                            {script $c = Commission::allRate($a->_id, $user)}
                             <tr>
                                 <td>
                                     <img src="{echo Ad::displayImg($a->image)}" alt="" class="img-responsive" width="150"> {script $id = $a->_id}
@@ -59,6 +62,9 @@
                                 </td>
                                 <td><a href="/campaign/info/{$a->_id}.html">{echo $a->title}</a></td>
                                 <td>{echo $c}</td>
+                                {if $orderBy === "viral"}
+                                <td>{echo $a->count}</td>
+                                {/if}
                                 <td>
                                 {foreach $cat in $a->category}
                                     {script $key = Shared\Utils::getMongoID($cat)}
