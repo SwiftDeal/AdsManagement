@@ -32,13 +32,14 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="sr-only">Account: </label>
-                                        <span class="add-on input-group-addon"><i class="fa fa-user fa-fw"></i> Account: </span>
                                         {if($affiliates)}
+                                        <span class="add-on input-group-addon"><i class="fa fa-user fa-fw"></i> Account: </span>
                                         <select name="user_id" class="form-control" style="max-width: 300px;" value="{echo $user_id}" required="">
                                         {foreach $a in $affiliates}
                                         <option value="{echo $a->id}">{echo $a->name}</option>
                                         {/foreach}
                                         {/if}{else}
+                                            <span class="add-on input-group-addon"><a href="/publisher/info/{echo $user_id}.html" target="_blank"><i class="fa fa-user fa-fw"></i> Account: </a></span>
                                             <input type="text" style="width: 180px" class="form-control" value="{echo $affiliate->name}" disabled="" />
                                             <input type="hidden" name="user_id" value="{echo $affiliate->id}" />
                                         {/else}
@@ -54,47 +55,39 @@
                 <div class="col-md-12">
                     <div class="panel panel-border panel-primary">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Transaction Details</h3>
-                        </div>
-                        <div class="panel-body">
-
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="panel panel-border panel-primary">
-                        <div class="panel-heading">
                             <h3 class="panel-title">Summary</h3>
                         </div>
                         <div class="panel-body">
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Invoice ID</th>
-                                            <th>Account</th>
-                                            <th>Start Date</th>
-                                            <th>End Date</th>
-                                            <th>Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    {foreach $i in $invoices}
-                                    {script $u = User::first(["id = ?" => $i->user_id], ['id', 'name'])}
-                                        <tr>
-                                            <td><small>{echo $i->id}</small></td>
-                                            <td>{echo $u->name}</td>
-                                            <td>{echo Framework\StringMethods::datetime_to_text($i->start)}</td>
-                                            <td>{echo Framework\StringMethods::datetime_to_text($i->end)}</td>
-                                            <td>{echo $i->amount}</td>
-                                        </tr>
-                                    {/foreach}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <hr>
-                            <h4 class="m-t-0 header-title text-center"><b>Other Items (Optional)</b><button type="button" id="addmore" class="btn btn-primary btn-xs">Add more</button></h4>
-                            <form method="post" action="" class="text-center">
+                            <form method="post" action="">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Invoice ID</th>
+                                                <th>Account</th>
+                                                <th>Start Date</th>
+                                                <th>End Date</th>
+                                                <th>Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        {foreach $i in $invoices}
+                                        {script $u = User::first(["id = ?" => $i->user_id], ['id', 'name'])}
+                                            <tr>
+                                                <td><small>{echo $i->id}</small></td>
+                                                <td>{echo $u->name}</td>
+                                                <td>{echo Framework\StringMethods::datetime_to_text($i->start)}</td>
+                                                <td>{echo Framework\StringMethods::datetime_to_text($i->end)}</td>
+                                                <td>{echo $user->convert($i->amount)}</td>
+                                                <input type="hidden" name="iamount[]" value="{echo $i->amount}" />
+                                                <input type="hidden" name="invoice[]" value="{echo $i->id}" />
+                                            </tr>
+                                        {/foreach}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <hr>
+                                <h4 class="m-t-0 header-title text-center"><b>Other Items (Optional)</b><button type="button" id="addmore" class="btn btn-primary btn-xs">Add more</button></h4>
                                 <div class="table-responsive">
                                     <table class="table">
                                         <tbody id="addmform">

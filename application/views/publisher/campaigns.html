@@ -21,8 +21,17 @@
                     </div>
                     <div class="input-group">
                         <label class="sr-only">Keyword</label>
-                        <span class="add-on input-group-addon"><i class="fa fa-tags fa-fw"></i> Keyword</span>
+                        <span class="add-on input-group-addon"><i class="fa fa-tag fa-fw"></i> Keyword</span>
                         <input type="text" name="keyword" class="form-control" value="{echo $keyword}">
+                    </div>
+                    <div class="input-group">
+                        <label class="sr-only">Sort</label>
+                        <span class="add-on input-group-addon"><i class="fa fa-list fa-fw"></i> Sort By</span>
+                        <select class="form-control">
+                            <option>Newly added</option>
+                            <option>Viral</option>
+                            <option>Old</option>
+                        </select>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Search</button>

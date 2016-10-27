@@ -93,13 +93,20 @@ class Billing extends Admin {
         }
 
         if (RequestMethods::post("action") == "cpayment") {
-            $meta = [];$items = RequestMethods::post("item");
+            $meta = [];$items = RequestMethods::post("item");$total = 0;
             if ($items) {
                 $amounts = RequestMethods::post("amount");
                 foreach ($items as $key => $item) {
                     $meta["items"][] = ['name' => $item, 'amount' => $amounts[$key]];
+                    $total += $this->currency($amounts[$key]);
                 }
             }
+            if ($invoices) {
+                foreach ($iamount as $ia) {
+                    $total += $ia;
+                }
+            }
+            $meta["invoices"] = RequestMethods::post("invoice");
             $meta["note"] = RequestMethods::post("note");
             $meta["refer_id"] = RequestMethods::post("refer_id");
             $payment = new Payment([
@@ -107,7 +114,7 @@ class Billing extends Admin {
                 "user_id" => $user->id,
                 "utype" => $user->type,
                 "type" => RequestMethods::post("type"),
-                "amount" => RequestMethods::post("amount"),
+                "amount" => $total,
                 "meta" => $meta
             ]);
             $payment->save();
