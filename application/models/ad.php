@@ -58,6 +58,15 @@ class Ad extends Shared\Model {
      * @label Url
      */
     protected $_url;
+
+    /**
+     * @column
+     * @readwrite
+     * @type array
+     *
+     * @label to store multi creatives like video, gif, image
+     */
+    protected $_creative = [];
     
     /**
      * @column

@@ -19,12 +19,17 @@ class Billing extends Admin {
     public function affiliates() {
         $this->seo(array("title" => "Billing"));
         $view = $this->getActionView();
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
+        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-60 day')));
         $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        $dateQuery = Utils::dateQuery($start, $end);
+        $query = ['utype = ?' => 'publisher', 'org_id' => $this->org->_id];
+        $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
 
-        $invoices = \Invoice::all(['utype = ?' => 'publisher', 'org_id' => $this->org->_id]);
+        $invoices = \Invoice::all($query);
+        $payments = \Payment::all($query);
 
         $view->set('invoices', $invoices)
+            ->set('payments', $payments)
             ->set('start', $start)
             ->set('end', $end);
     }

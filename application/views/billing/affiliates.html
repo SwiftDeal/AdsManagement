@@ -93,10 +93,35 @@
                             </p>
                         </div>
                         <div class="tab-pane" id="payments">
+                            {if($payments)}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Created</th>
+                                            <th>Type</th>
+                                            <th>Amount</th>
+                                            <th>Reference</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {foreach $p in $payments}
+                                        <tr>
+                                            <td><small>{echo Framework\StringMethods::only_date($p->created)}</small></td>
+                                            <td>{echo $p->type}</td>
+                                            <td>{echo $user->convert($p->amount)}</td>
+                                            <td>{echo $p->meta["refer_id"]}</td>
+                                        </tr>
+                                        {/foreach}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {/if}{else}
                             <p class="text-center">No payments has been created till now.</p>
                             <p class="text-center">
                                 <a href="/billing/createpayment.html" class="btn btn-success"><i class="fa fa-plus"></i> New Payments</a>
                             </p>
+                            {/else}
                         </div>
                     </div>
                 </div>

@@ -123,7 +123,8 @@ class Performance extends Shared\Model {
     }
 
     public static function overall($dateQuery = [], $user=null) {
-        $q = [];$clicks = []; $impressions = []; $payouts = []; $total_clicks = 0; $total_payouts = 0; $total_impressions = 0;
+        $q = [];$clicks = []; $conversions = []; $impressions = []; $payouts = []; 
+        $total_clicks = 0; $total_conversions = 0; $total_payouts = 0; $total_impressions = 0;
 
         if (is_array($user)) {
             $in = [];
@@ -146,6 +147,9 @@ class Performance extends Shared\Model {
             $total_clicks += $p->clicks;
             ArrayMethods::counter($clicks, $date, $p->clicks);
 
+            $total_conversions += $p->conversions;
+            ArrayMethods::counter($conversions, $date, $p->conversions);
+
             $total_impressions += $p->impressions;
             ArrayMethods::counter($impressions, $date, $p->impressions);
 
@@ -163,6 +167,8 @@ class Performance extends Shared\Model {
             "total_impressions" => $total_impressions,
             "clicks" => $clicks,
             "total_clicks" => $total_clicks,
+            "conversions" => $conversions,
+            "total_conversions" => $total_conversions,
             "payouts" => $payouts,
             "total_payouts" => $total_payouts
         ];

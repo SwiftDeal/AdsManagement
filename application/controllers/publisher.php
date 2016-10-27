@@ -205,8 +205,8 @@ class Publisher extends Auth {
         $this->seo(array("title" => "Account"));
         $view = $this->getActionView();
 
-        $transactions = \Transaction::all(['user_id = ?' => $this->user->_id], ['amount', 'currency', 'ref', 'created']);
-        $view->set("transactions", $transactions);
+        $invoices = \Invoice::all(['user_id = ?' => $this->user->_id], ['start', 'end', 'period', 'amount', 'live', 'created']);
+        $payments = \Payment::all(['user_id = ?' => $this->user->_id], ['type', 'amount', 'meta', 'live', 'created']);
         $user = $this->user; $view->set("errors", []);
         if (RequestMethods::type() == 'POST') {
             $action = RequestMethods::post('action', '');
@@ -256,7 +256,9 @@ class Publisher extends Auth {
             $this->setUser($user);
         }
         $afields = Meta::search('customField', $this->org);
-        $view->set('afields', $afields);
+        $view->set('afields', $afields)
+            ->set("invoices", $invoices)
+            ->set("payments", $payments);
     }
 
     /**

@@ -22,6 +22,7 @@
             </div>
         </div>
     </div>
+    {script $totalimpr = $total["total_impressions"] + $performance->impressions}
     <div class="col-lg-3">
         <div class="panel panel-border panel-primary">
             <div class="panel-heading">
@@ -39,12 +40,13 @@
                     </tr>
                     <tr>
                         <th>Overall</th>
-                        <td>{echo Shared\Markup::nice_number($total["total_impressions"] + $performance->impressions)}</td>
+                        <td>{echo Shared\Markup::nice_number($totalimpr)}</td>
                     </tr>
                 </table>
             </div>
         </div>
     </div>
+    {script $totalConv = $total["total_conversions"] + $performance->conversions}
     <div class="col-lg-3">
         <div class="panel panel-border panel-success">
             <div class="panel-heading">
@@ -54,15 +56,15 @@
                 <table class="table">
                     <tr>
                         <th>Today</th>
-                        <td>0</td>
+                        <td>{echo Shared\Markup::nice_number($performance->conversions)}</td>
                     </tr>
                     <tr>
                         <th>Yesterday</th>
-                        <td>0</td>
+                        <td>{echo Shared\Markup::nice_number($total["conversions"][$yesterday])}</td>
                     </tr>
                     <tr>
                         <th>Overall</th>
-                        <td>0</td>
+                        <td>{echo Shared\Markup::nice_number($totalConv)}</td>
                     </tr>
                 </table>
             </div>

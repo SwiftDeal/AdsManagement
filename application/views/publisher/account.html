@@ -189,10 +189,68 @@
                 </div>
             </div>
             <div class="tab-pane" id="invoices">
-                
+                {if($invoices)}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Created</th>
+                                <th>Status</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Period</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $i in $invoices}
+                            <tr>
+                                <td><small>{echo Framework\StringMethods::only_date($i->created)}</small></td>
+                                <td>
+                                    {if $i->live}
+                                    <span class="text text-success">Paid</span>
+                                    {/if} {else}
+                                    <span class="text text-warning">Pending</span>
+                                    {/else}
+                                </td>
+                                <td><small>{echo Framework\StringMethods::only_date($i->start)}</small></td>
+                                <td><small>{echo Framework\StringMethods::only_date($i->end)}</small></td>
+                                <td>{echo $i->period}</td>
+                                <td>{echo $user->convert($i->amount)}</td>
+                            </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+                {/if}{else}
+                <p class="text-center">No invoice has been created till now.</p>
+                {/else}
             </div>
             <div class="tab-pane" id="payments">
-                
+                {if($payments)}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Created</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $p in $payments}
+                            <tr>
+                                <td><small>{echo Framework\StringMethods::only_date($p->created)}</small></td>
+                                <td>{echo $p->type}</td>
+                                <td>{echo $user->convert($p->amount)}</td>
+                            </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+                {/if}{else}
+                <p class="text-center">No payments has been created till now.</p>
+                {/else}
             </div>
         </div>
     </div>
