@@ -108,7 +108,7 @@ class Campaign extends Admin {
             'msg' => 'Please Add an Advertiser!!',
             'controller' => $this, 'redirect' => '/advertiser/add.html'
         ]);
-        $view->set('advertisers', $advertisers);
+        $view->set('advertisers', User::objectArr($advertisers, ['_id', 'name', 'meta']));
 
         $categories = \Category::isEmpty(['org_id' => $this->org->_id], ['name', '_id'], [
             'msg' => 'Please Set Categories!!',
