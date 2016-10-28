@@ -308,6 +308,21 @@ class Utils {
 			
 			case 'show':
 				return $folder . $name;
+
+			case 'upload':
+				$img = self::upload($name, 'images', ['extension' => 'jpe?g|gif|bmp|png|tif']);
+				if ($img === false) {
+					$img = ' ';
+				}
+				return $img;
+
+			case 'download':
+				$img = self::downloadImage($name);
+				if ($img === false) {
+					$img = ' ';
+				}
+				return $img;
+
 		}
 	}
 }

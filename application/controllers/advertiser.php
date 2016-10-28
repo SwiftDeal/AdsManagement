@@ -308,28 +308,11 @@ class Advertiser extends Auth {
         $user = \User::first(["_id" => $pid, 'type' => 'advertiser', 'org_id' => $this->org->_id]);
         if (!$user) $this->_404();
 
-        $ads = \Ad::all(['user_id = ?' => $user->_id], ['_id']);
-        if (count($ads) === 0) {
-            $user->delete();
-            \Platform::deleteAll(['user_id' => $user->_id]);
+        $result = $user->delete();
+        if ($result) {
             $view->set('message', 'Advertiser Deleted successfully!!');
         } else {
-            $in = []; $query = ['user_id' => $user->_id];
-            foreach ($ads as $a) {
-                $in[] = Utils::mongoObjectId($a->_id);
-            }
-            // find clicks for any of the ad
-            $clickCount = \Click::count(['ad_id' => ['$in' => $in]]);
-
-            if ($clickCount === 0) {
-                \Ad::deleteAll($query);
-                \Commission::deleteAll(['ad_id' => ['$in' => $in]]);
-                \Performance::deleteAll($query);
-                \Platform::deleteAll(['user_id' => $user->_id]);
-                $user->delete();
-                return $view->set('message', 'Advertiser Deleted successfully!!');
-            }
-            $view->set('message', 'Failed to delete the advetiser data from database!!');
+            $view->set('message', 'Failed to delete the advetiser data from database!!');   
         }
     }
 

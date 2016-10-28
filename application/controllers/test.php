@@ -16,7 +16,7 @@ class Test extends Auth {
      * @before _admin
      */
     public function index() {
-        $this->JSONview(); $i = 0; $view = $this->getActionView();
+        $this->seo(array("title" => "Manage Account")); $i = 0; $view = $this->getActionView();
         /*$ads = Ad::all(['_id' => '57eb8aa51d41c8676b74b044']);
         foreach ($ads as $a) {
             foreach ($a->category as $id) {
@@ -40,7 +40,6 @@ class Test extends Auth {
         $email = '';
         // $user = User::first(['email' => $email]);
         // $this->setUser($user);
-        $this->redirect('/campaign/manage');
     }
 
     /**

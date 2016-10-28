@@ -35,15 +35,12 @@
                             </div>
                             <div class="form-group">
                                 <label>Device</label>
-                                <select name="device[]" class="form-control selectpicker" multiple="" data-live-search=true title="Choose a device target">
-                                    <option value="all" selected="">All</option>
-                                    <option value="android">Android</option>
-                                    <option value="iphone">iPhone</option>
-                                    <option value="winphone">Windows Phone</option>
-                                    <option value="linux">Linux</option>
-                                    <option value="windows">Windows</option>
-                                    <option value="mac">Mac OS</option>
-                                    <option value="ipad">iPad</option>
+                                {script $device = ['all']}
+                                <select name="device[]" class="form-control selectVal selectpicker" multiple="" data-live-search=true title="Choose a device target" data-value='{echo json_encode($device)}'>
+                                    {script $devices = Shared\Markup::devices()}
+                                    {foreach $d in $devices}
+                                    <option value="{echo $d_i}">{echo $d}</option>
+                                    {/foreach}
                                 </select>
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "device")}</span>
                             </div>
@@ -152,7 +149,8 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Coverage</label>
-                                <select name="coverage[$i][]" class="form-control selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
+                                {script $country = ['ALL']}
+                                <select name="coverage[$i][]" class="form-control selectVal selectpicker" data-value='{echo json_encode($country)}' multiple="" data-live-search=true title="Choose a campaign category">
                                     {include auth/country.html}
                                 </select>
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "coverage")}</span>

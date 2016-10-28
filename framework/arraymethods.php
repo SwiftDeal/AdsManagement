@@ -154,6 +154,23 @@ namespace Framework {
             return $result;
         }
 
+        public static function inArray($search, $current) {
+            $pass = true;
+
+            $current = array_unique($current);
+            foreach ($current as $c) {
+                if (!in_array($c, $search)) {
+                    $pass = false;
+                    break;
+                }
+            }
+
+            if (count($current) > count($search)) {
+                $pass = false;
+            }
+            return $pass;
+        }
+
     }
 
 }

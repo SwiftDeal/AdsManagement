@@ -96,6 +96,20 @@ class User {
 		return $fields;
 	}
 
+	public static function display($org, $type, $id = null) {
+		$fields = self::fields();
+		if ($id) {
+			$user = \User::first(['_id' => $id, 'org_id' => $org->_id, 'type' => $type]);
+			$users = \User::objectArr($user, $fields);
+
+			$data = ["$type" => (array) $users[0]];
+		} else {
+			$users = \User::all(['org_id' => $org->_id, 'type' => $type]);
+			$data = ["{$type}s" => \User::objectArr($users, $fields)];
+		}
+		return $data;
+	}
+
 	public static function customFields($user, $org) {
 		$afields = \Meta::search('customField', $org);
         if (count($afields) > 0) {
@@ -115,6 +129,11 @@ class User {
                 	
                 	case 'text':
                 		$v = RequestMethods::post($key);
+                		break;
+
+                	case 'date':
+                		$d = RequestMethods::post($key, date('Y-m-d'));
+                		$v = Db::convertType($d, 'date');
                 		break;
 
                 	default:

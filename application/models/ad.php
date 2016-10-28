@@ -170,20 +170,31 @@ class Ad extends Shared\Model {
         return $result;
     }
 
+    /**
+     * Overrides the parent delete method to check for clicks on the
+     * ad before deleting it
+     */
     public function delete() {
-        $id = \Shared\Utils::mongoObjectId($this->_id);
+        $id = Utils::mongoObjectId($this->_id);
         
         $count = \Click::count(['adid' => $id]);
         if ($count !== 0) {
             return ['message' => 'Can not delete!! Campaign contain clicks'];
         }
-        @unlink(APP_PATH . '/public/assets/uploads/images/' . $this->image);
+        Utils::image($this->image, 'remove');
         parent::delete();
         \Commission::deleteAll(['ad_id' => $id]);
         \Link::deleteAll(['ad_id' => $id]);
         return ['message' => 'Campaign removed successfully!!'];
     }
 
+    /**
+     * Calculates the earnings from the AD based on the clicks
+     * and the type of campaign - commissions
+     * @param  array  $opts   [description]
+     * @param  [type] $clicks [description]
+     * @return [type]         [description]
+     */
     public static function earning($opts = [], $clicks) {
         if ($opts['type'] === 'advertiser') {
             $rate = $opts['revenue'];

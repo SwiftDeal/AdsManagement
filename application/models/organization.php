@@ -136,10 +136,15 @@ class Organization extends \Shared\Model {
         return $html;
     }
 
-    public function users($type = "publisher") {
-        $publishers = \User::all(["org_id = ?" => $this->_id, "type = ?" => $type], ["_id"]);
+    public function users($type = "publisher", $object = true) {
+        $users = \User::all(["org_id = ?" => $this->_id, "type = ?" => $type], ["_id"]);
+        $ids = array_keys($users);
 
-        return Utils::mongoObjectId(array_keys($publishers));
+        if ($object) {
+            return Utils::mongoObjectId($ids);
+        } else {
+            return $ids;
+        }
     }
 
     public function widgets($pubClicks = [], $adClicks = [], $pubs = []) {

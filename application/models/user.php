@@ -3,8 +3,9 @@
 /**
  * @author Faizan Ayubi
  */
-use Framework\RequestMethods as RequestMethods;
 use Shared\Utils as Utils;
+use Shared\Services\Db as Db;
+use Framework\RequestMethods as RequestMethods;
 
 class User extends Shared\Model {
     const ROLES = ['afm' => 'Affiliate Manager', 'adm' => 'Advertiser Manager', 'admin' => 'Admin', 'publisher' => 'Publisher', 'advertiser' => 'Advertiser'];
@@ -243,7 +244,7 @@ class User extends Shared\Model {
     }
 
     public function delete() {
-        $deleteList = ['Link', 'Platform', 'Performance', 'Invoice', 'Transaction', 'Adaccess'];
+        $deleteList = ['Link', 'Platform', 'Ad', 'Performance', 'Invoice', 'Transaction', 'Adaccess'];
         $query = ['user_id' => $this->_id];
 
         $delete = false;
@@ -256,10 +257,27 @@ class User extends Shared\Model {
                 $delete = true;
 
                 $this->removeFields();
-                parent::delete();
+                break;
+
+            case 'advertiser':
+                $ads = Ad::all(['user_id' => $this->_id], ['_id']);
+                if (count($ads) === 0) {
+                    $delete = true;
+                } else {
+                    $in = array_keys($ads); $in = Db::convertType($in, 'id');
+                    $clickCount = Click::count(['adid' => ['$in' => $in]]);
+
+                    if ($clickCount === 0) {
+                        Commission::deleteAll(['ad_id' => ['$in' => $in]]);
+
+                        $delete = true;
+                    }
+                }
+                break;
         }
 
         if ($delete) {
+            parent::delete();
             foreach ($deleteList as $table) {
                 $table::deleteAll($query);
             }

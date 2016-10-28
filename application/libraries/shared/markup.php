@@ -136,6 +136,20 @@ namespace Shared {
             return implode($pass); //turn the array into a string
         }
 
+        public static function devices() {
+            $devices = array(
+                "all" => "All",
+                "android" => "Android",
+                "iphone" => "iPhone",
+                "winphone" => "Windows Phone",
+                "linux" => "Linux",
+                "windows" => "Windows",
+                "mac" => "Mac OS",
+                "ipad" => "iPad"
+            );
+            return $devices;
+        }
+
         public static function countries() {
             $countries = array(
                 'ALL' => 'ALL',

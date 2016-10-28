@@ -124,30 +124,12 @@ class Api extends \Shared\Controller {
 		$requestType = RequestMethods::type();
 		switch ($requestType) {
 			case 'DELETE':
-				$result = $publisher->delete();
-				if ($result) {
-				    $view->set('message', 'Affiliate removed successfully!!');
-				} else {
-				    $view->set('message', 'Failed to delete. Affiliate has already given clicks!!');   
-				}
+				$this->_deleteUser($publisher, 'Affiliate');
 				break;
 			
 			case 'POST':
 				if (!$id) {
-					$usr = User::addNew('publisher', $org, $view);
-					if ($usr === false) return $view->set('success', false);
-
-					$pass = $user->password;
-					$user->password = sha1($pass);
-					$user->save();
-
-					Mail::send([
-					    'user' => $user, 'org' => $org,
-					    'template' => 'pubRegister', 'pass' => $pass,
-					    'subject' => $org->name . ' Support'
-					]);
-					$view->set('message', 'Affiliate Added!!')
-						->set('success', true);
+					$this->_registerUser('publisher', ['template' => 'pubRegister']);
 				} else {
 					$allowedFields = ['name', 'phone', 'country', 'currency'];
 					foreach ($allowedFields as $f) {
@@ -160,20 +142,39 @@ class Api extends \Shared\Controller {
 				break;
 
 			case 'GET':
-				$columns = (new User)->getColumns();
-				$fields = array_keys($columns);
-				if ($id) {
-					$users = User::objectArr($publisher, $fields);
-
-					$data = ['publisher' => (array) $users[0]];
-					$view->set('data', $data);
-				} else {
-					$users = User::all(['org_id' => $org->_id, 'type' => 'publisher']);
-					$data = ['publishers' => User::objectArr($users, $fields)];
-					$view->set('data', $data);
-				}
+				$data = Usr::display($org, 'publisher', $id);
+				$view->set('data', $data);
 				break;
 		}
+	}
+
+	protected function _deleteUser($user, $type) {
+		$result = $user->delete(); $view = $this->getActionView();
+		if ($result) {
+		    $view->set('message', "$type removed successfully!!");
+		} else {
+		    $view->set('message', "Failed to delete $type from the database!!");   
+		}
+	}
+
+	protected function _registerUser($type, $opts = []) {
+		$view = $this->getActionView(); $org = $this->_org;
+
+		$usr = User::addNew($type, $org, $view);
+		if ($usr === false) return $view->set('success', false);
+
+		$pass = $user->password;
+		$user->password = sha1($pass);
+		$user->save();
+
+		$params = array_merge($opts, [
+		    'user' => $user, 'org' => $org,
+		    'pass' => $pass,
+		    'subject' => $org->name . ' Support'
+		])
+		Mail::send($params);
+		$view->set('message', ucfirst($type) . ' Added!!')
+			->set('success', true);
 	}
 
 	/**
@@ -230,13 +231,54 @@ class Api extends \Shared\Controller {
 				if ($id) { // edit a particular campaign
 
 				} else { // create a new campaign
+					$fields = ['title', 'description', 'url', 'expiry'];
+					$img = RequestMethods::post('image');	// contains image url
+					$campaign = new Ad([
+						'org_id' => $org->_id,
+						'type' => 'article',
+						'image' => Utils::image($img, 'download')
+					]);
+					foreach ($fields as $f) {
+						$campaign->$f = RequestMethods::post($f);
+					}
 
+					$advertisers = $org->users('advertiser', false);
+					$category = RequestMethods::post('category');
+					$uid = RequestMethods::post("user_id");
+					if (count($category) === 0 || count($advertisers) === 0 || !in_array($uid, $advertisers)) {
+						return $this->failure('30');
+					}
+
+					$devices = RequestMethods::post('devices'); $fixedDevices = Shared\Markup::devices();
+					$fixedDevices = array_keys($fixedDevices);
+					if (!ArrayMethods::inArray($fixedDevices, $devices)) {
+						return $view->set('message', 'Invalid Devices!!');
+					}
+
+					$categories = Category::all(['org_id' => $org->_id], ['_id']);
+					$categories = array_keys($categories);
+					if (!ArrayMethods::inArray($categories, $category)) {
+						return $view->set('message', 'Invalid Category!!');
+					}
+
+					$visibility = RequestMethods::post('visibility', 'public');
+					if ($visibility === 'private') {
+						$campaign->getMeta()['private'] = true;
+					}
+
+					if ($campaign->validate()) {
+						// $campaign->save();
+						
+					} else {
+						$data = ['errors' => $campaign->errors];
+						$view->set('data', $data);
+					}
 				}
 				break;
 			
 			case 'DELETE':
 				$message = $campaign->delete();
-				$view->set('message', $message);
+				$view->set($message);
 				break;
 		}
 	}
@@ -346,6 +388,51 @@ class Api extends \Shared\Controller {
 
 		$data = ['user' => $pub[0], 'earnings' => $earnings, 'total' => $total];
 		$view->set('data', $data);
+	}
+
+	/**
+	 * @before _secure
+	 * @after _cleanUp
+	 */
+	public function advertiser($id = null) {
+		$view = $this->getActionView(); $org = $this->_org;
+
+		if ($id) {
+			$advertiser = User::first(['org_id' => $org->_id, 'type' => 'advertiser', '_id' => $id]);
+		} else {
+			$advertiser = null;
+		}
+
+		if ($id && !$advertiser) {
+			return $this->failure('30');
+		}
+
+		$type = RequestMethods::type();
+		switch ($type) {
+			case 'GET':
+				$data = Usr::display($org, 'advertiser', $id);
+				$view->set('data', $data);
+				break;
+			
+			case 'POST':
+				if ($id) { // edit an advertiser
+					$allowedFields = ['name', 'phone', 'country', 'currency'];
+					foreach ($allowedFields as $f) {
+						$advertiser->$f = RequestMethods::post($f, $publisher->$f);
+					}
+					$advertiser->save();
+					$view->set('message', 'Advertiser Updated!!')
+						->set('success', true);
+				} else { // create new
+					$this->_registerUser('advertiser', ['template' => 'advertReg']);
+				}
+				break;
+
+			case 'DELETE':
+				$this->_deleteUser($advertiser, 'Advertiser');
+				break;
+		}
+
 	}
 
 	public function scrape() {

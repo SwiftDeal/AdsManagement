@@ -34,16 +34,12 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Device</label>
-                                        {script $device = is_array($c->device) ? $c->device : []}
-                                        <select name="device[]" class="selectVal form-control selectpicker" data-value='{echo json_encode($device)}' multiple="" data-live-search=true title="Choose a device target">
-                                            <option value="all" selected="">All</option>
-                                            <option value="android">Android</option>
-                                            <option value="iphone">iPhone</option>
-                                            <option value="winphone">Windows Phone</option>
-                                            <option value="linux">Linux</option>
-                                            <option value="windows">Windows</option>
-                                            <option value="mac">Mac OS</option>
-                                            <option value="ipad">iPad</option>
+                                        {script $device = is_array($c->device) ? $c->device : ['all']}
+                                        <select name="device[]" required="" class="selectVal form-control selectpicker" data-value='{echo json_encode($device)}' multiple="" data-live-search=true title="Choose a device target">
+                                            {script $devices = Shared\Markup::devices()}
+                                            {foreach $d in $devices}
+                                            <option value="{echo $d_i}">{echo $d}</option>
+                                            {/foreach}
                                         </select>
                                         <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "device")}</span>
                                     </div>
