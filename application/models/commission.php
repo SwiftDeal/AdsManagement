@@ -163,16 +163,21 @@ class Commission extends \Shared\Model {
         $commissions = self::all(['ad_id' => $adid], ['rate', 'model', 'coverage']);
         $defaultPayout = array_key_exists("campaign", $user->meta);
         foreach ($commissions as $c) {
+            $coverage = implode(",", $c->coverage);
+            if (strlen($coverage) > 20) {
+                $coverage = substr($coverage, 0, 20) . "..";
+            }
+
             if ($defaultPayout) {
                 $model = $user->meta["campaign"]["model"];
                 $rate = $user->meta["campaign"]["rate"];
                 if($c->model == $model) {
-                    $payout .= $user->convert($rate)." ".strtoupper($c->model)." ".implode(",", $c->coverage);
+                    $payout .= $user->convert($rate)." ".strtoupper($c->model)." ". $coverage;
                 } else {
-                    $payout .= $user->convert($c->rate)." ".strtoupper($c->model)." ".implode(",", $c->coverage);
+                    $payout .= $user->convert($c->rate)." ".strtoupper($c->model)." ".$coverage;
                 }
             } else {
-                $payout .= $user->convert($c->rate)." ".strtoupper($c->model)." ".implode(",", $c->coverage);
+                $payout .= $user->convert($c->rate)." ".strtoupper($c->model)." ".$coverage;
             }
             if (count($commissions) > 1) {
                 $payout .= "<br>";

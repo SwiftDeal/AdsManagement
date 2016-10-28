@@ -43,9 +43,6 @@
                             <th>PREVIEW</th>
                             <th>TITLE</th>
                             <th>PAYOUT</th>
-                            {if $orderBy === "viral"}
-                            <th>COUNT</th>
-                            {/if}
                             <th>CATEGORY</th>
                         </tr>
                     </thead>
@@ -62,9 +59,6 @@
                                 </td>
                                 <td><a href="/campaign/info/{$a->_id}.html">{echo $a->title}</a></td>
                                 <td>{echo $c}</td>
-                                {if $orderBy === "viral"}
-                                <td>{echo $a->count}</td>
-                                {/if}
                                 <td>
                                 {foreach $cat in $a->category}
                                     {script $key = Shared\Utils::getMongoID($cat)}

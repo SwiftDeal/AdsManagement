@@ -83,13 +83,17 @@ class Publisher extends Auth {
             $order = $orderBy;
             $ads = \Ad::all($query, [], 'modified', $order, $limit, $page);
         } else if ($orderBy == "viral") {
-            $ads = \Ad::all($query, [], 'modified', $order, $limit, $page);
+            $ads = \Ad::all($query, [], 'modified', $order);
             $fields = Shared\Services\User::fields('Ad');
             $ids = array_keys($ads); $ads = Ad::objectArr($ads, $fields);
 
             $clickCol = Registry::get("MongoDB")->clicks;
             $results = $clickCol->aggregate([
-                ['$match' => ['created' => Db::dateQuery($today, $today), 'adid' => ['$in' => Db::convertType($ids, 'id')]]],
+                ['$match' => [
+                    'adid' => ['$in' => Db::convertType($ids, 'id')],
+                    'is_bot' => false,
+                    'created' => Db::dateQuery($today, $today),
+                ]],
                 ['$project' => ['adid' => 1, '_id' => 1]],
                 ['$group' => ['_id' => '$adid', 'count' => ['$sum' => 1]]],
                 ['$sort' => ['count' => -1]],
@@ -99,9 +103,7 @@ class Publisher extends Auth {
             $ans = []; 
             foreach ($results as $r) {
                 $a = (object) $r; $key = Utils::getMongoID($a->_id);
-                $obj = $ads[$key];
-                $obj->count = $r->count;
-                $ans[$key] = $obj;
+                $ans[$key] = $ads[$key];
             }
             $ads = $ans; $count = 30;
         }
