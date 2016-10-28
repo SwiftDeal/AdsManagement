@@ -120,13 +120,8 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Model <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="How advertiser pays for the offers:CPA,CPC,CPI etc. Change offer pricing type will remove revenue, offer payout, offer cap and affiliate cap,and also delete affiliate payout and volume based tiers which related to this offer."></i></label>
-                                <select name="model[$i]" required="" class="form-control" data-live-search="false">
-                                    <option value="cpc" selected="">CPC (Cost per one Click)</option>
-                                    <option value="cpm">CPM (Cost per thousand Impressions)</option>
-                                    <option value="cpa">CPA (Cost per Action)</option>
-                                    <option value="cpi">CPI (Cost per Install)</option>
-                                    <option value="cps">CPS (Cost per Sale)</option>
-                                    <option value="cpl">CPL (Cost per Lead)</option>
+                                <select name="model[$i]" required="" class="form-control model" data-live-search="false">
+                                    {include auth/model.html}
                                 </select>
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "model")}</span>
                             </div>
@@ -134,7 +129,7 @@
                                 <label>Revenue <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The amount you receive from the advertiser for one promotion unit."></i></label>
                                 <div class="input-group">
                                     <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                    <input type="text" id="advertiserRate" name="revenue[$i]" class="form-control" required="">
+                                    <input type="text" name="revenue[$i]" class="form-control advertiserRate" required="">
                                 </div>
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "revenue")}</span>
                             </div>
@@ -172,13 +167,8 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Model <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="How advertiser pays for the offers:CPA,CPC,CPI etc. Change offer pricing type will remove revenue, offer payout, offer cap and affiliate cap,and also delete affiliate payout and volume based tiers which related to this offer."></i></label>
-                                <select name="model[$i]" required="" class="form-control" id="model" data-live-search="false" value="{echo $c['model']}">
-                                    <option value="cpc" selected="">CPC (Cost per one Click)</option>
-                                    <option value="cpm">CPM (Cost per thousand Impressions)</option>
-                                    <option value="cpa">CPA (Cost per Action)</option>
-                                    <option value="cpi">CPI (Cost per Install)</option>
-                                    <option value="cps">CPS (Cost per Sale)</option>
-                                    <option value="cpl">CPL (Cost per Lead)</option>
+                                <select name="model[$i]" required="" class="form-control model" data-live-search="false" value="{echo $c['model']}">
+                                    {include auth/model.html}
                                 </select>
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "model")}</span>
                             </div>
@@ -186,7 +176,7 @@
                                 <label>Revenue <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The amount you receive from the advertiser for one promotion unit."></i></label>
                                 <div class="input-group">
                                     <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                    <input type="text" id="advertiserRate" name="revenue[$i]" class="form-control" required="">
+                                    <input type="text" name="revenue[$i]" class="form-control advertiserRate" required="">
                                 </div>
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "revenue")}</span>
                             </div>
@@ -234,4 +224,5 @@
         else
             $('#perm').hide();
     });
+</script>
 </script>
