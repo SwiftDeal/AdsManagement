@@ -385,7 +385,10 @@ $(document).ready(function() {
                 return bootbox.alert('Internal Server Error');
             }
 
-            bootbox.alert(d.message);
+            $('#showLinkBox').modal('show');
+            $('#showLinkMessage').html(d.message);
+            $('#showLinkUrl').val(d.link);
+            var clipboard = new Clipboard('.btn');
         });
     });
 });

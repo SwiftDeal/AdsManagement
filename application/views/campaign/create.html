@@ -132,9 +132,9 @@
                             <div class="form-group">
                                 <label>Revenue <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The amount you receive from the advertiser for one promotion unit."></i></label>
                                 <div class="input-group">
-                                    {script $modelRate = $advertisers[0]->meta['campaign'] ?? []}
+                                    {script $modelRate = array_values($advertisers)[0]->meta['campaign'] ?? []}
                                     <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                    <input type="text" name="revenue[$i]" value="{echo $user->convert($modelRate['rate'] ?? 0.25, false)}" class="form-control advertiserRate" required="">
+                                    <input type="text" name="revenue[$i]" value="{echo $user->convert($modelRate['rate'] ?? 0.025, false)}" class="form-control advertiserRate" required="">
                                 </div>
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "revenue")}</span>
                             </div>
@@ -181,7 +181,7 @@
                                 <label>Revenue <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The amount you receive from the advertiser for one promotion unit."></i></label>
                                 <div class="input-group">
                                     <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                    <input type="text" name="revenue[$i]" class="form-control advertiserRate" required="">
+                                    <input type="text" name="revenue[$i]" value="{echo $user->convert($modelRate['rate'] ?? 0.025, false)}" class="form-control advertiserRate" required="">
                                 </div>
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "revenue")}</span>
                             </div>
@@ -234,7 +234,7 @@
     $('#advertiserSelect').on('change', function (e) {
         var id = $(this).val();
         var advert = advertisers[id];
-        var campaign = advert.meta.campaign;
+        var campaign = advert.meta.campaign || {};
 
         var model = campaign.model || "cpc";
         var revenue = campaign.rate || 0.25;

@@ -26,3 +26,26 @@
         </form>
     </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.15/clipboard.min.js"></script>
+
+<div class="modal fade" id="showLinkBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <div id="showLinkMessage"></div>
+            </div>
+
+            <div class="input-group">
+                <input type="text" value="" id="showLinkUrl" class="form-control">
+                <span class="input-group-btn">
+                    <button type="button" id="copyToClipboard" class="btn btn-primary" data-clipboard-target="#showLinkUrl"><i class="fa fa-clipboard"></i> Copy</button>
+                </span>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

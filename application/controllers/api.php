@@ -171,7 +171,7 @@ class Api extends \Shared\Controller {
 		    'user' => $user, 'org' => $org,
 		    'pass' => $pass,
 		    'subject' => $org->name . ' Support'
-		])
+		]);
 		Mail::send($params);
 		$view->set('message', ucfirst($type) . ' Added!!')
 			->set('success', true);

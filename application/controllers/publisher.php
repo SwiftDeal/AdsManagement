@@ -284,17 +284,16 @@ class Publisher extends Auth {
             $domain = 'dobolly.com';
         }
         $link = Link::first(["ad_id = ?" => $ad->_id, "user_id = ?" => $this->user->_id], ['domain', '_id']);
-        if ($link) {
-            $view->set('message', $ad->title.' <br><a href="http://'.$domain.'/'.$link->_id.'" target="_blank">http://'.$domain.'/'.$link->_id.'<a>');
-            return;
+        if (!$link) {
+            $link = new Link([
+                'user_id' => $this->user->_id, 'ad_id' => $ad->_id,
+                'domain' => $domain, 'live' => true
+            ]);
+            $link->save();
         }
-
-        $link = new Link([
-            'user_id' => $this->user->_id, 'ad_id' => $ad->_id,
-            'domain' => $domain, 'live' => true
-        ]);
-        $link->save();
-        $view->set('message', $ad->title . '<br><a href="' . $link->getUrl() . '" target="_blank">' . $link->getUrl() . '<a>');
+        
+        $view->set('message', $ad->title)
+            ->set('link', $link->getUrl());
 
     }
 
