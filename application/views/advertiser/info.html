@@ -4,12 +4,16 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
-                        <ol class="breadcrumb pull-right">
-                            <li><a href="/admin.html">Dashboard</a></li>
-                            <li><a href="/advertiser/manage.html">All advertisers</a></li>
-                            <li class="active">{echo $advertiser->name}</li>
-                        </ol>
-                        <h4 class="page-title">{echo $advertiser->name}'s account</h4>
+                        <span class="pull-right">
+                            {if !$a->live}
+                            <a href="advertiser/update/{echo $a->_id}" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-success"><i class="fa fa-check"></i></a>
+                            {/if} {else}
+                            <a href="advertiser/update/{echo $a->_id}" data-send='{echo json_encode(["live" => 0])}' class="update btn btn-warning"><i class="fa fa-times"></i></a>
+                            {/else}
+                            <a href="advertiser/delete/{echo $a->_id}" data-message="Are you sure you want to delete this advertiser??" class="delete btn btn-danger"><i class="fa fa-trash"></i></a>
+                            <a href="/auth/loginas/{echo $a->_id}" class="btn btn-default"><i class="fa fa-sign-in"></i></a>
+                        </span>
+                        <h4 class="page-title"><img src="{echo Shared\Markup::get_gravatar($advertiser->email, 30)}"> {echo $advertiser->name}'s account</h4>
                     </div>
                 </div>
             </div>
@@ -20,70 +24,86 @@
                     {echo $message}
                 </div>
                 {/if}
-                <div class="col-md-6">
-                    <div class="card-box">
-                        <h4 class="m-t-0 header-title"><b>User data</b></h4>
-                        <form role="form" method="post">
-                            <div class="form-group">
-                                <label>Name</label>
-                                <input type="text" name="name" value="{echo $advertiser->name}" class="form-control" placeholder="Full Name">
-                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "name")}</span>
+                <ul class="nav nav-tabs navtab-custom">
+                    <li class="active">
+                        <a href="#profile" data-toggle="tab" aria-expanded="true">
+                            <span class="visible-xs"><i class="fa fa-user"></i></span>
+                            <span class="hidden-xs">Profile</span>
+                        </a>
+                    </li>
+                    <li class="">
+                        <a href="#revenue" data-toggle="tab" aria-expanded="false">
+                            <span class="visible-xs"><i class="fa fa-bank"></i></span>
+                            <span class="hidden-xs">Revenue</span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="profile">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <form role="form" method="post">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" name="name" value="{echo $advertiser->name}" class="form-control" placeholder="Full Name">
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "name")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="text" name="email" value="{echo $advertiser->email}" class="form-control" placeholder="Email">
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "email")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Phone</label>
+                                        <input type="text" name="phone" value="{echo $advertiser->phone}" class="form-control" placeholder="Phone">
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "phone")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Country</label>
+                                        <input type="text" name="country" value="{echo $advertiser->country}" class="form-control" placeholder="country">
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "country")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Currency</label>
+                                        <select name="currency" class="form-control" value="{echo $advertiser->currency}">
+                                            <option value="INR">INR</option>
+                                            <option value="USD">USD</option>
+                                        </select>
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "currency")}</span>
+                                    </div>
+                                    <input type="hidden" name="action" value="account">
+                                    <p class="text-center">
+                                        <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
+                                    </p>
+                                </form>
                             </div>
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input type="text" name="email" value="{echo $advertiser->email}" class="form-control" placeholder="Email">
-                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "email")}</span>
+                            <div class="col-md-6">
+                                <h4 class="m-t-0 header-title"><b>Change Password</b></h4>
+                                <form class="form-horizontal" role="form" method="post">
+                                    <div class="form-group">
+                                        <label for="inputPassword3" class="col-sm-3 control-label">Old Password</label>
+                                        <div class="col-sm-9">
+                                            <input type="password" class="form-control" name="password" placeholder="Old Password">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputPassword4" class="col-sm-3 control-label">New Password</label>
+                                        <div class="col-sm-9">
+                                            <input type="password" class="form-control" name="npassword" placeholder="New Password">
+                                            <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "password")}</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group m-b-0">
+                                        <div class="col-sm-offset-3 col-sm-9">
+                                            <input type="hidden" name="action" value="password">
+                                            <button type="submit" class="btn btn-info waves-effect waves-light">Change</button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="form-group">
-                                <label>Phone</label>
-                                <input type="text" name="phone" value="{echo $advertiser->phone}" class="form-control" placeholder="Phone">
-                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "phone")}</span>
-                            </div>
-                            <div class="form-group">
-                                <label>Country</label>
-                                <input type="text" name="country" value="{echo $advertiser->country}" class="form-control" placeholder="country">
-                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "country")}</span>
-                            </div>
-                            <div class="form-group">
-                                <label>Currency</label>
-                                <select name="currency" class="form-control" value="{echo $advertiser->currency}">
-                                    <option value="INR">INR</option>
-                                    <option value="USD">USD</option>
-                                </select>
-                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "currency")}</span>
-                            </div>
-                            <input type="hidden" name="action" value="account">
-                            <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
-                        </form>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card-box">
-                        <h4 class="m-t-0 header-title"><b>Change Password</b></h4>
-                        <form class="form-horizontal" role="form" method="post">
-                            <div class="form-group">
-                                <label for="inputPassword3" class="col-sm-3 control-label">Old Password</label>
-                                <div class="col-sm-9">
-                                    <input type="password" class="form-control" name="password" placeholder="Old Password">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="inputPassword4" class="col-sm-3 control-label">New Password</label>
-                                <div class="col-sm-9">
-                                    <input type="password" class="form-control" name="npassword" placeholder="New Password">
-                                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "password")}</span>
-                                </div>
-                            </div>
-                            <div class="form-group m-b-0">
-                                <div class="col-sm-offset-3 col-sm-9">
-                                    <input type="hidden" name="action" value="password">
-                                    <button type="submit" class="btn btn-info waves-effect waves-light">Change</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="card-box">
-                        <h4 class="m-t-0 header-title"><b>Payout</b></h4>
+                    <div class="tab-pane" id="revenue">
                         <form role="form" method="post">
                             <div class="form-group">
                                 {script $model = isset($advertiser->meta['campaign']) ? $advertiser->meta['campaign']['model'] : null}

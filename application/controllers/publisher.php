@@ -354,7 +354,7 @@ class Publisher extends Auth {
         $query = ["type = ?" => "publisher", "org_id = ?" => $this->org->_id];
         $property = RequestMethods::get("property", "live");
         $value = RequestMethods::get("value", 0);
-        if (in_array($property, ["live"])) {
+        if (in_array($property, ["live", "id"])) {
             $query["{$property} = ?"] = $value;
         } else if (in_array($property, ["email", "name", "phone"])) {
             $query["{$property} = ?"] = Utils::mongoRegex($value);
