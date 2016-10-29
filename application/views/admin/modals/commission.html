@@ -15,12 +15,7 @@
                     <div class="form-group">
                         <label>Model <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="How advertiser pays for the offers:CPA,CPC,CPI etc. Change offer pricing type will remove revenue, offer payout, offer cap and affiliate cap,and also delete affiliate payout and volume based tiers which related to this offer."></i></label>
                         <select name="model" required="" class="selectpicker form-control" id="model" data-live-search=false style="width: 260px;">
-                            <option value="cpc" selected="">CPC (Cost per one Click)</option>
-                            <option value="cpm">CPM (Cost per thousand Impressions)</option>
-                            <option value="cpa">CPA (Cost per Action)</option>
-                            <option value="cpi">CPI (Cost per Install)</option>
-                            <option value="cps">CPS (Cost per Sale)</option>
-                            <option value="cpl">CPL (Cost per Lead)</option>
+                            {include auth/model.html}
                         </select>
                     </div>
                 </div>

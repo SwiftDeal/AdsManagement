@@ -8,13 +8,7 @@
                     <div class="page-title-box">
                         <span class="pull-right">
                             <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addCommisson"><i class="fa fa-plus"></i> New Commission</button> 
-                            {if !$c->live}
-                            <a href="campaign/update/{echo $c->_id}" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-success" data-toggle="tooltip" data-placement="top" data-original-title="Enable"><i class="fa fa-check"></i></a>
-                            {/if} {else}
-                            <a href="campaign/update/{echo $c->_id}" data-send='{echo json_encode(["live" => 0])}' class="update btn btn-warning" data-toggle="tooltip" data-placement="top" data-original-title="Disable"><i class="fa fa-times"></i></a>
-                            {/else}
-                            <a href="{echo $c->url}" target="_blank" class="btn btn-purple waves-effect waves-light" data-toggle="tooltip" data-placement="top" data-original-title="Landing page"><i class="fa fa-desktop"></i> Landing Page</a>
-                            <a href="campaign/delete/{echo $c->_id}" data-message="Are you sure you want to delete this campaign??" class="delete btn btn-danger" data-toggle="tooltip" data-placement="top" data-original-title="Delete"><i class="fa fa-trash"></i> Delete</a>
+                            <a href="/campaign/details/{echo $c->id}.html" class="btn btn-inverse waves-effect waves-light" data-toggle="tooltip" data-placement="top" data-original-title="Campaign Stats and Details"><i class="fa fa-info-circle"></i> Details</a>
                         </span>
                         <h4 class="page-title">{echo $c->title}</h4>
                     </div>
@@ -93,9 +87,7 @@
                                 <div class="form-group">
                                     <label>Model</label>
                                     <select name="model" required="" value="{echo $comm->model}" class="form-control">
-                                        <option value="cpc">CPC (Cost per one Click)</option>
-                                        <option value="cpm">CPM (Cost per thousand Impressions)</option>
-                                        <option value="cpa">CPA (Cost per Action)</option>
+                                        {include auth/model.html}
                                     </select>
                                     <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "model")}</span>
                                 </div>

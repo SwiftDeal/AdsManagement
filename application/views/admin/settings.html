@@ -77,12 +77,7 @@
                                             <div class="form-group">
                                                 {script $model = $c['model']}
                                                 <select name="model" required="" data-value='{echo json_encode(["$model"])}' class="selectVal form-control selectpicker">
-                                                    <option value="cpc">CPC (Cost per Click)</option>
-                                                    <option value="cpm">CPM (Cost per thousand impressions)</option>
-                                                    <option value="cpa">CPA (Cost per action)</option>
-                                                    <option value="cpi">CPI (Cost per Install)</option>
-                                                    <option value="cps">CPS (Cost per Sale)</option>
-                                                    <option value="cpl">CPL (Cost per Lead)</option>
+                                                    {include auth/model.html}
                                                 </select>
                                             </div>
                                         </td>

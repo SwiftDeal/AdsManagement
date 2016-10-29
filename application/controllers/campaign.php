@@ -219,7 +219,7 @@ class Campaign extends Admin {
 
         $property = RequestMethods::get("property", "live");
         $value = RequestMethods::get("value", 0);
-        if (in_array($property, ["user_id", "live"])) {
+        if (in_array($property, ["user_id", "live", "id"])) {
             $query[$property] = $value;
         } else if (in_array($property, ["url", "title"])) {
             $query[$property] = Utils::mongoRegex(preg_quote($value));
