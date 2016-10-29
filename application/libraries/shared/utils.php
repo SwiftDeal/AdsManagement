@@ -7,6 +7,11 @@ use Framework\ArrayMethods as ArrayMethods;
 use Framework\RequestMethods as RequestMethods;
 
 class Utils {
+	/**
+	 * Converts the object to string by using 'sprintf'
+	 * @param  mixed $field Can be any thing which is needed in string format
+	 * @return string
+	 */
 	public static function getMongoID($field) {
 		if (is_object($field)) {
 			$id = sprintf('%s', $field);
@@ -16,6 +21,13 @@ class Utils {
 		return $id;
 	}
 
+	/**
+	 * Converts the string to a valid BSON ObjectID of 24 characters or if $id -> string
+	 * else if $id -> array recursively converts each id to bson objectId
+	 * 
+	 * @param  string|object|array $id ID to converted to bson type
+	 * @return string|object|array (objects)     Returns an BSON ObjectID if $id is valid else empty string
+	 */
 	public static function mongoObjectId($id) {
 		$result = "";
 		if (is_array($id)) {
@@ -35,6 +47,13 @@ class Utils {
         return $result;
 	}
 
+	/**
+	 * Downloads the Image From the URL by checking its Content Type and matching against
+	 * the valid image content types defined by the standard. Image is stored into
+	 * the uploads directory
+	 * @param  string $url URL of the image
+	 * @return string|boolean      FALSE on failure else uploaded image name
+	 */
 	public static function downloadImage($url = null) {
 		if (!$url) { return false; }
 		try {
@@ -272,6 +291,13 @@ class Utils {
 		return $normal;
 	}
 
+	/**
+	 * Uploads the image sent by the user in $_FILES array when submitting
+	 * the form using file-upload. Assigns a name to the file and also checks
+	 * for a valid file extension based on the type (if provided)
+	 * 
+	 * @return string|boolean      FALSE on failure else uploaded image name
+	 */
 	public static function upload($name, $type = "images", $opts = []) {
 	    if (isset($_FILES[$name])) {
 	        $file = $_FILES[$name];

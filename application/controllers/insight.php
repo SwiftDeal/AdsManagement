@@ -31,8 +31,18 @@ class Insight extends Admin {
 		$this->start = $start; $this->end = $end;
 	}
 
+    /**
+     * @protected
+     */
+    public function setDate() {
+        $this->getActionView()->set([
+            'start' => $this->start, 'end' => $this->end
+        ]);
+    }
+
 	/**
      * @before _secure
+     * @after setDate
      */
 	public function campaign($id = null) {
 		$this->seo(["title" => "ADS Effectiveness"]);
@@ -89,7 +99,40 @@ class Insight extends Admin {
         	}
         	$results[$adid] = $to;
         }
+        $view->set('endt', time());
 
         $view->set('ads', $results);
 	}
+
+    /**
+     * @before _secure
+     * @after setDate
+     */
+    public function organization() {
+        $this->seo(["title" => "Organization Stats"]);
+        $view = $this->getActionView(); $org = $this->org;
+        $this->start = date('Y-m-d', strtotime('-5 day'));
+        $data = Shared\Services\Performance::stats($org, ['start' => $this->start, 'end' => $this->end]);
+        
+        $view->set($data);
+    }
+
+    /**
+     * @before _secure
+     * @after setDate
+     */
+    public function publishers() {
+        $this->seo(["title" => "Publisher Stats"]);
+        $view = $this->getActionView(); $org = $this->org;
+    }
+
+    /**
+     * @before _secure
+     * @after setDate
+     */
+    public function advertisers() {
+        $this->seo(["title" => "Advertiser Stats"]);
+        $view = $this->getActionView(); $org = $this->org;
+    }
+
 }

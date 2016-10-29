@@ -139,6 +139,12 @@ namespace Framework {
             return $result;
         }
 
+        /**
+         * Calculates the percentage of each key in the array
+         * @param  array  $arr    Array containing "key" => $count
+         * @param  integer $places To how many places the percentage should be round off
+         * @return array          Array containing "key" => percentage
+         */
         public static function percentage($arr, $places = 2) {
             $arr = self::topValues($arr, count($arr));
             $total = array_sum($arr);
@@ -154,6 +160,13 @@ namespace Framework {
             return $result;
         }
 
+        /**
+         * Function checks that all the values of $current array
+         * are present in $search array
+         * @param  array $search  Search Array
+         * @param  array $current Array to be tested against search array
+         * @return boolean
+         */
         public static function inArray($search, $current) {
             $pass = true;
 
@@ -170,7 +183,5 @@ namespace Framework {
             }
             return $pass;
         }
-
     }
-
 }

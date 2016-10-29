@@ -125,21 +125,8 @@ class Click extends Shared\Model {
         $classify = [];
         foreach ($clicks as $result) {
             $c = ArrayMethods::toObject($result);
-            switch ($type) {
-                case 'adid':
-                case 'pid':
-                case 'country':
-                case 'device':
-                case 'os':
-                case 'referer':
-                case 'cookie':
-                    $key = Utils::getMongoID($c->$type);
-                    break;
-                
-                default:
-                    $key = Utils::getMongoID($c->adid);        
-                    break;
-            }
+            $key = Utils::getMongoID($c->$type ?? '');
+
             if (strlen($key) == 0) {
                 $key = "Empty";
             }

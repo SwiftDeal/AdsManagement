@@ -264,10 +264,11 @@ class Report extends Admin {
             $obj = (object) $r; $id = Utils::getMongoID($obj->_id);
             $user = User::first(['_id' => $id], ['_id', 'name']);
             
-            $result[$k] = ArrayMethods::toObject([
+            $result[$id] = (object) [
+                '_id' => $user->_id,
                 'name' => $user->name,
                 'clicks' => $obj->count
-            ]);
+            ];
         }
 
         $view->set([
