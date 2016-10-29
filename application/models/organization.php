@@ -136,6 +136,17 @@ class Organization extends \Shared\Model {
         return $html;
     }
 
+    public function fullurl() {
+        if (!$this->_url) {
+            $fullurl = 'http://'.$this->_domain .'.vnative.com';
+        } else {
+            $fullurl = $this->_url;
+            if (!strpos($fullurl, 'http')) {
+                $fullurl = 'http://'.$this->_url;
+            }
+        }
+    }
+
     public function users($type = "publisher", $object = true) {
         $users = \User::all(["org_id = ?" => $this->_id, "type = ?" => $type], ["_id"]);
         $ids = array_keys($users);

@@ -6,33 +6,39 @@
     <div class="modal-dialog" role="document">
         <form action="/admin/notification.html" method="post" class="modal-content">
             <div class="modal-header text-center">
-            Enter URL
+                <h4>Custom Notification/Message</h4>
             </div>
             <div class="modal-body">
                 <div class="form-group">
                     <label for="url">Message</label>
-                    <textarea class="form-control" name="message" placeholder="Enter your message" required=""></textarea>
+                    <textarea class="form-control" name="message" placeholder="Enter your message" required="" rows="3"></textarea>
                 </div>
-                <div class="form-group">
-                    <label>Target</label>
-                    <select class="form-control" id="targetSelect" name="target">
-                        <option value="publishers" selected="">Publishers</option>
-                        <option value="advertisers">Advertisers</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Meta</label>
-                    <select class="form-control selectpicker" data-live-search="true" id="listUsers" name="meta">
-                        <option value="all" selected="true">All</option>
-                        {foreach $p in $publishers}
-                        <option value="{echo $p->_id}">{echo $p->name}</option>
-                        {/foreach}
-                    </select>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>User Section</label>
+                            <select class="form-control" id="targetSelect" name="target">
+                                <option value="publishers" selected="">Publishers</option>
+                                <option value="advertisers">Advertisers</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Target</label>
+                            <select class="form-control selectpicker" data-live-search="true" id="listUsers" name="meta">
+                                <option value="all" selected="true">All</option>
+                                {foreach $p in $publishers}
+                                <option value="{echo $p->_id}">{echo $p->name}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <input type="hidden" name="action" value="save">
-                <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Save</button>
+                <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Send</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </form>
