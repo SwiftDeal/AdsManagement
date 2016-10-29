@@ -152,6 +152,13 @@ class Db {
 		return $opts;
 	}
 
+	public static function collection($model) {
+		$model = "\\$model";
+		$m = new $model;
+
+		return $m->getTable();
+	}
+
 	// query method
 	public static function query($model, $query, $fields = [], $order = null, $direction = null, $limit = null, $page = null) {
 		$model = "\\$model";

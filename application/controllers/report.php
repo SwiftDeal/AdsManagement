@@ -215,75 +215,64 @@ class Report extends Admin {
      */
     public function platforms($id = null) {
         $this->seo(["title" => "Platform wise click stats"]);
-        $view = $this->getActionView();
+        $view = $this->getActionView(); $org = $this->org;
 
         $clickCol = Registry::get("MongoDB")->clicks;
         $start = RM::get("start", date('Y-m-d', strtotime('-1 day')));
         $end = RM::get("end", date('Y-m-d', strtotime('-1 day')));
-
-        // find all the users
-        $users = \User::all(['org_id' => $this->org->_id, 'type' => 'publisher'], ['_id', 'name']);
-        $advertisers = \User::all(['org_id' => $this->org->_id, 'type' => 'advertiser'], ['_id', 'email']);
-        $in = []; $url = null;
-        foreach ($advertisers as $a) {
-            $in[] = $a->_id;
-        }
+        $view->set(['start' => $start, 'end' => $end]);
 
         // find the platforms
-        $platforms = \Platform::all(['user_id' => ['$in' => $in]], ['_id', 'url']);
+        $platforms = \Platform::all([
+            'user_id' => ['$in' => $org->users('advertisers')]
+        ], ['_id', 'url']);
+        if (count($platforms) === 0) {
+            return $view->set(['platforms' => [], 'publishers' => []]);
+        }
 
-        if (count($platforms) > 0) {
-            $key = array_rand($platforms);
-            $url = RM::get('link', $platforms[$key]->url); $in = [];
-            
-            // find ads having this url
-            $ads = \Ad::all(['org_id' => $this->org->_id], ['_id', 'url']);
-            foreach ($ads as $a) {
-                $regex = preg_quote($url, '.');
-                if (preg_match('#^'.$regex.'#', $a->url)) {
-                    $in[] = Utils::mongoObjectId($a->_id);
-                }
+        $key = array_rand($platforms);
+        $url = RM::get('link', $platforms[$key]->url);
+        
+        // find ads having this url
+        $ads = \Ad::all(['org_id' => $org->_id], ['_id', 'url']);
+        $in = Utils::mongoObjectId(array_keys($ads)); $matched = [];
+        foreach ($ads as $a) {
+            $regex = preg_quote($url, '.');
+            if (preg_match('#^'.$regex.'#', $a->url)) {
+                $matched[] = Utils::mongoObjectId($a->_id);
             }
+        }
 
+        if (count($matched) === 0) {
             $query['adid'] = ['$in' => $in];
+        } else {
+            $query['adid'] = ['$in' => $matched];
         }
 
-        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
         $query['is_bot'] = false;
-        $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
+        $query['created'] = Db::dateQuery($start, $end);
 
-        $records = $clickCol->find($query, ['projection' => ['adid' => 1, 'pid' => 1]]);
-        $count = \Click::count($query);
+        $records = $clickCol->aggregate([
+            ['$match' => $query],
+            ['$projection' => ['_id' => 1, 'pid' => 1]],
+            ['$group' => ['_id' => '$pid', 'count' => ['$sum' => 1]]],
+            ['$sort' => ['count' => -1]],
+        ]);
 
-        $stats = []; $count = 0;
-        $clicks = \Click::classify($records, 'adid');
-        foreach ($clicks as $key => $value) {
-            $pubClicks = Click::classify($value, 'pid');
-            foreach ($pubClicks as $k => $v) {
-                // $uniqClicks = Click::checkFraud($v);
-                $uniqCount = count($v);
-                $count += $uniqCount;
-
-                if (!array_key_exists($k, $stats)) {
-                    $stats[$k] = $uniqCount;
-                } else {
-                    $stats[$k] += $uniqCount;
-                }
-            }
-        }
-
-        arsort($stats); $result = [];
-        foreach ($stats as $k => $value) {
+        $result = []; $publishers = [];
+        foreach ($records as $r) {
+            $obj = (object) $r; $id = Utils::getMongoID($obj->_id);
+            $user = User::first(['_id' => $id], ['_id', 'name']);
+            
             $result[$k] = ArrayMethods::toObject([
-                'name' => $users[$k]->name,
-                'clicks' => $value
+                'name' => $user->name,
+                'clicks' => $obj->count
             ]);
         }
 
         $view->set([
-            'platforms' => $platforms, 'publishers' => $result,
-            'link' => $url, 'count' => $count,
-            'start' => $start, 'end' => $end
+            'platforms' => $platforms, 'link' => $url,
+            'publishers' => $result
         ]);
     }
 

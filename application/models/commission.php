@@ -96,7 +96,7 @@ class Commission extends \Shared\Model {
                 break;
             
             case 'publisher':
-                $pub = $extra['publisher'];
+                $pub = $extra['publisher'] ?? (object) ['meta' => []];
                 $comm = $pub->meta['campaign'] ?? [];
 
                 if (isset($comm['rate'])) {
@@ -105,6 +105,11 @@ class Commission extends \Shared\Model {
                     $info['rate'] = (float) $commission->rate;
                 }
                 $query['pid'] = $pub->_id;
+                break;
+
+            case 'both':
+                $info['revenue'] = (float) $commission->revenue;
+                $info['rate'] = (float) $commission->rate;
                 break;
         }
 

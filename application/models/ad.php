@@ -196,8 +196,12 @@ class Ad extends Shared\Model {
      * @return [type]         [description]
      */
     public static function earning($opts = [], $clicks) {
+        $extra = $extraRev = 0;
         if ($opts['type'] === 'advertiser') {
             $rate = $opts['revenue'];
+        } else if ($opts['type'] === 'both') {
+            $extra = $opts['revenue'];
+            $rate = $opts['rate'];
         } else {
             $rate = $opts['rate'];
         }
@@ -208,25 +212,34 @@ class Ad extends Shared\Model {
             case 'cpi':
             case 'cpa':
                 $revenue = $conversions * $rate;
+                $extraRev = $conversions * $extra;
                 break;
 
             case 'cpm':
                 $revenue = $impressions * $rate;
+                $extraRev = $impressions * $extra;
                 break;
             
             default:    // cpc
                 $revenue = $clicks * $rate;
+                $extraRev = $clicks * $extra;
                 break;
         }
 
-        $revenue = round($revenue, 6);
-
-        return [
+        $revenue = round($revenue, 6); $extraRev = round($extraRev, 6);
+        $ans = [
             'clicks' => $clicks,
-            'revenue' => $revenue,
             'conversions' => $conversions,
             'impressions' => $impressions
         ];
+
+        if ($opts['type'] === 'both') {
+            $ans['rate'] = $revenue;
+            $ans['revenue'] = $extraRev;
+        } else {
+            $ans['revenue'] = $revenue;
+        }
+        return $ans;
     }
 
     public static function find(&$search, $key, $fields = []) {
