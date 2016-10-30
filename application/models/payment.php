@@ -52,11 +52,4 @@ class Payment extends Shared\Model {
      * @length 10,2
      */
     protected $_amount;
-
-    /**
-    * @column
-    * @readwrite
-    * @type array
-    */
-    protected $_meta = [];
 }

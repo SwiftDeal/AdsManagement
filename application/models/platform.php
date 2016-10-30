@@ -23,13 +23,6 @@ class Platform extends Shared\Model {
      */
     protected $_url;
 
-    /**
-    * @column
-    * @readwrite
-    * @type array
-    */
-    protected $_meta = [];
-
     public function setUrl($url) {
         if (!preg_match('/^https?:\/\//', $url)) {
             $url = 'http://' . $url;

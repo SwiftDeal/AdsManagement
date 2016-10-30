@@ -48,15 +48,6 @@ class ApiKey extends Shared\Model {
      */
     protected $_lastAccess = null;
 
-    /**
-     * @column
-     * @readwrite
-     * @type array
-     *
-     * @label Meta
-     */
-    protected $_meta = [];
-
     public function updateIps() {
         $request = RequestMethods::post('ips');
         $ips = ArrayMethods::clean($request);

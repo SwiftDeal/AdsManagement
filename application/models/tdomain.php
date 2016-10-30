@@ -1,9 +1,10 @@
 <?php
 
 /**
+ * Users List who are allowed to work on a private ad
  * @author Faizan Ayubi
  */
-class Notification extends Shared\Model {
+class TDomain extends Shared\Model {
 
     /**
      * @column
@@ -16,18 +17,19 @@ class Notification extends Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type text
+     * @type mongoid
+     * @index
      */
-    protected $_message;
+    protected $_user_id;
 
     /**
      * @column
      * @readwrite
      * @type text
-     *
-     * @validate required
-     * @label ad type
-     * @value advertisers, publishers
+     * @length 255
+     * 
+     * @validate required, min(3), max(255)
+     * @label domain
      */
-    protected $_target;
+    protected $_domain;
 }

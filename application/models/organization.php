@@ -81,15 +81,6 @@ class Organization extends \Shared\Model {
      */
     protected $_billing = [];
 
-    /**
-     * @column
-     * @readwrite
-     * @type array
-     * 
-     * @validate required
-     */
-    protected $_meta = [];
-
     public function updateDomains() {
         $tdomains = $this->tdomains;
         $newDomains = RequestMethods::post('tdomains');

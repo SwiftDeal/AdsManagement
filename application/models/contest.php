@@ -47,13 +47,6 @@ class Contest extends Shared\Model {
      */
     protected $_end;
 
-    /**
-    * @column
-    * @readwrite
-    * @type array
-    */
-    protected $_meta = [];
-
     public static function updateContests($controller) {
         $org = $controller->org;
         $fields = ['title', 'start', 'end'];

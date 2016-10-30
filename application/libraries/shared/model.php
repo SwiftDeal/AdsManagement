@@ -46,6 +46,13 @@ namespace Shared {
          */
         protected $_modified = null;
 
+        /**
+         * @column
+         * @readwrite
+         * @type array
+         */
+        protected $_meta = [];
+
         public static function hourly() {
             // override this method to do cron tasks
         }

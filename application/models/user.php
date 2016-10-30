@@ -93,13 +93,6 @@ class User extends Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type array
-     */
-    protected $_meta = [];
-
-    /**
-     * @column
-     * @readwrite
      * @type datetime
      */
     protected $_login = null;
