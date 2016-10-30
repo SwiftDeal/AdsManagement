@@ -387,7 +387,7 @@ $(document).ready(function() {
 
             $('#showLinkBox').modal('show');
             $('#showLinkMessage').html(d.message);
-            $('#showLinkUrl').val(d.link);
+            $('#showLinkUrl').val(d.message+'\n'+d.link);
             var clipboard = new Clipboard('.btn');
         });
     });

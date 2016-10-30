@@ -56,12 +56,22 @@ class Billing extends Admin {
             $view->set('affiliate', $user);
             $performances = Performance::all($query);
             $view->set('performances', $performances);
+
+            $inv_exist = Invoice::first($query);
+            if ($inv_exist) {
+                $view->set("message", "Invoice already exist for Date range from ".Framework\StringMethods::only_date($inv_exist->start)." to ".Framework\StringMethods::only_date($inv_exist->end));
+                return;
+            }
         } else {
             $affiliates = \User::all(['type = ?' => 'publisher', 'org_id' => $this->org->_id], ['id', 'name']);
             $view->set('affiliates', $affiliates);
         }
 
-        if (RequestMethods::post("action") == "cinvoice") {
+        $view->set('user_id', $user_id)
+            ->set('start', $start)
+            ->set('end', $end);
+
+        if (RequestMethods::post("action") == "cinvoice" && RequestMethods::post("amount") > 0) {
             $invoice = new Invoice([
                 "org_id" => $this->org->id,
                 "user_id" => $user->id,
@@ -75,9 +85,6 @@ class Billing extends Admin {
 
             $this->redirect("/billing/affiliates.html");
         }
-        $view->set('user_id', $user_id)
-            ->set('start', $start)
-            ->set('end', $end);
     }
 
     /**

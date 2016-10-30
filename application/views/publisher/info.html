@@ -135,7 +135,7 @@
                             <div class="form-group">
                                 {script $model = isset($publisher->meta['campaign']) ? $publisher->meta['campaign']['model'] : null}
                                 <label for="Model">Model (Optional)</label>
-                                <select name="model" class="form-control" value="{echo $model}">
+                                <select name="model" class="form-control" value="{echo $model}" required="">
                                     {include auth/model.html}
                                 </select>
                             </div>
@@ -145,7 +145,7 @@
                                 <label for="Rate">Rate (Optional)</label>
                                 <div class="input-group">
                                     <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                    <input type="text" name="rate" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" value="{echo $user->convert($rate, false)}">
+                                    <input type="text" name="rate" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" value="{echo $user->convert($rate, false)}" required="">
                                 </div>
                             </div>
                             <input type="hidden" name="action" value="campaign">
