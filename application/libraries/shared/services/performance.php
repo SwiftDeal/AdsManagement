@@ -33,12 +33,13 @@ class Performance {
 			
 			case 'advertiser':
 				$advertisers = $opts['advertisers'] ?? $org->users($type);
+				$fields = $opts['fields'] ?? ['revenue', 'created'];
 
 				$advertPerf = Perf::all([
 					'user_id' => ['$in' => $advertisers],
 					'created' => Db::dateQuery($start, $end)
-				], ['revenue', 'created'], 'created', 'desc');
-				$advertPerf = Perf::objectArr($advertPerf, ['revenue', 'created']);
+				], $fields, 'created', 'desc');
+				$advertPerf = Perf::objectArr($advertPerf, $fields);
 				return $advertPerf;
 		}
 		return [];
@@ -94,7 +95,6 @@ class Performance {
 				$perf[$date] = [];
 			}
 			ArrayMethods::add($from, $perf[$date]);
-
 			self::_addMeta($meta, $perf[$date]);
 		}
 	}
@@ -102,10 +102,10 @@ class Performance {
 	/**
 	 * Calculate Revenue from advertiser performance
 	 */
-	public static function revenue($advertPerf, &$perf) {
+	public static function revenue($advertPerf, &$perf, $extra = []) {
 		foreach ($advertPerf as $key => $value) {
-			$date = $value->created;
-			$from = ['revenue' => $value->revenue];
+			$from = (array) $value; $date = $value->created;
+			unset($from['created']);
 
 			if (!isset($perf[$date])) {
 				$perf[$date] = [];
@@ -144,6 +144,6 @@ class Performance {
 		self::payout($pubPerf, $perf);
 		self::revenue($advertPerf, $perf);
 
-		return ['stats' => $perf, 'total' => $total];
+		return ['stats' => $perf, 'total' => self::calTotal($perf)];
 	}
 }

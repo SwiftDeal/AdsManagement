@@ -5,6 +5,7 @@
  */
 use Shared\Utils as Utils;
 use Shared\Services\Db as Db;
+use Shared\Services\Performance as Perf;
 use Framework\Registry as Registry;
 use Framework\ArrayMethods as ArrayMethods;
 use Framework\RequestMethods as RequestMethods;
@@ -111,7 +112,7 @@ class Insight extends Admin {
     public function organization() {
         $this->seo(["title" => "Organization Stats"]);
         $view = $this->getActionView(); $org = $this->org;
-        $data = Shared\Services\Performance::stats($org, [
+        $data = Perf::stats($org, [
             'start' => $this->start,
             'end' => $this->end,
             'meta' => true
@@ -124,18 +125,52 @@ class Insight extends Admin {
      * @before _secure
      * @after setDate
      */
-    public function publishers() {
+    public function publishers($id = null) {
         $this->seo(["title" => "Publisher Stats"]);
         $view = $this->getActionView(); $org = $this->org;
+
+        if ($id) {
+            $publisher = User::first(['_id' => $id, 'org_id' => $org->_id, 'type' => 'publisher']);
+            if (!$publisher) $this->_404();
+            $in = [$publisher->_id];
+        } else {
+            $in = $org->users('publisher');
+        }
+
+        $pubPerf = Perf::perf($org, 'publisher', [
+            'meta' => true, 'publishers' => $in,
+            'start' => $this->start, 'end' => $this->end
+        ]);
+        $perf = []; Perf::payout($pubPerf, $perf);
+        $data = ['stats' => $perf, 'total' => Perf::calTotal($perf)];
+        $view->set($data);
     }
 
     /**
      * @before _secure
      * @after setDate
      */
-    public function advertisers() {
+    public function advertisers($id = null) {
         $this->seo(["title" => "Advertiser Stats"]);
         $view = $this->getActionView(); $org = $this->org;
+
+        if ($id) {
+            $advertiser = User::first(['_id' => $id, 'org_id' => $org->_id, 'type' => 'advertiser']);
+            if (!$advertiser) $this->_404();
+            $in = [$advertiser->_id];
+        } else {
+            $in = $org->users('advertiser');
+        }
+
+        $fields = ['clicks', 'impressions', 'conversions', 'revenue', 'created'];
+        $advertPerf = Perf::perf($org, 'advertiser', [
+            'advertisers' => $in,
+            'start' => $this->start, 'end' => $this->end,
+            'fields' => $fields
+        ]);
+        $perf = []; Perf::revenue($advertPerf, $perf);
+        $data = ['stats' => $perf, 'total' => Perf::calTotal($perf)];
+        $view->set($data);
     }
 
 }
