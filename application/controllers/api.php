@@ -349,7 +349,7 @@ class Api extends \Shared\Controller {
 				return $this->earning($id);
 			
 			case 'organization':
-				$data = Shared\Services\Performance::stats($org, ['start' => $start, 'end' => $end]);
+				$data = Shared\Services\Performance::stats($org, ['start' => $start, 'end' => $end, 'meta' => true]);
 				$view->set('data', $data);
 				break;
 		}

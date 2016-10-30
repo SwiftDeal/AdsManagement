@@ -119,7 +119,10 @@ namespace Framework {
                 if (!array_key_exists($key, $to)) {
                     $to[$key] = 0;
                 }
-                $to[$key] += $value;
+
+                if (is_int($value)) {
+                    $to[$key] += $value;
+                }
             }
         }
 

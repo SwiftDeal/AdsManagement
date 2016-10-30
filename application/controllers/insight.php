@@ -111,8 +111,11 @@ class Insight extends Admin {
     public function organization() {
         $this->seo(["title" => "Organization Stats"]);
         $view = $this->getActionView(); $org = $this->org;
-        $this->start = date('Y-m-d', strtotime('-5 day'));
-        $data = Shared\Services\Performance::stats($org, ['start' => $this->start, 'end' => $this->end]);
+        $data = Shared\Services\Performance::stats($org, [
+            'start' => $this->start,
+            'end' => $this->end,
+            'meta' => true
+        ]);
         
         $view->set($data);
     }

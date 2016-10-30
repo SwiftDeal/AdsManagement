@@ -293,7 +293,7 @@ class Publisher extends Auth {
         }
         
         $view->set('message', $ad->title)
-            ->set('link', $link->getUrl());
+            ->set('link', $link->getUrl($domain));
 
     }
 

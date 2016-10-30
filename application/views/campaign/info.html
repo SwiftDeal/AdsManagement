@@ -56,8 +56,22 @@
                             {script $link = Link::first(["ad_id = ?" => $id, "user_id = ?" => $user->id])} {if ($link)}
                             <tr>
                                 <th>Tracking Link</th>
-                                <td>{echo $link->getUrl()}</td>
+                                <td id="trackingURL">{echo $link->getUrl()}</td>
                             </tr>
+                            <tr>
+                                <th>Tracking Params</th>
+                                <td class="input-group">
+                                    <input type="text" placeholder="Extra Param1" class="form-control" id="param1">
+                                    <span class="input-group-addon">,</span>
+                                    <input type="text" placeholder="Extra Param2" class="form-control" id="param2">
+                                    <span class="input-group-btn">
+                                        <button type="button" id="extraParam" class="btn btn-primary">GO</button>
+                                    </span>
+                                </td>
+                            </tr>
+                            <script>
+                                window.trackingURL = '{echo $link->getUrl()}';
+                            </script>
                             {/if}
                         </tbody>
                     </table>
@@ -66,3 +80,11 @@
         </div>
     </div>
 </div>
+<script>
+    $('#extraParam').on('click', function (e) {
+        e.preventDefault();
+
+        var uri = trackingURL + "?p1=" + $('#param1').val() + "&p2=" + $('#param2').val();
+        $('#trackingURL').html(uri);
+    });
+</script>

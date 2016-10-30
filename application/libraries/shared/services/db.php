@@ -58,7 +58,7 @@ class Db {
 			$time = strtotime('now');
 		}
 
-		return new \MongoDB\BSON\UTCDateTime($time * 1000);		
+		return new \MongoDB\BSON\UTCDateTime($time * 1000);
 	}
 
 	/**

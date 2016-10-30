@@ -30,8 +30,13 @@ class Link extends Shared\Model {
      */
     protected $_domain;
 
-    public function getUrl() {
-        return 'http://' . $this->domain . '/'. $this->getMongoID();
+    public function getUrl($url = null) {
+        if ($url) {
+            $link = 'http://' . $url . '/'. $this->getMongoID();
+        } else {
+            $link = 'http://' . $this->domain . '/'. $this->getMongoID();
+        }
+        return $link;
     }
 
 }

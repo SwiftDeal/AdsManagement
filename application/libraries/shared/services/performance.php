@@ -20,6 +20,8 @@ class Performance {
 		switch ($type) {
 			case 'publisher':
 				$perfFields = ['clicks', 'impressions', 'conversions', 'revenue', 'created'];
+				$meta = $opts['meta'] ?? false;
+				if ($meta) { $perfFields[] = 'meta'; }
 				$publishers = $org->users($type);
 
 				$pubPerf = Perf::all([
@@ -42,6 +44,23 @@ class Performance {
 		return [];
 	}
 
+	protected static function _addMeta($meta, &$perf) {
+		if (!isset($perf['meta'])) {
+			$perf['meta'] = [];
+		}
+
+		foreach ($meta as $key => $value) {
+			if (!isset($perf['meta'][$key])) {
+				$arr = [];
+			} else {
+				$arr = $perf['meta'][$key];
+			}
+
+			ArrayMethods::add($value, $arr);
+			$perf['meta'][$key] = ArrayMethods::topValues($arr, count($arr));
+		}
+	}
+
 	/**
 	 * Calculate Payout, Clicks, Impressions, Conversions from publisher performance
 	 */
@@ -51,10 +70,18 @@ class Performance {
 			unset($from['created']); unset($from['revenue']);
 			$from['payout'] = $value->revenue;
 
+			if (isset($from['meta'])) {
+				$meta = $from['meta']; unset($from['meta']);
+			} else {
+				$meta = [];
+			}
+
 			if (!isset($perf[$date])) {
 				$perf[$date] = [];
 			}
 			ArrayMethods::add($from, $perf[$date]);
+
+			self::_addMeta($meta, $perf[$date]);
 		}
 	}
 
@@ -83,12 +110,19 @@ class Performance {
 		$pubPerf = self::_perf($org, 'publisher', $opts);
 		$advertPerf = self::_perf($org, 'advertiser', $opts);
 
-		$total = []; $perf = [];
+		$total = ['meta' => []]; $perf = [];
 		self::_payout($pubPerf, $perf);
 		self::_revenue($advertPerf, $perf);
 
 		foreach ($perf as $key => $value) {
 			ArrayMethods::add($value, $total);
+
+			foreach ($value['meta'] as $k => $v) {
+				if (!isset($total['meta'][$k])) {
+					$total['meta'][$k] = [];
+				}
+				ArrayMethods::add($v, $total['meta'][$k]);
+			}
 		}
 
 		return ['stats' => $perf, 'total' => $total];
