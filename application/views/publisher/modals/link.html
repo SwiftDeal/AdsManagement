@@ -8,13 +8,9 @@
                 <div class="form-group">
                     <label for="Domain">Domain</label>
                     <select name="domain" class="form-control" style="width: 180px">
-                        {if count($tdomains) === 0}
-                            <option value="dobolly.com" selected="">dobolly.com</option>
-                        {/if} {else}
-                            {foreach $d in $tdomains}
-                            <option value="{echo $d}">{echo $d}</option>
-                            {/foreach}
-                        {/else}
+                        {foreach $d in $tdomains}
+                        <option value="{echo $d}">{echo $d}</option>
+                        {/foreach}
                     </select>
                 </div>
             </div>

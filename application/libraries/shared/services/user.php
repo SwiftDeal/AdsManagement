@@ -74,13 +74,28 @@ class User {
 
 	public static function trackingLinks($user, $org) {
 		$default = $org->tdomains;
+		$cf = \Framework\Registry::get("configuration")->parse("configuration/cf")->cloudflare;
 		switch ($user->type) {
 			case 'publisher':
 				// check if anything set in meta
 				$def = $user->meta['tdomain'] ?? $default;
+				$ans = [];
 				if (is_string($def)) {
-					return [$def];
+					$ans[] = $def;
+				} else {
+					$users = \User::all(['org_id' => $org->_id, 'type' => $user->type], ['_id', 'meta']);
+					$ans = $default;
+					foreach ($users as $u) {
+						if (isset($u->meta['tdomain'])) {
+							$index = array_search($u->meta['tdomain'], $ans);
+							unset($ans[$index]);
+						}
+					}
 				}
+				if (count($ans) === 0) {
+					$ans[] = $cf->tracking->defaultDomain;
+				}
+				return $ans;
 			
 			default:
 				return $default;

@@ -131,10 +131,7 @@ class Publisher extends Auth {
         $this->seo(array("title" => "Tracking Links")); $view = $this->getActionView();
         $links = Link::all(['user_id' => $this->user->_id], ['ad_id', 'domain', '_id']);
 
-        $in = [];
-        foreach ($links as $l) {
-            $in[] = $l->ad_id;
-        }
+        $in = ArrayMethods::arrayKeys($links, 'ad_id');
         $ads = Ad::all(['_id' => ['$in' => $in]], ['title', '_id']);
 
         $result = [];
@@ -276,12 +273,12 @@ class Publisher extends Auth {
         if (!$ad) {
             return $view->set('message', "Invalid Request");
         }
+
+        $tdomains = Shared\Services\User::trackingLinks($this->user, $this->org);
         if (RequestMethods::post("domain")) {
             $domain = RequestMethods::post("domain");
-        } else if (count($this->org->tdomains) > 0) {
-            $domain = $this->array_random($this->org->tdomains);
         } else {
-            $domain = 'dobolly.com';
+            $domain = $this->array_random($tdomains);
         }
         $link = Link::first(["ad_id = ?" => $ad->_id, "user_id = ?" => $this->user->_id], ['domain', '_id']);
         if (!$link) {

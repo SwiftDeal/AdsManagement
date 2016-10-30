@@ -13,7 +13,7 @@ class Performance {
 	 * @param  string $type Type of user
 	 * @return [type]       [description]
 	 */
-	protected static function _perf($org, $type, $opts = []) {
+	public static function perf($org, $type, $opts = []) {
 		$start = $opts['start'] ?? RequestMethods::get('start', date('Y-m-d', strtotime("-5 day")));
 		$end = $opts['end'] ?? RequestMethods::get('end', date('Y-m-d', strtotime("-1 day")));
 
@@ -22,7 +22,7 @@ class Performance {
 				$perfFields = ['clicks', 'impressions', 'conversions', 'revenue', 'created'];
 				$meta = $opts['meta'] ?? false;
 				if ($meta) { $perfFields[] = 'meta'; }
-				$publishers = $org->users($type);
+				$publishers = $opts['publishers'] ?? $org->users($type);
 
 				$pubPerf = Perf::all([
 					'user_id' => ['$in' => $publishers],
@@ -32,7 +32,7 @@ class Performance {
 				return $pubPerf;
 			
 			case 'advertiser':
-				$advertisers = $org->users($type);
+				$advertisers = $opts['advertisers'] ?? $org->users($type);
 
 				$advertPerf = Perf::all([
 					'user_id' => ['$in' => $advertisers],
@@ -42,6 +42,19 @@ class Performance {
 				return $advertPerf;
 		}
 		return [];
+	}
+
+	protected static function clean($arr) {
+		$result = [];
+		foreach ($arr as $key => $value) {
+			$k = str_replace("-", ".", $key);
+			if (is_array($value)) {
+				$result[$k] = self::clean($value);
+			} else {
+				$result[$k] = $value;
+			}
+		}
+		return $result;
 	}
 
 	protected static function _addMeta($meta, &$perf) {
@@ -57,14 +70,15 @@ class Performance {
 			}
 
 			ArrayMethods::add($value, $arr);
-			$perf['meta'][$key] = ArrayMethods::topValues($arr, count($arr));
+			$arr = ArrayMethods::topValues($arr, count($arr));
+			$perf['meta'][$key] = self::clean($arr);
 		}
 	}
 
 	/**
 	 * Calculate Payout, Clicks, Impressions, Conversions from publisher performance
 	 */
-	protected static function _payout($pubPerf, &$perf) {
+	public static function payout($pubPerf, &$perf) {
 		foreach ($pubPerf as $key => $value) {
 			$from = (array) $value; $date = $value->created;
 			unset($from['created']); unset($from['revenue']);
@@ -88,7 +102,7 @@ class Performance {
 	/**
 	 * Calculate Revenue from advertiser performance
 	 */
-	protected static function _revenue($advertPerf, &$perf) {
+	public static function revenue($advertPerf, &$perf) {
 		foreach ($advertPerf as $key => $value) {
 			$date = $value->created;
 			$from = ['revenue' => $value->revenue];
@@ -100,20 +114,8 @@ class Performance {
 		}
 	}
 
-	/**
-	 * Return Date Wise Performance stats for an organization
-	 * @param  object $org  \Organization
-	 * @param  array  $opts Optional Array
-	 * @return array       Array Containing Stats and their total
-	 */
-	public static function stats($org, $opts = []) {
-		$pubPerf = self::_perf($org, 'publisher', $opts);
-		$advertPerf = self::_perf($org, 'advertiser', $opts);
-
-		$total = ['meta' => []]; $perf = [];
-		self::_payout($pubPerf, $perf);
-		self::_revenue($advertPerf, $perf);
-
+	public static function calTotal($perf) {
+		$total = ['meta' => []];
 		foreach ($perf as $key => $value) {
 			ArrayMethods::add($value, $total);
 
@@ -125,7 +127,23 @@ class Performance {
 			}
 		}
 
-		return ['stats' => $perf, 'total' => $total];
+		return $total;
+	}
 
+	/**
+	 * Return Date Wise Performance stats for an organization
+	 * @param  object $org  \Organization
+	 * @param  array  $opts Optional Array
+	 * @return array       Array Containing Stats and their total
+	 */
+	public static function stats($org, $opts = []) {
+		$pubPerf = self::perf($org, 'publisher', $opts);
+		$advertPerf = self::perf($org, 'advertiser', $opts);
+
+		$perf = [];
+		self::payout($pubPerf, $perf);
+		self::revenue($advertPerf, $perf);
+
+		return ['stats' => $perf, 'total' => $total];
 	}
 }

@@ -243,18 +243,6 @@ class Campaign extends Admin {
             ->set("categories", $categories);
     }
 
-    protected function categories($category) {
-        $array = [];$multi = [];
-        $categories = \Category::all(['org_id' => $this->org->_id], ['name', '_id']);
-        foreach ($category as $cat) {
-            $array[] = Shared\Utils::getMongoID($cat);
-        }
-        return [
-            "ids" => $array,
-            "categories" => $categories
-        ];
-    }
-
     /**
      * @before _secure
      * @after _csrfToken

@@ -120,7 +120,7 @@ namespace Framework {
                     $to[$key] = 0;
                 }
 
-                if (is_int($value)) {
+                if (is_numeric($value)) {
                     $to[$key] += $value;
                 }
             }
@@ -185,6 +185,18 @@ namespace Framework {
                 $pass = false;
             }
             return $pass;
+        }
+
+        public static function arrayKeys($arr = [], $key = null) {
+            $ans = [];
+            foreach ($arr as $k => $value) {
+                if ($key) {
+                    $ans[] = $value->$key;
+                } else {
+                    $ans[] = $k;
+                }
+            }
+            return $ans;
         }
     }
 }

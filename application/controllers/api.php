@@ -4,6 +4,7 @@ use Shared\Utils as Utils;
 use Keyword\Scrape as Scraper;
 use Shared\Services\Db as Db;
 use Shared\Services\User as Usr;
+use Shared\Services\Performance as Perf;
 use Framework\ArrayMethods as ArrayMethods;
 use Framework\RequestMethods as RequestMethods;
 
@@ -349,7 +350,7 @@ class Api extends \Shared\Controller {
 				return $this->earning($id);
 			
 			case 'organization':
-				$data = Shared\Services\Performance::stats($org, ['start' => $start, 'end' => $end, 'meta' => true]);
+				$data = Perf::stats($org, ['start' => $start, 'end' => $end, 'meta' => true]);
 				$view->set('data', $data);
 				break;
 		}
@@ -367,26 +368,17 @@ class Api extends \Shared\Controller {
 		$org = $this->_org; $perfFields = ['clicks', 'revenue', 'impressions', 'conversions', 'created'];
 		$publisher = User::first(['_id' => $id, 'org_id' => $org->_id]);
 		if (!$publisher) return $this->failure('30');
+		$publisher = User::objectArr($publisher, Usr::fields());
+		$publisher = array_shift($publisher);
 
 		$start = RequestMethods::get("start", date('Y-m-d', strtotime("-5 day")));
 		$end = RequestMethods::get("end", date('Y-m-d', strtotime('-1 day')));
-
-		$data = Performance::all([
-			'user_id' => $publisher->_id,
-			'created' => Db::dateQuery($start, $end)
-		], $perfFields, 'created', 'desc');
-
-		$total = []; $earnings = [];
-		$perf = Performance::objectArr($data, $perfFields);
-		foreach ($perf as $key => $p) {
-			$arr = (array) $p; unset($arr['created']);
-			$earnings[$p->created] = $arr;
-			ArrayMethods::add($arr, $total);
-		}
-
-		$pub = User::objectArr($publisher, Usr::fields());
-
-		$data = ['user' => $pub[0], 'earnings' => $earnings, 'total' => $total];
+		$pubPerf = Perf::perf($org, 'publisher', [
+			'meta' => true, 'publishers' => [$publisher->_id],
+			'start' => $start, 'end' => $end
+		]);
+		$perf = []; Perf::payout($pubPerf, $perf);
+		$data = ['user' => $publisher, 'stats' => $perf, 'total' => Perf::calTotal($perf)];
 		$view->set('data', $data);
 	}
 
