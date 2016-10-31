@@ -6,8 +6,8 @@
                 <div class="col-sm-12">
                     <div class="page-title-box">
                         <ol class="breadcrumb pull-right">
-                            <li><a href="/publisher/manage.html">Affiliates</a></li>
-                            <li><a href="/billing/affiliates.html">Billing</a></li>
+                            <li><a href="/advertiser/manage.html">Advertisers</a></li>
+                            <li><a href="/billing/advertisers.html">Billing</a></li>
                             <li class="active">Invoices</li>
                             <li class="active">Create Invoice</li>
                         </ol>
@@ -25,29 +25,29 @@
                 <div class="col-md-12">
                     <div class="panel panel-border panel-success">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Affiliate</h3>
+                            <h3 class="panel-title">Advertiser</h3>
                             <p class="text-muted m-b-30 font-13">
-                                Select any Affiliate and the date range to which you want to pay affiliates.
+                                Select any Advertiser and the date range to which you want to pay advertisers.
                             </p>
                         </div>
                         <div class="panel-body">
                             <form class="form-inline text-center" role="form" id="range">
-                                {if($affiliate)}
-                                <a href="/billing/createinvoice.html" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Change</a>
+                                {if($advertiser)}
+                                <a href="/billing/raiseinvoice.html" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Change</a>
                                 {/if}
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="sr-only">Account: </label>
-                                        {if($affiliates)}
+                                        {if($advertisers)}
                                         <span class="add-on input-group-addon"><i class="fa fa-user fa-fw"></i> Account: </span>
                                         <select name="user_id" class="form-control" style="max-width: 300px;" value="{echo $user_id}">
-                                        {foreach $a in $affiliates}
+                                        {foreach $a in $advertisers}
                                         <option value="{echo $a->id}">{echo $a->name}</option>
                                         {/foreach}
                                         {/if}{else}
                                             <span class="add-on input-group-addon"><a href="/publisher/info/{echo $user_id}.html" target="_blank"><i class="fa fa-user fa-fw"></i> Account: </a></span>
-                                            <input type="text" style="width: 180px" class="form-control" value="{echo $affiliate->name}" disabled="" />
-                                            <input type="hidden" name="user_id" value="{echo $affiliate->id}" />
+                                            <input type="text" style="width: 180px" class="form-control" value="{echo $advertiser->name}" disabled="" />
+                                            <input type="hidden" name="user_id" value="{echo $advertiser->id}" />
                                         {/else}
                                         </select>
                                     </div>
@@ -74,7 +74,7 @@
                         </div>
                     </div>
                 </div>
-                {if($affiliate)}
+                {if($advertiser)}
                 <div class="col-md-12">
                     <ul class="nav nav-tabs navtab-custom">
                         <li class="active">

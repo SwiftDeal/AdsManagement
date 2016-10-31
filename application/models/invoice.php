@@ -56,16 +56,6 @@ class Invoice extends Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type integer
-     *
-     * @validate required
-     * @label period for invoice
-     */
-    protected $_period;
-
-    /**
-     * @column
-     * @readwrite
      * @type decimal
      * @length 10,2
      */

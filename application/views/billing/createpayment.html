@@ -59,12 +59,12 @@
                         </div>
                         <div class="panel-body">
                             <form method="post" action="">
+                                {if($invoices)}
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
                                             <tr>
                                                 <th>Invoice ID</th>
-                                                <th>Account</th>
                                                 <th>Start Date</th>
                                                 <th>End Date</th>
                                                 <th>Amount</th>
@@ -72,20 +72,26 @@
                                         </thead>
                                         <tbody>
                                         {foreach $i in $invoices}
-                                        {script $u = User::first(["id = ?" => $i->user_id], ['id', 'name'])}
                                             <tr>
-                                                <td><small>{echo $i->id}</small></td>
-                                                <td>{echo $u->name}</td>
+                                                <td>
+                                                    <div class="checkbox checkbox-primary">
+                                                        <input id="inv{echo $i->id}" type="checkbox" name="invoice[]" checked="" value="{echo $i->id}">
+                                                        <label for="inv{echo $i->id}">
+                                                            <small>{echo $i->id}</small>
+                                                        </label>
+                                                    </div>
+                                                </td>
                                                 <td>{echo Framework\StringMethods::datetime_to_text($i->start)}</td>
                                                 <td>{echo Framework\StringMethods::datetime_to_text($i->end)}</td>
                                                 <td>{echo $user->convert($i->amount)}</td>
-                                                <input type="hidden" name="iamount[]" value="{echo $i->amount}" />
-                                                <input type="hidden" name="invoice[]" value="{echo $i->id}" />
                                             </tr>
                                         {/foreach}
                                         </tbody>
                                     </table>
                                 </div>
+                                {/if} {else}
+                                <p class="text-warning text-center">No Invoices Found. Cannot Create Payment</p>
+                                {/else}
                                 <hr>
                                 <h4 class="m-t-0 header-title text-center"><b>Other Items (Optional)</b><button type="button" id="addmore" class="btn btn-primary btn-xs">Add more</button></h4>
                                 <div class="table-responsive">
@@ -95,7 +101,13 @@
                                                 <th>Item</th>
                                                 <td><input type="text" name="item[]" class="form-control" /></td>
                                                 <th>Amount</th>
-                                                <td><input type="text" name="amount[]" class="form-control" /></td>
+                                                <td>
+                                                    <div class="input-group">
+                                                        <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                                        <input type="text" name="amount[]" class="form-control">
+                                                    </div>
+                                                    <small class="help-text">Add (-) minus for deduction</small>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <th>Payment Type</th>
@@ -116,10 +128,12 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <input type="hidden" name="action" value="cpayment"><hr>
+                                <input type="hidden" name="action" value="cpayment">
+                                {if($invoices)}
                                 <p class="text-center">
                                     <button type="submit" class="btn btn-success">Make Payment</button>
                                 </p>
+                                {/if}
                             </form>
                         </div>
                     </div>

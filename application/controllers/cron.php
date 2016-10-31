@@ -514,7 +514,7 @@ class Cron extends Shared\Controller {
             if ($impressions > 1000000) {
                 $imp_cost = 0.001*0.001*$impressions*$org->meta["bill"]["mic"];
             }
-            $bill = Bill([
+            $bill = new Bill([
                 "org_id" => $org->id,
                 "impressions" => $impressions,
                 "clicks" => $clicks,

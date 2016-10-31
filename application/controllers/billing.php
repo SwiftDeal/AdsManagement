@@ -24,6 +24,9 @@ class Billing extends Admin {
         $dateQuery = Utils::dateQuery($start, $end);
         $query = ['utype = ?' => 'publisher', 'org_id' => $this->org->_id];
         $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
+        if (RequestMethods::get("user_id")) {
+            $query['user_id'] = RequestMethods::get("user_id");
+        }
 
         $invoices = \Invoice::all($query);
         $payments = \Payment::all($query);
@@ -49,10 +52,9 @@ class Billing extends Admin {
             ->set('start', $start)
             ->set('end', $end);
 
-        $diff = date_diff(new DateTime($start), new DateTime($end));
         $dateQuery = Utils::dateQuery($start, $end);
         $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
-        $query = [ "user_id" => Utils::mongoObjectId($user_id)];
+        $query['user_id'] = $user_id;
 
         if($user_id) {
             $user = \User::first(['type = ?' => 'publisher', 'org_id' => $this->org->_id, 'id = ?' => $user_id]);
@@ -63,7 +65,7 @@ class Billing extends Admin {
             }
             $view->set('performances', $perfs);
 
-            $inv_exist = Invoice::first($query);
+            $inv_exist = Invoice::first(["user_id = ?" => $user_id, "start" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]]);
             if ($inv_exist) {
                 $view->set("message", "Invoice already exist for Date range from ".Framework\StringMethods::only_date($inv_exist->start)." to ".Framework\StringMethods::only_date($inv_exist->end));
                 return;
@@ -78,10 +80,10 @@ class Billing extends Admin {
                 "org_id" => $this->org->id,
                 "user_id" => $user->id,
                 "utype" => $user->type,
-                "start" => $perfs[0]->created,
-                "end" => end($perfs)->created,
-                "period" => $diff->format("%a"),
-                "amount" => RequestMethods::post("amount")
+                "start" => end($perfs)->created,
+                "end" => $perfs[0]->created,
+                "amount" => RequestMethods::post("amount"),
+                "live" => false
             ]);
             $invoice->save();
 
@@ -94,20 +96,23 @@ class Billing extends Admin {
      */
     public function createpayment() {
         $this->seo(array("title" => "Create Payment")); $view = $this->getActionView();
-        $user_id = RequestMethods::get("user_id", null);
+        $user_id = RequestMethods::get("user_id", null); $invs = [];$total = 0;$meta = [];
 
         if($user_id) {
             $user = \User::first(['type = ?' => 'publisher', 'org_id' => $this->org->_id, 'id = ?' => $user_id]);
             $view->set('affiliate', $user);
-            $invoices = Invoice::all(['org_id' => $this->org->_id, 'user_id = ?' => $user_id]);
-            $view->set('invoices', $invoices);
+            $invoices = Invoice::all(['org_id' => $this->org->_id, 'user_id = ?' => $user_id, 'live = ?' => false]);
+            foreach ($invoices as $inv) {
+                $invs[] = $inv;
+            }
+            $view->set('invoices', $invs);
         } else {
             $affiliates = \User::all(['type = ?' => 'publisher', 'org_id' => $this->org->_id], ['id', 'name']);
             $view->set('affiliates', $affiliates);
         }
 
         if (RequestMethods::post("action") == "cpayment") {
-            $meta = [];$items = RequestMethods::post("item");$total = 0;
+            $items = RequestMethods::post("item");
             if ($items) {
                 $amounts = RequestMethods::post("amount");
                 foreach ($items as $key => $item) {
@@ -116,8 +121,12 @@ class Billing extends Admin {
                 }
             }
             if ($invoices) {
-                foreach ($iamount as $ia) {
-                    $total += $ia;
+                foreach ($invs as $ia) {
+                    if (in_array($ia->id, RequestMethods::post("invoice"))) {
+                        $total += $ia->amount;
+                        $ia->live = true;
+                        $ia->save();
+                    }
                 }
             }
             $meta["invoices"] = RequestMethods::post("invoice");
@@ -154,5 +163,59 @@ class Billing extends Admin {
         $view->set('invoices', $invoices)
             ->set('start', $start)
             ->set('end', $end);
+    }
+
+    /**
+     * @before _secure
+     */
+    public function raiseinvoice() {
+        $this->seo(array("title" => "Create Invoice"));
+        $view = $this->getActionView(); $perfs = [];
+
+        $start = RequestMethods::get("start");
+        $end = RequestMethods::get("end");
+        $user_id = RequestMethods::get("user_id", null);
+
+        $view->set('user_id', $user_id)
+            ->set('start', $start)
+            ->set('end', $end);
+
+        $dateQuery = Utils::dateQuery($start, $end);
+        $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
+        $query['user_id'] = $user_id;
+
+        if($user_id) {
+            $user = \User::first(['type = ?' => 'advertiser', 'org_id' => $this->org->_id, 'id = ?' => $user_id]);
+            $view->set('advertiser', $user);
+            $performances = Performance::all($query, ['clicks', 'impressions', 'conversions', 'created', 'revenue'], 'created', 'desc');
+            foreach ($performances as $p) {
+                $perfs[] = $p;
+            }
+            $view->set('performances', $perfs);
+
+            $inv_exist = Invoice::first(["user_id = ?" => $user_id, "start" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]]);
+            if ($inv_exist) {
+                $view->set("message", "Invoice already exist for Date range from ".Framework\StringMethods::only_date($inv_exist->start)." to ".Framework\StringMethods::only_date($inv_exist->end));
+                return;
+            }
+        } else {
+            $advertisers = \User::all(['type = ?' => 'advertiser', 'org_id' => $this->org->_id], ['id', 'name']);
+            $view->set('advertisers', $advertisers);
+        }
+
+        if (RequestMethods::post("action") == "cinvoice" && RequestMethods::post("amount") > 0) {
+            $invoice = new Invoice([
+                "org_id" => $this->org->id,
+                "user_id" => $user->id,
+                "utype" => $user->type,
+                "start" => end($perfs)->created,
+                "end" => $perfs[0]->created,
+                "amount" => RequestMethods::post("amount"),
+                "live" => false
+            ]);
+            $invoice->save();
+
+            $this->redirect("/billing/advertisers.html");
+        }
     }
 }
