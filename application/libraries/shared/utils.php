@@ -266,7 +266,7 @@ class Utils {
 
 			$ip = $ip[0];
 		} else if (isset($headers['X-Forwarded-For'])) {
-			$ipaddr = $headers['Cf-Connecting-Ip'];
+			$ipaddr = $headers['X-Forwarded-For'];
 			$ip = explode(",", $ipaddr);
 
 			$ip = array_pop($ip);

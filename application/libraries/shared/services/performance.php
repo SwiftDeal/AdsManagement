@@ -59,20 +59,13 @@ class Performance {
 	}
 
 	protected static function _addMeta($meta, &$perf) {
-		if (!isset($perf['meta'])) {
-			$perf['meta'] = [];
-		}
-
 		foreach ($meta as $key => $value) {
-			if (!isset($perf['meta'][$key])) {
-				$arr = [];
-			} else {
-				$arr = $perf['meta'][$key];
+			if (!isset($perf[$key])) {
+				$perf[$key] = [];
 			}
-
+			$arr = $perf[$key];
 			ArrayMethods::add($value, $arr);
-			$arr = ArrayMethods::topValues($arr, count($arr));
-			$perf['meta'][$key] = self::clean($arr);
+			$perf[$key] = ArrayMethods::topValues($arr, count($arr));
 		}
 	}
 
@@ -93,10 +86,21 @@ class Performance {
 
 			if (!isset($perf[$date])) {
 				$perf[$date] = [];
+
+				if (count($meta) > 0 && !isset($perf[$date]['meta'])) {
+					$perf[$date]['meta'] = [];
+				}
 			}
 			ArrayMethods::add($from, $perf[$date]);
-			self::_addMeta($meta, $perf[$date]);
+			self::_addMeta($meta, $perf[$date]['meta']);
 		}
+
+		$result = [];	// Clean the keys
+		foreach ($perf as $date => $stat) {
+			$arr = self::clean($stat);
+			$result[$date] = $arr;
+		}
+		$perf = $result;
 	}
 
 	/**
@@ -118,6 +122,8 @@ class Performance {
 		$total = ['meta' => []];
 		foreach ($perf as $key => $value) {
 			ArrayMethods::add($value, $total);
+
+			if (!isset($value['meta']) || !is_array($value['meta'])) continue;
 
 			foreach ($value['meta'] as $k => $v) {
 				if (!isset($total['meta'][$k])) {
