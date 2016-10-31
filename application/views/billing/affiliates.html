@@ -54,7 +54,8 @@
                                             <th>Status</th>
                                             <th>Affiliate</th>
                                             <th>Account Status</th>
-                                            <th>Method</th>
+                                            <th>Start</th>
+                                            <th>End</th>
                                             <th>Amount</th>
                                         </tr>
                                     </thead>
@@ -78,7 +79,8 @@
                                                 <span class="text text-warning">Inactive</span>
                                                 {/else}
                                             </td>
-                                            <td>{echo $i->utype}</td>
+                                            <td><small>{echo Framework\StringMethods::only_date($i->start)}</small></td>
+                                            <td><small>{echo Framework\StringMethods::only_date($i->end)}</small></td>
                                             <td>{echo $user->convert($i->amount)}</td>
                                         </tr>
                                         {/foreach}
@@ -118,10 +120,10 @@
                             </div>
                             {/if}{else}
                             <p class="text-center">No payments has been created till now.</p>
+                            {/else}
                             <p class="text-center">
                                 <a href="/billing/createpayment.html" class="btn btn-success"><i class="fa fa-plus"></i> New Payments</a>
                             </p>
-                            {/else}
                         </div>
                     </div>
                 </div>

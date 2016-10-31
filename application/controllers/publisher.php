@@ -348,7 +348,7 @@ class Publisher extends Auth {
         $this->seo(array("title" => "List Publisher"));$view = $this->getActionView();
 
         $page = RequestMethods::get("page", 1);
-        $limit = RequestMethods::get("limit", 30);
+        $limit = RequestMethods::get("limit", 10);
         $query = ["type = ?" => "publisher", "org_id = ?" => $this->org->_id];
         $property = RequestMethods::get("property", "live");
         $value = RequestMethods::get("value", 0);

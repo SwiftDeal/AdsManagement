@@ -99,7 +99,7 @@
                         <div class="tab-pane" id="profile">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <form role="form" method="post">
+                                    <form role="form" method="post" action="/admin/customization.html#profile">
                                         <div class="form-group">
                                             <label>Name</label>
                                             <input type="text" name="name" value="{echo $user->name}" class="form-control" placeholder="Full Name" required="">
@@ -113,12 +113,12 @@
                                         <div class="form-group">
                                             <label>Currency</label>
                                             <select name="currency" class="form-control" value="{echo $user->currency}">
-                                                <option value="INR">INR <i class="fa fa-inr"></i></option>
-                                                <option value="USD">USD <i class="fa fa-usd"></i></option>
-                                                <option value="PKR">PKR <i class="fa fa-inr"></i></option>
-                                                <option value="AUD">AUD <i class="fa fa-usd"></i></option>
-                                                <option value="EUR">EUR <i class="fa fa-eur"></i></option>
-                                                <option value="GBP">GBP <i class="fa fa-gbp"></i></option>
+                                                <option value="INR">INR</option>
+                                                <option value="USD">USD</option>
+                                                <option value="PKR">PKR</option>
+                                                <option value="AUD">AUD</option>
+                                                <option value="EUR">EUR</option>
+                                                <option value="GBP">GBP</option>
                                             </select>
                                             <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "currency")}</span>
                                         </div>

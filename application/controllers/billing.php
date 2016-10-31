@@ -39,23 +39,29 @@ class Billing extends Admin {
      */
     public function createinvoice() {
         $this->seo(array("title" => "Create Invoice"));
-        $view = $this->getActionView();
+        $view = $this->getActionView(); $perfs = [];
 
         $start = RequestMethods::get("start");
         $end = RequestMethods::get("end");
+        $user_id = RequestMethods::get("user_id", null);
+
+        $view->set('user_id', $user_id)
+            ->set('start', $start)
+            ->set('end', $end);
 
         $diff = date_diff(new DateTime($start), new DateTime($end));
         $dateQuery = Utils::dateQuery($start, $end);
         $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
-
-        $user_id = RequestMethods::get("user_id", null);
         $query = [ "user_id" => Utils::mongoObjectId($user_id)];
 
         if($user_id) {
             $user = \User::first(['type = ?' => 'publisher', 'org_id' => $this->org->_id, 'id = ?' => $user_id]);
             $view->set('affiliate', $user);
-            $performances = Performance::all($query);
-            $view->set('performances', $performances);
+            $performances = Performance::all($query, ['clicks', 'impressions', 'conversions', 'created', 'revenue'], 'created', 'desc');
+            foreach ($performances as $p) {
+                $perfs[] = $p;
+            }
+            $view->set('performances', $perfs);
 
             $inv_exist = Invoice::first($query);
             if ($inv_exist) {
@@ -67,17 +73,13 @@ class Billing extends Admin {
             $view->set('affiliates', $affiliates);
         }
 
-        $view->set('user_id', $user_id)
-            ->set('start', $start)
-            ->set('end', $end);
-
         if (RequestMethods::post("action") == "cinvoice" && RequestMethods::post("amount") > 0) {
             $invoice = new Invoice([
                 "org_id" => $this->org->id,
                 "user_id" => $user->id,
                 "utype" => $user->type,
-                "start" => $start,
-                "end" => $end,
+                "start" => $perfs[0]->created,
+                "end" => end($perfs)->created,
                 "period" => $diff->format("%a"),
                 "amount" => RequestMethods::post("amount")
             ]);
