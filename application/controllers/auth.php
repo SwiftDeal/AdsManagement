@@ -273,17 +273,6 @@ class Auth extends Controller {
     }
 
     /**
-     * @protected
-     */
-    public function _publisher() {
-        parent::_secure();
-        if ($this->user->type !== 'publisher' || !$this->org) {
-            $this->_404();
-        }
-        $this->setLayout("layouts/publisher");
-    }
-
-    /**
      * @before _admin
      */
     public function delete($record_id) {

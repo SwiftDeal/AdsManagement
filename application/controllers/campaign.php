@@ -130,6 +130,7 @@ class Campaign extends Admin {
             $meta = $session->get('Campaign\Create:$meta');
         }
         $view->set("meta", $meta)
+            ->set("type", RequestMethods::get("type"))
             ->set("errors", []);
     }
 

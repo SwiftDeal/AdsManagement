@@ -16,23 +16,41 @@ class Advertiser extends Auth {
      */
     public function index() {
         $this->seo(array("title" => "Dashboard", "description" => "Stats for your Data"));
-        $view = $this->getActionView();
-        $start = RequestMethods::get("start", date('Y-m-d', strtotime('-7 day')));
-        $end = RequestMethods::get("end", date('Y-m-d'));
+        $view = $this->getActionView();$commissions = []; $clicks = 0;$d = 1;
 
-        $transactions = \Transaction::all([
-            "user_id = ?" => $this->user->_id,
-            "created = ?" => Db::dateQuery($start, $end)
-        ], ['amount']);
+        $ads = Ad::all([
+            "org_id = ?" => $this->org->_id, "user_id = ?" => $this->user->id
+        ], ["_id"]);
+        $in = array_keys($ads);
 
-        $paid = 0.00;
-        foreach ($transactions as $t) {
-            $paid += $t->amount;
-        }
+        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('now')));
+        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        $dateQuery = Utils::dateQuery($start, $end);
+        $clickCol = Registry::get("MongoDB")->clicks;
+        $clicks = Db::query('Click', [
+            "adid" => ['$in' => $in], "is_bot" => false,
+            "created" => Db::dateQuery($start, $end)
+        ], ['adid', 'country']);
 
-        $view->set("start", $start);
-        $view->set("end", $end)
-            ->set("paid", $paid);
+        $notifications = Notification::all([
+            "org_id = ?" => $this->org->id,
+            "meta = ?" => ['$in' => ['all', $this->user->_id]]
+        ], [], "created", "desc", 5, 1);
+        
+        $total = Performance::overall(
+            Utils::dateQuery([
+                'start' => strftime("%Y-%m-%d", strtotime('-365 day')),
+                'end' => strftime("%Y-%m-%d", strtotime('-1 day'))
+            ]),
+            $this->user
+        );
+        
+        $view->set("start", strftime("%Y-%m-%d", strtotime('-7 day')))
+            ->set("end", strftime("%Y-%m-%d", strtotime('now')))
+            ->set("notifications", $notifications)
+            ->set("total", $total)
+            ->set("yesterday", strftime("%B %d, %Y", strtotime('-1 day')))
+            ->set("performance", $this->perf($clicks, ['type' => 'publisher', 'publisher' => $this->user], ['start' => $start, 'end' => $end]));
     }
 
     /**

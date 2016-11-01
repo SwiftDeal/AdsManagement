@@ -10,7 +10,7 @@ use Framework\Registry as Registry;
 use Framework\ArrayMethods as ArrayMethods;
 use Framework\RequestMethods as RequestMethods;
 
-class Insight extends Admin {
+class Insight extends Auth {
 	/**
 	 * @readwrite
 	 * @var string
@@ -23,13 +23,21 @@ class Insight extends Admin {
 	 */
 	protected $_end = null;
 
+    /**
+     * @readwrite
+     * @var integer
+     */
+    protected $_user_id = null;
+
 	public function __construct($opts = []) {
 		parent::__construct($opts);
 
 		$start = RequestMethods::get('start', date('Y-m-d'));
 		$end = RequestMethods::get('end', date('Y-m-d'));
+        $user_id = RequestMethods::get("user_id", null);
 
 		$this->start = $start; $this->end = $end;
+        $this->user_id = $user_id;
 	}
 
     /**
@@ -150,12 +158,12 @@ class Insight extends Admin {
      * @before _secure
      * @after setDate
      */
-    public function advertisers($id = null) {
+    public function advertisers() {
         $this->seo(["title" => "Advertiser Stats"]);
         $view = $this->getActionView(); $org = $this->org;
 
-        if ($id) {
-            $advertiser = User::first(['_id' => $id, 'org_id' => $org->_id, 'type' => 'advertiser']);
+        if ($this->user_id) {
+            $advertiser = User::first(['_id' => $this->user_id, 'org_id' => $org->_id, 'type' => 'advertiser']);
             if (!$advertiser) $this->_404();
             $in = [$advertiser->_id];
         } else {

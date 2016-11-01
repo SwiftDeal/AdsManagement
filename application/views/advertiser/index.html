@@ -1,64 +1,131 @@
-<!-- Page-Title -->
 <div class="row">
-    <div class="col-sm-12">
-        <form class="form-inline pull-right" role="form" id="range" method="get">
-            <div class="form-group">
-                <div class="input-group">
-                    <label class="sr-only">From</label>
-                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> From</span>
-                    <input type="date" style="width: 180px" name="start" class="form-control" value="{$start}" />
-                </div>
+    <div class="col-lg-3">
+        <div class="panel panel-default panel-border">
+            <div class="panel-heading">
+                <h3 class="panel-title text-center">Clicks <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Yesterday Clicks recieved, updated everyday 1:00 AM (IST)"></i></h3>
             </div>
-            <div class="form-group">
-                <div class="input-group">
-                    <label class="sr-only">To</label>
-                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> To</span>
-                    <input type="date" style="width: 180px" name="end" class="form-control" value="{$end}" />
-                </div>
+            <div class="table-responsive panel-body">
+                <table class="table">
+                    <tr>
+                        <th>Today</th>
+                        <td>{echo Shared\Markup::nice_number($performance->clicks)}</td>
+                    </tr>
+                    <tr>
+                        <th>Yesterday</th>
+                        <td>{echo Shared\Markup::nice_number($total["clicks"][$yesterday])}</td>
+                    </tr>
+                    <tr>
+                        <th>Overall</th>
+                        <td>{echo Shared\Markup::nice_number($total["total_clicks"] + $performance->clicks)}</td>
+                    </tr>
+                </table>
             </div>
-            <input type="hidden" name="user_id" value="{echo $user->_id}">
-            <button type="submit" class="btn btn-primary">Show</button>
-        </form>
-        <h4 class="page-title">Dashboard</h4>
-    </div>
-</div>
-<!-- Page-Title -->
-<div class="row">
-    <div class="col-sm-6 col-lg-3">
-        <div class="text-center card-box">
-            <h3 class="text-success" id="click">0</h3>
-            <p class="text-muted text-nowrap">Clicks</p>
         </div>
     </div>
-    <div class="col-sm-6 col-lg-3">
-        <div class="text-center card-box">
-            <h3 class="text-pink" id="earning">0</h3>
-            <p class="text-muted text-nowrap">Debit</p>
+    {script $totalimpr = $total["total_impressions"] + $performance->impressions}
+    <div class="col-lg-3">
+        <div class="panel panel-border panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title text-center">Impressions</h3>
+            </div>
+            <div class="table-responsive panel-body">
+                <table class="table">
+                    <tr>
+                        <th>Today</th>
+                        <td>{echo Shared\Markup::nice_number($performance->impressions)}</td>
+                    </tr>
+                    <tr>
+                        <th>Yesterday</th>
+                        <td>{echo Shared\Markup::nice_number($total["impressions"][$yesterday])}</td>
+                    </tr>
+                    <tr>
+                        <th>Overall</th>
+                        <td>{echo Shared\Markup::nice_number($totalimpr)}</td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
-    <div class="col-sm-6 col-lg-3">
-        <div class="text-center card-box">
-            <h3 class="text-info" id="impressions">0</h3>
-            <p class="text-muted text-nowrap">Impressions</p>
+    {script $totalConv = $total["total_conversions"] + $performance->conversions}
+    <div class="col-lg-3">
+        <div class="panel panel-border panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title text-center">Conversions</h3>
+            </div>
+            <div class="table-responsive panel-body">
+                <table class="table">
+                    <tr>
+                        <th>Today</th>
+                        <td>{echo Shared\Markup::nice_number($performance->conversions)}</td>
+                    </tr>
+                    <tr>
+                        <th>Yesterday</th>
+                        <td>{echo Shared\Markup::nice_number($total["conversions"][$yesterday])}</td>
+                    </tr>
+                    <tr>
+                        <th>Overall</th>
+                        <td>{echo Shared\Markup::nice_number($totalConv)}</td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
-    <div class="col-sm-6 col-lg-3">
-        <div class="text-center card-box">
-            <h3 class="text-inverse counter">{echo $paid}</h3>
-            <p class="text-muted text-nowrap">Payout Done</p>
+    <div class="col-lg-3">
+        <div class="panel panel-border panel-inverse">
+            <div class="panel-heading">
+                <h3 class="panel-title text-center">Revenue</h3>
+            </div>
+            <div class="table-responsive panel-body">
+                <table class="table">
+                    <tr>
+                        <th>Today</th>
+                        <td>{echo $user->convert($performance->revenue)}</td>
+                    </tr>
+                    <tr>
+                        <th>Yesterday</th>
+                        <td>{echo $user->convert($total["payouts"][$yesterday])}</td>
+                    </tr>
+                    <tr>
+                        <th>Overall</th>
+                        <td>{echo $user->convert($total["total_payouts"] + $performance->revenue)}</td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 <div class="row">
     <div class="col-lg-12">
-        <div class="card-box">
-            <h4 class="text-dark  header-title m-t-0 m-b-30">Performance Last 7 Days</h4>
-            <div id="clickstats" style="height: 300px;"></div>
+        <div class="portlet">
+            <div class="portlet-heading portlet-default">
+                <h3 class="portlet-title text-dark">Performance Last 7 Days</h3>
+                <div class="portlet-widgets">
+                    <form class="form-inline" role="form" id="range" method="get">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="sr-only">From</label>
+                                <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> From</span>
+                                <input type="date" style="width: 180px" name="start" class="form-control" value="{$start}" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="sr-only">To</label>
+                                <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> To</span>
+                                <input type="date" style="width: 180px" name="end" class="form-control" value="{$end}" />
+                            </div>
+                        </div>
+                        <input type="hidden" name="user_id" value="{echo $user->_id}">
+                        <button type="submit" class="btn btn-primary">Show</button>
+                    </form>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div id="bg-default" class="panel-collapse collapse in">
+                <div class="portlet-body">
+                    <canvas id="perfstats" height="300"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<script type="text/javascript">
-$(document).ready(function() {
-    advert_home();
-});
-</script>

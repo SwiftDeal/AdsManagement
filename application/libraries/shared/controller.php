@@ -67,6 +67,28 @@ namespace Shared {
             }
         }
 
+        /**
+         * @protected
+         */
+        public function _publisher() {
+            $this->_secure();
+            if ($this->user->type !== 'publisher' || !$this->org) {
+                $this->_404();
+            }
+            $this->setLayout("layouts/publisher");
+        }
+
+        /**
+         * @protected
+         */
+        public function _advertiser() {
+            $this->_secure();
+            if ($this->user->type !== 'advertiser' || !$this->org) {
+                $this->_404();
+            }
+            $this->setLayout("layouts/advertiser");
+        }
+
         public function currency($n) {
             $n = (float) $n;
             $user = $this->getUser();

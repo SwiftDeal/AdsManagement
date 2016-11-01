@@ -226,5 +226,5 @@ File: Chartjs
 //initializing
 function($) {
     "use strict";
-    $.ChartJs.init()
+    //$.ChartJs.init()
 }(window.jQuery);
