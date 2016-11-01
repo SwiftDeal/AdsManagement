@@ -32,7 +32,7 @@ class Insight extends Auth {
 	public function __construct($opts = []) {
 		parent::__construct($opts);
 
-		$start = RequestMethods::get('start', date('Y-m-d'));
+		$start = RequestMethods::get('start', date('Y-m-d', strtotime("-1 day")));
 		$end = RequestMethods::get('end', date('Y-m-d'));
         $user_id = RequestMethods::get("user_id", null);
 

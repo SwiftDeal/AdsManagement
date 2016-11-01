@@ -65,9 +65,9 @@ class Cron extends Shared\Controller {
         $this->log('Starting Memory at: ' . memory_get_usage());
 
         $this->_performance();
+        $this->log('Peak Memory at: ' . memory_get_peak_usage());
         $this->_webPerf();
         $this->_rssFeed();
-        $this->log('Peak Memory at: ' . memory_get_peak_usage());
 
         // $this->_test();
     }
