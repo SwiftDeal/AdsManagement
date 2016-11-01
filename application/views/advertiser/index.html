@@ -100,7 +100,7 @@
             <div class="portlet-heading portlet-default">
                 <h3 class="portlet-title text-dark">Performance Last 7 Days</h3>
                 <div class="portlet-widgets">
-                    <form class="form-inline" role="form" id="range" method="get">
+                    <form class="form-inline" role="form" id="indexrange" method="get">
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="sr-only">From</label>
@@ -122,10 +122,15 @@
                 <div class="clearfix"></div>
             </div>
             <div id="bg-default" class="panel-collapse collapse in">
-                <div class="portlet-body">
+                <div class="portlet-body" id="graph-container">
                     <canvas id="perfstats" height="300"></canvas>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    advertiser.insights();
+});
+</script>

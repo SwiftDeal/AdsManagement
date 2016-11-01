@@ -6,54 +6,57 @@
         }
 
         Advertiser.prototype = {
-            home: function () {
-                request.get({ url: "insight/advertisers", data: $('#range').serialize()}, function(err, data) {
-                    console.log(data);
-                    //creating lineChart
+            insights: function () {
+                request.get({ url: "insight/advertisers", data: $('#indexrange').serialize()}, function(err, data) {
+                    var x = [], clicks = [], conversions = [], impressions = [], revenue = [];
+                    $.each(data.stats, function(i, val) {
+                        x.push(i);
+                        clicks.push(val.clicks);
+                        conversions.push(val.conversions);
+                        impressions.push(val.impressions);
+                        revenue.push($.Components.convertTo(val.revenue, data.user._currency));
+                    });
                     var lineChart = {
-                        labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September"],
+                        labels: x,
                         datasets: [
-                            {
-                                label: "Sales Analytics",
-                                fill: false,
-                                lineTension: 0.1,
-                                backgroundColor: "#228bdf",
-                                borderColor: "#228bdf",
-                                borderCapStyle: 'butt',
-                                borderDash: [],
-                                borderDashOffset: 0.0,
-                                borderJoinStyle: 'miter',
-                                pointBorderColor: "#228bdf",
-                                pointBackgroundColor: "#fff",
-                                pointBorderWidth: 1,
-                                pointHoverRadius: 5,
-                                pointHoverBackgroundColor: "#228bdf",
-                                pointHoverBorderColor: "#eef0f2",
-                                pointHoverBorderWidth: 2,
-                                pointRadius: 1,
-                                pointHitRadius: 10,
-                                data: [65, 59, 80, 81, 56, 55, 40, 35, 30]
-                            }
+                            $.ChartJs.lineChart({
+                                label: "Clicks",
+                                color: "#36A2EB",
+                                data: clicks
+                            }),
+                            $.ChartJs.lineChart({
+                                label: "Conversions",
+                                color: "#FFCE56",
+                                data: conversions
+                            }),
+                            $.ChartJs.lineChart({
+                                label: "Impressions",
+                                color: "#FAA43A",
+                                data: impressions
+                            }),
+                            $.ChartJs.lineChart({
+                                label: "Revenue",
+                                color: "#4BC0C0",
+                                data: revenue
+                            })
                         ]
                     };
-
-                    var lineOpts = {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    max: 100,
-                                    min: 20,
-                                    stepSize: 10
-                                }
-                            }]
-                        }
-                    };
-
-                    $.ChartJs.respChart($("#perfstats"),'Line',lineChart, lineOpts);
+                    $.ChartJs.respChart($("#perfstats"),'Line',lineChart, {});
                 });  
             },
+            index: function () {
+                var $this = this;
+                $('#indexrange').submit(function(e) {
+                    e.preventDefault();
+                    $('#perfstats').remove();
+                    $('#graph-container').append('<canvas id="perfstats" height="300"></canvas>');
+                    $('#indexrange button').addClass('disabled');
+                    $this.insights();
+                    $('#indexrange button').removeClass('disabled');
+                });
+            },
             init: function () {
-                this.home();
+                this.index();
             }
         };
         return Advertiser;
