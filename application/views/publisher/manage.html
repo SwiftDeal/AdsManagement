@@ -64,6 +64,9 @@
                                             &nbsp;{if(array_key_exists("campaign", $p->meta))}
                                             <i class="fa fa-money" data-toggle="tooltip" data-placement="top" data-original-title='Model: {echo $p->meta["campaign"]["model"]} with Payout: {echo $user->convert($p->meta["campaign"]["rate"], false)}'></i>
                                             {/if}
+                                            &nbsp;{if(array_key_exists("tdomain", $p->meta))}
+                                            <i class="fa fa-globe" data-toggle="tooltip" data-placement="top" data-original-title='Tracking Domain: {echo $p->meta["tdomain"]}'></i>
+                                            {/if}
                                         </td>
                                         <td>{echo Shared\Markup::nice_number($perf['clicks'])}</td>
                                         <td>{echo $user->convert($perf['revenue'])}</td>

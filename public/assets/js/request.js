@@ -1,3 +1,10 @@
+/**
+ * Request Library a wrapper around jQuery Ajax
+ * @param  {Object} window The Global window object
+ * @param  {function} $      jQuery function
+ * @return {Object}        A new object of the library
+ * @author  Hemant Mann http://github.com/Hemant-Mann
+ */
 (function (window, $) {
     var Request = (function () {
         function Request() {

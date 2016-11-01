@@ -1,7 +1,0 @@
-Developer : Faizan Ayubi
-Email : faizan@cloudstuff.tech
-Organization : CloudStuff
-
-Developer : Hemant Mann
-Email : hemant@cloudstuff.tech
-Organization : CloudStuff

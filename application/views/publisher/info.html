@@ -50,6 +50,12 @@
                         </a>
                     </li>
                     <li class="">
+                        <a href="#performance" data-toggle="tab" aria-expanded="false">
+                            <span class="visible-xs"><i class="fa fa-pie-chart"></i></span>
+                            <span class="hidden-xs">Performance</span>
+                        </a>
+                    </li>
+                    <li class="">
                         <a href="/billing/affiliates.html?user_id={echo $publisher->id}">
                             <span class="visible-xs"><i class="fa fa-file-text-o"></i></span>
                             <span class="hidden-xs">Invoices</span>
@@ -220,6 +226,30 @@
                             <a href="/admin/customization.html#affiliate" class="btn btn-info btn-sm"><i class="fa fa-plus"></i> Add Custom Fields</a>
                         </p>
                     {/else}
+                    </div>
+                    <div class="tab-pane" id="performance">
+                        <div class="row">
+                            <form class="form-inline text-center" role="form" id="range">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <label class="sr-only">From</label>
+                                        <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> From</span>
+                                        <input type="date" style="width: 180px" name="start" class="form-control" value="{$start}" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <label class="sr-only">To</label>
+                                        <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> To</span>
+                                        <input type="date" style="width: 180px" name="end" class="form-control" value="{$end}" />
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Show</button>
+                            </form>
+                            <div class="col-md-6">
+                                <canvas id="doughnut" height="300"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

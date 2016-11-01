@@ -128,7 +128,7 @@ class User extends Shared\Model {
             case 'pkr':
                 $places = 3;
                 $n = (float) ($n * 104);
-                $prefix = '<i class="fa fa-inr"></i> ';
+                $prefix = 'Rs. ';
                 break;
 
             case 'aud':
