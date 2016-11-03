@@ -56,12 +56,11 @@
         $.fn.niceScroll && $(".nicescroll").niceScroll({ cursorcolor: '#98a6ad', cursorwidth: '6px', cursorborderradius: '5px' });
     },
 
-    Components.prototype.initSelect2 = function() {
+    Components.prototype.initSelectPicker = function() {
         $('select[value]').each(function () {
             $(this).val(this.getAttribute("value"));
         });
-        $('select').select2();
-        $('.noselect2').select2('destroy');
+        $('.noselect2').selectpicker('destroy');
 
         // This is for adding 'selected="true"' on <option> of <select> tag
         var selectTags = $('.selectVal');
@@ -85,6 +84,19 @@
         });
         $("input[type=date]").on('changeDate', function(ev){
             $(this).datepicker('hide');
+        });
+    },
+
+    Components.prototype.initNavTabs = function() {
+        // Javascript to enable link to tab
+        var url = document.location.toString();
+        if (url.match('#')) {
+            $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+        }
+
+        // Change hash for page-reload
+        $('.nav-tabs a').on('shown.bs.tab', function (e) {
+            window.location.hash = e.target.hash;
         });
     },
 
@@ -130,8 +142,9 @@
         this.initGA(),
         this.initPopoverPlugin(),
         this.initNiceScrollPlugin(),
-        this.initSelect2(),
+        this.initSelectPicker(),
         this.initDatePicker(),
+        this.initNavTabs(),
         this.initNavbar();
     },
 
