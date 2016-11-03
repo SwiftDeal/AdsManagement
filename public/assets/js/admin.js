@@ -6,7 +6,7 @@
         }
 
         Admin.prototype = {
-            insights: function () {
+            performance: function () {
                 request.get({ url: "insight/organization", data: $('#indexrange').serialize()}, function(err, data) {
                     var x = [], clicks = [], conversions = [], impressions = [], revenue = [];
                     $.each(data.stats, function(i, val) {
@@ -41,17 +41,17 @@
                             })
                         ]
                     };
-                    $.ChartJs.respChart($("#perfstats"),'Line',lineChart, {});
+                    $.ChartJs.respChart($("#perfstat"),'Line',lineChart, {});
                 });  
             },
             index: function () {
                 var $this = this;
                 $('#indexrange').submit(function(e) {
                     e.preventDefault();
-                    $('#perfstats').remove();
-                    $('#graph-container').append('<canvas id="perfstats" height="300"></canvas>');
+                    $('#perfstat').remove();
+                    $('#perf-stat').append('<canvas id="perfstat" height="300"></canvas>');
                     $('#indexrange button').addClass('disabled');
-                    $this.insights();
+                    $this.performance();
                     $('#indexrange button').removeClass('disabled');
                 });
             },
@@ -129,6 +129,33 @@
                     var input = self.parent().parent().find('input');
                     input.remove();
                     self.remove();
+                });
+            },
+            customization: function () {
+                $("input[type=checkbox]").click(function() {
+                    if ($("#affoption").is(":checked")) 
+                        $(".affauto").removeClass('hide');
+                    else 
+                        $(".affauto").addClass('hide');
+                });
+            },
+            notification: function () {
+                $('#targetSelect').on('change', function (e) {
+                    e.preventDefault();
+
+                    
+                    var el = $('#listUsers');
+                    var type = $(this).val();
+                    el.html(' ');
+                    el.append('<option value="' + def._id + '">' + def.name + '</option>');
+
+                    request.get({url: 'admin/notification'}, function (err, d) {
+                        var opts = d[type];
+                        opts.forEach(function (opt) {
+                            el.append('<option value="' + opt._id + '">' + opt.name + '</option>');
+                        });
+                        el.selectpicker('refresh');
+                    });
                 });
             },
             init: function () {

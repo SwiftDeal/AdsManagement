@@ -27,7 +27,7 @@ class Performance {
 				$pubPerf = Perf::all([
 					'user_id' => ['$in' => $publishers],
 					'created' => Db::dateQuery($start, $end)
-				], $perfFields, 'created', 'desc');
+				], $perfFields, 'created', 'asc');
 				$pubPerf = Perf::objectArr($pubPerf, $perfFields);
 				return $pubPerf;
 			
@@ -38,7 +38,7 @@ class Performance {
 				$advertPerf = Perf::all([
 					'user_id' => ['$in' => $advertisers],
 					'created' => Db::dateQuery($start, $end)
-				], $fields, 'created', 'desc');
+				], $fields, 'created', 'asc');
 				$advertPerf = Perf::objectArr($advertPerf, $fields);
 				return $advertPerf;
 		}

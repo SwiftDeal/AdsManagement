@@ -45,21 +45,7 @@
     </div>
 </div>
 <script type="text/javascript">
-    $('#targetSelect').on('change', function (e) {
-        e.preventDefault();
-
-        
-        var el = $('#listUsers');
-        var type = $(this).val();
-        el.html(' ');
-        el.append('<option value="' + def._id + '">' + def.name + '</option>');
-
-        request.get({url: 'admin/notification'}, function (err, d) {
-            var opts = d[type];
-            opts.forEach(function (opt) {
-                el.append('<option value="' + opt._id + '">' + opt.name + '</option>');
-            });
-            el.selectpicker('refresh');
-        });
-    });
+jQuery(document).ready(function($) {
+    admin.notification();
+});
 </script>

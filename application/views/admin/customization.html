@@ -283,10 +283,7 @@
     </div>
 </div>
 <script type="text/javascript">
-$("input[type=checkbox]").click(function() {
-    if ($("#affoption").is(":checked")) 
-        $(".affauto").removeClass('hide');
-    else 
-        $(".affauto").addClass('hide');
+jQuery(document).ready(function($) {
+    admin.customization();
 });
 </script>
