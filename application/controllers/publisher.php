@@ -497,25 +497,37 @@ class Publisher extends Auth {
         }
 
         if (RequestMethods::type() === 'DELETE') {
-            $meta = $publisher->meta; $publisher->removeFields();
-            unset($meta['afields']);
-            Db::updateRaw('users', [
-                '_id' => Db::convertType($publisher->_id, 'id')
-            ], ['$set' => ['meta' => $meta]]);
-            $view->set('message', 'Data Removed!!');
+            $action = RequestMethods::get("action");
+            switch ($action) {
+                case 'payoutdel':
+                    $meta = $publisher->meta;
+                    unset($meta['campaign']);
+                    if (empty($meta)) {
+                        $publisher->meta = "";
+                    } else {
+                        $publisher->meta = $meta;
+                    }
+                    $publisher->save();
+                    $view->set('message', 'Payout Deleted!!');
+                    break;
+                
+                case 'afields':
+                    $meta = $publisher->meta; $publisher->removeFields();
+                    unset($meta['afields']);
+                    Db::updateRaw('users', [
+                        '_id' => Db::convertType($publisher->_id, 'id')
+                    ], ['$set' => ['meta' => $meta]]);
+                    $view->set('message', 'Data Removed!!');
+                    break;
+
+                case 'defaultDomain':
+                    unset($publisher->getMeta()['tdomain']);
+                    $publisher->save();
+                    $view->set('message', 'Removed tracking domain!!');
+                    break;
+            }
         }
 
-        if (RequestMethods::get("action") == "payoutdel") {
-            $meta = $publisher->meta;
-            unset($meta['campaign']);
-            if (empty($meta)) {
-                $publisher->meta = "";
-            } else {
-                $publisher->meta = $meta;
-            }
-            $publisher->save();
-            $view->set('message', 'Payout Deleted!!');
-        }
         $view->set("publisher", $publisher);
         $afields = Meta::search('customField', $this->org);
         $view->set('afields', $afields);
