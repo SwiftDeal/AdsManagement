@@ -133,12 +133,12 @@ class Insight extends Auth {
      * @before _secure
      * @after setDate
      */
-    public function publishers($id = null) {
+    public function publishers() {
         $this->seo(["title" => "Publisher Stats"]);
         $view = $this->getActionView(); $org = $this->org;
 
-        if ($id) {
-            $publisher = User::first(['_id' => $id, 'org_id' => $org->_id, 'type' => 'publisher']);
+        if ($this->user_id) {
+            $publisher = User::first(['_id' => $this->user_id, 'org_id' => $org->_id, 'type' => 'publisher']);
             if (!$publisher) $this->_404();
             $in = [$publisher->_id];
         } else {

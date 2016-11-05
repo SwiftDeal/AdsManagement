@@ -1,13 +1,19 @@
+/**
+Author: vNative Dev Team
+Email: info@vnative.com
+File: Admin Controller
+*/
 (function (window, $) {
     "use strict";
     var Admin = (function () {
         function Admin() {
-            
+            this.url = "insight/organization";
         }
 
         Admin.prototype = {
             performance: function () {
-                request.get({ url: "insight/organization", data: $('#indexrange').serialize()}, function(err, data) {
+                var $this = this;
+                request.get({ url: $this.url, data: $('#indexrange').serialize()}, function(err, data) {
                     var x = [], clicks = [], conversions = [], impressions = [], revenue = [];
                     $.each(data.stats, function(i, val) {
                         x.push(i);
@@ -42,7 +48,47 @@
                         ]
                     };
                     $.ChartJs.respChart($("#perfstat"),'Line',lineChart, {});
-                });  
+                    
+                    //Country wise visitor
+                    $.VectorMap.init({
+                        country: data.total.meta.country
+                    });
+
+                    //Referer
+                    $.each(data.total.meta.referer, function(i, val) {
+                        $('#topreferer').append('<tr><td>'+ i +'</td><td>'+ val +'</td></tr>');
+                    });
+
+                    //device
+                    var device = data.total.meta.device,
+                        pieChart = {
+                        labels: [
+                            "Desktops",
+                            "Tablets",
+                            "Mobiles"
+                        ],
+                        datasets: [{
+                            data: [device['desktop'], device['tablet'], device['mobile']],
+                            backgroundColor: [
+                                "#228bdf",
+                                "#00b19d",
+                                "#7266ba"
+                            ],
+                            hoverBackgroundColor: [
+                                "#228bdf",
+                                "#00b19d",
+                                "#7266ba"
+                            ],
+                            hoverBorderColor: "#fff"
+                        }]
+                    };
+                    $.ChartJs.respChart($("#devicestat"),'Pie',pieChart);
+
+                    //OS
+                    $.each(data.total.meta.os, function(i, val) {
+                        $('#topos').append('<tr><td>'+ i +'</td><td>'+ val +'</td></tr>');
+                    });
+                });
             },
             index: function () {
                 var $this = this;
@@ -51,6 +97,7 @@
                     $('#perfstat').remove();
                     $('#perf-stat').append('<canvas id="perfstat" height="300"></canvas>');
                     $('#indexrange button').addClass('disabled');
+                    $('#topreferer').html('');
                     $this.performance();
                     $('#indexrange button').removeClass('disabled');
                 });
@@ -156,6 +203,89 @@
                         });
                         el.selectpicker('refresh');
                     });
+                });
+            },
+            createpayment: function () {
+                $("#addmore").click(function (e) {
+                    e.preventDefault();
+                    var item = $("#item").html();
+                    $("#addmform").prepend("<tr>" + item + "</tr>");
+                });
+            },
+            campaignCreate: function (advertisers, currency) {
+                $(".comm").click(function (e) {
+                    e.preventDefault();
+                    var btn = $(this).closest("div");
+                    btn.remove();
+                });
+                $("input[type=radio]").click(function() {
+                    if($('#vpublic').is(':checked'))
+                        $('#perm').show();
+                    else
+                        $('#perm').hide();
+                });
+
+                $('#advertiserSelect').on('change', function (e) {
+                    var id = $(this).val();
+                    var advert = advertisers[id];
+                    var campaign = advert.meta.campaign || {};
+
+                    var model = campaign.model || "cpc";
+                    var revenue = campaign.rate || 0.25;
+                    $('.model').val(model);
+                    $('.advertiserRate').val($.Components.convertTo(revenue, currency));
+                });
+            },
+            campaignDetails: function (advertisers, link, reqData) {
+                $('#selectAdvert').on('change', function (e) {
+                    e.preventDefault();
+
+                    var el = $('#testingPixel');
+                    window.currentAdvert = $(this).val();
+                    $('#requestResult').html('');
+                    el.text('<img src="' + link + '&advert_id=' + window.currentAdvert + '">');
+                });
+
+                $('#checkStatus').on('click', function (e) {
+                    e.preventDefault();
+                    request.get( {
+                        url: 'advertiser/manage', data: reqData
+                    }, function (err, d) {
+
+                        var resultEl = $('#requestResult');
+                        $.each(d.advertisers, function (i, el) {
+                            // check for pixel in meta
+                            var meta = el._meta || {};
+                            var status = meta.pixel, found = false;
+
+                            if (status === "working" && el.__id == window.currentAdvert)
+                                found = true;
+                            else
+                                resultEl.addClass('label-danger').removeClass('label-success').html('Pixel not added on website, Please add the pixel or contact account manager');
+
+                            if (found)
+                                resultEl.addClass('label-success').removeClass('label-danger').html('It is working!!');
+
+                            if (found)
+                                return false;
+                        });
+                    }
+                    );
+                });
+            },
+            contest: function () {
+                $('#contestType').on('change', function () {
+                    var current = $(this).val();
+                    var opts = $(this).find('option');
+
+                    // hide all the other types dialog boxes
+                    $.each(opts, function (i, el) {
+                        var selector = $('#' + $(el).val());
+                        if (!selector.hasClass('hide')) {
+                            selector.addClass('hide');
+                        }
+                    });
+                    $('#' + current).removeClass('hide');
                 });
             },
             init: function () {

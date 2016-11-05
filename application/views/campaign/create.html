@@ -225,28 +225,8 @@
         </div>
     </div>
 </div>
-<script src="{echo CDN}js/misc.js"></script>
 <script type="text/javascript">
-    $(".comm").click(function (e) {
-        e.preventDefault();
-        var btn = $(this).closest("div");
-        btn.remove();
-    });
-    $("input[type=radio]").click(function() {
-        if($('#vpublic').is(':checked'))
-            $('#perm').show();
-        else
-            $('#perm').hide();
-    });
-
-    $('#advertiserSelect').on('change', function (e) {
-        var id = $(this).val();
-        var advert = advertisers[id];
-        var campaign = advert.meta.campaign || {};
-
-        var model = campaign.model || "cpc";
-        var revenue = campaign.rate || 0.25;
-        $('.model').val(model);
-        $('.advertiserRate').val(Main.convertTo(revenue, currency));
-    });
+jQuery(document).ready(function($) {
+    admin.campaignCreate(advertisers, currency);
+});
 </script>

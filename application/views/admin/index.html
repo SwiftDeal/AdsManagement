@@ -136,6 +136,44 @@
                 </div>
             </div>
             <div class="row">
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="text-dark  header-title m-t-0">Country</h4>
+                        <div id="country" style="height: 300px"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="text-dark  header-title m-t-0">Top Referers</h4>
+                        <div class="table-responsive nicescroll" style="height: 300px">
+                            <table class="table">
+                                <tbody id="topreferer"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="text-dark  header-title m-t-0">Device</h4>
+                        <div id="device-stat">
+                            <canvas id="devicestat" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="text-dark  header-title m-t-0">OS</h4>
+                        <div class="table-responsive nicescroll" style="height: 300px">
+                            <table class="table">
+                                <tbody id="topos"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
                 {script $widgets = $org->meta["widgets"] ?? []}
                 {if in_array("top10pubs", $widgets)}
                 <div class="col-md-{echo $d}">
@@ -182,6 +220,10 @@
         <!-- end container -->
     </div>
 </div>
+<link rel="stylesheet" type="text/css" href="{echo CDN}plugins/jvectormap/jquery-jvectormap-2.0.3.css">
+<script src="{echo CDN}plugins/jvectormap/jquery-jvectormap-2.0.3.min.js"></script>
+<script src="{echo CDN}plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+<script src="{echo CDN}js/jvectormap.js"></script>
 <script type="text/javascript">
 jQuery(document).ready(function($) {
     admin.performance();

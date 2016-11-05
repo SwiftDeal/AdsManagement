@@ -231,7 +231,7 @@
                     </div>
                     <div class="tab-pane" id="performance">
                         <div class="row">
-                            <form class="form-inline text-center" role="form" id="range">
+                            <form class="form-inline text-center" role="form" id="indexrange">
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="sr-only">From</label>
@@ -246,10 +246,56 @@
                                         <input type="date" style="width: 180px" name="end" class="form-control" value="{$end}" />
                                     </div>
                                 </div>
+                                <input type="hidden" name="user_id" value="{echo $publisher->_id}">
                                 <button type="submit" class="btn btn-primary">Show</button>
                             </form>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card-box">
+                                    <h4 class="text-dark  header-title m-t-0">Volume Report</h4>
+                                    <div id="perf-stat">
+                                        <canvas id="perfstat" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md-6">
-                                <canvas id="doughnut" height="300"></canvas>
+                                <div class="card-box">
+                                    <h4 class="text-dark  header-title m-t-0">Country</h4>
+                                    <div id="country" style="height: 300px"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card-box">
+                                    <h4 class="text-dark  header-title m-t-0">Top Referers</h4>
+                                    <div class="table-responsive nicescroll" style="height: 300px">
+                                        <table class="table">
+                                            <tbody id="topreferer"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card-box">
+                                    <h4 class="text-dark  header-title m-t-0">Device</h4>
+                                    <div id="device-stat">
+                                        <canvas id="devicestat" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card-box">
+                                    <h4 class="text-dark  header-title m-t-0">OS</h4>
+                                    <div class="table-responsive nicescroll" style="height: 300px">
+                                        <table class="table">
+                                            <tbody id="topos"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -258,3 +304,13 @@
         </div>
     </div>
 </div>
+<link rel="stylesheet" type="text/css" href="{echo CDN}plugins/jvectormap/jquery-jvectormap-2.0.3.css">
+<script src="{echo CDN}plugins/jvectormap/jquery-jvectormap-2.0.3.min.js"></script>
+<script src="{echo CDN}plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+<script src="{echo CDN}js/jvectormap.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    admin.url = "insight/publishers";
+    admin.performance();
+});
+</script>

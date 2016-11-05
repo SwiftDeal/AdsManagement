@@ -208,41 +208,8 @@
         </div>
     </div>
 </div>
-<script src="{echo CDN}js/request-1.1.js"></script>
-<script>
-    $('#selectAdvert').on('change', function (e) {
-        e.preventDefault();
-
-        var el = $('#testingPixel');
-        window.currentAdvert = $(this).val();
-        $('#requestResult').html('');
-        el.text('<img src="' + link + '&advert_id=' + window.currentAdvert + '">');
-    });
-
-    $('#checkStatus').on('click', function (e) {
-        e.preventDefault();
-        request.get( {
-            url: 'advertiser/manage', data: reqData
-        }, function (err, d) {
-
-            var resultEl = $('#requestResult');
-            $.each(d.advertisers, function (i, el) {
-                // check for pixel in meta
-                var meta = el._meta || {};
-                var status = meta.pixel, found = false;
-
-                if (status === "working" && el.__id == window.currentAdvert)
-                    found = true;
-                else
-                    resultEl.addClass('label-danger').removeClass('label-success').html('Pixel not added on website, Please add the pixel or contact account manager');
-
-                if (found)
-                    resultEl.addClass('label-success').removeClass('label-danger').html('It is working!!');
-
-                if (found)
-                    return false;
-            });
-        }
-        );
-    });
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    admin.campaignDetails(advertisers, link, reqData);
+});
 </script>

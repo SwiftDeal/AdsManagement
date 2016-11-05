@@ -61,20 +61,8 @@
         </form>
     </div>
 </div>
-<script>
-    $(document).ready(function () {
-        $('#contestType').on('change', function () {
-            var current = $(this).val();
-            var opts = $(this).find('option');
-
-            // hide all the other types dialog boxes
-            $.each(opts, function (i, el) {
-                var selector = $('#' + $(el).val());
-                if (!selector.hasClass('hide')) {
-                    selector.addClass('hide');
-                }
-            });
-            $('#' + current).removeClass('hide');
-        });
-    });
+<script type="text/javascript">
+$(document).ready(function () {
+    admin.contest();
+});
 </script>

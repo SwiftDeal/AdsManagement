@@ -530,26 +530,9 @@ class Publisher extends Auth {
 
         $view->set("publisher", $publisher);
         $afields = Meta::search('customField', $this->org);
-        $view->set('afields', $afields);
-    }
-
-    /**
-     * @before _admin
-     */
-    public function performance($id = null) {
-        $this->seo(array("title" => "Publisher Performance"));
-        $view = $this->getActionView();
-        $start = RequestMethods::get("start", date('Y-m-d', strtotime("-2 day")));
-        $end = RequestMethods::get("end", date('Y-m-d', strtotime("-1 day")));
-
-        $publisher = User::first(["id = ?" => $id, "org_id = ?" => $this->org->_id], ["id", "name"]);
-        if (!$publisher) $this->_404();
-
-        $performances = \Performance::all(['user_id' => $publisher->id, 'created' => Db::dateQuery($start, $end)], [], 'created', 'desc');
-        $view->set("publisher", $publisher)
-            ->set("data", $performances)
-            ->set("start", $start)
-            ->set("end", $end);
+        $view->set('afields', $afields)
+            ->set("start", strftime("%Y-%m-%d", strtotime('-7 day')))
+            ->set("end", strftime("%Y-%m-%d", strtotime('now')));
     }
 
     /**
