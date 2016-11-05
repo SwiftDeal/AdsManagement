@@ -181,7 +181,7 @@ namespace Framework {
                 }
             }
 
-            if (count($current) > count($search)) {
+            if (count($current) == 0 || count($current) > count($search)) {
                 $pass = false;
             }
             return $pass;

@@ -19,7 +19,7 @@ class Performance {
 
 		switch ($type) {
 			case 'publisher':
-				$perfFields = ['clicks', 'impressions', 'conversions', 'revenue', 'created'];
+				$perfFields = $opts['fields'] ?? ['clicks', 'impressions', 'conversions', 'revenue', 'created'];
 				$meta = $opts['meta'] ?? false;
 				if ($meta) { $perfFields[] = 'meta'; }
 				$publishers = $opts['publishers'] ?? $org->users($type);
@@ -76,7 +76,9 @@ class Performance {
 		foreach ($pubPerf as $key => $value) {
 			$from = (array) $value; $date = $value->created;
 			unset($from['created']); unset($from['revenue']);
-			$from['payout'] = $value->revenue;
+			if (isset($value->revenue)) {
+				$from['payout'] = $value->revenue;
+			}
 
 			if (isset($from['meta'])) {
 				$meta = $from['meta']; unset($from['meta']);

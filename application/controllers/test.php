@@ -9,6 +9,7 @@ use Framework\Registry as Registry;
 use Shared\Mail as Mail;
 use Shared\Utils as Utils;
 use Shared\Services\Db;
+use Shared\Services\Performance as Perf;
 use Framework\ArrayMethods as ArrayMethods;
 
 class Test extends Auth {

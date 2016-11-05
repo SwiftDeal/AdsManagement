@@ -6,6 +6,7 @@
  */
 use Shared\Utils as Utils;
 use Shared\Services\Db as Db;
+use Framework\ArrayMethods as ArrayMethods;
 class Ad extends Shared\Model {
 
     /**
@@ -161,6 +162,34 @@ class Ad extends Shared\Model {
             ];
         }
         return $result;
+    }
+
+    public function validate($opts = [], &$view) {
+        if (empty($opts)) {
+            return parent::validate();
+        }
+
+        $advertisers = $opts['advertisers'];
+        $categories = Category::all(['org_id' => $this->org_id], ['_id']);
+        if (count($advertisers) === 0 || !in_array($this->user_id, $advertisers)) {
+            $this->_errors['user_id'] = ['Invalid User ID passed!!'];
+            $view->set([ 'message' => 'Invalid Request' ]);
+            return false;
+        }
+
+        if (!ArrayMethods::inArray(array_keys($categories), $this->category)) {
+            $this->_errors['category'] = ['Invalid Category!!'];
+            $view->set([ 'message' => 'Invalid Category!!' ]);
+            return false;
+        }
+
+        if (!ArrayMethods::inArray($opts['devices'], $this->device)) {
+            $this->_errors['device'] = ['Invalid Devices!!'];
+            $view->set([ 'message' => 'Invalid Devices!!' ]);
+            return false;
+        }
+
+        parent::validate();
     }
 
     /**

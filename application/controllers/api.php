@@ -232,7 +232,7 @@ class Api extends \Shared\Controller {
 				if ($id) { // edit a particular campaign
 
 				} else { // create a new campaign
-					$fields = ['title', 'description', 'url', 'expiry'];
+					$fields = ['title', 'description', 'url', 'expiry', 'category', 'device', 'user_id'];
 					$img = RequestMethods::post('image');	// contains image url
 					$campaign = new Ad([
 						'org_id' => $org->_id,
@@ -242,34 +242,24 @@ class Api extends \Shared\Controller {
 					foreach ($fields as $f) {
 						$campaign->$f = RequestMethods::post($f);
 					}
-
-					$advertisers = $org->users('advertiser', false);
-					$category = RequestMethods::post('category');
-					$uid = RequestMethods::post("user_id");
-					if (count($category) === 0 || count($advertisers) === 0 || !in_array($uid, $advertisers)) {
-						return $this->failure('30');
-					}
-
-					$devices = RequestMethods::post('devices'); $fixedDevices = Shared\Markup::devices();
-					$fixedDevices = array_keys($fixedDevices);
-					if (!ArrayMethods::inArray($fixedDevices, $devices)) {
-						return $view->set('message', 'Invalid Devices!!');
-					}
-
-					$categories = Category::all(['org_id' => $org->_id], ['_id']);
-					$categories = array_keys($categories);
-					if (!ArrayMethods::inArray($categories, $category)) {
-						return $view->set('message', 'Invalid Category!!');
-					}
+					$view->set('success', false);
 
 					$visibility = RequestMethods::post('visibility', 'public');
 					if ($visibility === 'private') {
 						$campaign->getMeta()['private'] = true;
 					}
+					$opts = [
+						'devices' => array_keys(Shared\Markup::devices()),
+						'advertisers' => $org->users('advertiser', false)
+					];
 
-					if ($campaign->validate()) {
+					if (true) {
 						// $campaign->save();
-						
+						$arr = ArrayMethods::reArray($_POST['commissions']);
+						var_dump($arr);
+						var_dump($_POST['commissions']);
+
+						$view->set('success', true);
 					} else {
 						$data = ['errors' => $campaign->errors];
 						$view->set('data', $data);
@@ -380,6 +370,16 @@ class Api extends \Shared\Controller {
 		$perf = []; Perf::payout($pubPerf, $perf);
 		$data = ['user' => $publisher, 'stats' => $perf, 'total' => Perf::calTotal($perf)];
 		$view->set('data', $data);
+	}
+
+	/**
+	 * @before _secure
+	 * @after _cleanUp
+	 */
+	public function devices() {
+		$view = $this->getActionView();
+		$devices = Shared\Markup::devices();
+		$view->set('data', ['devices' => array_keys($devices)]);
 	}
 
 	/**
