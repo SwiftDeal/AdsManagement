@@ -36,7 +36,7 @@ File: Admin Controller
                                 data: conversions
                             }),
                             $.ChartJs.lineChart({
-                                label: "Impressions",
+                                label: "Ad Impressions",
                                 color: "#FAA43A",
                                 data: impressions
                             }),

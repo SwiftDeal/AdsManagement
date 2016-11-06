@@ -97,20 +97,20 @@ class Advertiser extends Auth {
         $this->seo(array("title" => $ad->title));
         $view = $this->getActionView();
 
-        $start = RequestMethods::get("start", date('Y-m-d', strtotime("-1 day")));
+        $start = RequestMethods::get("start", date('Y-m-d', strtotime("-7 day")));
         $end = RequestMethods::get("end", date('Y-m-d'));
-
-        $clicks = Db::query('Click', [
-            'adid' => $ad->_id, 'is_bot' => false,
+        $limit = RequestMethods::get("limit", 10); $page = RequestMethods::get("page", 1);
+        $quesry = [
+            'adid' => Db::convertType($id),
             'created' => Db::dateQuery($start, $end)
-        ], ['adid', 'country']);
-
-        $advertPerf = $this->perf($clicks, ['type' => 'advertiser'], ['start' => $start, 'end' => $end]);
-        $view->set('advertPerf', $advertPerf)
-            ->set('advertiser', $this->user);
-
+        ];
+        $clicks = \Click::all($query, [], 'created', 'desc', $limit, $page);
+        $count = \Click::count($query);
         $cf = Registry::get("configuration")->parse("configuration/cf")->cloudflare;
-        $view->set("domain", $cf->api->domain);
+        $view->set("domain", $cf->api->domain)
+            ->set("clicks", $clicks)
+            ->set("count", $count)
+            ->set('advertiser', $this->user);
 
         $comms = Commission::all(["ad_id = ?" => $id]);$models = [];
         foreach ($comms as $comm) {
@@ -153,16 +153,6 @@ class Advertiser extends Auth {
                     $new = RequestMethods::post('npassword');
                     $view->set($user->updatePassword($old, $new));
                     break;
-
-                case 'campaign':
-                    $rate = RequestMethods::post('rate', 0.25);
-                    $user->getMeta()['campaign'] = [
-                        'model' => RequestMethods::post('model', 'cpc'),
-                        'rate' => $this->currency($rate),
-                    ];
-                    $user->save();
-                    $view->set('message', 'Campaign Settings Updated!!');
-                    break;
             }
         }
     }
@@ -170,8 +160,8 @@ class Advertiser extends Auth {
     /**
      * @before _secure
      */
-    public function payments() {
-        $this->seo(array("title" => "Payments"));
+    public function bills() {
+        $this->seo(array("title" => "Bills"));
         $view = $this->getActionView();
 
         $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
@@ -183,9 +173,9 @@ class Advertiser extends Auth {
         ];
 
         $performances = \Performance::all($query, [], 'created', 'desc');
-        $transactions = \Transaction::all($query, ['amount', 'currency', 'ref', 'created']);
+        $invoices = \Invoice::all(['user_id = ?' => $this->user->_id]);
         $view->set("performances", $performances)
-            ->set("transactions", $transactions);
+            ->set("invoices", $invoices);
 
         $view->set("start", $start);
         $view->set("end", $end);

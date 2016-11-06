@@ -130,6 +130,7 @@
                                 <td>
                                     Clicks: {echo Shared\Markup::nice_number($p->clicks)}
                                     {if($p->conversions)}<br>Conersions: {echo Shared\Markup::nice_number($p->conversions)}{/if}
+                                    {if($p->impressions)}<br>Impressions: {echo Shared\Markup::nice_number($p->impressions)}{/if}
                                 </td>
                                 <td>{echo $user->convert($p->revenue)}</i></td>
                                 {script $total += $p->revenue}

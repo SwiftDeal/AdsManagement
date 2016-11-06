@@ -32,7 +32,7 @@
                     <tr>
                         <th>PREVIEW</th>
                         <th>TITLE</th>
-                        <th>PAYOUT</th>
+                        <th>PRICING</th>
                         <th>STATUS</th>
                     </tr>
                 </thead>
@@ -43,7 +43,7 @@
                         <td>
                             <img src="{echo Ad::displayImg($a->image)}" class="img-responsive" width="100">
                         </td>
-                        <td><a href="/campaign/info/{$a->_id}.html">{echo $a->title}</a></td>
+                        <td><a href="/advertiser/campaign/{$a->_id}.html">{echo $a->title}</a></td>
                         <td>{echo $c}</td>
                         <td>
                             {if $a->live}

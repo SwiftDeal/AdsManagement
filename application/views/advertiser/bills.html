@@ -1,0 +1,119 @@
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form-inline pull-right" role="form" id="range">
+            <div class="form-group">
+                <div class="input-group">
+                    <label class="sr-only">From</label>
+                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> From</span>
+                    <input type="date" style="width: 180px" name="start" class="form-control" value="{echo $start}" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <label class="sr-only">To</label>
+                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> To</span>
+                    <input type="date" style="width: 180px" name="end" class="form-control" value="{echo $end}" />
+                </div>
+            </div>
+            <input type="hidden" name="user_id" value="{echo $user->_id}">
+            <button type="submit" class="btn btn-primary">Show</button>
+        </form>
+        <h4 class="page-title">Bills</h4>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-tabs navtab-custom">
+            <li class="active">
+                <a href="#summary" data-toggle="tab" aria-expanded="true">
+                    <span class="visible-xs"><i class="fa fa-user"></i></span>
+                    <span class="hidden-xs">Summary</span>
+                </a>
+            </li>
+            <li class="">
+                <a href="#invoices" data-toggle="tab" aria-expanded="false">
+                    <span class="visible-xs"><i class="fa fa-list"></i></span>
+                    <span class="hidden-xs">Invoices</span>
+                </a>
+            </li>
+            <li class="">
+                <a href="#payout" data-toggle="tab" aria-expanded="false">
+                    <span class="visible-xs"><i class="fa fa-bank"></i></span>
+                    <span class="hidden-xs">Payout</span>
+                </a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="summary">
+                <h4 class="m-t-0 header-title"><b>Amount Spent</b></h4>
+                <table class="tablesaw m-t-20 table m-b-0" data-tablesaw-mode="stack">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Performance</th>
+                            <th>Amount Due</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {script $total = 0.00}{foreach $p in $performances}
+                        <tr>
+                            <td>{echo Framework\StringMethods::only_date($p->created)}</td>
+                            <td>
+                                Clicks: {echo Shared\Markup::nice_number($p->clicks)}
+                                {if($p->conversions)}<br>Conersions: {echo Shared\Markup::nice_number($p->conversions)}{/if}
+                                {if($p->impressions)}<br>Impressions: {echo Shared\Markup::nice_number($p->impressions)}{/if}
+                            </td>
+                            <td>{echo $user->convert($p->revenue)}</i></td>
+                            {script $total += $p->revenue}
+                        </tr>
+                        {/foreach}
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td>Amount Spent: {echo $user->convert($total)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane" id="invoices">
+                {if($invoices)}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Amount</th>
+                                <th>Start</th>
+                                <th>End</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $i in $invoices}
+                            <tr>
+                                <td><small>{echo Framework\StringMethods::only_date($i->created)}</small></td>
+                                <td>
+                                    {if $i->live}
+                                    <span class="text text-success">Success</span>
+                                    {/if} {else}
+                                    <span class="text text-warning">Pending</span>
+                                    {/else}
+                                </td>
+                                <td>{echo $i->amount}</td>
+                                <td><small>{echo Framework\StringMethods::only_date($i->start)}</small></td>
+                                <td><small>{echo Framework\StringMethods::only_date($i->end)}</small></td>
+                            </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+                {/if}{else}
+                <p class="text-center">No invoice has been created till now.</p>
+                {/else}
+            </div>
+            <div class="tab-pane" id="payout">
+                
+            </div>
+        </div>
+    </div>
+</div>

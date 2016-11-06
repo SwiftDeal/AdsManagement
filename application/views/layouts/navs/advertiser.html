@@ -15,15 +15,15 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/advertiser/index.html"><i class="fa fa-bullhorn"></i> Dashboard</a></li>
+                    <li><a href="/advertiser/index.html"><i class="fa fa-dashboard"></i> Dashboard</a></li>
                     <li><a href="/advertiser/campaigns.html"><i class="fa fa-bullhorn"></i> Campaigns</a></li>
-                    <li><a href="/advertiser/platforms.html"><i class="fa fa-tablet"></i> Platforms</a></li>
-                    <li><a href="/advertiser/payments.html"><i class="fa fa-money"></i> Payments</a></li>
+                    <li><a href="/advertiser/bills.html"><i class="fa fa-money"></i> Billing</a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle waves-effect waves-light profile" data-toggle="dropdown" aria-expanded="true">
                             <img src="{echo Shared\Markup::get_gravatar($user->email, 30)}"> {echo $user->name} <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
+                            <li><a href="/advertiser/platforms.html">Platforms</a></li>
                             <li><a href="/advertiser/account.html">Account</a></li>
                             <li><a href="/logout.html">Logout</a></li>
                         </ul>

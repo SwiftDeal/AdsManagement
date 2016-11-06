@@ -2,13 +2,15 @@
     "use strict";
     var Advertiser = (function () {
         function Advertiser() {
-            
+            this.url = "insight/advertisers";
         }
 
         Advertiser.prototype = {
-            insights: function () {
-                request.get({ url: "insight/advertisers", data: $('#indexrange').serialize()}, function(err, data) {
+            performance: function () {
+                var $this = this;
+                request.get({ url: $this.url, data: $('#indexrange').serialize()}, function(err, data) {
                     var x = [], clicks = [], conversions = [], impressions = [], revenue = [];
+                    console.log(data);
                     $.each(data.stats, function(i, val) {
                         x.push(i);
                         clicks.push(val.clicks);
@@ -30,7 +32,7 @@
                                 data: conversions
                             }),
                             $.ChartJs.lineChart({
-                                label: "Impressions",
+                                label: "Ad Impressions",
                                 color: "#FAA43A",
                                 data: impressions
                             }),
@@ -41,8 +43,48 @@
                             })
                         ]
                     };
-                    $.ChartJs.respChart($("#perfstats"),'Line',lineChart, {});
-                });  
+                    $.ChartJs.respChart($("#perfstat"),'Line',lineChart, {});
+                    
+                    //Country wise visitor
+                    $.VectorMap.init({
+                        country: data.total.meta.country
+                    });
+
+                    //Referer
+                    $.each(data.total.meta.referer, function(i, val) {
+                        $('#topreferer').append('<tr><td>'+ i +'</td><td>'+ val +'</td></tr>');
+                    });
+
+                    //device
+                    var device = data.total.meta.device,
+                        pieChart = {
+                        labels: [
+                            "Desktops",
+                            "Tablets",
+                            "Mobiles"
+                        ],
+                        datasets: [{
+                            data: [device['desktop'], device['tablet'], device['mobile']],
+                            backgroundColor: [
+                                "#228bdf",
+                                "#00b19d",
+                                "#7266ba"
+                            ],
+                            hoverBackgroundColor: [
+                                "#228bdf",
+                                "#00b19d",
+                                "#7266ba"
+                            ],
+                            hoverBorderColor: "#fff"
+                        }]
+                    };
+                    $.ChartJs.respChart($("#devicestat"),'Pie',pieChart);
+
+                    //OS
+                    $.each(data.total.meta.os, function(i, val) {
+                        $('#topos').append('<tr><td>'+ i +'</td><td>'+ val +'</td></tr>');
+                    });
+                });
             },
             campaignDetails: function (adv, link, reqData) {
                 $('#selectAdvert').on('change', function (e) {
@@ -86,7 +128,8 @@
                     $('#perfstats').remove();
                     $('#graph-container').append('<canvas id="perfstats" height="300"></canvas>');
                     $('#indexrange button').addClass('disabled');
-                    $this.insights();
+                    $('#topreferer').html('');
+                    $this.performance();
                     $('#indexrange button').removeClass('disabled');
                 });
             },
