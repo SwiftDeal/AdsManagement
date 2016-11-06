@@ -44,6 +44,41 @@
                     $.ChartJs.respChart($("#perfstats"),'Line',lineChart, {});
                 });  
             },
+            campaignDetails: function (adv, link, reqData) {
+                $('#selectAdvert').on('change', function (e) {
+                    e.preventDefault();
+
+                    var el = $('#testingPixel');
+                    window.currentAdvert = $(this).val();
+                    $('#requestResult').html('');
+                    el.text('<img src="' + link + '&advert_id=' + window.currentAdvert + '">');
+                });
+
+                $('#checkStatus').on('click', function (e) {
+                    e.preventDefault();
+                    request.get( {
+                        url: 'advertiser/manage', data: reqData
+                    }, function (err, d) {
+
+                        var resultEl = $('#requestResult');
+                        // check for pixel in meta
+                        var meta = adv._meta || {};
+                        var status = meta.pixel, found = false;
+
+                        if (status === "working" && adv.__id == window.currentAdvert)
+                            found = true;
+                        else
+                            resultEl.addClass('label-danger').removeClass('label-success').html('Pixel not added on website, Please add the pixel or contact account manager');
+
+                        if (found)
+                            resultEl.addClass('label-success').removeClass('label-danger').html('It is working!!');
+
+                        if (found)
+                            return false;
+                    }
+                    );
+                });
+            },
             index: function () {
                 var $this = this;
                 $('#indexrange').submit(function(e) {
@@ -55,6 +90,7 @@
                     $('#indexrange button').removeClass('disabled');
                 });
             },
+
             init: function () {
                 this.index();
             }

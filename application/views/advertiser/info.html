@@ -5,13 +5,13 @@
                 <div class="col-sm-12">
                     <div class="page-title-box">
                         <span class="pull-right">
-                            {if !$a->live}
-                            <a href="advertiser/update/{echo $a->_id}" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-success"><i class="fa fa-check"></i></a>
+                            {if !$advertiser->live}
+                            <a href="advertiser/update/{echo $advertiser->_id}" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-success"><i class="fa fa-check"></i> Activate</a>
                             {/if} {else}
-                            <a href="advertiser/update/{echo $a->_id}" data-send='{echo json_encode(["live" => 0])}' class="update btn btn-warning"><i class="fa fa-times"></i></a>
+                            <a href="advertiser/update/{echo $advertiser->_id}" data-send='{echo json_encode(["live" => 0])}' class="update btn btn-warning"><i class="fa fa-times"></i> Deactivate</a>
                             {/else}
-                            <a href="advertiser/delete/{echo $a->_id}" data-message="Are you sure you want to delete this advertiser??" class="delete btn btn-danger"><i class="fa fa-trash"></i></a>
-                            <a href="/auth/loginas/{echo $a->_id}" class="btn btn-default"><i class="fa fa-sign-in"></i></a>
+                            <a href="advertiser/delete/{echo $advertiser->_id}" data-message="Are you sure you want to delete this advertiser??" class="delete btn btn-danger"><i class="fa fa-trash"> Delete</i></a>
+                            <a href="/auth/loginas/{echo $advertiser->_id}" class="btn btn-default"><i class="fa fa-sign-in"></i> Signin</a>
                         </span>
                         <h4 class="page-title"><img src="{echo Shared\Markup::get_gravatar($advertiser->email, 30)}"> {echo $advertiser->name}'s account</h4>
                     </div>

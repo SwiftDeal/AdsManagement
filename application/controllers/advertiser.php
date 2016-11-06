@@ -90,6 +90,47 @@ class Advertiser extends Auth {
     /**
      * @before _secure
      */
+    public function campaign($id) {
+        $ad = \Ad::first(["_id = ?" => $id, 'org_id' => $this->org->_id]);
+        if (!$ad) $this->_404();
+
+        $this->seo(array("title" => $ad->title));
+        $view = $this->getActionView();
+
+        $start = RequestMethods::get("start", date('Y-m-d', strtotime("-1 day")));
+        $end = RequestMethods::get("end", date('Y-m-d'));
+
+        $clicks = Db::query('Click', [
+            'adid' => $ad->_id, 'is_bot' => false,
+            'created' => Db::dateQuery($start, $end)
+        ], ['adid', 'country']);
+
+        $advertPerf = $this->perf($clicks, ['type' => 'advertiser'], ['start' => $start, 'end' => $end]);
+        $view->set('advertPerf', $advertPerf)
+            ->set('advertiser', $this->user);
+
+        $cf = Registry::get("configuration")->parse("configuration/cf")->cloudflare;
+        $view->set("domain", $cf->api->domain);
+
+        $comms = Commission::all(["ad_id = ?" => $id]);$models = [];
+        foreach ($comms as $comm) {
+            $models[] = $comm->model;
+        }
+        $advertiser = User::first(["id = ?" => $ad->user_id], ['name']);
+        $categories = \Category::all(["org_id = ?" => $this->org->_id], ['name', '_id']);
+
+        $view->set("ad", $ad)
+            ->set("comms", $comms)
+            ->set("categories", $categories)
+            ->set("advertiser", $advertiser)
+            ->set('models', $models)
+            ->set("start", $start)
+            ->set("end", $end);
+    }
+
+    /**
+     * @before _secure
+     */
     public function account() {
         $this->seo(array("title" => "Account"));
         $view = $this->getActionView();

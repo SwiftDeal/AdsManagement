@@ -39,9 +39,8 @@
                                         <th></th>
                                         <th>Name</th>
                                         <th>Email</th>
+                                        <th>Clicks</th>
                                         <th>Amount Due</th>
-                                        <th>Created</th>
-                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -50,7 +49,7 @@
                                     <tr>
                                         <td><img src="{echo Shared\Markup::get_gravatar($p->email, 40)}"></td>
                                         <td>
-                                            {echo $a->name}<br>
+                                            <a href="/advertiser/info/{echo $a->_id}.html">{echo $a->name}</a><br>
                                             <small>(ID: 
                                             {if $a->live}
                                             <span class="text text-success">{echo $a->_id}</span>
@@ -58,19 +57,17 @@
                                             <span class="text text-warning">{echo $a->_id}</span>
                                             {/else})</small>
                                         </td>
-                                        <td>{echo $a->email}</td>
-                                        <td>{echo $user->convert($perf['revenue'])}</td>
-                                        <td><small>{echo Framework\StringMethods::only_date($a->created)}</small></td>
                                         <td>
-                                            <a href="/advertiser/info/{echo $a->_id}.html" class="btn btn-xs btn-primary"><i class="fa fa-edit"></i></a>
-                                            {if !$a->live}
-                                            <a href="advertiser/update/{echo $a->_id}" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-xs btn-success"><i class="fa fa-check"></i></a>
-                                            {/if} {else}
-                                            <a href="advertiser/update/{echo $a->_id}" data-send='{echo json_encode(["live" => 0])}' class="update btn btn-xs btn-warning"><i class="fa fa-times"></i></a>
-                                            {/else}
-                                            <a href="advertiser/delete/{echo $a->_id}" data-message="Are you sure you want to delete this advertiser??" class="delete btn btn-xs btn-danger"><i class="fa fa-trash"></i></a>
-                                            <a href="/auth/loginas/{echo $a->_id}" class="btn btn-xs btn-default"><i class="fa fa-sign-in"></i></a>
+                                            {echo $a->email}<br>
+                                            {if($a->login)}
+                                            <i class="fa fa-clock-o" data-toggle="tooltip" data-placement="top" data-original-title='Last Login: {echo Framework\StringMethods::datetime_to_text($p->login)}'></i>
+                                            {/if}
+                                            &nbsp;{if(array_key_exists("campaign", $a->meta))}
+                                            <i class="fa fa-money" data-toggle="tooltip" data-placement="top" data-original-title='Model: {echo $p->meta["campaign"]["model"]} with Payout: {echo $user->convert($p->meta["campaign"]["rate"], false)}'></i>
+                                            {/if}
                                         </td>
+                                        <td>{echo Shared\Markup::nice_number($perf['clicks'])}</td>
+                                        <td>{echo $user->convert($perf['revenue'])}</td>
                                     </tr>
                                     {/foreach}
                                 </tbody>

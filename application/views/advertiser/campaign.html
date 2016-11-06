@@ -1,0 +1,215 @@
+<script>
+    var adv = JSON.parse('{echo json_encode($advertiser)}');
+    var link = 'http://track.' + '{echo $domain}' + '/pixel?adid={echo $ad->_id}';
+    var reqData = JSON.parse('{echo json_encode(["property" => live, "value" => 1])}');
+</script>
+<div class="content-page">
+    <div class="content">
+        <div class="container">
+            <!-- Page-Title -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="page-title-box">
+                        <span class="pull-right">
+                            {if !$ad->live}
+                            <a href="campaign/update/{echo $ad->_id}" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-success" data-toggle="tooltip" data-placement="top" data-original-title="Enable"><i class="fa fa-check"></i> Enable</a>
+                            {/if} {else}
+                            <a href="campaign/update/{echo $ad->_id}" data-send='{echo json_encode(["live" => 0])}' class="update btn btn-warning" data-toggle="tooltip" data-placement="top" data-original-title="Disable"><i class="fa fa-times"></i> Disable</a>
+                            {/else}
+                            <a href="{echo $ad->url}" target="_blank" class="btn btn-purple waves-effect waves-light" data-toggle="tooltip" data-placement="top" data-original-title="Landing page"><i class="fa fa-desktop"></i> Landing Page</a>
+                            <a href="/campaign/edit/{echo $ad->_id}" class="btn btn-default" data-toggle="tooltip" data-placement="top" data-original-title="Edit"><i class="fa fa-edit"></i> Edit</a>
+                            <a href="campaign/delete/{echo $ad->_id}" data-message="Are you sure you want to delete this campaign??" class="delete btn btn-danger" data-toggle="tooltip" data-placement="top" data-original-title="Delete"><i class="fa fa-trash"></i> Delete</a>
+                        </span>
+                        <h4 class="page-title">{echo $ad->title}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="nav nav-tabs navtab-custom">
+                        <li class="active">
+                            <a href="#home" data-toggle="tab" aria-expanded="true">
+                                <span class="visible-xs"><i class="fa fa-home"></i></span>
+                                <span class="hidden-xs">Details</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#performance" data-toggle="tab" aria-expanded="false">
+                                <span class="visible-xs"><i class="fa fa-graph"></i></span>
+                                <span class="hidden-xs">Performance</span>
+                            </a>
+                        </li>
+                        {if(!empty(array_intersect(["cpa", "cps", "cpl"], $models)))}
+                        <li class="">
+                            <a href="#pixelTest" data-toggle="tab" aria-expanded="false">
+                                <span class="visible-xs"><i class="fa fa-graph"></i></span>
+                                <span class="hidden-xs">Test Pixel</span>
+                            </a>
+                        </li>
+                        {/if}
+                        {if(array_key_exists("private", $ad->meta))}
+                        <li class="">
+                            <a href="#access" data-toggle="tab" aria-expanded="false">
+                                <span class="visible-xs"><i class="fa fa-graph"></i></span>
+                                <span class="hidden-xs">Campaign Access</span>
+                            </a>
+                        </li>
+                        {/if}
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="home">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <img src="{echo Ad::displayImg($ad->image)}" alt="" width="300" class="img-responsive">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <tr>
+                                                <th>Status</th>
+                                                <td>{if($ad->live)}<span class="label label-success">Active</span>{/if}{else}<span class="label label-warning">Inactive</span>{/else}</td>
+                                                <th>Advertiser</th>
+                                                <td>{echo $advertiser->name}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Category</th>
+                                                <td>
+                                                    {foreach $cat in $ad->category}
+                                                        {script $key = Shared\Utils::getMongoID($cat)}
+                                                        <label class="label label-info">{echo $categories[$key]->name}</label>
+                                                    {/foreach}
+                                                </td>
+                                                <th>Created</th>
+                                                <td>{echo Framework\StringMethods::only_date($ad->created)}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Device Targeted</th>
+                                                <td>{echo strtoupper(implode(",", $ad->device))}</td>
+                                                <th>Link</th>
+                                                <td><a href="{echo $ad->url}" target="_blank">{echo $ad->url}</a></td>
+                                            </tr>
+                                            {if(!empty(array_intersect(["cpa", "cps", "cpl"], $models)))}
+                                            <tr>
+                                                <th>Postback URL</th>
+                                                <td><code>http://track.vnative.com/acquisition?click_id={click_id}</code></td>
+                                                <th>CPA Conversion Pixel</th>
+                                                <td><code>&lt;img src='{echo "http://track." . $domain}/pixel?adid={echo $ad->_id}'&gt;</code></td>
+                                            </tr>
+                                            {/if}
+                                            {if(in_array("cpi", $models))}
+                                            <tr>
+                                                <th>Tracking Integration</th>
+                                                <td><a href="http://vnative.com/how-to-integrate-cpi-tracking-in-android-app/" target="_blank">Instructions</a></td>
+                                                <th>CPI Tracking Pixel</th>
+                                                <td>
+                                                    <a href="https://gist.github.com/faizanayubi/8ec81f04ff57a530e26d0bdf034b2a9a" target="_blank">AndroidManifest.xml</a><br>
+                                                    <a href="#" target="_blank">ManyInstallTrackersReceiver.java</a>
+                                                </td>
+                                            </tr>
+                                            {/if}
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h3>Commission Details</h3>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <tr>
+                                                <th>Model</th>
+                                                <th>Coverage</th>
+                                                <th>Revenue</th>
+                                                <th>Payout</th>
+                                                <th>Description</th>
+                                            </tr>
+                                            {foreach $comm in $comms}
+                                            <tr>
+                                                <td>{echo strtoupper($comm->model)}</td>
+                                                <td>{echo implode(",", $comm->coverage)}</td>
+                                                <td>{echo $user->convert($comm->revenue)}</td>
+                                                <td>{echo $user->convert($comm->rate)}</td>
+                                                <td>{echo $comm->description}</td>
+                                            </tr>
+                                            {/foreach}
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="performance">
+                            <div class="row">
+                                <form class="form-inline text-center" role="form" id="range">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <label class="sr-only">From</label>
+                                            <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> From</span>
+                                            <input type="date" style="width: 180px" name="start" class="form-control" value="{$start}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <label class="sr-only">To</label>
+                                            <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> To</span>
+                                            <input type="date" style="width: 180px" name="end" class="form-control" value="{$end}" />
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Show</button>
+                                </form>
+                                <div>
+                                    <p>Clicks: {echo $advertPerf->clicks}</p>
+                                    <p>Conversions: {echo $advertPerf->conversions}</p>
+                                    <p>Impressinos: {echo $advertPerf->impressions}</p>
+                                    <p>Revenue: {echo $advertPerf->revenue}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="pixelTest">
+                            <form action="">
+                                <select name="advertisers" class="form-control selectpicker" id="selectAdvert">
+                                    <option>Select An Advertiser</option>
+                                    {foreach $a in $advertisers}
+                                    <option value="{echo $a->_id}">{echo $a->name}</option>
+                                    {/foreach}
+                                </select>
+                                <br><br>
+                                Steps:
+                                <ol>
+                                    <li>Select any Advertiser from the list</li>
+                                    <li>Get the Tracking Pixel from below and insert it on any page</li>
+                                    <li>Fire up the page in web browser</li>
+                                    <li>Hit this <button class="btn btn-primary" id="checkStatus">Check Status</button> button</li>
+                                    <li>Result: <span id="requestResult" class="label"></span></li>
+                                </ol>
+                                <p>CPA Conversion Pixel: <code id="testingPixel"></code></p>
+                            </form>
+                        </div>
+                        <div class="tab-pane" id="access">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <th>Affiliate</th>
+                                        <th>Added On</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    {foreach $aff in $affs}
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    {/foreach}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    advertiser.campaignDetails(adv, link, reqData);
+});
+</script>

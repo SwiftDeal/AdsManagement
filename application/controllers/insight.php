@@ -67,13 +67,16 @@ class Insight extends Auth {
         }
 
         $ads = Ad::all($query, ['_id']); $in = Db::convertType(array_keys($ads), 'id');
+        $match = [
+            'adid' => ['$in' => $in],
+            'is_bot' => false,
+            'created' => Db::dateQuery($this->start, $this->end),
+        ];
+        if ($this->user_id) {
+            $match["pid"] = Db::convertType($this->user_id);
+        }
         $records = $clickCol->aggregate([
-            ['$match' => [
-	                'adid' => ['$in' => $in],
-	                'is_bot' => false,
-	                'created' => Db::dateQuery($this->start, $this->end),
-            	]
-            ],
+            ['$match' => $match],
             ['$project' => ['adid' => 1, '_id' => 1, 'country' => 1]],
             ['$group' => [
             	'_id' => ['adid' => '$adid', 'country' => '$country'], 'countryCount' => ['$sum' => 1]]
