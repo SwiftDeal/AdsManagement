@@ -204,7 +204,7 @@ class Publisher extends Auth {
         $this->seo(array("title" => "Account"));
         $view = $this->getActionView();
 
-        $invoices = \Invoice::all(['user_id = ?' => $this->user->_id], ['start', 'end', 'period', 'amount', 'live', 'created']);
+        $invoices = \Invoice::all(['user_id = ?' => $this->user->_id], ['start', 'end', 'amount', 'live', 'created']);
         $payments = \Payment::all(['user_id = ?' => $this->user->_id], ['type', 'amount', 'meta', 'live', 'created']);
         $user = $this->user; $view->set("errors", []);
         if (RequestMethods::type() == 'POST') {

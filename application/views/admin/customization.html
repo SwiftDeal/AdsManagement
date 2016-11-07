@@ -157,12 +157,12 @@
                                 <div class="row">
                                     <div class="col-md-6 form-horizontal">
                                         <h4 class="m-t-0 header-title text-center"><b>Affiliate</b></h4>
-                                        {script $affbilling = isset($org->billing['aff']) ? $org->billing['aff'] : []}
+                                        {script $affbilling = $org->billing['aff'] ?? []}
                                         <div class="form-group">
                                             <label class="col-sm-4 control-label"></label>
                                             <div class="col-sm-8">
                                                 <div class="checkbox checkbox-primary">
-                                                    <input id="affoption" type="checkbox" name="auto" value="true" {if($affbilling["auto"])}checked{/if}>
+                                                    <input id="affoption" type="checkbox" name="autoinvoice" value="1" {if($affbilling["auto"])}checked{/if}>
                                                     <label for="affoption">
                                                         Auto Generate Invoices
                                                     </label>
@@ -180,7 +180,7 @@
                                             <div class="col-sm-8">
                                                 <div class="input-group">
                                                     <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                                    <input type="text" name="minpay" class="form-control" placeholder="eg. 50" value="{echo $user->convert($affbilling['freq'], false, 4)}">
+                                                    <input type="text" name="minpay" class="form-control" placeholder="eg. 50" value="{echo $user->convert($affbilling['minpay'], false, 4, false)}">
                                                 </div>
                                             </div>
                                         </div>

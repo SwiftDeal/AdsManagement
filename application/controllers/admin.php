@@ -74,7 +74,7 @@ class Admin extends Auth {
 
                 case 'billing':
                     $billing = $org->billing;
-                    $billing["aff"]["auto"] = RequestMethods::post("autoinvoice", false);
+                    $billing["aff"]["auto"] = RequestMethods::post("autoinvoice", 0);
                     $billing["aff"]["freq"] = RequestMethods::post("freq", 15);
                     $billing["aff"]["minpay"] = $this->currency(RequestMethods::post('minpay', 100));
                     $billing["aff"]["ptypes"] = RequestMethods::post("ptypes");

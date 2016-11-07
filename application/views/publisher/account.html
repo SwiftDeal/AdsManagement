@@ -198,7 +198,6 @@
                                 <th>Status</th>
                                 <th>Start Date</th>
                                 <th>End Date</th>
-                                <th>Period</th>
                                 <th>Amount</th>
                             </tr>
                         </thead>
@@ -215,7 +214,6 @@
                                 </td>
                                 <td><small>{echo Framework\StringMethods::only_date($i->start)}</small></td>
                                 <td><small>{echo Framework\StringMethods::only_date($i->end)}</small></td>
-                                <td>{echo $i->period}</td>
                                 <td>{echo $user->convert($i->amount)}</td>
                             </tr>
                             {/foreach}
@@ -233,6 +231,7 @@
                         <thead>
                             <tr>
                                 <th>Created</th>
+                                <th>Reference</th>
                                 <th>Type</th>
                                 <th>Amount</th>
                             </tr>
@@ -241,7 +240,8 @@
                             {foreach $p in $payments}
                             <tr>
                                 <td><small>{echo Framework\StringMethods::only_date($p->created)}</small></td>
-                                <td>{echo $p->type}</td>
+                                <td>{echo $p->meta["refer_id"]}</td>
+                                <td>{echo ucfirst($p->type)}</td>
                                 <td>{echo $user->convert($p->amount)}</td>
                             </tr>
                             {/foreach}

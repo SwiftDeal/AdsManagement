@@ -113,7 +113,7 @@ class User extends Shared\Model {
         $this->_email = $e;
     }
 
-    public function convert($n, $p=true, $places = 2) {
+    public function convert($n, $p=true, $places = 2, $format=true) {
         // first strip any formatting;
         $n = (0+str_replace(",", "", $n));
         // is this a number?
@@ -161,13 +161,12 @@ class User extends Shared\Model {
         elseif ($n > 1000000000) $num = round(($n/1000000000), 2).'B';
         elseif ($n > 1000000) $num = round(($n/1000000), 2).'M';
         elseif ($n > 1000) $num = round(($n/1000), 2).'K';
-        if ($num !== false) {
-            if ($prefix) $num = $prefix . $num;
+        if ($num !== false && $format === true) {
+            if ($p !== false) $num = $prefix . $num;
             return $num;
         }
 
-        if (is_float($n)) $n = number_format($n, $places);
-        else $n = number_format($n);
+        if (is_float($n)) $n = round($n, $places);
 
         if ($p !== false) {
             return $prefix . $n;
