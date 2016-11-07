@@ -309,8 +309,10 @@
 <script src="{echo CDN}plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
 <script src="{echo CDN}js/jvectormap.js"></script>
 <script type="text/javascript">
-jQuery(document).ready(function($) {
+$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     admin.url = "insight/publishers";
-    admin.performance();
+    var target = $(e.target).attr("href");
+    if ((target == '#performance'))
+        admin.performance();
 });
 </script>

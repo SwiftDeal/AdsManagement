@@ -418,42 +418,6 @@ class Admin extends Auth {
     }
 
     /**
-     * @before _secure
-     */
-    public function newTrans($user_id) {
-        $user = \User::first(['org_id' => $this->org->_id, '_id' => $user_id]);
-        if (!$user) $this->_404();
-        $this->seo(array("title" => "New Transaction for User: " . $user->name)); $view = $this->getActionView();
-
-        $transaction = \Transaction::first(['user_id' => $user->_id], [], 'created', 'desc');
-        $dateQuery = [];
-        if ($transaction) {
-            $lastCreated = $transaction->created->format('Y-m-d');
-            $dateQuery = [
-                'start' => Db::time($lastCreated),
-                'end' => Db::time()
-            ];
-        }
-        $perf = \Performance::overall($dateQuery, $user);
-
-        $view->set([ 'errors' => [], 'usr' => $user, 'payment' => $perf['total_payouts'] ]);
-        if (RequestMethods::type() === 'POST') {
-            $trans = new \Transaction([
-                'org_id' => $this->org->_id,
-                'user_id' => $user->_id,
-                'amount' => $this->currency(RequestMethods::post('amount')),
-                'ref' => RequestMethods::post('ref')
-            ]);
-            if ($trans->validate()) {
-                $trans->save();
-                $view->set('message', 'Transaction Added!! for user');
-            } else {
-                $view->set('errors', $trans->errors);
-            }
-        }
-    }
-
-    /**
      * @protected
      * @Over ride
      */

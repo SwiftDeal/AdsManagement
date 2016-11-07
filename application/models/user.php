@@ -237,7 +237,7 @@ class User extends Shared\Model {
     }
 
     public function delete() {
-        $deleteList = ['Link', 'Platform', 'Ad', 'Performance', 'Invoice', 'Transaction', 'Adaccess'];
+        $deleteList = ['Link', 'Platform', 'Ad', 'Performance', 'Invoice', 'Adaccess'];
         $query = ['user_id' => $this->_id];
 
         $delete = false;

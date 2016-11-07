@@ -5,18 +5,6 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
-                        <form class="form-inline pull-right" role="form" id="range">
-                            <div class="form-group">
-                                <label>Date: </label>
-                                <select name="invoice" class="form-control" data-live-search=true style="width: 200px;">
-                                    <option value="current">{echo date('F')}</option>
-                                    {foreach $bill in $bills}
-                                    <option></option>
-                                    {/foreach}
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Show</button>
-                        </form>
                         <h4 class="page-title">Billing</h4>
                     </div>
                 </div>
@@ -24,42 +12,78 @@
 
             <div class="row">
                 <div class="col-sm-12">
-                    <div class="card-box">
-                        <h4 class="m-t-0 header-title text-center">Summary</h4>
-                        <div class="table-rep-plugin">
-                            <div class="table-responsive" data-pattern="priority-columns">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Item</th>
-                                            <th>Quantity</th>
-                                            <th>Rate</th>
-                                            <th>Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Clicks</td>
-                                            <td>{echo $clicks['total']}</td>
-                                            <td>{echo $user->convert($org->meta["bill"]["tcc"])} per thousand</td>
-                                            <td>{echo $user->convert($clicks['cost'])}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Impressions</td>
-                                            <td>{echo $impressions['total']}</td>
-                                            <td>{echo $user->convert($org->meta["bill"]["mic"])} per million</td>
-                                            <td>{echo $user->convert($impressions['cost'])}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Total</b></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><b>{echo $user->convert($impressions['cost'] + $clicks['cost'])}</b></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                    <ul class="nav nav-tabs navtab-custom">
+                        <li class="active">
+                            <a href="#bills" data-toggle="tab" aria-expanded="false">
+                                <span class="visible-xs"><i class="fa fa-file-text-o"></i></span>
+                                <span class="hidden-xs">Bills</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#credits" data-toggle="tab" aria-expanded="true">
+                                <span class="visible-xs"><i class="fa fa-money"></i></span>
+                                <span class="hidden-xs">Credits</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#payments" data-toggle="tab" aria-expanded="true">
+                                <span class="visible-xs"><i class="fa fa-money"></i></span>
+                                <span class="hidden-xs">Payment History</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="bills">
+                            <h4 class="m-t-0 header-title pull-right">Summary</h4>
+                            <form class="form-inline" role="form" id="range">
+                                <div class="form-group">
+                                    <label>Date: </label>
+                                    <select name="invoice" class="form-control" data-live-search=true style="width: 200px;">
+                                        <option value="current">{echo date('F')} {echo date('Y')}</option>
+                                        {foreach $bill in $bills}
+                                        <option></option>
+                                        {/foreach}
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Show</button>
+                            </form>
+                            <div class="table-rep-plugin">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Item</th>
+                                                <th>Quantity</th>
+                                                <th>Rate</th>
+                                                <th>Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Clicks</td>
+                                                <td>{echo $clicks['total']}</td>
+                                                <td>{echo $user->convert($org->meta["bill"]["tcc"])} per thousand</td>
+                                                <td>{echo $user->convert($clicks['cost'])}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Impressions</td>
+                                                <td>{echo $impressions['total']}</td>
+                                                <td>{echo $user->convert($org->meta["bill"]["mic"])} per million</td>
+                                                <td>{echo $user->convert($impressions['cost'])}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><b>Total</b></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td><b>{echo $user->convert($impressions['cost'] + $clicks['cost'])}</b></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
+                        <div class="tab-pane" id="credits"></div>
+                        <div class="tab-pane" id="payments"></div>
                     </div>
                 </div>
             </div>
