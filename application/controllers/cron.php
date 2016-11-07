@@ -11,6 +11,7 @@ use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
 use Shared\Services\Db as Db;
 use Shared\Services\User as Usr;
+use Shared\Services\Performance as Perf;
 
 class Cron extends Shared\Controller {
 
@@ -66,6 +67,7 @@ class Cron extends Shared\Controller {
 
         $this->_performance();
         $this->log('Peak Memory at: ' . memory_get_peak_usage());
+        $this->_invoice();
         $this->_webPerf();
         $this->_rssFeed();
 
@@ -487,6 +489,64 @@ class Cron extends Shared\Controller {
             var_dump('Saving contest: ' . $c->_id);
             $c->save();
         }
+    }
+
+    public function _invoice() {
+        $orgs = Organization::all(['live' => true]);
+        $today = date('Y-m-d');
+        $this->log('Started Invoices');
+
+        foreach ($orgs as $o) {
+            $start = date('Y-m-d', strtotime("-1 day"));
+            // check auto invoice
+            $aff = $o->billing['aff'] ?? [];
+            if (!isset($aff['auto']) || !$aff['auto']) continue;
+            $this->log('Checking Invoices for Org: ' . $o->name);
+
+            // make invoice for all publishers b/w $start and $today
+            $pubs = User::all(['org_id' => $o->_id, 'live' => true, 'type' => 'publisher']);
+            foreach ($pubs as $p) {
+                $invoice = Invoice::first(['org_id' => $o->_id, 'user_id' => $p->_id], ['created'], 'created', 'desc');
+                if ($invoice) { // check no of days
+                    $lastCreated = $invoice->created->format('Y-m-d');
+                    $diff = date_diff(date_create($lastCreated), date_create($today));
+
+                    if ($diff->d !== (int) $aff['freq']) {
+                        continue;
+                    }
+                    $start = date('Y-m-d', strtotime("-" . $aff['freq'] . " day"));
+                } else {
+                    $start = $o->created->format('Y-m-d');
+                }
+
+                // check if invoice exists for the date range
+                $inv = Invoice::first([
+                    'user_id' => $p->_id,
+                    'created' => Db::dateQuery($start, $today)
+                ], ['_id']);
+                if ($inv) continue;
+
+                $pubPerf = Perf::perf($o, 'publisher', [
+                    'publishers' => [$p->_id],
+                    'fields' => ['revenue', 'created'],
+                    'start' => $start, 'end' => $today
+                ]);
+                $perf = []; Perf::payout($pubPerf, $perf); $total = Perf::calTotal($perf);
+                $payout = $total['payout'] ?? 0; $keys = array_keys($perf);
+                if ($payout < $aff['minpay']) continue;
+
+                // create a new invoice
+                $inv = new Invoice([
+                    'org_id' => $o->_id, 'user_id' => $p->_id,
+                    'utype' => $p->type, 'amount' => $payout,
+                    'start' => $keys[0], 'end' => end($keys)
+                ]);
+
+                $inv->save();
+                $this->log('Invoice saved for User: ' . $p->name . ' email: ' . $p->email);
+            }
+        }
+        $this->log('End Invoices');
     }
 
     public function generateBills() {

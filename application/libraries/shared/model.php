@@ -57,6 +57,16 @@ namespace Shared {
             // override this method to do cron tasks
         }
 
+        public function display() {
+            $columns = $this->getColumns();
+            $arr = [];
+            foreach ($columns as $key => $value) {
+                $field = "_{$key}";
+                $arr[$key] = $this->$field;
+            }
+            return $arr;
+        }
+
         public static function displayImg($name = '', $folder = "images") {
             $file = CDN . 'uploads/' . $folder . '/' . $name;
             return $file;
