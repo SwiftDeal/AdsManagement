@@ -213,6 +213,7 @@ class User extends Shared\Model {
         $u = self::first(["email = ?" => $user->email, "org_id = ?" => $org->_id]);
         if ($u) {
             $view->set("message", "User already exists!!");
+            $view->set('errors', ['email' => ['Duplicate Email']]);
             return false;
         }
 

@@ -120,7 +120,9 @@ namespace Framework {
          * @return \Framework\View
          */
         public function erase($key) {
-            unset($this->data[$key]);
+            $data = $this->data;
+            unset($data[$key]);
+            $this->data = $data;
             return $this;
         }
 

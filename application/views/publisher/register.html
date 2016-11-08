@@ -14,17 +14,20 @@
     <div class="form-group">
         <div class="col-xs-12">
             <input class="form-control" type="text" name="name" required="" placeholder="Full Name">
+            <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "name")}</span>
         </div>
     </div>
     <div class="form-group">
         <div class="col-xs-12">
             <input class="form-control" type="email" name="email" required="" placeholder="Email">
+            <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "email")}</span>
         </div>
     </div>
     <div class="form-group">
         <div class="col-xs-12">
             <input class="form-control" type="password" name="password" required="" placeholder="Password" pattern=".{8,}" required title="8 characters minimum">
             <small class="help-text">Password should be atleast 8 characters</small>
+            <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "password")}</span>
         </div>
     </div>
     <div class="form-group">

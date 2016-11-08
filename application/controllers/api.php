@@ -108,7 +108,7 @@ class Api extends \Shared\Controller {
 	 * @before _secure
 	 * @after _cleanUp
 	 */
-	public function affiliate($id = null) {
+	public function affiliates($id = null) {
 		// check request type
 		$org = $this->_org; $view = $this->getActionView();
 
@@ -136,9 +136,14 @@ class Api extends \Shared\Controller {
 					foreach ($allowedFields as $f) {
 						$publisher->$f = RequestMethods::post($f, $publisher->$f);
 					}
+					$password = RequestMethods::post('password');
+					if ($password) {
+						$publisher->password = sha1($password);
+					}
 					$publisher->save();
 					$view->set('message', 'Affiliate Updated!!')
-						->set('success', true);
+						->set('success', true)
+						->set('data', (object) ['user' => User::objectArr($publisher, Usr::fields())[0]]);
 				}
 				break;
 
@@ -152,30 +157,39 @@ class Api extends \Shared\Controller {
 	protected function _deleteUser($user, $type) {
 		$result = $user->delete(); $view = $this->getActionView();
 		if ($result) {
-		    $view->set('message', "$type removed successfully!!");
+		    $view->set('message', "$type removed successfully!!")
+		    	->set('success', true);
 		} else {
-		    $view->set('message', "Failed to delete $type from the database!!");   
+		    $view->set('message', "Failed to delete $type from the database!!")
+		    	->set('success', false);
 		}
 	}
 
 	protected function _registerUser($type, $opts = []) {
 		$view = $this->getActionView(); $org = $this->_org;
+		$view->set('success', false);
 
 		$usr = User::addNew($type, $org, $view);
-		if ($usr === false) return $view->set('success', false);
+		if ($usr === false) {
+			// set view->errors to data
+			$errors = $view->get('errors'); $view->erase('errors');
+			$view->set('data', ['errors' => $errors]);
+			return;
+		}
 
 		$pass = $user->password;
-		$user->password = sha1($pass);
-		$user->save();
+		$usr->password = sha1($pass);
+		$usr->save();
 
 		$params = array_merge($opts, [
-		    'user' => $user, 'org' => $org,
+		    'user' => $usr, 'org' => $org,
 		    'pass' => $pass,
 		    'subject' => $org->name . ' Support'
 		]);
-		Mail::send($params);
+		Shared\Mail::send($params);
 		$view->set('message', ucfirst($type) . ' Added!!')
-			->set('success', true);
+			->set('success', true)
+			->set('data', (object) ['user' => User::objectArr($usr, Usr::fields())[0]]);
 	}
 
 	/**
