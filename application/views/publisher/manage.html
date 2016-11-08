@@ -45,6 +45,7 @@
                                 <tbody>
                                     {foreach $p in $publishers}
                                     {script $perf = Performance::calculate($p)}
+                                    {script $pays = Payment::done($p)}
                                     <tr>
                                         <td><img src="{echo Shared\Markup::get_gravatar($p->email, 40)}"></td>
                                         <td>
@@ -69,7 +70,7 @@
                                             {/if}
                                         </td>
                                         <td>{echo Shared\Markup::nice_number($perf['clicks'])}</td>
-                                        <td>{echo $user->convert($perf['revenue'])}</td>
+                                        <td>{echo $user->convert($perf['revenue'] - $pays['amount'])}</td>
                                     </tr>
                                     {/foreach}
                                 </tbody>

@@ -164,7 +164,7 @@ class Organization extends \Shared\Model {
                 $u = $pubs[$pid];
                 $result['publishers'][] = [
                     "_id" => $pid,
-                    "name" => $u->name,
+                    "username" => $u->username,
                     "count" => $count
                 ];
             }

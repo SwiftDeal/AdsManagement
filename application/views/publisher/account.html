@@ -46,8 +46,13 @@
                     <div class="col-md-6">
                         <form role="form" method="post">
                             <div class="form-group">
+                                <label>Username/Nicname</label>
+                                <input type="text" name="username" value="{echo $user->username}" class="form-control" placeholder="User Name">
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "username")}</span>
+                            </div>
+                            <div class="form-group">
                                 <label>Name</label>
-                                <input type="text" name="name" value="{echo $user->name}" class="form-control" placeholder="Full Name">
+                                <input type="text" name="name" value="{echo $user->name}" class="form-control" placeholder="Full Name" required="">
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "name")}</span>
                             </div>
                             <div class="form-group">

@@ -68,7 +68,8 @@
                                                 {if $i->live}
                                                 <span class="text text-success">Success</span>
                                                 {/if} {else}
-                                                <span class="text text-warning">Pending</span>
+                                                <span class="text text-warning">Pending</span><br>
+                                                <small><a href="/billing/createpayment.html?user_id={echo $i->user_id}" class="text-sm">Make Payment</a></small>
                                                 {/else}
                                             </td>
                                             <td><a href="/publisher/info/{echo $i->user_id}.html" target="_blank">{echo $u->name}</a></td>

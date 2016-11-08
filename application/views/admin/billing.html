@@ -83,6 +83,13 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                <p class="text-center">
+                                {if(!$bill->live && ($invoice != "current"))}
+                                    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZVD7V4XDGC7E4&amount={echo ($impressions['cost'] + $clicks['cost'])}" class="btn btn-primary"><i class="fa fa-paypal"></i> Pay with Paypal</a>
+                                {/if}{else}
+                                    
+                                {/else}
+                                </p>
                             </div>
                         </div>
                         <div class="tab-pane" id="credits"></div>

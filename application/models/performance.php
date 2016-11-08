@@ -64,16 +64,20 @@ class Performance extends Shared\Model {
         if ($both) {
             $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
         }
-        $perf = self::all($query, ['clicks', 'revenue']);
+        $perf = self::all($query, ['clicks', 'revenue', 'impressions', 'conversions']);
 
-        $clicks = 0; $revenue = 0.00;
+        $clicks = 0; $revenue = 0.00; $impressions = 0; $conversions = 0;
         foreach ($perf as $p) {
             $clicks += $p->clicks;
             $revenue += $p->revenue;
+            $impressions += $p->impressions;
+            $conversions += $p->conversions;
         }
         return [
             'clicks' => $clicks,
-            'revenue' => $revenue
+            'revenue' => $revenue,
+            'impressions' => $impressions,
+            'conversions' => $conversions
         ];
     }
 

@@ -52,4 +52,21 @@ class Payment extends Shared\Model {
      * @length 10,2
      */
     protected $_amount;
+
+    public static function done($user, $dateQuery = []) {
+        $query = ['user_id' => $user->_id];
+        $both = isset($dateQuery['start']) && isset($dateQuery['end']);
+        if ($both) {
+            $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
+        }
+        $pays = self::all($query, ['amount']);
+
+        $amount = 0.00;
+        foreach ($pays as $p) {
+            $amount += $p->amount;
+        }
+        return [
+            'amount' => $amount
+        ];
+    }
 }

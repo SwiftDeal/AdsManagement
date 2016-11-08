@@ -185,7 +185,7 @@
                                 <tbody>
                                     {foreach $u in $topEarners}
                                     <tr>
-                                        <td><a href="/publisher/info/{echo $u['_id']}.html">{echo $u["name"]}</a></td>
+                                        <td><a href="/publisher/info/{echo $u['_id']}.html">{echo $u["username"]}</a></td>
                                         <td>{echo Shared\Markup::nice_number($u["count"])}</td>
                                     </tr>
                                     {/foreach}

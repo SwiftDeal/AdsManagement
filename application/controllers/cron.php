@@ -104,7 +104,7 @@ class Cron extends Shared\Controller {
         foreach ($orgs as $org) {
             if (!array_key_exists("widgets", $org->meta)) continue;
 
-            $pubs = User::all(["org_id = ?" => $org->_id, "type = ?" => "publisher"], ["_id", "name"]);
+            $pubs = User::all(["org_id = ?" => $org->_id, "type = ?" => "publisher"], ["_id", "username"]);
             $in = array_keys($pubs);
             
             $records = Db::query('Click', [
@@ -539,7 +539,8 @@ class Cron extends Shared\Controller {
                 $inv = new Invoice([
                     'org_id' => $o->_id, 'user_id' => $p->_id,
                     'utype' => $p->type, 'amount' => $payout,
-                    'start' => $keys[0], 'end' => end($keys)
+                    'start' => $keys[0], 'end' => end($keys),
+                    'live' => false
                 ]);
 
                 $inv->save();

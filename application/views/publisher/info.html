@@ -69,6 +69,11 @@
                             <div class="col-md-6">
                                 <form role="form" method="post" action="/publisher/info/{echo $publisher->id}">
                                     <div class="form-group">
+                                        <label>Username</label>
+                                        <input type="text" name="username" value="{echo $publisher->username}" class="form-control" placeholder="UserName">
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "name")}</span>
+                                    </div>
+                                    <div class="form-group">
                                         <label>Name</label>
                                         <input type="text" name="name" value="{echo $publisher->name}" class="form-control" placeholder="Full Name">
                                         <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "name")}</span>

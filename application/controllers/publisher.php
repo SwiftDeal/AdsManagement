@@ -211,7 +211,7 @@ class Publisher extends Auth {
             $action = RequestMethods::post('action', '');
             switch ($action) {
                 case 'account':
-                    $fields = ['name', 'phone', 'currency'];
+                    $fields = ['name', 'phone', 'currency', 'username'];
                     foreach ($fields as $f) {
                         $user->$f = RequestMethods::post($f);
                     }
@@ -458,7 +458,7 @@ class Publisher extends Auth {
             $action = RequestMethods::post('action', '');
             switch ($action) {
                 case 'account':
-                    $fields = ['name', 'email', 'phone', 'country', 'currency'];
+                    $fields = ['name', 'email', 'phone', 'country', 'currency', 'username'];
                     foreach ($fields as $f) {
                         $publisher->$f = RequestMethods::post($f);
                     }

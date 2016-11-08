@@ -187,14 +187,6 @@ File: Admin Controller
                     self.remove();
                 });
             },
-            customization: function () {
-                $("input[type=checkbox]").click(function() {
-                    if ($("#affoption").is(":checked")) 
-                        $(".affauto").removeClass('hide');
-                    else 
-                        $(".affauto").addClass('hide');
-                });
-            },
             notification: function () {
                 $('#targetSelect').on('change', function (e) {
                     e.preventDefault();
