@@ -34,19 +34,22 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="bills">
-                            <h4 class="m-t-0 header-title pull-right">Summary</h4>
-                            <form class="form-inline" role="form" id="range">
-                                <div class="form-group">
-                                    <label>Date: </label>
-                                    <select name="invoice" class="form-control" data-live-search=true style="width: 200px;">
-                                        <option value="current">{echo date('F')} {echo date('Y')}</option>
-                                        {foreach $bill in $bills}
-                                        <option></option>
-                                        {/foreach}
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Show</button>
-                            </form>
+                            <span class="text-center">
+                                <h4 class="m-t-0 header-title">Summary</h4>
+                                <h4 class="m-t-0 header-title">START: {echo Framework\StringMethods::only_date($start)} - END: {echo Framework\StringMethods::only_date($end)}</h4>
+                                <form class="form-inline" role="form" id="range">
+                                    <div class="form-group">
+                                        <label>Date: </label>
+                                        <select name="invoice" class="form-control" value="{echo $invoice}" style="width: 200px;">
+                                            <option value="current">Current</option>
+                                            {foreach $b in $bills}
+                                            <option value="{echo $b->id}">{echo Framework\StringMethods::only_date($b->created)}</option>
+                                            {/foreach}
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Show</button>
+                                </form>
+                            </span>
                             <div class="table-rep-plugin">
                                 <div class="table-responsive">
                                     <table class="table table-striped">

@@ -571,29 +571,35 @@ class Cron extends Shared\Controller {
                 $click_cost = 0.001*$clicks*$org->meta["bill"]["tcc"];
             }
             $impressions = $performances['total_impressions'];
-            if ($impressions > 1000000) {
+            if ($impressions > 100000) {
                 $imp_cost = 0.001*0.001*$impressions*$org->meta["bill"]["mic"];
             }
+            $total = $click_cost + $imp_cost;
             $bill = new Bill([
                 "org_id" => $org->id,
                 "impressions" => $impressions,
                 "clicks" => $clicks,
                 "mic" => $org->meta["bill"]["mic"],
                 "tcc" => $org->meta["bill"]["tcc"],
-                "amount" => $click_cost + $imp_cost,
-                "live" => false
+                "start" => $start,
+                "end" => $end,
+                "amount" => $total,
+                "live" => false,
+                "created" => Db::time('-7 day')
             ]);
-            $bill->save();
-            $user = User::first(["org_id = ?" => $org->id, "type = ?" => "admin"]);
-            Mail::send([
-                'user' => $user,
-                'bill' => $bill,
-                'template' => 'adminBilling',
-                'subject' => 'Billing at vNative',
-                'click_cost' => $click_cost,
-                'imp_cost' => $imp_cost,
-                'org' => $org
-            ]);
+            if ($total > 1) {
+                $bill->save();
+                $user = User::first(["org_id = ?" => $org->id, "type = ?" => "admin"]);
+                Mail::send([
+                    'user' => $user,
+                    'bill' => $bill,
+                    'template' => 'adminBilling',
+                    'subject' => 'Billing at vNative',
+                    'click_cost' => $click_cost,
+                    'imp_cost' => $imp_cost,
+                    'org' => $org
+                ]);
+            }
         }
     }
 

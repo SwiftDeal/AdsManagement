@@ -17,6 +17,16 @@ class User extends Shared\Model {
      * @index
      */
     protected $_org_id;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * @length 100
+     * 
+     * @label UserName
+     */
+    protected $_username = null;
     
     /**
      * @column
@@ -198,6 +208,7 @@ class User extends Shared\Model {
         $fields = ['name', 'email', 'phone', 'password', 'country'];
         $user = new self([
             'country' => RequestMethods::server("HTTP_CF_IPCOUNTRY", "IN"),
+            'username' => RequestMethods::post("name", "USER"),
             'currency' => 'USD', 'org_id' => $org->_id,
             'type' => $type, 'live' => false
         ]);

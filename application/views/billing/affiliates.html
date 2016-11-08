@@ -71,7 +71,7 @@
                                                 <span class="text text-warning">Pending</span>
                                                 {/else}
                                             </td>
-                                            <td>{echo $u->name}</td>
+                                            <td><a href="/publisher/info/{echo $i->user_id}.html" target="_blank">{echo $u->name}</a></td>
                                             <td>
                                                 {if $u->live}
                                                 <span class="text text-success">Active</span>
@@ -100,7 +100,8 @@
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Created</th>
+                                            <th>Date</th>
+                                            <th>Name</th>
                                             <th>Type</th>
                                             <th>Amount</th>
                                             <th>Reference</th>
@@ -108,9 +109,11 @@
                                     </thead>
                                     <tbody>
                                         {foreach $p in $payments}
+                                        {script $u = User::first(["id = ?" => $p->user_id], ['name'])}
                                         <tr>
                                             <td><small>{echo Framework\StringMethods::only_date($p->created)}</small></td>
-                                            <td>{echo $p->type}</td>
+                                            <td><a href="/publisher/info/{echo $p->user_id}.html" target="_blank">{echo $u->name}</a></td>
+                                            <td>{echo strtoupper($p->type)}</td>
                                             <td>{echo $user->convert($p->amount)}</td>
                                             <td>{echo $p->meta["refer_id"]}</td>
                                         </tr>

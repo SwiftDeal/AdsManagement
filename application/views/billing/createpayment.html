@@ -83,7 +83,7 @@
                                                 </td>
                                                 <td>{echo Framework\StringMethods::datetime_to_text($i->start)}</td>
                                                 <td>{echo Framework\StringMethods::datetime_to_text($i->end)}</td>
-                                                <td>{echo $user->convert($i->amount)}</td>
+                                                <td>{echo $user->convert($i->amount, true, 2, false)}</td>
                                             </tr>
                                         {/foreach}
                                         </tbody>

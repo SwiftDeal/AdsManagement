@@ -56,14 +56,14 @@
                                     <div class="input-group">
                                         <label class="sr-only">From</label>
                                         <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> From</span>
-                                        <input type="date" style="width: 180px" name="start" class="form-control" value="{echo $start}" />
+                                        <input type="date" style="width: 180px" name="start" class="form-control" value="{echo $start}" required="" />
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="sr-only">To</label>
                                         <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> To</span>
-                                        <input type="date" style="width: 180px" name="end" class="form-control" value="{echo $end}" />
+                                        <input type="date" style="width: 180px" name="end" class="form-control" value="{echo $end}" required="" />
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Fetch Details</button>
@@ -202,7 +202,7 @@
                                             <td>{echo Shared\Markup::nice_number($totalClk)}</td>
                                             <td>{echo Shared\Markup::nice_number($totalConvr)}</td>
                                             <td>{echo Shared\Markup::nice_number($totalImpr)}</td>
-                                            <td>{echo $user->convert($total)}</td>
+                                            <td>{echo $user->convert($total, true, 2, false)}</td>
                                         </tr>
                                     </tbody>
                                 </table>

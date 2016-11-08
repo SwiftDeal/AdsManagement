@@ -94,10 +94,19 @@ File: Admin Controller
                 var $this = this;
                 $('#indexrange').submit(function(e) {
                     e.preventDefault();
-                    $('#perfstat').remove();
-                    $('#perf-stat').append('<canvas id="perfstat" height="300"></canvas>');
                     $('#indexrange button').addClass('disabled');
+                    //removing divs to update graphs
+                    $('#country').remove();
+                    $('#c-stat').append('<canvas id="perfstat" height="300"></canvas>');
+                    
+                    $('#perfstat').remove();
+                    $('#perf-stat').append('<div id="country" style="height: 300px"></div>');
+
+                    $('#devicestat').remove();
+                    $('#device-stat').append('<canvas id="devicestat" height="300"></canvas>');
+
                     $('#topreferer').html('');
+                    $('#topos').html('');
                     $this.performance();
                     $('#indexrange button').removeClass('disabled');
                 });

@@ -321,7 +321,7 @@ class Admin extends Auth {
      */
     public function billing() {
         $this->seo(array("title" => "Billing")); $view = $this->getActionView();
-        $bills = Bill::all(["org_id = ?" => $this->org->id]);
+        $bills = Bill::all(["org_id = ?" => $this->org->id], ['id', 'created'], "created", "desc");
         $invoice = RequestMethods::get("invoice", "current");
         $imp_cost = 0; $click_cost = 0;
         switch ($invoice) {
@@ -341,6 +341,7 @@ class Admin extends Auth {
             
             default:
                 $bill = Bill::first(["org_id = ?" => $this->org->id, "id = ?" => $invoice]);
+                $start = $bill->start; $end = $bill->end;
                 $clicks = $bill->clicks;
                 $impressions = $bill->impressions;
                 break;
@@ -354,6 +355,7 @@ class Admin extends Auth {
         $view->set([
             'bills' => $bills,
             'clicks' => [ 'total' => $clicks, 'cost' => $click_cost ],
+            'start' => $start, 'end' => $end, 'invoice' => $invoice,
             'impressions' => [ 'total' => $impressions, 'cost' => $imp_cost ]
         ]);
     }

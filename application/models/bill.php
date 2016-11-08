@@ -52,6 +52,26 @@ class Bill extends Shared\Model {
     /**
      * @column
      * @readwrite
+     * @type date
+     *
+     * @validate required
+     * @label invoice start date
+     */
+    protected $_start;
+
+    /**
+     * @column
+     * @readwrite
+     * @type date
+     *
+     * @validate required
+     * @label invoice end date
+     */
+    protected $_end;
+
+    /**
+     * @column
+     * @readwrite
      * @type decimal
      * @length 6,2
      *
