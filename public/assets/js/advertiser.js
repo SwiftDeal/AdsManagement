@@ -1,3 +1,6 @@
+/**
+ * Advertiser Controller, requires - request.js, components.js, browser.js
+ */
 (function (window, $) {
     "use strict";
     var Advertiser = (function () {

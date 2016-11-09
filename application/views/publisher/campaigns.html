@@ -13,7 +13,7 @@
                     <div class="input-group">
                         <label class="sr-only">Category</label>
                         <span class="add-on input-group-addon"><i class="fa fa-tags fa-fw"></i> Category</span>
-                        <select class="form-control selectVal" data-value='{echo json_encode($coverage)}' name="category[]" multiple="" data-live-search=true title="Browse by Category" style="width: 180px">
+                        <select class="form-control selectpicker selectVal" data-value='{echo json_encode($coverage)}' name="category[]" multiple="" data-live-search=true title="Browse by Category" style="width: 180px">
                         {foreach $cat in $categories}
                         <option value="{echo $cat->_id}">{echo $cat->name}</option>
                         {/foreach}
