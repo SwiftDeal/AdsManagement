@@ -53,10 +53,11 @@ class Billing extends Admin {
             ->set('end', $end);
 
         $dateQuery = Utils::dateQuery($start, $end);
-        $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
+        $query['created'] = Db::dateQuery($start, $end);
         $query['user_id'] = $user_id;
+        $view->set("exists", false);
 
-        if($user_id) {
+        if ($user_id) {
             $user = \User::first(['type = ?' => 'publisher', 'org_id' => $this->org->_id, 'id = ?' => $user_id]);
             $view->set('affiliate', $user);
             $performances = Performance::all($query, ['clicks', 'impressions', 'conversions', 'created', 'revenue'], 'created', 'desc');
@@ -65,9 +66,10 @@ class Billing extends Admin {
             }
             $view->set('performances', $perfs);
 
-            $inv_exist = Invoice::first(["user_id = ?" => $user_id, "start" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]]);
+            $inv_exist = Invoice::exists($user_id, $start, $end);
             if ($inv_exist) {
                 $view->set("message", "Invoice already exist for Date range from ".Framework\StringMethods::only_date($inv_exist->start)." to ".Framework\StringMethods::only_date($inv_exist->end));
+                $view->set("exists", true);
                 return;
             }
         } else {

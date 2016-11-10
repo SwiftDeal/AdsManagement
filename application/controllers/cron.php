@@ -520,10 +520,7 @@ class Cron extends Shared\Controller {
                 }
 
                 // check if invoice exists for the date range
-                $inv = Invoice::first([
-                    'user_id' => $p->_id,
-                    'created' => Db::dateQuery($start, $today)
-                ], ['_id']);
+                $inv = Invoice::exists($p->_id, $start, $today);
                 if ($inv) continue;
 
                 $pubPerf = Perf::perf($o, 'publisher', [

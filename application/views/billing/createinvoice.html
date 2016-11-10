@@ -68,9 +68,11 @@
                                 </div>
                                 <button type="submit" class="btn btn-primary">Fetch Details</button>
                             </form>
-                            {if($performances)}
+                            {if($performances) && !isset($message)}
                             <br><p class="text-center">The Invoice will be created from {echo Framework\StringMethods::only_date(end($performances)->created)} to {echo Framework\StringMethods::only_date($performances[0]->created)}</p>
-                            {/if}
+                            {/if} {elseif isset($message)}
+                            <br><p class="text-center">{echo $message}</p>
+                            {/elseif}
                         </div>
                     </div>
                 </div>
@@ -213,12 +215,12 @@
                                 <input type="hidden" name="impressions" value="{echo $totalImpr}">
                                 <input type="hidden" name="action" value="cinvoice">
                                 <input type="hidden" name="amount" value="{echo $total}">
-                                {if($total > 0)}
+                                {if ($total > 0 && !$exists)}
                                 <p class="text-center">
                                     <button type="submit" class="btn btn-success">Create Invoice</button>
                                 </p>
-                                {/if}{else}
-                                <p class="text-warning text-center">No Records Found. Cannot Create Invoice</p>
+                                {/if} {else}
+                                <p class="text-warning text-center">Cannot Create Invoice</p>
                                 {/else}
                             </form>
                             

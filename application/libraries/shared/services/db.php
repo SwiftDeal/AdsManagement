@@ -95,7 +95,7 @@ class Db {
 	public static function dateQuery($start = null, $end = null) {
 		$changed = false;
 		if ($start && $end) {
-			if (is_object($start) && is_object($end) && is_a($start, 'MongoDB\BSON\UTCDateTime') && is_a($end, 'MongoDB\BSON\UTCDateTime')) {
+			if (self::isType($start, 'date') && self::isType($end, 'date')) {
 				$dq = ['start' => $start, 'end' => $end];
 				$changed = true;
 			}
