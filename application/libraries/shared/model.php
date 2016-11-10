@@ -53,6 +53,10 @@ namespace Shared {
          */
         protected $_meta = [];
 
+        public function setLive($val) {
+            $this->_live = (boolean) $val;
+        }
+
         public static function hourly() {
             // override this method to do cron tasks
         }
@@ -142,10 +146,11 @@ namespace Shared {
                     continue;
                 }
                 $v = $this->_convertToType($current, $value['type']);
-                $v = $this->_preventEmpty($v, $value['type']);
-                if (is_null($v)) {
+                $checkEmpty = $this->_preventEmpty($v, $value['type']);
+                // dont save empty fields when creating a record
+                if (is_null($checkEmpty) && is_null($this->__id)) {
                     continue;
-                } else {
+                } else { // allow empty values when updating
                     $doc[$key] = $v;
                 }
             }
@@ -155,13 +160,13 @@ namespace Shared {
 
             if (empty($this->$raw)) {
                 if (!array_key_exists('created', $doc)) {
-                    $doc['created'] = Db::time();
+                    $this->_created = $doc['created'] = Db::time();
                 }
 
                 $result = $collection->insertOne($doc);
                 $this->__id = $result->getInsertedId();
             } else {
-                $doc['modified'] = Db::time();
+                $this->_modified = $doc['modified'] = Db::time();
 
                 $this->__id = Utils::mongoObjectId($this->__id);
                 $result = $collection->updateOne(['_id' => $this->__id], ['$set' => $doc]);

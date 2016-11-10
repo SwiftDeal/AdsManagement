@@ -24,7 +24,7 @@ $routes = array(
         "action" => "login"
     ),
     array(
-        "pattern" => "api/affiliate/:id/earning",
+        "pattern" => "api/affiliates/:id/earning",
         "controller" => "api",
         "action" => "earning"
     )

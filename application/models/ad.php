@@ -201,13 +201,13 @@ class Ad extends Shared\Model {
         
         $count = \Click::count(['adid' => $id]);
         if ($count !== 0) {
-            return ['message' => 'Can not delete!! Campaign contain clicks'];
+            return ['message' => 'Can not delete!! Campaign contain clicks', 'success' => false];
         }
         Utils::image($this->image, 'remove');
         parent::delete();
         \Commission::deleteAll(['ad_id' => $id]);
         \Link::deleteAll(['ad_id' => $id]);
-        return ['message' => 'Campaign removed successfully!!'];
+        return ['message' => 'Campaign removed successfully!!', 'success' => true];
     }
 
     /**

@@ -132,7 +132,7 @@ class Api extends \Shared\Controller {
 				if (!$id) {
 					$this->_registerUser('publisher', ['template' => 'pubRegister']);
 				} else {
-					$allowedFields = ['name', 'phone', 'country', 'currency'];
+					$allowedFields = ['name', 'phone', 'country', 'currency', 'live'];
 					foreach ($allowedFields as $f) {
 						$publisher->$f = RequestMethods::post($f, $publisher->$f);
 					}
@@ -200,7 +200,7 @@ class Api extends \Shared\Controller {
 		$view = $this->getActionView(); $org = $this->_org;
 		$active = RequestMethods::get('active', 1);
 
-		$fields = ['_id', 'title', 'image', 'url', 'device', 'expiry', 'created'];
+		$fields = ['_id', 'title', 'description', 'image', 'url', 'device', 'expiry', 'created'];
 		$commFields = ['model', 'rate', 'revenue', 'coverage'];
 
 		if ($id) {
