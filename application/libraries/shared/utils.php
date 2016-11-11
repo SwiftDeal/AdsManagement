@@ -291,6 +291,15 @@ class Utils {
 		return $normal;
 	}
 
+	public static function getConfig($name, $property = null) {
+		$config = Registry::get("configuration")->parse("configuration/{$name}");
+
+		if ($property && property_exists($config, $property)) {
+			return $config->$property;
+		}
+		return $config;
+	}
+
 	/**
 	 * Uploads the image sent by the user in $_FILES array when submitting
 	 * the form using file-upload. Assigns a name to the file and also checks

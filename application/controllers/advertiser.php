@@ -279,7 +279,7 @@ class Advertiser extends Auth {
                     break;
 
                 case 'campaign':
-                    $advertiser->getMeta['campaign'] = [
+                    $advertiser->getMeta()['campaign'] = [
                         'model' => RequestMethods::post('model'),
                         'rate' => $this->currency(RequestMethods::post('rate'))
                     ];

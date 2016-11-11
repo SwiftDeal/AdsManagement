@@ -3,12 +3,13 @@
 /**
  * @author Faizan Ayubi
  */
-use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
 use WebBot\Core\Bot as Bot;
 use \Curl\Curl;
 use Shared\Utils as Utils;
 use \Shared\Services\Db as Db;
+use Framework\ArrayMethods as ArrayMethods;
+use Framework\RequestMethods as RequestMethods;
 
 class Campaign extends Admin {
     
@@ -41,7 +42,7 @@ class Campaign extends Admin {
      * @before _secure
      */
     public function details($id) {
-        $ad = \Ad::first(["_id = ?" => $id, 'org_id' => $this->org->_id]);
+        $ad = \Ad::first(['_id' => $id, 'org_id' => $this->org->_id]);
         if (!$ad) $this->_404();
 
         $this->seo(array("title" => $ad->title));
@@ -49,6 +50,22 @@ class Campaign extends Admin {
 
         $start = RequestMethods::get("start", date('Y-m-d', strtotime("-1 day")));
         $end = RequestMethods::get("end", date('Y-m-d'));
+
+        if (RequestMethods::type() === 'DELETE') {
+            $action = RequestMethods::get('action');
+            switch ($action) {
+            case 'commDel':
+                $commId = RequestMethods::get('comm_id');
+                $commCount = Commission::count(['ad_id' => $ad->_id]);
+                if ($commCount < 2) {
+                    return $view->set('message', 'Atleast 1 commission is required!!');
+                }
+                $comm = Commission::first(['_id' => $commId, 'ad_id' => $ad->_id]);
+                if ($comm) $comm->delete();
+                $view->set('message', 'Commission deleted!!');
+                break;
+            }
+        }
 
         $clicks = Db::query('Click', [
             'adid' => $ad->_id, 'is_bot' => false,
@@ -60,13 +77,11 @@ class Campaign extends Admin {
         $view->set('advertPerf', $advertPerf)
             ->set('advertisers', \User::objectArr($advertisers, ['_id', 'name']));
 
-        $cf = Registry::get("configuration")->parse("configuration/cf")->cloudflare;
+        $cf = Utils::getConfig("cf", 'cloudflare');
         $view->set("domain", $cf->api->domain);
 
-        $comms = Commission::all(["ad_id = ?" => $id]);$models = [];
-        foreach ($comms as $comm) {
-            $models[] = $comm->model;
-        }
+        $comms = Commission::all(["ad_id = ?" => $id]);
+        $models = ArrayMethods::arrayKeys($comms, 'model');
         $advertiser = User::first(["id = ?" => $ad->user_id], ['name']);
         $categories = \Category::all(["org_id = ?" => $this->org->_id], ['name', '_id']);
 

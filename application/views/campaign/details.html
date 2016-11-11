@@ -122,7 +122,9 @@
                                                 <th>Revenue</th>
                                                 <th>Payout</th>
                                                 <th>Description</th>
+                                                <th>Action</th>
                                             </tr>
+                                            {script $parsed = parse_url(URL)}
                                             {foreach $comm in $comms}
                                             <tr>
                                                 <td>{echo strtoupper($comm->model)}</td>
@@ -130,6 +132,7 @@
                                                 <td>{echo $user->convert($comm->revenue)}</td>
                                                 <td>{echo $user->convert($comm->rate)}</td>
                                                 <td>{echo $comm->description}</td>
+                                                <td><button class="btn btn-xs btn-danger delete" type="button" data-message='Are you sure you want to delete this commission??' data-href="{echo $parsed['path']}?action=commDel&comm_id={echo $comm->_id}"><i class="fa fa-trash"></i> Delete</button></td>
                                             </tr>
                                             {/foreach}
                                         </table>
