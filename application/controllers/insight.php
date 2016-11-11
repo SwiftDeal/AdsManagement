@@ -54,66 +54,73 @@ class Insight extends Auth {
      * @after setDate
      */
 	public function campaign($id = null) {
-		$this->seo(["title" => "ADS Effectiveness"]);
+		$this->seo(["title" => "Campaign Insights"]);
         $view = $this->getActionView(); $org = $this->org;
+        if (!$id) $this->_404();
 
-        // Clicks, Revenue, Rate, Profit (Revenue - Rate)
-        $clickCol = Db::collection('Click');
-        $limit = RequestMethods::get('limit', 30);
-
-        $query = ['org_id' => $org->_id];
-        if ($id) {
-        	$query['_id'] = Db::convertType($id, 'id');
-        }
-
-        $ads = Ad::all($query, ['_id']); $in = Db::convertType(array_keys($ads), 'id');
-        $match = [
-            'adid' => ['$in' => $in],
-            'is_bot' => false,
-            'created' => Db::dateQuery($this->start, $this->end),
-        ];
+        $match = [ 'adid' => Db::convertType($id), 'is_bot' => false ];
         if ($this->user_id) {
             $match["pid"] = Db::convertType($this->user_id);
         }
-        $records = $clickCol->aggregate([
-            ['$match' => $match],
-            ['$project' => ['adid' => 1, '_id' => 1, 'country' => 1]],
-            ['$group' => [
-            	'_id' => ['adid' => '$adid', 'country' => '$country'], 'countryCount' => ['$sum' => 1]]
-            ],
-            ['$group' => [
-            	'_id' => '$_id.adid',
-            	'countries' => [
-            		'$push' => [
-            			'country' => '$_id.country',
-            			'count' => '$countryCount'
-            		]
-            	],
-            	'count' => ['$sum' => '$countryCount']
-            ]],
-            ['$sort' => ['count' => -1]],
-            ['$limit' => $limit]
-        ]);
 
-        $results = []; $commissions = [];
-        foreach ($records as $r) {
-        	$to = []; $obj = (object) $r;
-        	$adid = Utils::getMongoID($obj->_id);
-        	foreach ($obj->countries as $key => $value) {
-        		$o = (object) $value;
+        $diff = date_diff(date_create($this->start), date_create($this->end));
+        $stats = []; $clickCol = Db::collection('Click');
+        for ($i = 0; $i <= $diff->format("%a"); $i++) {
+            $date = date('Y-m-d', strtotime($this->start . " +{$i} day"));
 
-        		$comm = Commission::campaignRate($adid, $commissions, $o->country, [
-        			'type' => 'both', 'start' => $this->start, 'end' => $this->end
-        		]);
+            $stats[$date] = [
+                'clicks' => 0,
+                'meta' => [
+                    'country' => [], 'device' => [],
+                    'referer' => [], 'os' => []
+                ]
+            ];
+            $match['created'] = Db::dateQuery($date, $date);
 
-        		$earning = Ad::earning($comm, $o->count);
-        		ArrayMethods::add($earning, $to);
-        	}
-        	$results[$adid] = $to;
+            $records = $clickCol->aggregate([
+                ['$match' => $match],
+                ['$project' => ['country' => 1, 'device' => 1, 'os' => 1, 'referer' => 1]],
+                ['$group' => [
+                    '_id' => ['country' => '$country', 'os' => '$os', 'device' => '$device', 'referer' => '$referer'],
+                    'count' => ['$sum' => 1]
+                ]],
+                ['$sort' => ['count' => -1]]
+            ]);
+
+            foreach ($records as $r) {
+                $obj = Utils::toArray($r);
+                $keys = ['country', 'os', 'device', 'referer'];
+
+                $arr =& $stats[$date]['meta'];
+                $stats[$date]['clicks'] += $obj['count'];
+                foreach ($keys as $k) {
+                    $index = $r['_id'][$k];
+                    ArrayMethods::counter($arr[$k], $index, $obj['count']);
+                }
+            }
         }
-        $view->set('endt', time());
 
-        $view->set('ads', $results);
+        $records = [];
+        foreach ($stats as $date => $r) {
+            $commissions = [];
+        	foreach ($r['meta']['country'] as $country => $clicks) {
+                $extra = [ 'type' => 'both', 'start' => $date, 'end' => $date ];
+                if ($this->user_id) {
+                    $extra['pid'] = $this->user_id;
+                }
+
+        		$comm = Commission::campaignRate($id, $commissions, $country, $extra);
+
+        		$earning = Ad::earning($comm, $clicks);
+        		ArrayMethods::add($earning, $r);
+        	}
+            $records[$date] = $r;
+        }
+        $total = Perf::calTotal($stats);
+
+        $view->set('ads', $records)
+            ->set('total', $total)
+            ->set('records', $j);
 	}
 
     /**

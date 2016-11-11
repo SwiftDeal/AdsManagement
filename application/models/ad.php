@@ -256,7 +256,7 @@ class Ad extends Shared\Model {
         ];
 
         if ($opts['type'] === 'both') {
-            $ans['rate'] = $revenue;
+            $ans['payout'] = $revenue;
             $ans['revenue'] = $extraRev;
         } else {
             $ans['revenue'] = $revenue;

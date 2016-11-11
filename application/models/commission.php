@@ -110,6 +110,10 @@ class Commission extends \Shared\Model {
             case 'both':
                 $info['revenue'] = (float) $commission->revenue;
                 $info['rate'] = (float) $commission->rate;
+
+                if (isset($extra['pid'])) {
+                    $query['pid'] = $extra['pid'];
+                }
                 break;
         }
 
