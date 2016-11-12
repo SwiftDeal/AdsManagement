@@ -33,4 +33,20 @@ class Campaign {
 			}
 		}
 	}
+
+	public static function displayData($ads = []) {
+	    $result = []; $ads = (array) $ads;
+	    foreach ($ads as $a) {
+	        $a = (object) $a;
+	        $find = \Ad::first(['_id' => $a->_id], ['title', 'image', 'url']);
+	        $result[] = [
+	            '_id' => $a->_id,
+	            'clicks' => $a->clicks,
+	            'title' => $find->title,
+	            'image' => $find->image,
+	            'url' => $find->url
+	        ];
+	    }
+	    return $result;
+	}
 }

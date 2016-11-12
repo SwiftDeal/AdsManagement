@@ -11,7 +11,7 @@ use Framework\ArrayMethods as ArrayMethods;
 /**
  * @property string $_image Ad Image
  * @property array|object $_meta Contains different keys for storing misc values
- *                   - processing: (boolean)
+ *                   - processing: (boolean) To check whether campaign is in processing stage
  *                   - videos: (array) Array of objects contains name of video files
  *                   - private: (boolean) To control visibility of ADs
  */
@@ -152,22 +152,6 @@ class Ad extends Shared\Model {
         $result = [];
         foreach ($this->_category as $cat) {
             $result[] = sprintf('%s', $cat);
-        }
-        return $result;
-    }
-
-    public static function displayData($ads = []) {
-        $result = []; $ads = (array) $ads;
-        foreach ($ads as $a) {
-            $a = (object) $a;
-            $find = self::first(['_id' => $a->_id], ['title', 'image', 'url']);
-            $result[] = [
-                '_id' => $a->_id,
-                'clicks' => $a->clicks,
-                'title' => $find->title,
-                'image' => $find->image,
-                'url' => $find->url
-            ];
         }
         return $result;
     }

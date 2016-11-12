@@ -67,7 +67,7 @@ class Publisher extends Auth {
         $category = RequestMethods::get("category", []);
         $keyword = RequestMethods::get("keyword", '');
         $query = ["live = ?" => true, "org_id = ?" => $this->org->_id];
-        $today = date('Y-m-d');
+        $query["meta.private"] = ['$ne' => true]; $today = date('Y-m-d');
 
         if (count($category) > 0) {
             // if you want AND query instead of OR query then replace '$in' --> '$all'
@@ -86,6 +86,7 @@ class Publisher extends Auth {
             $ads = \Ad::all($query, [], 'modified', $order);
             $fields = Shared\Services\User::fields('Ad');
             $ids = array_keys($ads); $ads = Ad::objectArr($ads, $fields);
+            $limit = $count = 30;
 
             $clickCol = Registry::get("MongoDB")->clicks;
             $results = $clickCol->aggregate([
@@ -97,7 +98,7 @@ class Publisher extends Auth {
                 ['$project' => ['adid' => 1, '_id' => 1]],
                 ['$group' => ['_id' => '$adid', 'count' => ['$sum' => 1]]],
                 ['$sort' => ['count' => -1]],
-                ['$limit' => 30]
+                ['$limit' => $limit]
             ]);
 
             $ans = []; 
@@ -105,9 +106,8 @@ class Publisher extends Auth {
                 $a = (object) $r; $key = Utils::getMongoID($a->_id);
                 $ans[$key] = $ads[$key];
             }
-            $ads = $ans; $count = 30;
+            $ads = $ans;
         }
-        $query["meta.private"] = ['$ne' => true];
     	
         $categories = \Category::all(["org_id = ?" => $this->org->_id], ['name', '_id']);
         $user = $this->user; $model = null; $rate = null;

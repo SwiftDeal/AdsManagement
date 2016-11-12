@@ -17,13 +17,12 @@ class Billing extends Admin {
      * @before _secure
      */
     public function affiliates() {
-        $this->seo(array("title" => "Billing"));
-        $view = $this->getActionView();
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-60 day')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
-        $dateQuery = Utils::dateQuery($start, $end);
-        $query = ['utype = ?' => 'publisher', 'org_id' => $this->org->_id];
-        $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
+        $this->seo(array("title" => "Billing")); $view = $this->getActionView();
+        $start = RequestMethods::get("start", date("Y-m-d", strtotime('-60 day')));
+        $end = RequestMethods::get("end", date("Y-m-d", strtotime('now')));
+
+        $query = ['utype' => 'publisher', 'org_id' => $this->org->_id];
+        $query['created'] = Db::dateQuery($start, $end);
         if (RequestMethods::get("user_id")) {
             $query['user_id'] = RequestMethods::get("user_id");
         }
@@ -52,23 +51,20 @@ class Billing extends Admin {
             ->set('start', $start)
             ->set('end', $end);
 
-        $dateQuery = Utils::dateQuery($start, $end);
         $query['created'] = Db::dateQuery($start, $end);
         $query['user_id'] = $user_id;
         $view->set("exists", false);
 
         if ($user_id) {
-            $user = \User::first(['type = ?' => 'publisher', 'org_id' => $this->org->_id, 'id = ?' => $user_id]);
+            $user = \User::first(['type = ?' => 'publisher', 'org_id = ?' => $this->org->_id, 'id = ?' => $user_id]);
             $view->set('affiliate', $user);
             $performances = Performance::all($query, ['clicks', 'impressions', 'conversions', 'created', 'revenue'], 'created', 'desc');
-            foreach ($performances as $p) {
-                $perfs[] = $p;
-            }
+            $perfs = array_values($performances);
             $view->set('performances', $perfs);
 
             $inv_exist = Invoice::exists($user_id, $start, $end);
             if ($inv_exist) {
-                $view->set("message", "Invoice already exist for Date range from ".Framework\StringMethods::only_date($inv_exist->start)." to ".Framework\StringMethods::only_date($inv_exist->end));
+                $view->set("message", "Invoice already exist for Date range from " . Framework\StringMethods::only_date($inv_exist->start) . " to " . Framework\StringMethods::only_date($inv_exist->end));
                 $view->set("exists", true);
                 return;
             }
@@ -89,6 +85,7 @@ class Billing extends Admin {
             ]);
             $invoice->save();
 
+            Registry::get("session")->set('$flashMessage', 'Payment Saved!!');
             $this->redirect("/billing/affiliates.html");
         }
     }
@@ -98,7 +95,8 @@ class Billing extends Admin {
      */
     public function createpayment() {
         $this->seo(array("title" => "Create Payment")); $view = $this->getActionView();
-        $user_id = RequestMethods::get("user_id", null); $invs = [];$total = 0;$meta = [];
+        $user_id = RequestMethods::get("user_id", null);
+        $invs = []; $total = 0; $meta = [];
 
         if($user_id) {
             $user = \User::first(['type = ?' => 'publisher', 'org_id' => $this->org->_id, 'id = ?' => $user_id]);
@@ -144,6 +142,7 @@ class Billing extends Admin {
             ]);
             $payment->save();
 
+            Registry::get("session")->set('$flashMessage', 'Payment Saved!!');
             $this->redirect("/billing/affiliates.html");
         }
         $view->set('user_id', $user_id)
@@ -187,7 +186,7 @@ class Billing extends Admin {
         $query['user_id'] = $user_id;
 
         if($user_id) {
-            $user = \User::first(['type = ?' => 'advertiser', 'org_id' => $this->org->_id, 'id = ?' => $user_id]);
+            $user = \User::first(['type = ?' => 'advertiser', 'org_id = ?' => $this->org->_id, 'id = ?' => $user_id]);
             $view->set('advertiser', $user);
             $performances = Performance::all($query, ['clicks', 'impressions', 'conversions', 'created', 'revenue'], 'created', 'desc');
             foreach ($performances as $p) {
@@ -217,6 +216,7 @@ class Billing extends Admin {
             ]);
             $invoice->save();
 
+            Registry::get("session")->set('$flashMessage', 'Payment Saved!!');
             $this->redirect("/billing/advertisers.html");
         }
     }

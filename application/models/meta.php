@@ -59,7 +59,16 @@ class Meta extends Shared\Model {
             case 'customField':
                 $meta = self::first(['prop' => 'customField', 'propid' => $obj->_id]);
                 return $meta->value ?? [];
-               
+            
+            case 'resetpass':
+                $count = $obj->count ?? 1;
+                if ($count === 1) {
+                    $meta = self::first(['prop' => 'resetpass', 'value' => $obj->value]);
+                } else {
+                    $query = array_merge(['prop' => 'resetpass'], $obj->query);
+                    $meta = self::all($query);
+                }
+                return $meta;
         }
         return (object) [];
     }

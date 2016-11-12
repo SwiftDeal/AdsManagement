@@ -107,19 +107,11 @@ class Auth extends Controller {
             $this->redirect($beforeLogin);
         }
 
-        switch ($user->type) {
-            case 'publisher':
-                $this->redirect('/publisher/index.html');
-                break;
-
-            case 'advertiser':
-                $this->redirect('/advertiser/index.html');
-                break;
-
-            default:
-                $this->redirect('/admin/index.html');
-                break;
+        $type = $user->type;
+        if (!in_array($type, ['publisher', 'advertiser'])) {
+            $type = "admin";
         }
+        $this->redirect("/{$type}/index.html");
     }
 
     /**
@@ -144,9 +136,9 @@ class Auth extends Controller {
         $this->seo(array("title" => "Forgot Password", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
-        $meta = Meta::first(array("value = ?" => $token, "prop = ?" => "resetpass"));
-        if (!isset($meta)) {
-            $this->redirect("/index.html");
+        $meta = Meta::search('resetpass', (object) ['value' => $token]);
+        if (!$meta) {
+            $this->redirect("/");
         }
 
         // @todo install reCaptcha
@@ -154,8 +146,7 @@ class Auth extends Controller {
             $pass = RequestMethods::post("password");
             $user = User::first(array("id = ?" => $meta->propid));
             if ($pass == RequestMethods::post("npassword")) {
-                $user->password = sha1($pass);
-                $user->save();
+                $user->password = sha1($pass); $user->save();
                 $meta->delete();
                 $view->set("message", 'Password changed successfully now <a href="/login.html">Login</a>');
             } else{
@@ -289,7 +280,7 @@ class Auth extends Controller {
             $widgets = $meta['widget'];
             return [
                 'publishers' => $widgets['top10pubs'] ?? [],
-                'ads' => Ad::displayData($widgets['top10ads'] ?? [])
+                'ads' => Shared\Services\Campaign::displayData($widgets['top10ads'] ?? [])
             ];
         } else { // fallback case
             return [
