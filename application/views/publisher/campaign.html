@@ -93,10 +93,11 @@
                                     <th>Description</th>
                                 </tr>
                                 {foreach $comm in $comms}
+                                {script $rate = $user->meta["campaign"]["rate"] ?? $comm->rate}
                                 <tr>
                                     <td>{echo strtoupper($comm->model)}</td>
                                     <td>{echo implode(",", $comm->coverage)}</td>
-                                    <td>{echo $user->convert($comm->rate)}</td>
+                                    <td>{echo $user->convert($rate)}</td>
                                     <td>{echo $comm->description}</td>
                                 </tr>
                                 {/foreach}

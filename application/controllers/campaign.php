@@ -13,31 +13,6 @@ use Framework\RequestMethods as RequestMethods;
 use YTDownloader\Service\Download as Downloader;
 
 class Campaign extends Admin {
-    
-    public function info($id) {
-        $type = ($this->user) && ($this->user->type === "publisher" || $this->user->type === "advertiser");
-        if (!$type) {
-            $this->_404();
-        } else {
-            $this->setLayout("layouts/".$this->user->type);
-        }
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
-
-        $ad = \Ad::first(["_id = ?" => $id, 'org_id' => $this->org->_id]);
-        if (!$ad) $this->_404();
-        $this->seo(array("title" => $ad->title));
-        $view = $this->getActionView();
-
-        $commission = Commission::first(["ad_id = ?" => $id]);
-
-        $view->set("ad", $ad);
-        $view->set("c", $commission);
-        $view->set("start", $start);
-        $view->set("end", $end);
-        $view->set('commission', $this->user->commission())
-            ->set('tdomains', \Shared\Services\User::trackingLinks($this->user, $this->org));
-    }
 
     /**
      * @before _secure
