@@ -14,8 +14,8 @@ class Report extends Admin {
     /**
      * @before _secure
      */
-    public function ads() {
-        $this->seo(array("title" => "ADS Effectiveness"));
+    public function campaigns() {
+        $this->seo(array("title" => "Campaigns Effectiveness"));
         $view = $this->getActionView();
 
         $start = RM::get("start", date("Y-m-d", strtotime('now')));
