@@ -210,19 +210,12 @@ class Campaign extends Admin {
     	$this->seo(['title' => 'Campaign Manage', 'description' => 'Manage campaigns']);
     	$view = $this->getActionView();
 
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
-        $end = RequestMethods::get("end", null);
         $page = RequestMethods::get("page", 1);
         $limit = RequestMethods::get("limit", 30);
-        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
-        $query = ["org_id = ?" => $this->org->id];
-
-        if ($end) {
-            $query["created"] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
-        }
-
         $property = RequestMethods::get("property", "live");
         $value = RequestMethods::get("value", 0);
+
+        $query = ["org_id = ?" => $this->org->id];
         if (in_array($property, ["user_id", "live", "id"])) {
             $query[$property] = $value;
         } else if (in_array($property, ["url", "title"])) {
@@ -240,8 +233,6 @@ class Campaign extends Admin {
             ->set("inactive", $inactive)
             ->set("limit", $limit)
             ->set("page", $page)
-            ->set("start", $start)
-            ->set("end", $end)
             ->set("property", $property)
             ->set("value", $value)
             ->set("categories", $categories);

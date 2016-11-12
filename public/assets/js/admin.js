@@ -110,6 +110,11 @@ File: Admin Controller
                     $this.performance();
                     $('#indexrange button').removeClass('disabled');
                 });
+                $('.izoom').click(function (e) {
+                    e.preventDefault();
+                    $('#ibody').html('<img src="'+ $(this).attr('src') +'" class="img-responsive">');
+                    $('#zoomImage').modal('show');
+                });
             },
             update: function () {
                 $('.update').on('click', function (e) {

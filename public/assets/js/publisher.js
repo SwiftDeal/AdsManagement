@@ -72,6 +72,11 @@
                 });
             },
             init: function () {
+                $('.izoom').click(function (e) {
+                    e.preventDefault();
+                    $('#ibody').html('<img src="'+ $(this).attr('src') +'" class="img-responsive">');
+                    $('#zoomImage').modal('show');
+                });
                 this.createLink(),
                 this.createLinkForm(),
                 this.fetchClickStats(),

@@ -1,15 +1,3 @@
-<style type="text/css">
-.thumb {
-    position: relative;
-}
-
-.caption {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-}
-</style>
 {include publisher/modals/link.html}
 <!-- Bootstrap Select -->
 <div class="row">
@@ -54,7 +42,6 @@
                         <tr>
                             <th>CAMPAIGN</th>
                             <th>PAYOUT</th>
-                            <th>CATEGORY</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -65,24 +52,19 @@
                                 <td>
                                     <div class="media">
                                         <div class="media-left">
-                                            <a href="/campaign/info/{$a->_id}.html">
-                                                <img class="media-object" src="{echo Ad::displayImg($a->image)}" alt="{echo $a->title}" width="150">
-                                            </a>
+                                            <img class="media-object izoom" src="{echo Ad::displayImg($a->image)}" alt="{echo $a->title}" width="150">
                                             <button type="button" data-adid="{echo $a->_id}" class="createLink btn btn-purple btn-xs waves-effect waves-light text-center">Generate Link</button>
                                         </div>
                                       <div class="media-body">
-                                        <p class="media-heading"><a href="/publisher/campaign/{$a->_id}.html">{echo $a->title}</a></p>
-                                        <small>{echo $a->description}</small>
+                                        <h5 class="media-heading"><a href="/publisher/campaign/{$a->_id}.html">{echo $a->title}</a></h5>
+                                        {foreach $cat in $a->category}
+                                            {script $key = Shared\Utils::getMongoID($cat)}
+                                            <label class="label label-info">{echo $categories[$key]->name}</label>
+                                        {/foreach}
                                       </div>
                                     </div>
                                 </td>
                                 <td><small>{echo $c}</small></td>
-                                <td>
-                                {foreach $cat in $a->category}
-                                    {script $key = Shared\Utils::getMongoID($cat)}
-                                    <label class="label label-info">{echo $categories[$key]->name}</label>
-                                {/foreach}
-                                </td>
                             </tr>
                         {/foreach}
                         </tbody>
