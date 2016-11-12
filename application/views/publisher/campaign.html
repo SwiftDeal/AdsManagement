@@ -1,0 +1,141 @@
+{include publisher/modals/link.html}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="page-title-box">
+            {if($ad->live)}
+            <span class="pull-right">
+                <div class="text-center">
+                    <button type="button" data-adid="{echo $ad->_id}" class="createLink btn btn-purple waves-effect waves-light"><i class="fa fa-link"></i> Generate Link</button>
+                </div>
+            </span>
+            {/if}
+            <h4 class="page-title">{echo $ad->title}</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-tabs navtab-custom">
+            <li class="active">
+                <a href="#home" data-toggle="tab" aria-expanded="true">
+                    <span class="visible-xs"><i class="fa fa-home"></i></span>
+                    <span class="hidden-xs">Details</span>
+                </a>
+            </li>
+            <li class="">
+                <a href="#performance" data-toggle="tab" aria-expanded="false">
+                    <span class="visible-xs"><i class="fa fa-graph"></i></span>
+                    <span class="hidden-xs">Performance</span>
+                </a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="home">
+                <div class="row">
+                    <div class="col-md-4">
+                        <img src="{echo Ad::displayImg($ad->image)}" alt="" width="300" class="img-responsive">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <th>Status</th>
+                                    <td>{if($ad->live)}<span class="label label-success">Active</span>{/if}{else}<span class="label label-warning">Inactive</span>{/else}</td>
+                                    <th>Expiry</th>
+                                    <td>{echo $ad->expiry}</td>
+                                </tr>
+                                <tr>
+                                    <th>Category</th>
+                                    <td>
+                                        {foreach $cat in $ad->category}
+                                            {script $key = Shared\Utils::getMongoID($cat)}
+                                            <label class="label label-info">{echo $categories[$key]->name}</label>
+                                        {/foreach}
+                                    </td>
+                                    <th>Created</th>
+                                    <td>{echo Framework\StringMethods::only_date($ad->created)}</td>
+                                </tr>
+                                <tr>
+                                    <th>Device Targeted</th>
+                                    <td>{echo strtoupper(implode(",", $ad->device))}</td>
+                                    <th>Landing Page</th>
+                                    <td><a href="{echo $ad->url}" target="_blank">{echo $ad->url}</a></td>
+                                </tr>
+                                {script $link = Link::first(["ad_id = ?" => $ad->_id, "user_id = ?" => $user->id])}
+                                {if ($link)}
+                                <tr>
+                                    <th>Tracking Link</th>
+                                    <td id="trackingURL">{echo $link->getUrl()}</td>
+                                    <th>Tracking Params</th>
+                                    <td class="input-group">
+                                        <input type="text" placeholder="Extra Param1" class="form-control" id="param1">
+                                        <span class="input-group-addon">,</span>
+                                        <input type="text" placeholder="Extra Param2" class="form-control" id="param2">
+                                        <span class="input-group-btn">
+                                            <button type="button" id="extraParam" class="btn btn-primary">GO</button>
+                                        </span>
+                                    </td>
+                                </tr>
+                                {/if}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3>Commission Details</h3>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Coverage</th>
+                                    <th>Payout</th>
+                                    <th>Description</th>
+                                </tr>
+                                {foreach $comm in $comms}
+                                <tr>
+                                    <td>{echo strtoupper($comm->model)}</td>
+                                    <td>{echo implode(",", $comm->coverage)}</td>
+                                    <td>{echo $user->convert($comm->rate)}</td>
+                                    <td>{echo $comm->description}</td>
+                                </tr>
+                                {/foreach}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="performance">
+                <div class="row">
+                    <form class="form-inline text-center" role="form" id="range">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="sr-only">From</label>
+                                <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> From</span>
+                                <input type="date" style="width: 180px" name="start" class="form-control" value="{$start}" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="sr-only">To</label>
+                                <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> To</span>
+                                <input type="date" style="width: 180px" name="end" class="form-control" value="{$end}" />
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Show</button>
+                    </form>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    window.trackingURL = $('#trackingURL').text();
+    $('#extraParam').on('click', function (e) {
+        e.preventDefault();
+
+        var uri = trackingURL + "?p1=" + $('#param1').val() + "&p2=" + $('#param2').val();
+        $('#trackingURL').html(uri);
+    });
+</script>

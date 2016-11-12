@@ -1,3 +1,15 @@
+<style type="text/css">
+.thumb {
+    position: relative;
+}
+
+.caption {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+</style>
 {include publisher/modals/link.html}
 <!-- Bootstrap Select -->
 <div class="row">
@@ -40,8 +52,7 @@
                 <table class="table m-0">
                     <thead>
                         <tr>
-                            <th>PREVIEW</th>
-                            <th>TITLE</th>
+                            <th>CAMPAIGN</th>
                             <th>PAYOUT</th>
                             <th>CATEGORY</th>
                         </tr>
@@ -52,13 +63,20 @@
                             {script $c = Commission::allRate($a->_id, $user)}
                             <tr>
                                 <td>
-                                    <img src="{echo Ad::displayImg($a->image)}" class="img-responsive" width="150"> {script $id = $a->_id}
-                                    <div class="text-center">
-                                        <button type="button" data-adid="{echo $a->_id}" class="createLink btn btn-purple btn-xs waves-effect waves-light text-center">Generate Link</button>
+                                    <div class="media">
+                                        <div class="media-left">
+                                            <a href="/campaign/info/{$a->_id}.html">
+                                                <img class="media-object" src="{echo Ad::displayImg($a->image)}" alt="{echo $a->title}" width="150">
+                                            </a>
+                                            <button type="button" data-adid="{echo $a->_id}" class="createLink btn btn-purple btn-xs waves-effect waves-light text-center">Generate Link</button>
+                                        </div>
+                                      <div class="media-body">
+                                        <p class="media-heading"><a href="/campaign/info/{$a->_id}.html">{echo $a->title}</a></p>
+                                        <small>{echo $a->description}</small>
+                                      </div>
                                     </div>
                                 </td>
-                                <td><a href="/campaign/info/{$a->_id}.html">{echo $a->title}</a></td>
-                                <td>{echo $c}</td>
+                                <td><small>{echo $c}</small></td>
                                 <td>
                                 {foreach $cat in $a->category}
                                     {script $key = Shared\Utils::getMongoID($cat)}

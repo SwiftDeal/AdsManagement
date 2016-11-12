@@ -127,6 +127,48 @@ class Publisher extends Auth {
         ]);
     }
 
+    /**
+     * @before _secure
+     */
+    public function campaign($id) {
+        $ad = \Ad::first(["_id = ?" => $id, 'org_id' => $this->org->_id]);
+        if (!$ad) $this->_404();
+
+        $this->seo(array("title" => $ad->title));
+        $view = $this->getActionView();
+
+        $start = RequestMethods::get("start", date('Y-m-d', strtotime("-7 day")));
+        $end = RequestMethods::get("end", date('Y-m-d'));
+        $limit = RequestMethods::get("limit", 10); $page = RequestMethods::get("page", 1);
+        $query = [
+            'adid' => Db::convertType($id),
+            'created' => Db::dateQuery($start, $end)
+        ];
+        $clicks = \Click::all($query, [], 'created', 'desc', $limit, $page);
+        $count = \Click::count($query);
+        $cf = Registry::get("configuration")->parse("configuration/cf")->cloudflare;
+        $view->set("domain", $cf->api->domain)
+            ->set("clicks", $clicks)
+            ->set("count", $count)
+            ->set('advertiser', $this->user);
+
+        $comms = Commission::all(["ad_id = ?" => $id]);$models = [];
+        foreach ($comms as $comm) {
+            $models[] = $comm->model;
+        }
+        $advertiser = User::first(["id = ?" => $ad->user_id], ['name']);
+        $categories = \Category::all(["org_id = ?" => $this->org->_id], ['name', '_id']);
+
+        $view->set("ad", $ad)
+            ->set("comms", $comms)
+            ->set("categories", $categories)
+            ->set("advertiser", $advertiser)
+            ->set('models', $models)
+            ->set("start", $start)
+            ->set("end", $end)
+            ->set('tdomains', \Shared\Services\User::trackingLinks($this->user, $this->org));
+    }
+
     public function links() {
         $this->seo(array("title" => "Tracking Links")); $view = $this->getActionView();
         $links = Link::all(['user_id' => $this->user->_id], ['ad_id', 'domain', '_id']);

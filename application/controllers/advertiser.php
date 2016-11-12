@@ -100,7 +100,7 @@ class Advertiser extends Auth {
         $start = RequestMethods::get("start", date('Y-m-d', strtotime("-7 day")));
         $end = RequestMethods::get("end", date('Y-m-d'));
         $limit = RequestMethods::get("limit", 10); $page = RequestMethods::get("page", 1);
-        $quesry = [
+        $query = [
             'adid' => Db::convertType($id),
             'created' => Db::dateQuery($start, $end)
         ];

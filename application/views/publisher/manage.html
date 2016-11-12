@@ -62,10 +62,10 @@
                                             {if($p->login)}
                                             <i class="fa fa-clock-o" data-toggle="tooltip" data-placement="top" data-original-title='Last Login: {echo Framework\StringMethods::datetime_to_text($p->login)}'></i>
                                             {/if}
-                                            &nbsp;{if(array_key_exists("campaign", $p->meta))}
+                                            {if(array_key_exists("campaign", $p->meta))}&nbsp;
                                             <i class="fa fa-money" data-toggle="tooltip" data-placement="top" data-original-title='Model: {echo $p->meta["campaign"]["model"]} with Payout: {echo $user->convert($p->meta["campaign"]["rate"], false)}'></i>
                                             {/if}
-                                            &nbsp;{if(array_key_exists("tdomain", $p->meta))}
+                                            {if(array_key_exists("tdomain", $p->meta))}&nbsp;
                                             <i class="fa fa-globe" data-toggle="tooltip" data-placement="top" data-original-title='Tracking Domain: {echo $p->meta["tdomain"]}'></i>
                                             {/if}
                                         </td>

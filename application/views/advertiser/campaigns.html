@@ -44,7 +44,7 @@
                             <img src="{echo Ad::displayImg($a->image)}" class="img-responsive" width="100">
                         </td>
                         <td><a href="/advertiser/campaign/{$a->_id}.html">{echo $a->title}</a></td>
-                        <td>{echo $c}</td>
+                        <td><small>{echo $c}</small></td>
                         <td>
                             {if $a->live}
                             <span class="text text-success">ACTIVE</span>

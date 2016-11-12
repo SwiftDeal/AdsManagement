@@ -118,7 +118,7 @@
                                 <label for="Rate">Rate (Optional)</label>
                                 <div class="input-group">
                                     <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                    <input type="text" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,2})?$" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" value="{echo $user->convert($rate, false)}">
+                                    <input type="text" name="rate" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" value="{echo $user->convert($rate, false)}">
                                 </div>
                             </div>
                             <input type="hidden" name="action" value="campaign">
