@@ -7,6 +7,14 @@
 use Shared\Utils as Utils;
 use Shared\Services\Db as Db;
 use Framework\ArrayMethods as ArrayMethods;
+
+/**
+ * @property string $_image Ad Image
+ * @property array|object $_meta Contains different keys for storing misc values
+ *                   - processing: (boolean)
+ *                   - videos: (array) Array of objects contains name of video files
+ *                   - private: (boolean) To control visibility of ADs
+ */
 class Ad extends Shared\Model {
 
     /**
@@ -193,6 +201,18 @@ class Ad extends Shared\Model {
     }
 
     /**
+     * Removes the Media files of the campaign
+     * @return [type] [description]
+     */
+    protected function _removeMedia() {
+        $videos = $this->_meta['videos'] ?? [];
+        foreach ($videos as $v) {
+            Utils::media($v['file'], 'remove', ['type' => 'video']);
+        }
+        Utils::media($this->image, 'remove');
+    }
+
+    /**
      * Overrides the parent delete method to check for clicks on the
      * ad before deleting it
      */
@@ -203,7 +223,7 @@ class Ad extends Shared\Model {
         if ($count !== 0) {
             return ['message' => 'Can not delete!! Campaign contain clicks', 'success' => false];
         }
-        Utils::media($this->image, 'remove');
+        $this->_removeMedia();
         parent::delete();
         \Commission::deleteAll(['ad_id' => $id]);
         \Link::deleteAll(['ad_id' => $id]);

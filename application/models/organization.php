@@ -6,6 +6,16 @@
 use Framework\Registry as Registry;
 use Framework\RequestMethods as RequestMethods;
 use Shared\Utils as Utils;
+
+/**
+ * @property array|object $_meta Contains different keys for storing misc values
+ *                               - zopim (string) Contains zopim ID
+ *                               - widgets (object) properties => "top10pubs", "top10ads"
+ *                               - widget (array)
+ *                               - commission (array) Array of objects containing default commission info
+ *
+ * @property array|object $_billing Contains billing related Info
+ */
 class Organization extends \Shared\Model {
     
     /**

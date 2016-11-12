@@ -335,15 +335,20 @@ class Utils {
 	}
 
 	public static function downloadVideo($url, $opts = []) {
+		$folder = self::media('', 'show', ['type' => 'video']);
+		$extension = $opts['extension'] ?? 'mp4';
 		try {
-			$ytdl = \YTDownloader\Service\Download($url, [
-				'path' => self::media('', 'show', ['type' => 'video'])
+			$ytdl = new \YTDownloader\Service\Download($url, [
+				'path' => $folder
 			]);
-			$name = $ytdl->convert('mp4', [
+			$file = $ytdl->convert($extension, [
 				'type' => 'video',
 				'quality' => $opts['quality'] ?? '240p'
 			]);
 
+			$name = uniqid() . ".{$extension}";
+			copy($folder . $file, $folder . $name);
+			unlink($folder . $file);
 		} catch (\Exception $e) {
 			$name = false;
 		}
@@ -351,7 +356,7 @@ class Utils {
 	}
 
 	public static function media($name, $task = 'show', $opts = []) {
-		$type = isset($opts['type']) ?? 'image';
+		$type = ($opts['type']) ?? 'image';
 		$folder = APP_PATH . "/public/assets/uploads/{$type}s/";
 		switch ($task) {
 			case 'remove':

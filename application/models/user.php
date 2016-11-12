@@ -7,6 +7,14 @@ use Shared\Utils as Utils;
 use Shared\Services\Db as Db;
 use Framework\RequestMethods as RequestMethods;
 
+/**
+ * @property array|object $_meta Contains different keys for storing misc values
+ *                               - campaign (object) properties => 'model', 'rate', 'coverage',
+ *                               - afields (object) properties => variables based on what set in org
+ *                               - tdomain (string) Contains tracking domain for publisher
+ *                               - bank (object) properties => 'name', 'ifsc', 'account_no', 'account_owner'
+ *                               - payout (object) Types of payout info
+ */
 class User extends Shared\Model {
     const ROLES = ['afm' => 'Affiliate Manager', 'adm' => 'Advertiser Manager', 'admin' => 'Admin', 'publisher' => 'Publisher', 'advertiser' => 'Advertiser'];
 

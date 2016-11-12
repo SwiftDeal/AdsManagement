@@ -138,9 +138,9 @@ class Admin extends Auth {
         
         $img = RequestMethods::get("img");
         if (RequestMethods::get("action") == "removelogo" && $img === $org->logo) {
-            @unlink(APP_PATH . '/public/assets/uploads/images/' . $org->logo);
-            $org->logo = null; $this->setOrg($org);
-            Db::updateRaw('organizations', ['_id' => Db::convertType($org->_id, 'id')], ['$unset' => ['logo' => 1]]);
+            Utils::media($org->logo, 'remove');
+            $org->logo = ' '; $this->setOrg($org);
+            $org->save();
             $this->redirect("/admin/customization.html");
         }
     }
