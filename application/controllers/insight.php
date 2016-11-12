@@ -25,7 +25,7 @@ class Insight extends Auth {
 
     /**
      * @readwrite
-     * @var integer
+     * @var string
      */
     protected $_user_id = null;
 
@@ -67,14 +67,9 @@ class Insight extends Auth {
         $stats = []; $clickCol = Db::collection('Click');
         for ($i = 0; $i <= $diff->format("%a"); $i++) {
             $date = date('Y-m-d', strtotime($this->start . " +{$i} day"));
+            $keys = ['country', 'os', 'device', 'referer'];
 
-            $stats[$date] = [
-                'clicks' => 0,
-                'meta' => [
-                    'country' => [], 'device' => [],
-                    'referer' => [], 'os' => []
-                ]
-            ];
+            $stats[$date] = [ 'clicks' => 0, 'meta' => [] ];
             $match['created'] = Db::dateQuery($date, $date);
 
             $records = $clickCol->aggregate([
@@ -88,35 +83,18 @@ class Insight extends Auth {
             ]);
 
             foreach ($records as $r) {
-                $obj = Utils::toArray($r);
-                $keys = ['country', 'os', 'device', 'referer'];
+                $obj = Utils::toArray($r); $arr =& $stats[$date]['meta'];
 
-                $arr =& $stats[$date]['meta'];
-                $stats[$date]['clicks'] += $obj['count'];
                 foreach ($keys as $k) {
+                    if (!isset($arr[$k])) $arr[$k] = [];
                     $index = $r['_id'][$k];
                     ArrayMethods::counter($arr[$k], $index, $obj['count']);
                 }
             }
         }
 
-        $records = [];
-        foreach ($stats as $date => $r) {
-            $commissions = [];
-        	foreach ($r['meta']['country'] as $country => $clicks) {
-                $extra = [ 'type' => 'both', 'start' => $date, 'end' => $date ];
-                if ($this->user_id) {
-                    $extra['pid'] = $this->user_id;
-                }
-
-        		$comm = Commission::campaignRate($id, $commissions, $country, $extra);
-
-        		$earning = Ad::earning($comm, $clicks);
-        		ArrayMethods::add($earning, $r);
-        	}
-            $records[$date] = $r;
-        }
-        $total = Perf::calTotal($stats);
+        $records = Shared\Services\Campaign::earning($stats, $id, $this->user_id);
+        $total = Perf::calTotal($records);
 
         $view->set('ads', $records)
             ->set('total', $total)

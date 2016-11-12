@@ -39,8 +39,8 @@ class Advertiser extends Auth {
         
         $total = Performance::overall(
             Utils::dateQuery([
-                'start' => strftime("%Y-%m-%d", strtotime('-365 day')),
-                'end' => strftime("%Y-%m-%d", strtotime('-1 day'))
+                'start' => date("Y-m-d", strtotime('-365 day')),
+                'end' => date("Y-m-d", strtotime('-1 day'))
             ]),
             $this->user
         );
@@ -50,7 +50,7 @@ class Advertiser extends Auth {
             ->set("notifications", $notifications)
             ->set("total", $total)
             ->set("yesterday", strftime("%B %d, %Y", strtotime('-1 day')))
-            ->set("performance", $this->perf($clicks, ['type' => 'publisher', 'publisher' => $this->user], ['start' => $start, 'end' => $end]));
+            ->set("performance", $this->perf($clicks, ['type' => 'advertiser'], ['start' => $start, 'end' => $end]));
     }
 
     /**
@@ -67,7 +67,7 @@ class Advertiser extends Auth {
         $query = [ "user_id" => $this->user->id ];
         $ads = \Ad::all($query, ['title', 'image', 'category', '_id', 'live', 'created'], 'created', 'desc', $limit, $page);
         $count = \Ad::count($query);
-        $in = Utils::mongoObjectId(array_keys($ads));
+        $in = Db::convertType(array_keys($ads));
 
         $query["created"] = Db::dateQuery($start, $end);
         $records = Db::query('Click', [
@@ -91,11 +91,10 @@ class Advertiser extends Auth {
      * @before _secure
      */
     public function campaign($id) {
-        $ad = \Ad::first(["_id = ?" => $id, 'org_id' => $this->org->_id]);
+        $ad = \Ad::first(['_id' => $id, 'org_id' => $this->org->_id]);
         if (!$ad) $this->_404();
 
-        $this->seo(array("title" => $ad->title));
-        $view = $this->getActionView();
+        $this->seo(array("title" => $ad->title)); $view = $this->getActionView();
 
         $start = RequestMethods::get("start", date('Y-m-d', strtotime("-7 day")));
         $end = RequestMethods::get("end", date('Y-m-d'));
@@ -106,16 +105,15 @@ class Advertiser extends Auth {
         ];
         $clicks = \Click::all($query, [], 'created', 'desc', $limit, $page);
         $count = \Click::count($query);
-        $cf = Registry::get("configuration")->parse("configuration/cf")->cloudflare;
+        $cf = Utils::getConfig("cf", "cloudflare");
         $view->set("domain", $cf->api->domain)
             ->set("clicks", $clicks)
             ->set("count", $count)
             ->set('advertiser', $this->user);
 
-        $comms = Commission::all(["ad_id = ?" => $id]);$models = [];
-        foreach ($comms as $comm) {
-            $models[] = $comm->model;
-        }
+        $comms = Commission::all(["ad_id = ?" => $id]);
+        $models = ArrayMethods::arrayKeys($comms, 'model');
+        
         $advertiser = User::first(["id = ?" => $ad->user_id], ['name']);
         $categories = \Category::all(["org_id = ?" => $this->org->_id], ['name', '_id']);
 
@@ -161,11 +159,10 @@ class Advertiser extends Auth {
      * @before _secure
      */
     public function bills() {
-        $this->seo(array("title" => "Bills"));
-        $view = $this->getActionView();
+        $this->seo(array("title" => "Bills")); $view = $this->getActionView();
 
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        $start = RequestMethods::get("start", date("Y-m-d", strtotime('-7 day')));
+        $end = RequestMethods::get("end", date("Y-m-d", strtotime('now')));
 
         $query = [
             'user_id = ?' => $this->user->_id,
@@ -185,10 +182,10 @@ class Advertiser extends Auth {
      * @before _admin
      */
     public function add() {
-        $this->seo(array("title" => "Add Advertiser"));$view = $this->getActionView();
+        $this->seo(array("title" => "Add Advertiser")); $view = $this->getActionView();
         $pass = Shared\Utils::randomPass();
-        $view->set("pass", $pass);
-        $view->set("errors", []);
+        $view->set("pass", $pass)->set("errors", []);
+        
         if (RequestMethods::type() == 'POST') {
             $user = \User::addNew('advertiser', $this->org, $view);
             if (!$user) return;
@@ -231,7 +228,7 @@ class Advertiser extends Auth {
         if (in_array($property, ["live", "id"])) {
             $query["{$property} = ?"] = $value;
         } else if (in_array($property, ["email", "name", "phone"])) {
-            $query["{$property} = ?"] = Utils::mongoRegex($value);
+            $query["{$property} = ?"] = Db::convertType($value, 'regex');
         }
 
         $advertisers = \User::all($query, ['_id', 'name', 'live', 'email', 'created'], 'created', 'desc');
@@ -253,8 +250,7 @@ class Advertiser extends Auth {
      * @before _admin
      */
     public function info($id = null) {
-        $this->seo(array("title" => "Advertiser Edit"));
-        $view = $this->getActionView();
+        $this->seo(array("title" => "Advertiser Edit")); $view = $this->getActionView();
 
         $advertiser = User::first(["_id = ?" => $id, "type = ?" => "advertiser", "org_id = ?" => $this->org->id]);
         if (!$advertiser) $this->_404();
@@ -264,9 +260,9 @@ class Advertiser extends Auth {
             $action = RequestMethods::post('action', '');
             switch ($action) {
                 case 'account':
-                    $fields = ['name', 'email', 'phone', 'country', 'currency'];
+                    $fields = ['name', 'phone', 'country', 'currency'];
                     foreach ($fields as $f) {
-                        $advertiser->$f = RequestMethods::post($f);
+                        $advertiser->$f = RequestMethods::post($f, $advertiser->$f);
                     }
                     $advertiser->save();
                     $view->set('message', 'Account Info updated!!');
@@ -330,10 +326,10 @@ class Advertiser extends Auth {
      * @before _secure
      */
     public function performance() {
-        $this->JSONview();$view = $this->getActionView();
+        $this->JSONview(); $view = $this->getActionView();
         
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        $start = RequestMethods::get("start", date("Y-m-d", strtotime('-7 day')));
+        $end = RequestMethods::get("end", date("Y-m-d", strtotime('now')));
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
         
         $find = Performance::overall($dateQuery, $this->user);

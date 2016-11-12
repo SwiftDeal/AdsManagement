@@ -291,8 +291,7 @@ class Auth extends Controller {
     }
 
     protected function perf($clicks, $arr, $dq = []) {
-        $perf = new Performance();
-        $adsInfo = [];
+        $perf = new Performance(); $commissions = [];
         $classify = \Click::classify($clicks, 'adid');
         foreach ($classify as $key => $value) {
             $countryWise = \Click::classify($value, 'country');
@@ -301,7 +300,7 @@ class Auth extends Controller {
                 $adClicks = count($records); $updateData = [];
 
                 $extra = array_merge($arr, $dq);
-                $info = \Commission::campaignRate($key, $adsInfo, $country, $extra);
+                $info = \Commission::campaignRate($key, $commissions, $country, $extra);
 
                 $earning = \Ad::earning($info, $adClicks);
                 \Framework\ArrayMethods::copy($earning, $updateData);

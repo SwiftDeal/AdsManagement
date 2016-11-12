@@ -18,24 +18,40 @@ class Report extends Admin {
         $this->seo(array("title" => "ADS Effectiveness"));
         $view = $this->getActionView();
 
-        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('now')));
-        $end = RM::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        $start = RM::get("start", date("Y-m-d", strtotime('now')));
+        $end = RM::get("end", date("Y-m-d", strtotime('now')));
+        $limit = RM::get("limit", 30);
         $q = ['start' => $start, 'end' => $end]; $view->set($q);
 
         // Only find the ads for this organizations
         $allAds = \Ad::all(['org_id' => $this->org->_id], ['_id']);
-        $in = Utils::mongoObjectId(array_keys($allAds));
+        $in = Db::convertType(array_keys($allAds));
+        $clickCol = Db::collection('Click');
 
-        $clicks = Db::query('Click', [
+        $match = [
             'created' => Db::dateQuery($start, $end),
             'is_bot' => false,
             'adid' => ['$in' => $in]
-        ], ['adid']);
+        ];
+        $records = $clickCol->aggregate([
+            ['$match' => $match],
+            ['$project' => ['adid' => 1]],
+            ['$group' => [
+                '_id' => '$adid',
+                'count' => ['$sum' => 1]
+            ]],
+            ['$sort' => ['count' => -1]],
+            ['$limit' => $limit]
+        ]);
+        $stats = [];
+        foreach ($records as $r) {
+            $arr = Utils::toArray($r);
+            $id = Utils::getMongoID($arr['_id']);
+            $stats[$id] = $arr['count'];
+        }
 
-        $classify = \Click::classify($clicks, 'adid');
-        $stats = Click::counter($classify);
-        $stats = ArrayMethods::topValues($stats, 50);
-        $view->set('stats', $stats);
+        $view->set('stats', $stats)
+            ->set('limit', $limit);
     }
 
     /**

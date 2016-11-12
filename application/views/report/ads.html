@@ -9,6 +9,13 @@
                         <form class="form-inline pull-right" role="form" id="range">
                             <div class="form-group">
                                 <div class="input-group">
+                                    <label class="sr-only">Limit</label>
+                                    <span class="add-on input-group-addon"> Limit</span>
+                                    <input type="text" class="form-control" name="limit" value="{echo $limit}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
                                     <label class="sr-only">From</label>
                                     <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> From</span>
                                     <input type="date" style="width: 180px" name="start" class="form-control" value="{$start}" />
@@ -46,7 +53,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {foreach $records in $stats}
+                                        {script $totalClicks = 0} {foreach $records in $stats}
                                         {script $ad = Ad::first(['_id' => $records_i], ['_id', 'title', 'url', 'image', 'live'])}
                                         {script $cm = Commission::first(["ad_id = ?" => $ad->_id])}
                                         <tr>
@@ -63,12 +70,17 @@
                                             </td>
                                             <td><a href="/campaign/details/{echo $ad->_id}">{echo $ad->title}</a></td>
                                             <td>{echo $records}</td>
-                                            <td>
-                                                {echo $user->convert($cm->rate)} <b>{echo strtoupper($cm->model)}</b>
-                                            </td>
+                                            {script $totalClicks += $records}
+                                            <td>{echo Commission::allRate($ad->_id, $user)}</td>
                                             <td>{echo $user->convert($records * $cm->rate)}</td>
                                         </tr>
                                         {/foreach}
+                                        <tr>
+                                            <th>Total: </th>
+                                            <td></td>
+                                            <td></td>
+                                            <th>{echo $totalClicks}</th>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>

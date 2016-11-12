@@ -1,6 +1,7 @@
 <?php
 namespace Shared\Services;
 use Shared\Utils as Utils;
+use Framework\ArrayMethods as ArrayMethods;
 
 class Campaign {
 	public static function minutely() {
@@ -19,10 +20,7 @@ class Campaign {
 
 						if (strlen($vid) >= 4) {
 							$found = true;
-							$arr[] = [
-								'file' => $vid,
-								'quality' => $q
-							];
+							$arr[] = [ 'file' => $vid, 'quality' => $q ];
 						}
 					}
 					if ($found) unset($meta['processing']);
@@ -48,5 +46,24 @@ class Campaign {
 	        ];
 	    }
 	    return $result;
+	}
+
+	public static function earning($stats = [], $adid, $user_id) {
+		$records = [];
+		foreach ($stats as $date => $r) {
+            $commissions = [];
+        	foreach ($r['meta']['country'] as $country => $clicks) {
+                $extra = [ 'type' => 'both', 'start' => $date, 'end' => $date ];
+                if ($user_id) {
+                    $extra['pid'] = $user_id;
+                }
+
+        		$comm = \Commission::campaignRate($adid, $commissions, $country, $extra);
+        		$earning = \Ad::earning($comm, $clicks);
+        		ArrayMethods::add($earning, $r);
+        	}
+            $records[$date] = $r;
+        }
+        return $records;
 	}
 }
