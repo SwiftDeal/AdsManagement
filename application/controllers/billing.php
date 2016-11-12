@@ -195,10 +195,8 @@ class Billing extends Admin {
             }
             $view->set('performances', $perfs);
 
-            $inv_exist = Invoice::first(["user_id = ?" => $user_id, "start" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]]);
-            $inv_exist1 = Invoice::first(["user_id = ?" => $user_id, "end" => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]]);
-
-            if ($inv_exist || $inv_exist1) {
+            $inv_exist = Invoice::exists($user_id, $start, $end);
+            if ($inv_exist) {
                 $view->set("message", "Invoice already exist for Date range from ".Framework\StringMethods::only_date($inv_exist->start)." to ".Framework\StringMethods::only_date($inv_exist->end));
                 return;
             }

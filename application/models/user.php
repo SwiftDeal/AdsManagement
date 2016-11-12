@@ -243,7 +243,7 @@ class User extends Shared\Model {
     public function removeFields() {
         $meta = $this->_meta; $afields = $meta['afields'] ?? [];
         foreach ($meta['afields'] as $key => $value) {
-            Utils::image($value, 'remove');
+            Utils::media($value, 'remove');
         }
     }
 

@@ -136,7 +136,7 @@ class User {
 
                 switch ($type) {
                 	case 'file':
-                		$v = Utils::upload($key, 'images', ['extension' => 'jpe?g|gif|bmp|png|tif|pdf']);
+                		$v = Utils::media($key, 'upload', ['extension' => 'jpe?g|gif|bmp|png|tif|pdf']);
                 		if (!$v) {
                 			$message = "Please Upload a valid image or pdf file";
                 		}

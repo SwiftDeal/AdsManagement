@@ -191,6 +191,10 @@ class Download {
 		return self::$_location;
 	}
 
+	public function getUrl() {
+		return $this->_url;
+	}
+
 	/**
 	 * @return array Returns an array of available qualities
 	 */

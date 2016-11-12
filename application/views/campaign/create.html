@@ -53,12 +53,12 @@
                                 <input type="url" class="form-control" name="url" required="" value="{echo $meta['url']}">
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "url")}</span>
                             </div>
-                            {if($type == "video")}
+                            {if (isset($type) && $type == "video")}
                             <div class="form-group">
                                 <label>Youtube Video URL</label>
                                 <input type="hidden" name="type" value="{echo $type}">
                                 <input type="url" class="form-control" name="videoUrl" required="" value="{echo $meta['url']}">
-                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "videourl")}</span>
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "videoUrl")}</span>
                             </div>
                             {/if}
                             <div class="form-group">

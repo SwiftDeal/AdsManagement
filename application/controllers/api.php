@@ -251,7 +251,7 @@ class Api extends \Shared\Controller {
 					$campaign = new Ad([
 						'org_id' => $org->_id,
 						'type' => 'article',
-						'image' => Utils::image($img, 'download')
+						'image' => Utils::media($img, 'download')
 					]);
 					foreach ($fields as $f) {
 						$campaign->$f = RequestMethods::post($f);

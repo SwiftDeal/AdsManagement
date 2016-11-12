@@ -54,7 +54,7 @@ class Utils {
 	 * @param  string $url URL of the image
 	 * @return string|boolean      FALSE on failure else uploaded image name
 	 */
-	public static function downloadImage($url = null) {
+	public static function downloadImage($url = null, $opts = []) {
 		if (!$url) { return false; }
 		try {
 			$bot = new Bot(['image' => $url], ['logging' => false]);
@@ -307,7 +307,7 @@ class Utils {
 	 * 
 	 * @return string|boolean      FALSE on failure else uploaded image name
 	 */
-	public static function upload($name, $type = "images", $opts = []) {
+	public static function uploadImage($name, $type = "images", $opts = []) {
 	    if (isset($_FILES[$name])) {
 	        $file = $_FILES[$name];
 	        $path = APP_PATH . "/public/assets/uploads/{$type}/";
@@ -334,8 +334,25 @@ class Utils {
 	    return false;
 	}
 
-	public static function image($name, $task = 'show') {
-		$folder = APP_PATH . '/public/assets/uploads/images/';
+	public static function downloadVideo($url, $opts = []) {
+		try {
+			$ytdl = \YTDownloader\Service\Download($url, [
+				'path' => self::media('', 'show', ['type' => 'video'])
+			]);
+			$name = $ytdl->convert('mp4', [
+				'type' => 'video',
+				'quality' => $opts['quality'] ?? '240p'
+			]);
+
+		} catch (\Exception $e) {
+			$name = false;
+		}
+		return $name;
+	}
+
+	public static function media($name, $task = 'show', $opts = []) {
+		$type = isset($opts['type']) ?? 'image';
+		$folder = APP_PATH . "/public/assets/uploads/{$type}s/";
 		switch ($task) {
 			case 'remove':
 				@unlink($folder . $name);
@@ -345,18 +362,20 @@ class Utils {
 				return $folder . $name;
 
 			case 'upload':
-				$img = self::upload($name, 'images', ['extension' => 'jpe?g|gif|bmp|png|tif']);
-				if ($img === false) {
-					$img = ' ';
+				$func = "upload" . ucfirst($type);
+				$media = self::$func($name, 'images', $opts);
+				if ($media === false) {
+					$media = ' ';
 				}
-				return $img;
+				return $media;
 
 			case 'download':
-				$img = self::downloadImage($name);
-				if ($img === false) {
-					$img = ' ';
+				$func = "download" . ucfirst($type);
+				$media = self::$func($name, $opts);
+				if ($media === false) {
+					$media = ' ';
 				}
-				return $img;
+				return $media;
 
 		}
 	}

@@ -25,6 +25,10 @@ class Cron extends Shared\Controller {
 
     public function index($type = "daily") {
         switch ($type) {
+            case 'minutely':
+                $this->_minutely();
+                break;
+
             case 'hourly':
                 $this->_hourly();
                 break;
@@ -41,6 +45,11 @@ class Cron extends Shared\Controller {
                 $this->_monthly();
                 break;
         }
+    }
+
+    // execute every 5 minutes
+    protected function _minutely() {
+        Shared\Services\Campaign::minutely();
     }
 
     protected function _hourly() {

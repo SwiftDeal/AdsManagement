@@ -10,6 +10,7 @@ use Shared\Utils as Utils;
 use \Shared\Services\Db as Db;
 use Framework\ArrayMethods as ArrayMethods;
 use Framework\RequestMethods as RequestMethods;
+use YTDownloader\Service\Download as Downloader;
 
 class Campaign extends Admin {
     
@@ -189,6 +190,17 @@ class Campaign extends Admin {
             if ($expiry) {
                 $campaign->expiry = $expiry;
             }
+            try {
+                if ($campaign->type === "video") {
+                    $url = RequestMethods::post('videoUrl');
+                    $ytdl = new Downloader($url);
+                    $campaign->getMeta()['processing'] = true;
+                    $campaign->getMeta()['videoUrl'] = $ytdl->getUrl();
+                }
+            } catch (\Exception $e) {
+                // Invalid URL
+                return $view->set("errors", ['videoUrl' => ["Pass a valid youtube video URL"]]);
+            }
 
     		if (!$campaign->validate()) {
     			return $view->set("errors", $campaign->errors);
@@ -211,6 +223,7 @@ class Campaign extends Admin {
                 $commission->save();
             }
 
+            Registry::get("session")->set('$flashMessage', 'Campaign Created successfully!!');
     		$this->redirect("/campaign/manage.html");
     	}
     }
@@ -352,13 +365,19 @@ class Campaign extends Admin {
         if (!$c || RequestMethods::type() !== 'POST') {
             return $view->set('message', 'Invalid Request!!');
         }
-
-        foreach ($_POST as $key => $value) {
-            $c->$key = $value;
-        }
-        $c->save();
         $view->set('message', 'Updated successfully!!');
-        $view->set('campaign', $c);
+
+        $allowedFields = ['title', 'description', 'live', 'expiry', 'type'];
+        foreach ($allowedFields as $f) {
+            $c->$f = RequestMethods::post($f, $c->$f);
+        }
+        $processing = $c->meta['processing'] ?? false;
+        if ($processing) {
+            $view->set('message', 'Campaign is being processed. Try after 10 minutes.');
+        } else {
+            $c->save();
+            $view->set('campaign', $c);
+        }
     }
 
     /**
