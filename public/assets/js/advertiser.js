@@ -1,5 +1,5 @@
 /**
- * Advertiser Controller, requires - request.js, components.js, browser.js
+ * Advertiser Controller, requires - request.js, chart.js, components.js, browser.js
  */
 (function (window, $) {
     "use strict";

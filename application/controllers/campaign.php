@@ -211,7 +211,7 @@ class Campaign extends Admin {
     	$view = $this->getActionView();
 
         $page = RequestMethods::get("page", 1);
-        $limit = RequestMethods::get("limit", 30);
+        $limit = RequestMethods::get("limit", 10);
         $property = RequestMethods::get("property", "live");
         $value = RequestMethods::get("value", 0);
 

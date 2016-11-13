@@ -20,20 +20,15 @@ class Publisher extends Auth {
         $this->seo(array("title" => "Dashboard", "description" => "Stats for your Data"));
         $view = $this->getActionView(); $commissions = []; $clicks = 0;$d = 1;
 
-        $start = RequestMethods::get("start", date('Y-m-d', strtotime('now')));
-        $end = RequestMethods::get("end", date('Y-m-d', strtotime('now')));
-        $dateQuery = Utils::dateQuery($start, $end);
-        
-        $today = date('Y-m-d');
-        $clicks = Db::query('Click', [
+        $tclicks = Db::query('Click', [
             "pid" => $this->user->_id, "is_bot" => false,
-            "created" => Db::dateQuery($today, $today)
+            "created" => Db::dateQuery(date('Y-m-d'), date('Y-m-d'))
         ], ['adid', 'country']);
 
-        $notifications = Notification::all([
-            "org_id = ?" => $this->org->id,
-            "meta = ?" => ['$in' => ['all', $this->user->_id]]
-        ], [], "created", "desc", 5, 1);
+        $yclicks = Db::query('Click', [
+            "pid" => $this->user->_id, "is_bot" => false,
+            "created" => Db::dateQuery(date('Y-m-d', strtotime('-1 day')), date('Y-m-d', strtotime('-1 day')))
+        ], ['adid', 'country']);        
         
         $total = Performance::overall(
             Utils::dateQuery([
@@ -42,20 +37,19 @@ class Publisher extends Auth {
             ]),
             $this->user
         );
-        $topusers = $this->widgets($dateQuery);
-        if (array_key_exists("widgets", $this->org->meta)) {
-            $d = isset($notifications) + in_array("top10ads", $this->org->meta["widgets"]) + in_array("top10pubs", $this->org->meta["widgets"]);
-        }
 
-        $perf = $this->perf($clicks, ['type' => 'publisher', 'publisher' => $this->user], ['start' => $today, 'end' => $today]);
-        $view->set("start", $start)
-            ->set("end", $end)
-            ->set("d", 12/$d)
-            ->set("topusers", $topusers)
+        $notifications = Notification::all([
+            "org_id = ?" => $this->org->id,
+            "meta = ?" => ['$in' => ['all', $this->user->_id]]
+        ], [], "created", "desc", 5, 1);
+
+        $topusers = $this->widgets(Utils::dateQuery(date('Y-m-d', strtotime('now')), date('Y-m-d', strtotime('now'))));
+
+        $view->set("topusers", $topusers)
             ->set("notifications", $notifications)
             ->set("total", $total)
-            ->set("yesterday", strftime("%B %d, %Y", strtotime('-1 day')))
-            ->set("performance", $perf);
+            ->set("ptoday", $this->perf($tclicks, ['type' => 'publisher', 'publisher' => $this->user], ['start' => date('Y-m-d'), 'end' => date('Y-m-d')]))
+            ->set("pyest", $this->perf($yclicks, ['type' => 'publisher', 'publisher' => $this->user], ['start' => date('Y-m-d', strtotime('-1 day')), 'end' => date('Y-m-d', strtotime('-1 day'))]));
     }
 
     /**

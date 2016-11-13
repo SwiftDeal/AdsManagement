@@ -31,29 +31,46 @@
                 <thead>
                     <tr>
                         <th>PREVIEW</th>
-                        <th>TITLE</th>
-                        <th>PRICING</th>
-                        <th>STATUS</th>
+                        <th>PAYOUT</th>
+                        <th>PERFORMANCE</th>
+                        <th>REVENUE</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {foreach $a in $ads}
-                    {script $c = Commission::allRate($a->_id, $user)}
+                {foreach $a in $ads}
+                    {script $c = Commission::allRate($a->id, $user)}
+                    {script $p = Shared\Services\Campaign::performance($a->id, ['end' => date('Y-m-d'), 'start' => $a->created->format('Y-m-d'), 'meta' => false])}
                     <tr>
                         <td>
-                            <img src="{echo Ad::displayImg($a->image)}" class="img-responsive" width="100">
+                            <div class="media">
+                                <div class="media-left">
+                                    <img class="media-object izoom" src="{echo Ad::displayImg($a->image)}" alt="..." width="70" height="70">
+                                </div>
+                                <div class="media-body">
+                                    <h5 class="media-heading">
+                                        {if $a->live}
+                                        <i class="fa fa-circle text-success"></i>
+                                        {/if} {else}
+                                        <i class="fa fa-circle text-warning"></i>
+                                        {/else}
+                                        <a href="/campaign/details/{$a->_id}.html">{echo $a->title}</a>
+                                    </h5>
+                                    {foreach $cat in $a->category}
+                                        {script $key = Shared\Utils::getMongoID($cat)}
+                                        <label class="label label-info">{echo $categories[$key]->name}</label>
+                                    {/foreach}
+                                </div>
+                            </div>
                         </td>
-                        <td><a href="/advertiser/campaign/{$a->_id}.html">{echo $a->title}</a></td>
                         <td><small>{echo $c}</small></td>
                         <td>
-                            {if $a->live}
-                            <span class="text text-success">ACTIVE</span>
-                            {/if} {else}
-                            <span class="text text-warning">INACTIVE</span>
-                            {/else}
+                            {if($p["total"]["clicks"])}Clicks <span class="badge">{echo $p["total"]["clicks"] ?? 0}</span>{/if}
+                            {if($p["total"]["conversions"])}<br>Conversions <span class="badge">{echo $p["total"]["conversions"] ?? 0}</span>{/if}
+                            {if($p["total"]["impressions"])}<br>Impressions <span class="badge">{echo $p["total"]["impressions"] ?? 0}</span>{/if}
                         </td>
+                        <td>{echo $user->convert($p["total"]["revenue"] ?? 0)}</td>
                     </tr>
-                    {/foreach}
+                {/foreach}
                 </tbody>
             </table>
 

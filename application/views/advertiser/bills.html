@@ -112,7 +112,32 @@
                 {/else}
             </div>
             <div class="tab-pane" id="payout">
-                
+                {if($payments)}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Created</th>
+                                <th>Reference</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $p in $payments}
+                            <tr>
+                                <td><small>{echo Framework\StringMethods::only_date($p->created)}</small></td>
+                                <td>{echo $p->meta["refer_id"]}</td>
+                                <td>{echo ucfirst($p->type)}</td>
+                                <td>{echo $user->convert($p->amount)}</td>
+                            </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+                {/if}{else}
+                <p class="text-center">No payments has been created till now.</p>
+                {/else}
             </div>
         </div>
     </div>
