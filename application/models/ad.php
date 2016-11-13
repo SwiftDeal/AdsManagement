@@ -156,10 +156,11 @@ class Ad extends Shared\Model {
         return $result;
     }
 
-    public function validate($opts = [], &$view) {
+    public function validate($opts = []) {
         if (empty($opts)) {
             return parent::validate();
         }
+        $view = $opts['view'];
 
         $advertisers = $opts['advertisers'];
         $categories = Category::all(['org_id' => $this->org_id], ['_id']);

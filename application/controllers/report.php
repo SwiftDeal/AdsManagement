@@ -78,6 +78,8 @@ class Report extends Admin {
 
     /**
      * @before _secure
+     * @todo fetch realtime data for today (if start == end) But if start != today then fetch data from 
+     * performance table and add it with realtime
      */
     public function publishers() {
         $this->seo(["title" => "Publisher Rankings"]); $view = $this->getActionView();

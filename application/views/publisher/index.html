@@ -12,7 +12,7 @@
                     </tr>
                     <tr>
                         <th data-toggle="tooltip" data-placement="top" data-original-title="Yesterday Clicks recieved, updated everyday 1:00 AM (IST)">Yesterday</th>
-                        <td>{echo Shared\Markup::nice_number($total["clicks"][$yesterday])}</td>
+                        <td>{echo Shared\Markup::nice_number($total["clicks"][$yesterday] ?? 0)}</td>
                     </tr>
                     <tr>
                         <th>Overall</th>
@@ -36,7 +36,7 @@
                     </tr>
                     <tr>
                         <th>Yesterday</th>
-                        <td>{echo Shared\Markup::nice_number($total["impressions"][$yesterday])}</td>
+                        <td>{echo Shared\Markup::nice_number($total["impressions"][$yesterday] ?? 0)}</td>
                     </tr>
                     <tr>
                         <th>Overall</th>
@@ -60,7 +60,7 @@
                     </tr>
                     <tr>
                         <th>Yesterday</th>
-                        <td>{echo Shared\Markup::nice_number($total["conversions"][$yesterday])}</td>
+                        <td>{echo Shared\Markup::nice_number($total["conversions"][$yesterday] ?? 0)}</td>
                     </tr>
                     <tr>
                         <th>Overall</th>
@@ -83,7 +83,7 @@
                     </tr>
                     <tr>
                         <th>Yesterday</th>
-                        <td>{echo $user->convert($total["payouts"][$yesterday])}</td>
+                        <td>{echo $user->convert($total["payouts"][$yesterday] ?? 0)}</td>
                     </tr>
                     <tr>
                         <th>Overall</th>

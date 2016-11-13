@@ -23,10 +23,12 @@ class Admin extends Auth {
         ], ["_id"]);
         $in = array_keys($publishers);
         
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-4 day')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        $start = RequestMethods::get("start", date('Y-m-d', strtotime('-4 day')));
+        $end = RequestMethods::get("end", date('Y-m-d', strtotime('now')));
         
-        $data = Shared\Services\Performance::stats($this->org, ['start' => strftime("%Y-%m-%d", strtotime($this->org->created)), 'end' => $end]);
+        $data = Shared\Services\Performance::stats($this->org, [
+            'start' => date('Y-m-d', strtotime("-1 month")), 'end' => $end
+        ]);
         $topusers = $this->widgets();
         if (array_key_exists("widgets", $this->org->meta)) {
             $d = in_array("top10ads", $this->org->meta["widgets"]) + in_array("top10pubs", $this->org->meta["widgets"]);

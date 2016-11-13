@@ -427,7 +427,7 @@ namespace Framework {
          * @return type
          * @throws Exception\Validation
          */
-        public function validate() {
+        public function validate($opts = []) {
             $this->_errors = array();
             foreach ($this->columns as $column) {
                 if ($column["validate"]) {
