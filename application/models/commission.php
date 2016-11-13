@@ -14,6 +14,22 @@ class Commission extends \Shared\Model {
      * @validate required
      */
     protected $_ad_id;
+
+    /**
+     * @column
+     * @readwrite
+     * @type mongoid
+     * @index
+     */
+    protected $_org_id = null;
+
+    /**
+     * @column
+     * @readwrite
+     * @type mongoid
+     * @index
+     */
+    protected $_user_id = null;
     
     /**
      * @column
@@ -119,6 +135,10 @@ class Commission extends \Shared\Model {
 
         switch (strtolower($commission->model)) {
             case 'cpa':
+                $count = \Conversion::count($query);
+                $info['conversions'] = $count;
+                break;
+
             case 'cpi':
                 $count = \Conversion::count($query);
                 $info['conversions'] = $count;

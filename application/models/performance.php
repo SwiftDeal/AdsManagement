@@ -51,6 +51,14 @@ class Performance extends Shared\Model {
      */
     protected $_revenue = 0.0;
 
+    /**
+     * @column
+     * @readwrite
+     * @type decimal
+     * @length 10,2
+     */
+    protected $_profit = 0.0;
+
     public function save() {
         if ($this->clicks === 0 && $this->impressions === 0 && $this->conversions === 0) {
             return false;

@@ -21,9 +21,9 @@
                                     <input type="date" style="width: 180px" name="end" class="form-control" value="{$end}" />
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">Show</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
-                        <h4 class="page-title">Dashboard</h4>
+                        <h4 class="page-title"><i class="fa fa-dashboard"></i> Dashboard</h4>
                     </div>
                 </div>
             </div>
@@ -31,7 +31,7 @@
                 <div class="col-md-3">
                     <div class="panel panel-border panel-success">
                         <div class="panel-heading">
-                            <h3 class="panel-title text-center">Network <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Total number of clicks, impressions and conversions from {$start} to {$end}"></i></h3>
+                            <h3 class="panel-title text-center">Network <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Total number of clicks, impressions and conversions"></i></h3>
                         </div>
                         <div class="table-responsive panel-body">
                             <table class="table">
@@ -54,7 +54,7 @@
                 <div class="col-md-3">
                     <div class="panel panel-border panel-inverse">
                         <div class="panel-heading">
-                            <h3 class="panel-title text-center">Finance <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Total Payout, revenue and profit from {$start} to {$end}"></i></h3>
+                            <h3 class="panel-title text-center">Finance <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Total Payout, revenue and profit"></i></h3>
                         </div>
                         <div class="table-responsive panel-body">
                             <table class="table">
@@ -124,97 +124,115 @@
                     </div>
                 </div>
             </div>
-            <!-- end row -->
+            
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card-box">
-                        <h4 class="text-dark  header-title m-t-0">Volume Report</h4>
-                        <div id="perf-stat">
-                            <canvas id="perfstat" height="300"></canvas>
+                    <ul class="nav nav-tabs navtab-custom">
+                        <li class="active">
+                            <a href="#volume" data-toggle="tab" aria-expanded="false">
+                                <span class="visible-xs"><i class="fa fa-area-chart"></i></span>
+                                <span class="hidden-xs">Volume Report</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#or" data-toggle="tab" aria-expanded="true">
+                                <span class="visible-xs"><i class="fa fa-globe"></i></span>
+                                <span class="hidden-xs">OS &amp; Referers</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#trendings" data-toggle="tab" aria-expanded="false">
+                                <span class="visible-xs"><i class="fa fa-line-chart"></i></span>
+                                <span class="hidden-xs">Trendings</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="volume">
+                            <h4 class="text-dark  header-title m-t-0">Volume Report</h4>
+                            <div id="perf-stat">
+                                <canvas id="perfstat" height="300"></canvas>
+                            </div><hr>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h4 class="text-dark text-center header-title m-t-0">Device</h4>
+                                    <div id="device-stat">
+                                        <canvas id="devicestat" height="300"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h4 class="text-dark text-center header-title m-t-0">Country</h4>
+                                    <div id="country" style="height: 300px"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="or">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h4 class="text-dark  header-title m-t-0">OS</h4>
+                                    <div class="table-responsive nicescroll" style="height: 300px">
+                                        <table class="table">
+                                            <tbody id="topos"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h4 class="text-dark  header-title m-t-0">Top Referers</h4>
+                                    <div class="table-responsive nicescroll" style="height: 300px">
+                                        <table class="table">
+                                            <tbody id="topreferer"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="trendings">
+                            <div class="row">
+                                {script $widgets = $org->meta["widgets"] ?? []}
+                                {if in_array("top10pubs", $widgets)}
+                                <div class="col-md-{echo $d}">
+                                    {script $topEarners = $topusers['publishers']}
+                                    <div class="card-box widget-user">
+                                        <h4 class="text-dark  header-title m-t-0">Top 10 publishers <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Top 10 affiliates ranked by number of clicks daily"></i></h4>
+                                        <div class="table-responsive nicescroll" style="height: 280px">
+                                            <table class="table">
+                                                <tbody>
+                                                    {foreach $u in $topEarners}
+                                                    <tr>
+                                                        <td><a href="/publisher/info/{echo $u['_id']}.html">{echo $u["username"]}</a></td>
+                                                        <td>{echo Shared\Markup::nice_number($u["count"])}</td>
+                                                    </tr>
+                                                    {/foreach}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                {/if}
+                                {if in_array("top10ads", $widgets)}
+                                <div class="col-md-{echo $d}">
+                                    {script $topCampaigns = $topusers['ads']}
+                                    <div class="card-box widget-user">
+                                        <h4 class="text-dark  header-title m-t-0">Top 10 Campaigns</h4>
+                                        <div class="table-responsive nicescroll" style="height: 280px">
+                                            <table class="table">
+                                                <tbody>
+                                                    {foreach $tc in $topCampaigns}
+                                                    <tr>
+                                                        <td><a href="/campaign/details/{echo $tc['_id']}.html" target="_blank">{echo $tc["title"]}</a></td>
+                                                        <td>{echo Shared\Markup::nice_number($tc["clicks"])}</td>
+                                                    </tr>
+                                                    {/foreach}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                {/if}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card-box">
-                        <h4 class="text-dark  header-title m-t-0">Country</h4>
-                        <div id="country" style="height: 300px"></div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card-box">
-                        <h4 class="text-dark  header-title m-t-0">Top Referers</h4>
-                        <div class="table-responsive nicescroll" style="height: 300px">
-                            <table class="table">
-                                <tbody id="topreferer"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card-box">
-                        <h4 class="text-dark  header-title m-t-0">Device</h4>
-                        <div id="device-stat">
-                            <canvas id="devicestat" height="300"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card-box">
-                        <h4 class="text-dark  header-title m-t-0">OS</h4>
-                        <div class="table-responsive nicescroll" style="height: 300px">
-                            <table class="table">
-                                <tbody id="topos"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                {script $widgets = $org->meta["widgets"] ?? []}
-                {if in_array("top10pubs", $widgets)}
-                <div class="col-md-{echo $d}">
-                    {script $topEarners = $topusers['publishers']}
-                    <div class="card-box widget-user">
-                        <h4 class="text-dark  header-title m-t-0">Top 10 publishers <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Top 10 affiliates ranked by number of clicks daily"></i></h4>
-                        <div class="table-responsive nicescroll" style="height: 280px">
-                            <table class="table">
-                                <tbody>
-                                    {foreach $u in $topEarners}
-                                    <tr>
-                                        <td><a href="/publisher/info/{echo $u['_id']}.html">{echo $u["username"]}</a></td>
-                                        <td>{echo Shared\Markup::nice_number($u["count"])}</td>
-                                    </tr>
-                                    {/foreach}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                {/if}
-                {if in_array("top10ads", $widgets)}
-                <div class="col-md-{echo $d}">
-                    {script $topCampaigns = $topusers['ads']}
-                    <div class="card-box widget-user">
-                        <h4 class="text-dark  header-title m-t-0">Top 10 Campaigns</h4>
-                        <div class="table-responsive nicescroll" style="height: 280px">
-                            <table class="table">
-                                <tbody>
-                                    {foreach $tc in $topCampaigns}
-                                    <tr>
-                                        <td><a href="/campaign/details/{echo $tc['_id']}.html" target="_blank">{echo $tc["title"]}</a></td>
-                                        <td>{echo Shared\Markup::nice_number($tc["clicks"])}</td>
-                                    </tr>
-                                    {/foreach}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                {/if}
             </div>
         </div>
         <!-- end container -->
