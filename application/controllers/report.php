@@ -35,13 +35,13 @@ class Report extends Admin {
         ];
         $records = $clickCol->aggregate([
             ['$match' => $match],
-            ['$project' => ['adid' => 1]],
+            ['$project' => ['adid' => 1, '_id' => 0]],
             ['$group' => [
                 '_id' => '$adid',
                 'count' => ['$sum' => 1]
             ]],
             ['$sort' => ['count' => -1]],
-            ['$limit' => $limit]
+            ['$limit' => (int) $limit]
         ]);
         $stats = [];
         foreach ($records as $r) {
@@ -80,29 +80,39 @@ class Report extends Admin {
      * @before _secure
      */
     public function publishers() {
-        $this->seo(array("title" => "Publisher Rankings"));
-        $view = $this->getActionView();
+        $this->seo(["title" => "Publisher Rankings"]); $view = $this->getActionView();
 
-        $start = RM::get("start", date('Y-m-d'));
-        $end = RM::get("end", date('Y-m-d'));
-        $q = ['start' => $start, 'end' => $end]; $view->set($q);
-        $dateQuery = Utils::dateQuery($q);
-        $start = $dateQuery['start']; $end = $dateQuery['end'];
+        $start = RM::get("start", date('Y-m-d')); $end = RM::get("end", date('Y-m-d'));
+        $limit = RM::get("limit", 40);
+        $view->set(['start' => $start, 'end' => $end]);
 
-        $clicks = Db::query('Click', [
+        $match = [
             'pid' => ['$in' => $this->org->users('publisher')],
             'is_bot' => false,
             'created' => Db::dateQuery($start, $end)
-        ], ['pid', 'device', 'adid']);
-        
-        $classify = \Click::classify($clicks, 'pid');
-        $stats = Click::counter($classify);
-        $stats = ArrayMethods::topValues($stats, 50);
+        ];
 
-        $deviceStats = []; $bounceRate = [];
-        foreach ($stats as $pid => $count) {
-            $pubClicks = $classify[$pid];
-            // taking a lot of time @todo (do something about it)
+        $clickCol = Db::collection('Click');
+        $records = $clickCol->aggregate([
+            ['$match' => $match],
+            ['$project' => ['pid' => 1, 'device' => 1, '_id' => 0]],
+            ['$group' => [
+                '_id' => ['pid' => '$pid', 'device' => '$device'],
+                'count' => ['$sum' => 1]
+            ]],
+            ['$sort' => ['count' => -1]],
+            ['$limit' => (int) $limit]
+        ]);
+
+        $stats = $deviceStats = [];
+        foreach ($records as $r) {
+            $obj = Utils::toArray($r); $_id = $obj['_id'];
+            $pid = Utils::getMongoID($_id['pid']);
+            ArrayMethods::counter($stats, $pid, $obj['count']);
+            
+            if (!isset($deviceStats[$pid])) $deviceStats[$pid] = [];
+            ArrayMethods::counter($deviceStats[$pid], $_id['device'], $obj['count']);
+
             /*$adClicks = Click::classify($pubClicks, 'adid');
 
             $br = 0; $total = count($adClicks);
@@ -121,9 +131,6 @@ class Report extends Admin {
                 $br += $bounce;
             }
             $bounceRate[$pid] = (int) (round($br / $total, 2) * 100);*/
-
-            $device = Click::classifyInfo(['clicks' => $pubClicks, 'type' => 'device', 'arr' => []]);
-            $deviceStats[$pid] = $device;
         }
 
         $view->set('stats', $stats)
@@ -148,10 +155,8 @@ class Report extends Admin {
 
         // Only find the ads for this organizations
         $ads = \Ad::all(['org_id' => $this->org->_id], ['_id']);
-        $query = ['adid' => [
-            '$in' => Utils::mongoObjectId(array_keys($ads))
-            ]
-        ];
+        $in = Db::convertType(array_keys($ads));
+        $query = ['adid' => ['$in' => $in]];
 
         $searching = [];
         foreach ($fields as $key => $value) {

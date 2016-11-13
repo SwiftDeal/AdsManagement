@@ -20,13 +20,14 @@ class Publisher extends Auth {
         $this->seo(array("title" => "Dashboard", "description" => "Stats for your Data"));
         $view = $this->getActionView(); $commissions = []; $clicks = 0;$d = 1;
 
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('now')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        $start = RequestMethods::get("start", date('Y-m-d', strtotime('now')));
+        $end = RequestMethods::get("end", date('Y-m-d', strtotime('now')));
         $dateQuery = Utils::dateQuery($start, $end);
-        $clickCol = Registry::get("MongoDB")->clicks;
+        
+        $today = date('Y-m-d');
         $clicks = Db::query('Click', [
             "pid" => $this->user->_id, "is_bot" => false,
-            "created" => Db::dateQuery($start, $end)
+            "created" => Db::dateQuery($today, $today)
         ], ['adid', 'country']);
 
         $notifications = Notification::all([
@@ -46,6 +47,7 @@ class Publisher extends Auth {
             $d = isset($notifications) + in_array("top10ads", $this->org->meta["widgets"]) + in_array("top10pubs", $this->org->meta["widgets"]);
         }
 
+        $perf = $this->perf($clicks, ['type' => 'publisher', 'publisher' => $this->user], ['start' => $today, 'end' => $today]);
         $view->set("start", $start)
             ->set("end", $end)
             ->set("d", 12/$d)
@@ -53,7 +55,7 @@ class Publisher extends Auth {
             ->set("notifications", $notifications)
             ->set("total", $total)
             ->set("yesterday", strftime("%B %d, %Y", strtotime('-1 day')))
-            ->set("performance", $this->perf($clicks, ['type' => 'publisher', 'publisher' => $this->user], ['start' => $start, 'end' => $end]));
+            ->set("performance", $perf);
     }
 
     /**

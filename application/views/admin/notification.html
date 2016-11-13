@@ -30,6 +30,7 @@
                                 </thead>
                                 <tbody>
                                     <tbody>
+                                        {script $parsed = parse_url(URL)}
                                         {foreach $n in $notifications}
                                         <tr>
                                             <td>{echo Framework\StringMethods::only_date($n->created)}</td>
@@ -37,7 +38,7 @@
                                             <td>{echo $n->target}</td>
                                             <td>{echo implode($n->meta)}</td>
                                             <td>
-                                                <a href="?action=delete&id={echo $n->_id}" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i> Remove</a>
+                                                <a href="{echo $parsed['path']}?id={echo $n->_id}" class="delete btn btn-xs btn-danger" data-message="Are you sure you want to delete this notification??"><i class="fa fa-trash"></i> Remove</a>
                                             </td>
                                         </tr>
                                         {/foreach}

@@ -119,10 +119,6 @@ class Commission extends \Shared\Model {
 
         switch (strtolower($commission->model)) {
             case 'cpa':
-                $count = \Conversion::count($query);
-                $info['conversions'] = $count;
-                break;
-
             case 'cpi':
                 $count = \Conversion::count($query);
                 $info['conversions'] = $count;

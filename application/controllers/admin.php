@@ -266,7 +266,7 @@ class Admin extends Auth {
 
         switch (RequestMethods::post("action")) {
             case 'save':
-                $meta = RequestMethods::post("meta");
+                $meta = RequestMethods::post("meta", "all");
                 $message = RequestMethods::post("message");
                 $success = "Saved Successfully";
 
@@ -299,17 +299,15 @@ class Admin extends Auth {
                 break;
         }
 
-        switch (RequestMethods::get("action")) {
-            case 'delete':
-                $id = RequestMethods::get("id");
-                $n = Notification::first(["org_id = ?" => $this->org->id, "id = ?" => $id]);
-                if ($n) {
-                    $n->delete();
-                    $view->set("message", "Deleted Successfully");
-                } else {
-                    $view->set("message", "Notification does not exist");
-                }
-                break;
+        if (RequestMethods::type() === 'DELETE') {
+            $id = RequestMethods::get("id");
+            $n = Notification::first(["org_id = ?" => $this->org->id, "id = ?" => $id]);
+            if ($n) {
+                $n->delete();
+                $view->set("message", "Deleted Successfully");
+            } else {
+                $view->set("message", "Notification does not exist");
+            }
         }
 
         $notifications = Notification::all(["org_id = ?" => $this->org->id], [], "created", "desc");
