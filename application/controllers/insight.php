@@ -56,49 +56,16 @@ class Insight extends Auth {
 	public function campaign($id = null) {
 		$this->seo(["title" => "Campaign Insights"]);
         $view = $this->getActionView(); $org = $this->org;
-        if (!$id) $this->_404();
+        $ad = Ad::first(['_id' => $id, 'org_id' => $org->_id]);
+        if (!$ad) $this->_404();
 
-        $match = [ 'adid' => Db::convertType($id), 'is_bot' => false ];
-        if ($this->user_id) {
-            $match["pid"] = Db::convertType($this->user_id);
-        }
+        $data = Shared\Services\Campaign::performance($id, [
+            'start' => $this->start, 'end' => $this->end, 'pid' => $this->user_id,
+            'meta' => true
+        ]);
 
-        $diff = date_diff(date_create($this->start), date_create($this->end));
-        $stats = []; $clickCol = Db::collection('Click');
-        for ($i = 0; $i <= $diff->format("%a"); $i++) {
-            $date = date('Y-m-d', strtotime($this->start . " +{$i} day"));
-            $keys = ['country', 'os', 'device', 'referer'];
-
-            $stats[$date] = [ 'clicks' => 0, 'meta' => [] ];
-            $match['created'] = Db::dateQuery($date, $date);
-
-            $records = $clickCol->aggregate([
-                ['$match' => $match],
-                ['$project' => ['country' => 1, 'device' => 1, 'os' => 1, 'referer' => 1]],
-                ['$group' => [
-                    '_id' => ['country' => '$country', 'os' => '$os', 'device' => '$device', 'referer' => '$referer'],
-                    'count' => ['$sum' => 1]
-                ]],
-                ['$sort' => ['count' => -1]]
-            ]);
-
-            foreach ($records as $r) {
-                $obj = Utils::toArray($r); $arr =& $stats[$date]['meta'];
-
-                foreach ($keys as $k) {
-                    if (!isset($arr[$k])) $arr[$k] = [];
-                    $index = $r['_id'][$k];
-                    ArrayMethods::counter($arr[$k], $index, $obj['count']);
-                }
-            }
-        }
-
-        $records = Shared\Services\Campaign::earning($stats, $id, $this->user_id);
-        $total = Perf::calTotal($records);
-
-        $view->set('ads', $records)
-            ->set('total', $total)
-            ->set('records', $j);
+        $view->set('stats', $data['stats'])
+            ->set('total', $data['total']);
 	}
 
     /**

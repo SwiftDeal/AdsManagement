@@ -174,7 +174,7 @@ class Cron extends Shared\Controller {
             
             // classify the clicks according to AD ID
             $classify = \Click::classify($clicks, 'adid');
-            $countryWise = []; $deviceWise = []; $osWise = []; $refWise = [];
+            $countryWise = $deviceWise = $osWise = $refWise = [];
             foreach ($classify as $key => $value) {
                 $ad = \Ad::find($adsInfo, $key, ['user_id', 'url']);
                 $advert = Usr::find($advertisers, $ad->user_id, ['_id', 'meta', 'email', 'org_id']);
@@ -186,16 +186,18 @@ class Cron extends Shared\Controller {
                     ArrayMethods::counter($countryWise, $country, $adClicks);
 
                     $pComm = \Commission::campaignRate($key, $commInfo, $country, array_merge([
-                        'type' => 'publisher', 'publisher' => $p
+                        'type' => 'both', 'publisher' => $p
                     ], $dq));
                     
                     $earning = \Ad::earning($pComm, $adClicks); ArrayMethods::copy($earning, $updateData);
+                    $updateData['profit'] = $updateData['revenue'] - $updateData['payout'];
                     $perf->update($updateData);
 
                     $aComm = \Commission::campaignRate($key, $commInfo, $country, array_merge([
                         'type' => 'advertiser'
                     ], $dq));
                     
+                    $updateData = [];
                     $earning = \Ad::earning($aComm, $adClicks); ArrayMethods::copy($earning, $updateData);
                     $advertPerf->update($updateData);
                 }

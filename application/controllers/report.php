@@ -137,7 +137,7 @@ class Report extends Admin {
 
         $view->set('stats', $stats)
             ->set('deviceStats', $deviceStats)
-            ->set('bounceRate', $bounceRate);
+            ->set('bounceRate', $bounceRate ?? []);
     }
 
     /**

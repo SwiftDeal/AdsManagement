@@ -112,23 +112,16 @@ class Commission extends \Shared\Model {
                 break;
             
             case 'publisher':
-                $pub = $extra['publisher'] ?? (object) ['meta' => []];
-                $comm = $pub->meta['campaign'] ?? [];
-
-                if (isset($comm['rate'])) {
-                    $info['rate'] = (float) $comm['rate'];
-                } else {
-                    $info['rate'] = (float) $commission->rate;
-                }
-                $query['pid'] = $pub->_id;
+                $info['rate'] = self::getPubRate($commission, $extra);
+                $query['pid'] = $extra['publisher']->_id ?? null;
                 break;
 
             case 'both':
                 $info['revenue'] = (float) $commission->revenue;
-                $info['rate'] = (float) $commission->rate;
+                $info['rate'] = self::getPubRate($commission, $extra);
 
-                if (isset($extra['pid'])) {
-                    $query['pid'] = $extra['pid'];
+                if (isset($extra['publisher'])) {
+                    $query['pid'] = $extra['publisher']->_id;
                 }
                 break;
         }
@@ -151,6 +144,18 @@ class Commission extends \Shared\Model {
         }
         $info['campaign'] = strtolower($commission->model);
         return $info;
+    }
+
+    protected static function getPubRate($commission, $extra = []) {
+        $pub = $extra['publisher'] ?? (object) ['meta' => []];
+        $comm = $pub->meta['campaign'] ?? [];
+
+        if (isset($comm['rate'])) {
+            $rate = (float) $comm['rate'];
+        } else {
+            $rate = (float) $commission->rate;
+        }
+        return $rate;
     }
 
     /**

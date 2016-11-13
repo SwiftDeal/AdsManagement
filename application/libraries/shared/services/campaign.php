@@ -48,14 +48,14 @@ class Campaign {
 	    return $result;
 	}
 
-	public static function earning($stats = [], $adid, $user_id) {
+	public static function earning($stats = [], $adid, $user_id = null) {
 		$records = [];
 		foreach ($stats as $date => $r) {
             $commissions = [];
         	foreach ($r['meta']['country'] as $country => $clicks) {
                 $extra = [ 'type' => 'both', 'start' => $date, 'end' => $date ];
                 if ($user_id) {
-                    $extra['pid'] = $user_id;
+                    $extra['publisher'] = \User::first(['_id' => $user_id]);
                 }
 
         		$comm = \Commission::campaignRate($adid, $commissions, $country, $extra);
@@ -65,5 +65,87 @@ class Campaign {
             $records[$date] = $r;
         }
         return $records;
+	}
+
+	protected static function _getStats($records, &$stats, $date) {
+		$keys = ['country', 'os', 'device', 'referer'];
+		foreach ($records as $r) {
+		    $obj = Utils::toArray($r); $arr =& $stats[$date]['meta'];
+
+		    foreach ($keys as $k) {
+		        if (!isset($arr[$k])) $arr[$k] = [];
+		        $index = $r['_id'][$k] ?? null;
+		        if (is_null($index)) continue;
+
+		        if (strlen(trim($index)) === 0) {
+		        	$index = "Empty";
+		        }
+
+		        ArrayMethods::counter($arr[$k], $index, $obj['count']);
+		    }
+		}
+	}
+
+	protected static function _perfQuery($match, $extra) {
+		$meta = $extra['meta'] ?? true;
+		$clickCol = Db::collection('Click');
+
+		$group = ['country' => 1, 'device' => 1, 'os' => 1, 'referer' => 1, '_id' => 0];
+		$_id = ['country' => '$country', 'os' => '$os', 'device' => '$device', 'referer' => '$referer'];
+		if (!$meta) {	// if meta is not required
+			$group = ['country' => 1, '_id' => 0]; $_id = ['country' => '$country'];
+		}
+		
+		$records = $clickCol->aggregate([
+		    ['$match' => $match],
+		    ['$project' => $group],
+		    ['$group' => [
+		        '_id' => $_id,
+		        'count' => ['$sum' => 1]
+		    ]],
+		    ['$sort' => ['count' => -1]]
+		]);
+		return $records;
+	}
+
+	public static function performance($id, $extra = []) {
+		$stats = []; $start = $end = date('Y-m-d');
+
+		$match = [ 'adid' => Db::convertType($id), 'is_bot' => false ];
+		$user_id = $extra['pid'] ?? null;
+		if ($user_id) {
+            $match["pid"] = Db::convertType($user_id);
+        }
+        
+		if (isset($extra['start']) && isset($extra['end'])) {
+			$start = $extra['start']; $end = $extra['end'];
+		}
+		
+		$diff = date_diff(date_create($start), date_create($end));
+
+		$dateWise = $extra['meta'] ?? true;	// by default datewise query
+		if ($dateWise) {
+			for ($i = 0; $i <= $diff->format("%a"); $i++) {
+				$date = date('Y-m-d', strtotime($start . " +{$i} day"));
+				$stats[$date] = [ 'clicks' => 0, 'meta' => [] ];
+				$match['created'] = Db::dateQuery($date, $date);
+				
+				$records = self::_perfQuery($match, $extra);
+				self::_getStats($records, $stats, $date);
+			}
+		} else {
+			$match['created'] = Db::dateQuery($start, $end);
+			$stats[$start] = [ 'clicks' => 0, 'meta' => [] ];
+
+			$records = self::_perfQuery($match, $extra);
+			self::_getStats($records, $stats, $start);
+		}
+
+		$records = self::earning($stats, $id, $user_id);
+        $total = Performance::calTotal($records);
+        return [
+        	'stats' => $records,
+        	'total' => $total
+        ];
 	}
 }
