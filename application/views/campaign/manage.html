@@ -80,8 +80,8 @@
                                             {if($p["total"]["conversions"])}<br>Conversions <span class="badge">{echo $p["total"]["conversions"] ?? 0}</span>{/if}
                                             {if($p["total"]["impressions"])}<br>Impressions <span class="badge">{echo $p["total"]["impressions"] ?? 0}</span>{/if}
                                         </td>
-                                        <td>{echo $user->convert($p["total"]["revenue"] ?? 0)}</td>
-                                        <td>{echo $user->convert(($p["total"]["revenue"] ?? 0) - ($p["total"]["payout"] ?? 0))}</td>
+                                        <td>{echo $user->convert($p["total"]["revenue"] ?? 0, true, 2)}</td>
+                                        <td>{echo $user->convert(($p["total"]["revenue"] ?? 0) - ($p["total"]["payout"] ?? 0), true, 2)}</td>
                                     </tr>
                                 {/foreach}
                                 </tbody>

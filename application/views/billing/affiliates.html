@@ -69,7 +69,9 @@
                                         {foreach $i in $invoices}
                                         {script $u = User::first(["id = ?" => $i->user_id], ['name', 'live'])}
                                         <tr>
-                                            <td><small>{echo Framework\StringMethods::only_date($i->created)}</small></td>
+                                            <td>
+                                                <small>{echo Framework\StringMethods::only_date($i->created)}<br>(ID: {echo $i->id})</small>
+                                            </td>
                                             <td>
                                                 {if $i->live}
                                                 <span class="text text-success">Success</span>

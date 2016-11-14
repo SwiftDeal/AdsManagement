@@ -1,8 +1,3 @@
-<script>
-    var adv = JSON.parse('{echo json_encode($advertiser)}');
-    var link = 'http://track.' + '{echo $domain}' + '/pixel?adid={echo $ad->_id}';
-    var reqData = JSON.parse('{echo json_encode(["property" => live, "value" => 1])}');
-</script>
 <div class="row">
     <div class="col-sm-12">
         <div class="page-title-box">

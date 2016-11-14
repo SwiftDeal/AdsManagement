@@ -9,21 +9,21 @@
                 <table class="table">
                     <tr>
                         <th>Today</th>
-                        <td>{echo Shared\Markup::nice_number($performance->clicks)}</td>
+                        <td>{echo Shared\Markup::nice_number($ptoday->clicks)}</td>
                     </tr>
                     <tr>
-                        <th data-toggle="tooltip" data-placement="top" data-original-title="Yesterday Clicks recieved, updated everyday 1:00 AM (IST)">Yesterday</th>
-                        <td>{echo Shared\Markup::nice_number($yestPerf->clicks ?? 0)}</td>
+                        <th>Yesterday</th>
+                        <td>{echo Shared\Markup::nice_number($pyest->clicks ?? 0)}</td>
                     </tr>
                     <tr>
                         <th>Overall</th>
-                        <td>{echo Shared\Markup::nice_number($total["clicks"] ?? 0 + $yestPerf->clicks + $performance->clicks)}</td>
+                        <td>{echo Shared\Markup::nice_number($total["total_clicks"] + $ptoday->clicks)}</td>
                     </tr>
                 </table>
             </div>
         </div>
     </div>
-    {script $totalimpr = $total["impressions"] ?? 0 + $yestPerf->impressions + $performance->impressions}
+    {script $totalimpr = $total["total_impressions"] + $ptoday->impressions}
     <div class="col-lg-3">
         <div class="panel panel-border panel-primary">
             <div class="panel-heading">
@@ -33,11 +33,11 @@
                 <table class="table">
                     <tr>
                         <th>Today</th>
-                        <td>{echo Shared\Markup::nice_number($performance->impressions)}</td>
+                        <td>{echo Shared\Markup::nice_number($ptoday->impressions)}</td>
                     </tr>
                     <tr>
                         <th>Yesterday</th>
-                        <td>{echo Shared\Markup::nice_number($yestPerf->impressions ?? 0)}</td>
+                        <td>{echo Shared\Markup::nice_number($pyest->impressions ?? 0)}</td>
                     </tr>
                     <tr>
                         <th>Overall</th>
@@ -47,7 +47,7 @@
             </div>
         </div>
     </div>
-    {script $totalConv = $total["conversions"] ?? 0 + $yestPerf->conversions + $performance->conversions}
+    {script $totalConv = $total["total_conversions"] + $ptoday->conversions}
     <div class="col-lg-3">
         <div class="panel panel-border panel-success">
             <div class="panel-heading">
@@ -57,11 +57,11 @@
                 <table class="table">
                     <tr>
                         <th>Today</th>
-                        <td>{echo Shared\Markup::nice_number($performance->conversions)}</td>
+                        <td>{echo Shared\Markup::nice_number($ptoday->conversions)}</td>
                     </tr>
                     <tr>
                         <th>Yesterday</th>
-                        <td>{echo Shared\Markup::nice_number($yestPerf->conversions ?? 0)}</td>
+                        <td>{echo Shared\Markup::nice_number($pyest->conversions ?? 0)}</td>
                     </tr>
                     <tr>
                         <th>Overall</th>
@@ -80,15 +80,15 @@
                 <table class="table">
                     <tr>
                         <th>Today</th>
-                        <td>{echo $user->convert($performance->revenue)}</td>
+                        <td>{echo $user->convert($ptoday->revenue)}</td>
                     </tr>
                     <tr>
                         <th>Yesterday</th>
-                        <td>{echo $user->convert($yestPerf->revenue ?? 0)}</td>
+                        <td>{echo $user->convert($pyest->revenue ?? 0)}</td>
                     </tr>
                     <tr>
                         <th>Overall</th>
-                        <td>{echo $user->convert($total["revenue"] ?? 0 + $yestPerf->revenue + $performance->revenue)}</td>
+                        <td>{echo $user->convert($total["total_payouts"] + $ptoday->revenue)}</td>
                     </tr>
                 </table>
             </div>
@@ -129,7 +129,6 @@
                 <div class="table-responsive nicescroll" style="height: 280px">
                     <table class="table">
                         <tbody>
-                            {script $notifications = $notifications ?? []}
                             {foreach $n in $notifications}
                             <tr>
                                 <td>{echo Framework\StringMethods::only_date($n->created)}</td>
@@ -147,7 +146,7 @@
             <div class="tab-pane" id="toppubs">
                 <div class="table-responsive nicescroll" style="height: 280px">
                     <table class="table">
-                        {script $topEarners = $topusers['publishers'] ?? []}
+                        {script $topEarners = $topusers['publishers']}
                         <thead>
                             <tr>
                                 <th>Handle</th>
@@ -170,7 +169,7 @@
             <div class="tab-pane" id="topads">
                 <div class="table-responsive nicescroll" style="height: 280px">
                     <table class="table">
-                        {script $topCampaigns = $topusers['ads'] ?? []}
+                        {script $topCampaigns = $topusers['ads']}
                         <thead>
                             <tr>
                                 <th>Handle</th>
@@ -179,7 +178,6 @@
                         </thead>
                         <tbody>
                             {foreach $tc in $topCampaigns}
-                            {script $categories = Category::all(['org_id' => $org->_id], ['_id', 'name'])}
                             {script $a = Ad::first(["id = ?" => $tc['_id']])}
                             <tr>
                                 <td>
@@ -190,8 +188,7 @@
                                         </div>
                                       <div class="media-body">
                                         <h5 class="media-heading"><a href="/publisher/campaign/{$a->_id}.html">{echo $a->title}</a></h5>
-                                        {script $cats = $a->category ?? []}
-                                        {foreach $cat in $cats}
+                                        {foreach $cat in $a->category}
                                             {script $key = Shared\Utils::getMongoID($cat)}
                                             <label class="label label-info">{echo $categories[$key]->name}</label>
                                         {/foreach}
@@ -209,3 +206,4 @@
         </div>
     </div>
 </div>
+0
