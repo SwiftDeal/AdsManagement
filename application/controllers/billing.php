@@ -220,4 +220,21 @@ class Billing extends Admin {
             $this->redirect("/billing/advertisers.html");
         }
     }
+
+    /**
+     * @before _secure
+     */
+    public function invoice($id) {
+        $this->seo(array("title" => "Create Invoice"));
+        $view = $this->getActionView();
+        $invoice = Invoice::first(["live = ?" => false, "org_id = ?" => $this->org->id, "id = ?" => $id]);
+        if (RequestMethods::get("action") == "delinv") {
+            if ($invoice) {
+                $invoice->delete();
+            }
+            Registry::get("session")->set('$flashMessage', 'Invoice Deleted Successfully');
+            $this->redirect("/billing/affiliates.html");
+        }
+        $view->set('i', $invoice);
+    }
 }

@@ -36,12 +36,6 @@
                     <span class="hidden-xs">Invoices</span>
                 </a>
             </li>
-            <li class="">
-                <a href="#payout" data-toggle="tab" aria-expanded="false">
-                    <span class="visible-xs"><i class="fa fa-bank"></i></span>
-                    <span class="hidden-xs">Payout</span>
-                </a>
-            </li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="summary">
@@ -109,34 +103,6 @@
                 </div>
                 {/if}{else}
                 <p class="text-center">No invoice has been created till now.</p>
-                {/else}
-            </div>
-            <div class="tab-pane" id="payout">
-                {if($payments)}
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Created</th>
-                                <th>Reference</th>
-                                <th>Type</th>
-                                <th>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {foreach $p in $payments}
-                            <tr>
-                                <td><small>{echo Framework\StringMethods::only_date($p->created)}</small></td>
-                                <td>{echo $p->meta["refer_id"]}</td>
-                                <td>{echo ucfirst($p->type)}</td>
-                                <td>{echo $user->convert($p->amount)}</td>
-                            </tr>
-                            {/foreach}
-                        </tbody>
-                    </table>
-                </div>
-                {/if}{else}
-                <p class="text-center">No payments has been created till now.</p>
                 {/else}
             </div>
         </div>

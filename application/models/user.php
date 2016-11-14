@@ -131,7 +131,7 @@ class User extends Shared\Model {
         $this->_email = $e;
     }
 
-    public function convert($n, $p=true, $places = 2, $format=true) {
+    public function convert($n, $p=true, $places = 6, $format=true) {
         // first strip any formatting;
         $n = (0+str_replace(",", "", $n));
         // is this a number?

@@ -109,7 +109,6 @@
                                     <th>Model</th>
                                     <th>Coverage</th>
                                     <th>Revenue</th>
-                                    <th>Payout</th>
                                     <th>Description</th>
                                 </tr>
                                 {foreach $comm in $comms}
@@ -117,7 +116,6 @@
                                     <td>{echo strtoupper($comm->model)}</td>
                                     <td>{echo implode(",", $comm->coverage)}</td>
                                     <td>{echo $user->convert($comm->revenue)}</td>
-                                    <td>{echo $user->convert($comm->rate)}</td>
                                     <td>{echo $comm->description}</td>
                                 </tr>
                                 {/foreach}

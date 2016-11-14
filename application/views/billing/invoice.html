@@ -1,0 +1,40 @@
+<div class="content-page">
+    <div class="content">
+        <div class="container">
+            <!-- Page-Title -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="page-title-box">
+                        <ol class="breadcrumb pull-right">
+                            <li><a href="#">Minton</a></li>
+                            <li><a href="#">Pages</a></li>
+                            <li class="active">Blank</li>
+                        </ol>
+                        <h4 class="page-title">Invoice: {echo $i->id}</h4>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr>
+                            	<th>START</th>
+                            	<td>{echo Framework\StringMethods::only_date($i->start)}</td>
+                            </tr>
+                            <tr>
+                            	<th>END</th>
+                            	<td>{echo Framework\StringMethods::only_date($i->end)}</td>
+                            </tr>
+                            <tr>
+                            	<th>User</th>
+                            	{script $u = User::first(["id = ?" => $i->user_id], ["name"])}
+                            	<td>{echo $u->name}</td>
+                            </tr>
+                            <tr>
+                            	<th>Amount</th>
+                            	<td>{echo $i->amount}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

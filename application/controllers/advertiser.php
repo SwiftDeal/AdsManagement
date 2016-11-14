@@ -111,7 +111,7 @@ class Advertiser extends Auth {
             ->set("count", $count)
             ->set('advertiser', $this->user);
 
-        $comms = Commission::all(["ad_id = ?" => $id]);
+        $comms = Commission::all(["ad_id = ?" => $id], ['model', 'coverage', 'revenue', 'description']);
         $models = ArrayMethods::arrayKeys($comms, 'model');
         
         $advertiser = User::first(["id = ?" => $ad->user_id], ['name']);

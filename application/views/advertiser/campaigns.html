@@ -53,7 +53,7 @@
                                         {/if} {else}
                                         <i class="fa fa-circle text-warning"></i>
                                         {/else}
-                                        <a href="/campaign/details/{$a->_id}.html">{echo $a->title}</a>
+                                        <a href="/advertiser/campaign/{$a->_id}.html">{echo $a->title}</a>
                                     </h5>
                                     {foreach $cat in $a->category}
                                         {script $key = Shared\Utils::getMongoID($cat)}
