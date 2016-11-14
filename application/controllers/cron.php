@@ -191,6 +191,7 @@ class Cron extends Shared\Controller {
                     
                     $earning = \Ad::earning($pComm, $adClicks); ArrayMethods::copy($earning, $updateData);
                     $updateData['profit'] = $updateData['revenue'] - $updateData['payout'];
+                    $updateData['revenue'] = $updateData['payout'];
                     $perf->update($updateData);
 
                     $aComm = \Commission::campaignRate($key, $commInfo, $country, array_merge([

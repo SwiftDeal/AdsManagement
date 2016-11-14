@@ -20,36 +20,30 @@ class Publisher extends Auth {
         $this->seo(array("title" => "Dashboard", "description" => "Stats for your Data"));
         $view = $this->getActionView(); $commissions = []; $clicks = 0;$d = 1;
 
-        $tclicks = Db::query('Click', [
-            "pid" => $this->user->_id, "is_bot" => false,
-            "created" => Db::dateQuery(date('Y-m-d'), date('Y-m-d'))
-        ], ['adid', 'country']);
-
-        $yclicks = Db::query('Click', [
-            "pid" => $this->user->_id, "is_bot" => false,
-            "created" => Db::dateQuery(date('Y-m-d', strtotime('-1 day')), date('Y-m-d', strtotime('-1 day')))
-        ], ['adid', 'country']);        
+        $today = date('Y-m-d');
+        $yesterday = date('Y-m-d', strtotime("-1 day"));
+        $perf = Shared\Services\User::livePerf($this->user, $today, $today);
+        $yestPerf = Shared\Services\User::livePerf($this->user, $yesterday, $yesterday);
         
-        $total = Performance::overall(
-            Utils::dateQuery([
-                'start' => strftime("%Y-%m-%d", strtotime('-365 day')),
-                'end' => strftime("%Y-%m-%d", strtotime('-1 day'))
-            ]),
+        $total = Performance::total(
+            [
+                'start' => date("Y-m-d", strtotime('-365 day')),
+                'end' => date("Y-m-d", strtotime('-2 day'))
+            ],
             $this->user
         );
-
         $notifications = Notification::all([
             "org_id = ?" => $this->org->id,
             "meta = ?" => ['$in' => ['all', $this->user->_id]]
         ], [], "created", "desc", 5, 1);
 
-        $topusers = $this->widgets(Utils::dateQuery(date('Y-m-d', strtotime('now')), date('Y-m-d', strtotime('now'))));
+        $topusers = $this->widgets();
 
         $view->set("topusers", $topusers)
             ->set("notifications", $notifications)
             ->set("total", $total)
-            ->set("ptoday", $this->perf($tclicks, ['type' => 'publisher', 'publisher' => $this->user], ['start' => date('Y-m-d'), 'end' => date('Y-m-d')]))
-            ->set("pyest", $this->perf($yclicks, ['type' => 'publisher', 'publisher' => $this->user], ['start' => date('Y-m-d', strtotime('-1 day')), 'end' => date('Y-m-d', strtotime('-1 day'))]));
+            ->set("performance", $perf)
+            ->set("yestPerf", $yestPerf);
     }
 
     /**

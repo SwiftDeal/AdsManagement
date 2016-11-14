@@ -16,41 +16,35 @@ class Advertiser extends Auth {
      */
     public function index() {
         $this->seo(array("title" => "Dashboard", "description" => "Stats for your Data"));
-        $view = $this->getActionView();$commissions = []; $clicks = 0;$d = 1;
+        $view = $this->getActionView();$commissions = [];
 
-        $ads = Ad::all([
-            "org_id = ?" => $this->org->_id, "user_id = ?" => $this->user->id
-        ], ["_id"]);
-        $in = array_keys($ads);
-
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('now')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
-        $dateQuery = Utils::dateQuery($start, $end);
-        $clickCol = Registry::get("MongoDB")->clicks;
-        $clicks = Db::query('Click', [
-            "adid" => ['$in' => $in], "is_bot" => false,
-            "created" => Db::dateQuery($start, $end)
-        ], ['adid', 'country']);
+        $start = RequestMethods::get("start", date("Y-m-d", strtotime('now')));
+        $end = RequestMethods::get("end", date("Y-m-d", strtotime('now')));
+        
+        $today = date('Y-m-d');
+        $yesterday = date('Y-m-d', strtotime("-1 day"));
+        $perf = Shared\Services\User::livePerf($this->user, $today, $today);
+        $yestPerf = Shared\Services\User::livePerf($this->user, $yesterday, $yesterday);
 
         $notifications = Notification::all([
             "org_id = ?" => $this->org->id,
             "meta = ?" => ['$in' => ['all', $this->user->_id]]
         ], [], "created", "desc", 5, 1);
         
-        $total = Performance::overall(
-            Utils::dateQuery([
+        $total = Performance::total(
+            [
                 'start' => date("Y-m-d", strtotime('-365 day')),
-                'end' => date("Y-m-d", strtotime('-1 day'))
-            ]),
+                'end' => date("Y-m-d", strtotime('-2 day'))
+            ],
             $this->user
         );
         
-        $view->set("start", strftime("%Y-%m-%d", strtotime('-7 day')))
-            ->set("end", strftime("%Y-%m-%d", strtotime('now')))
+        $view->set("start", date("Y-m-d", strtotime('-7 day')))
+            ->set("end", date("Y-m-d", strtotime('now')))
             ->set("notifications", $notifications)
             ->set("total", $total)
-            ->set("yesterday", strftime("%B %d, %Y", strtotime('-1 day')))
-            ->set("performance", $this->perf($clicks, ['type' => 'advertiser'], ['start' => $start, 'end' => $end]));
+            ->set("yestPerf", $yestPerf)
+            ->set("performance", $perf);
     }
 
     /**

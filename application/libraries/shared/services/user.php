@@ -111,6 +111,83 @@ class User {
 		return $fields;
 	}
 
+	protected static function _livePerfQuery($match = []) {
+		$records = Db::collection('Click')->aggregate([
+			['$match' => $match],
+			['$project' => ['adid' => 1, 'country' => 1, '_id' => 0]],
+			['$group' => [
+				'_id' => ['adid' => '$adid', 'country' => '$country'],
+				'count' => ['$sum' => 1]
+			]],
+			['$group' => [
+				'_id' => '$_id.adid',
+				'countries' => [
+					'$push' => [
+						'country' => '$_id.country',
+						'count' => '$count'
+					]
+				],
+				'count' => ['$sum' => '$count']
+			]],
+			['$sort' => ['count' => -1]]
+		]);
+		return $records;
+	}
+
+	public static function livePerf($user, $s = null, $e = null) {
+		$start = $end = date('Y-m-d'); $type = $user->type ?? '';
+		if ($s) $start = $s; if ($e) $end = $e;
+
+		$perf = new \Performance();
+		$match = [ 'is_bot' => false, 'created' => Db::dateQuery($start, $end) ];
+		switch ($user->type) {
+			case 'publisher':
+				$match['pid'] = Db::convertType($user->_id);
+				break;
+			
+			case 'advertiser':
+				$ads = \Ad::all(['user_id' => $user->_id], ['_id']);
+				$keys = array_keys($ads);
+				$match['adid'] = ['$in' => Db::convertType($keys)];
+				break;
+
+			default:
+				return $perf;
+		}
+
+		$results = $commissions = []; $records = self::_livePerfQuery($match);
+		foreach ($records as $r) {
+			$obj = Utils::toArray($r); $adid = Utils::getMongoID($obj['_id']);
+			$results[$adid] = $obj;
+		}
+		$keys = array_keys($results);
+		$comms = \Commission::all(['ad_id' => ['$in' => $keys]], ['ad_id', 'rate', 'revenue', 'model', 'coverage']);
+		foreach ($comms as $c) {
+			$key = Utils::getMongoID($c->ad_id);
+			if (!array_key_exists($key, $commissions)) {
+				$commissions[$key] = [];
+			}
+			$commissions[$key][] = $c;
+		}
+
+		foreach ($results as $adid => $obj) {
+			$comm = \Commission::filter($commissions[$adid]);
+			foreach ($obj['countries'] as $value) {
+				$country = $value['country']; $clicks = $value['count'];
+
+				$comm = \Commission::campaignRate($adid, $comm, $country, [
+					'type' => $type, "$type" => $user, 'start' => $start, 'end' => $end,
+					'commFetched' => true
+				]);
+
+				$updateData = []; $earning = \Ad::earning($comm, $clicks);
+				AM::copy($earning, $updateData);
+				$perf->update($updateData);
+			}
+		}
+		return $perf;
+	}
+
 	public static function display($org, $type, $id = null) {
 		$fields = self::fields();
 		if ($id) {

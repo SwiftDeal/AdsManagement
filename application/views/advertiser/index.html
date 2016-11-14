@@ -12,17 +12,17 @@
                     </tr>
                     <tr>
                         <th>Yesterday</th>
-                        <td>{echo Shared\Markup::nice_number($total["clicks"][$yesterday])}</td>
+                        <td>{echo Shared\Markup::nice_number($yestPerf->clicks)}</td>
                     </tr>
                     <tr>
                         <th>Overall</th>
-                        <td>{echo Shared\Markup::nice_number($total["total_clicks"] + $performance->clicks)}</td>
+                        <td>{echo Shared\Markup::nice_number($total["clicks"] + $performance->clicks + $yestPerf->clicks)}</td>
                     </tr>
                 </table>
             </div>
         </div>
     </div>
-    {script $totalimpr = $total["total_impressions"] + $performance->impressions}
+    {script $totalimpr = $total["impressions"] + $performance->impressions + $yestPerf->impressions}
     <div class="col-lg-3">
         <div class="panel panel-border panel-primary">
             <div class="panel-heading">
@@ -36,7 +36,7 @@
                     </tr>
                     <tr>
                         <th>Yesterday</th>
-                        <td>{echo Shared\Markup::nice_number($total["impressions"][$yesterday])}</td>
+                        <td>{echo Shared\Markup::nice_number($yestPerf->impressions)}</td>
                     </tr>
                     <tr>
                         <th>Overall</th>
@@ -46,7 +46,7 @@
             </div>
         </div>
     </div>
-    {script $totalConv = $total["total_conversions"] + $performance->conversions}
+    {script $totalConv = $total["conversions"] + $performance->conversions + $yestPerf->conversions}
     <div class="col-lg-3">
         <div class="panel panel-border panel-success">
             <div class="panel-heading">
@@ -60,7 +60,7 @@
                     </tr>
                     <tr>
                         <th>Yesterday</th>
-                        <td>{echo Shared\Markup::nice_number($total["conversions"][$yesterday])}</td>
+                        <td>{echo Shared\Markup::nice_number($yestPerf->conversions)}</td>
                     </tr>
                     <tr>
                         <th>Overall</th>
@@ -83,11 +83,11 @@
                     </tr>
                     <tr>
                         <th>Yesterday</th>
-                        <td>{echo $user->convert($total["payouts"][$yesterday])}</td>
+                        <td>{echo $user->convert($yestPerf->revenue)}</td>
                     </tr>
                     <tr>
                         <th>Overall</th>
-                        <td>{echo $user->convert($total["total_payouts"] + $performance->revenue)}</td>
+                        <td>{echo $user->convert($total['revenue'] + $yestPerf->revenue + $performance->revenue)}</td>
                     </tr>
                 </table>
             </div>

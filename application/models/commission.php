@@ -4,6 +4,7 @@
  * @author Faizan Ayubi
  */
 use Shared\Services\Db as Db;
+use Framework\Registry as Registry;
 class Commission extends \Shared\Model {
     
     /**
@@ -92,7 +93,12 @@ class Commission extends \Shared\Model {
      * @return array
      */
     public static function campaignRate($adid, &$commissions = [], $country = null, $extra = []) {        
-        $comm = self::find($commissions, $adid);
+        $commFetched = $extra['commFetched'] ?? false;
+        if ($commFetched) {
+            $comm = $commissions;
+        } else {
+            $comm = self::find($commissions, $adid);
+        }
         $info = ['campaign' => 'cpc', 'rate' => 0, 'revenue' => 0, 'type' => $extra['type']];
         if (!is_array($comm)) return $info;
 
@@ -126,12 +132,13 @@ class Commission extends \Shared\Model {
                 break;
         }
 
+        if (Registry::get('vardump') && $commission->model === "cpa" || $commission->model === "cpi") {
+            var_dump($commission->model);
+            var_dump($query);
+        }
+
         switch (strtolower($commission->model)) {
             case 'cpa':
-                $count = \Conversion::count($query);
-                $info['conversions'] = $count;
-                break;
-
             case 'cpi':
                 $count = \Conversion::count($query);
                 $info['conversions'] = $count;
@@ -158,6 +165,22 @@ class Commission extends \Shared\Model {
         return $rate;
     }
 
+    public static function filter($commissions) {
+        $countryWise = [];
+        foreach ($commissions as $c) {
+            $coverage = $c->coverage;
+
+            foreach ($coverage as $country) {
+                $countryWise[$country] = (object) [
+                    'model' => $c->model,
+                    'rate' => $c->rate,
+                    'revenue' => $c->revenue
+                ];
+            }
+        }
+        return $countryWise;
+    }
+
     /**
      * Finds the commission based on the "ad_id"
      * @param  array &$search Array of Commission (to prevent querying from database again and again)
@@ -166,22 +189,9 @@ class Commission extends \Shared\Model {
     public static function find(&$search, $key) {
         $key = \Shared\Utils::getMongoID($key);
 
-        $countryWise = [];
         if (!array_key_exists($key, $search)) {
             $commissions = self::all(['ad_id' => $key], ['rate', 'revenue', 'model', 'coverage']);
-            foreach ($commissions as $c) {
-                $coverage = $c->coverage;
-
-                foreach ($coverage as $country) {
-                    $countryWise[$country] = (object) [
-                        'model' => $c->model,
-                        'rate' => $c->rate,
-                        'revenue' => $c->revenue
-                    ];
-                }
-            }
-            $search[$key] = $countryWise;
-            $comm = $countryWise;
+            $search[$key] = $comm = self::filter($commissions);
         } else {
             $comm = $search[$key];
         }

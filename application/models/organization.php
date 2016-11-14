@@ -152,9 +152,11 @@ class Organization extends \Shared\Model {
         $users = \User::all(["org_id = ?" => $this->_id, "type = ?" => $type], ["_id"]);
         $ids = array_keys($users);
 
-        if ($object) {
+        if ($object === true) {
             return Utils::mongoObjectId($ids);
-        } else {
+        } else if ($object === 'users') {
+            return $users;
+        } else if ($object === false) {
             return $ids;
         }
     }

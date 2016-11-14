@@ -4,6 +4,7 @@
  * @author Faizan Ayubi
  */
 use Shared\Utils as Utils;
+use Shared\Services\Db as Db;
 use Framework\ArrayMethods as ArrayMethods;
 class Performance extends Shared\Model {
 
@@ -101,15 +102,17 @@ class Performance extends Shared\Model {
             ]);
         }
         $perf->clicks = $perf->impressions = $perf->conversions = 0;
-        $perf->revenue = $perf->cpc = 0.00;
+        $perf->revenue = $perf->cpc = $perf->profit = 0.00;
+        $perf->meta = [];
         return $perf;
     }
 
     public function update($data = []) {
-        $fields = $this->getColumns();
-        foreach ($fields as $key => $value) {
-            if (isset($data[$key])) {
-                $this->$key += $data[$key];
+        foreach ($data as $key => $value) {
+            try {
+                $this->$key += $value;
+            } catch (\Exception $e) {
+                continue;
             }
         }
         $this->calAvgCpc();
@@ -125,15 +128,58 @@ class Performance extends Shared\Model {
         $this->cpc = round($avgCpc, 6);
     }
 
+    public static function calProfit($pubPerf, $advPerf) {
+        $pubPerf = (array) $pubPerf; $advPerf = (array) $advPerf;
+        $payout = $pubPerf['revenue']; $rev = $advPerf['revenue'];
+        $pubPerf['payout'] = $payout;
+        $pubPerf['revenue'] = $rev;
+        $pubPerf['profit'] = $rev - $payout;
+
+        return (object) $pubPerf;
+    }
+
+    public static function total($dq = [], $user = null, $fields = []) {
+        $name = __CLASS__;
+
+        if (count($fields) === 0) {
+            $fields = ['clicks', 'conversions', 'impressions', 'revenue'];
+        }
+        $project = ['user_id' => 1, '_id' => 0]; $group = ['_id' => '$user_id'];
+        foreach ($fields as $f) {
+            $project[$f] = 1;
+            $group[$f] = ['$sum' => '$' . $f];
+        }
+
+        $match = [ 'created' => Db::dateQuery($dq['start'], $dq['end']) ];
+        if (is_array($user)) {
+            $keys = ArrayMethods::arrayKeys($user, '_id');
+            $match['user_id'] = ['$in' => Db::convertType($keys)];
+        } else {
+            $match['user_id'] = Db::convertType($user->_id);
+        }
+        $records = Db::collection($name)->aggregate([
+            ['$match' => $match],
+            ['$project' => $project],
+            ['$group' => $group]
+        ]);
+
+        $result = [];
+        foreach ($records as $r) {
+            $obj = Utils::toArray($r); $add = [];
+            foreach ($fields as $f) {
+                $add[$f] = $obj[$f];
+            }
+            ArrayMethods::add($add, $result);
+        }
+        return $result;
+    }
+
     public static function overall($dateQuery = [], $user=null) {
         $q = [];$clicks = []; $conversions = []; $impressions = []; $payouts = []; 
         $total_clicks = 0; $total_conversions = 0; $total_payouts = 0; $total_impressions = 0;
 
         if (is_array($user)) {
-            $in = [];
-            foreach ($user as $u) {
-                $in[] = $u->_id;
-            }
+            $in = ArrayMethods::arrayKeys($user, '_id');
             $q["user_id"] = ['$in' => $in];
         } elseif ($user) {
             $q["user_id"] = $user->id;
