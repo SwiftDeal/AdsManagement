@@ -50,6 +50,7 @@
                                             <th>Clicks</th>
                                             <th>Rate</th>
                                             <th>Revenue</th>
+                                            <th>Profit</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -72,7 +73,10 @@
                                             <td>{echo $records}</td>
                                             {script $totalClicks += $records}
                                             <td>{echo Commission::allRate($ad->_id, $user)}</td>
-                                            <td>{echo $user->convert($records * $cm->rate)}</td>
+                                            {script $data = Shared\Services\Campaign::performance($records_i, ['start' => $start, 'end' => $end,'meta' => false])}
+                                            {script $rev = $data['total']['revenue'] ?? 0}
+                                            <td>{echo $user->convert($rev)}</td>
+                                            <td>{echo $user->convert($rev - $data['total']['payout'] ?? 0)}</td>
                                         </tr>
                                         {/foreach}
                                         <tr>

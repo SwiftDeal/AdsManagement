@@ -38,7 +38,6 @@ class Commission extends \Shared\Model {
      * @type text
      * @length 255
      * 
-     * @validate required, min(3), max(255)
      * @label description
      */
     protected $_description;
@@ -84,7 +83,7 @@ class Commission extends \Shared\Model {
      * @validate required
      * @label Coverage
      */
-    protected $_coverage;
+    protected $_coverage = ['ALL'];
 
     /**
      * Gets the Rate based on the type of record i.e 'publisher', or 'advertiser'
@@ -130,11 +129,6 @@ class Commission extends \Shared\Model {
                     $query['pid'] = $extra['publisher']->_id;
                 }
                 break;
-        }
-
-        if (Registry::get('vardump') && $commission->model === "cpa" || $commission->model === "cpi") {
-            var_dump($commission->model);
-            var_dump($query);
         }
 
         switch (strtolower($commission->model)) {

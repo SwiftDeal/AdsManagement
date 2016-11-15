@@ -20,7 +20,7 @@ class Report extends Admin {
 
         $start = RM::get("start", date("Y-m-d", strtotime('now')));
         $end = RM::get("end", date("Y-m-d", strtotime('now')));
-        $limit = RM::get("limit", 30);
+        $limit = RM::get("limit", 20);
         $q = ['start' => $start, 'end' => $end]; $view->set($q);
 
         // Only find the ads for this organizations

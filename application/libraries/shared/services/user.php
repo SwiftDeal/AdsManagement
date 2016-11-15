@@ -160,27 +160,29 @@ class User {
 			$obj = Utils::toArray($r); $adid = Utils::getMongoID($obj['_id']);
 			$results[$adid] = $obj;
 		}
-		$keys = array_keys($results);
-		$comms = \Commission::all(['ad_id' => ['$in' => $keys]], ['ad_id', 'rate', 'revenue', 'model', 'coverage']);
-		foreach ($comms as $c) {
-			$key = Utils::getMongoID($c->ad_id);
-			if (!array_key_exists($key, $commissions)) {
-				$commissions[$key] = [];
-			}
-			$commissions[$key][] = $c;
+		$comms = Db::query('Commission', ['ad_id' => ['$in' => array_keys($results)]], ['ad_id', 'rate', 'revenue', 'model', 'coverage']);
+		$comms = \Click::classify($comms, 'ad_id');
+		foreach ($comms as $adid => $value) {
+			$value = array_map(function ($v) {
+				$v["ad_id"] = Utils::getMongoID($v["ad_id"]);
+				unset($v["_id"]);
+
+				return (object) $v;
+			}, Utils::toArray($value));
+			$commissions[$adid] = \Commission::filter($value);
 		}
 
 		foreach ($results as $adid => $obj) {
-			$comm = \Commission::filter($commissions[$adid]);
+			$comms = $commissions[$adid];
+
 			foreach ($obj['countries'] as $value) {
 				$country = $value['country']; $clicks = $value['count'];
 
-				$comm = \Commission::campaignRate($adid, $comm, $country, [
-					'type' => $type, "$type" => $user, 'start' => $start, 'end' => $end,
-					'commFetched' => true
+				$commission = \Commission::campaignRate($adid, $comms, $country, [
+					'type' => $type, "$type" => $user, 'start' => $start, 'end' => $end, 'commFetched' => true
 				]);
 
-				$updateData = []; $earning = \Ad::earning($comm, $clicks);
+				$updateData = []; $earning = \Ad::earning($commission, $clicks);
 				AM::copy($earning, $updateData);
 				$perf->update($updateData);
 			}

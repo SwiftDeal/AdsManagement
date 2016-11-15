@@ -384,11 +384,21 @@ namespace Framework {
         protected function _validateRequired($value) {
             switch (gettype($value)) {
                 case 'array':
-                    $value = count($value);
+                    $value = (count($value) !== 0);
                     break;
 
                 case 'object':
-                    $value = count(get_object_vars($value));
+                    $value = (count(get_object_vars($value)) !== 0);
+                    break;
+
+                case 'integer':
+                    $v = (int) $value;
+                    $value = ($v !== 0);
+                    break;
+
+                case 'float':
+                    $v = (float) $value;
+                    $value = ($v !== 0.0 || $v !== 0);
                     break;
                 
                 default:
