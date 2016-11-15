@@ -81,7 +81,7 @@ class Auth extends Controller {
 
     protected function _login($org, $view) {
         $session = Registry::get("session");
-        $email = trim(RequestMethods::post("email")); $pass = RequestMethods::post("password");
+        $email = strtolower(trim(RequestMethods::post("email"))); $pass = RequestMethods::post("password");
         $user = \User::first(["org_id = ?" => $org->_id, "email = ?" => $email]);
 
         if (!$user) {

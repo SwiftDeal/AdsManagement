@@ -17,13 +17,13 @@
                     </tr>
                     <tr>
                         <th>Overall</th>
-                        <td>{echo Shared\Markup::nice_number($total["clicks"] ?? 0 + $yestPerf->clicks + $performance->clicks)}</td>
+                        <td>{echo Shared\Markup::nice_number(($total["clicks"] ?? 0) + $yestPerf->clicks + $performance->clicks)}</td>
                     </tr>
                 </table>
             </div>
         </div>
     </div>
-    {script $totalimpr = $total["impressions"] ?? 0 + $yestPerf->impressions + $performance->impressions}
+    {script $totalimpr = ($total["impressions"] ?? 0) + $yestPerf->impressions + $performance->impressions}
     <div class="col-lg-3">
         <div class="panel panel-border panel-primary">
             <div class="panel-heading">
@@ -47,7 +47,7 @@
             </div>
         </div>
     </div>
-    {script $totalConv = $total["conversions"] ?? 0 + $yestPerf->conversions + $performance->conversions}
+    {script $totalConv = ($total["conversions"] ?? 0) + $yestPerf->conversions + $performance->conversions}
     <div class="col-lg-3">
         <div class="panel panel-border panel-success">
             <div class="panel-heading">
@@ -80,15 +80,15 @@
                 <table class="table">
                     <tr>
                         <th>Today</th>
-                        <td>{echo $user->convert($performance->revenue)}</td>
+                        <td>{echo $user->convert($performance->revenue, true, 2)}</td>
                     </tr>
                     <tr>
                         <th>Yesterday</th>
-                        <td>{echo $user->convert($yestPerf->revenue ?? 0)}</td>
+                        <td>{echo $user->convert($yestPerf->revenue ?? 0, true, 2)}</td>
                     </tr>
                     <tr>
                         <th>Overall</th>
-                        <td>{echo $user->convert($total["revenue"] ?? 0 + $yestPerf->revenue + $performance->revenue)}</td>
+                        <td>{echo $user->convert(($total["revenue"] ?? 0) + $yestPerf->revenue + $performance->revenue, true, 2)}</td>
                     </tr>
                 </table>
             </div>
