@@ -140,50 +140,87 @@ class Report extends Admin {
             ->set('bounceRate', $bounceRate ?? []);
     }
 
+    protected function _searchQuery($fields, &$adIds, &$pIds) {
+        $searchQ = RM::get('query', []);
+        $query = $searching = [];
+        foreach ($searchQ as $q) {
+            if (!in_array($q, $fields)) continue;
+            $searching[$q] = RM::get($q);
+
+            switch ($q) {
+                case 'adid':
+                    $adIdsGet = RM::get($q, []);
+                    if (ArrayMethods::inArray($adIds, $adIdsGet)) {
+                        $adIds = $adIdsGet;
+                    }
+                    break;
+
+                case 'pid':
+                    $pIdsGet = RM::get($q, []);
+                    if (ArrayMethods::inArray($pIds, $pIdsGet)) {
+                        $pIds = $pIdsGet;
+                    }
+                    break;
+                
+                case 'device':
+                case 'os':
+                case 'country':
+                    $reqData = RM::get($q, []);
+                    if (count($reqData) === 0) break;
+                    $data = implode("|", $reqData);
+
+                    $query[$q] = Db::convertType($data, 'regex');
+                    break;
+
+                case 'referer':
+                    $data = RM::get($q, 'facebook');
+                    $query[$q] = Db::convertType($data, 'regex');
+                    break;
+
+                case 'ip':
+                    $reqData = RM::get('ip', '');
+                    $pieces = explode(",", $reqData);
+                    if (count($pieces) === 0) break;
+                    $data = implode("|", $pieces);
+
+                    $query[$q] = Db::convertType($data, 'regex');
+                    break;
+            }
+        }
+        return [
+            'query' => $query, 'searching' => $searching
+        ];
+    }
+
     /**
      * @before _secure
      */
     public function clicks() {
-        $this->seo(array("title" => "Click Logs"));
-        $view = $this->getActionView();
+        $this->seo(["title" => "Click Logs"]); $view = $this->getActionView();
 
         $limit = RM::get("limit", 10); $page = RM::get("page", 1);
-        $prop = RM::get("property"); $val = RM::get("value");
-        $sort = RM::get("sort", "desc"); $sign = RM::get("sign", "equal");
-        $orderBy = RM::get("order", 'created');
-        $start = RM::get("start", date('Y-m-d', strtotime('-7 day')));
-        $end = RM::get("end", date('Y-m-d', strtotime('-1 day')));
-        $fields = (new \Click())->getColumns();
+        $start = RM::get("start", date('Y-m-d', strtotime('-1 day')));
+        $end = RM::get("end", date('Y-m-d', strtotime('now')));
+        $fields = Shared\Services\User::fields('Click');
 
-        // Only find the data for this organizations
-        $ads = \Ad::all(['org_id' => $this->org->_id], ['_id']);
+        $ads = \Ad::all(['org_id' => $this->org->_id], ['_id', 'title'], 'created', 'desc');
         $affs = \User::all(['org_id' => $this->org->_id, 'type = ?' => 'publisher'], ['_id', 'name']);
-        $in = Db::convertType(array_keys($ads));
-        $query = ['adid' => ['$in' => Db::convertType(RM::get('adid', []))]];
+        $adIds = array_keys($ads); $pIds = array_keys($affs);
 
-        $searching = [];
-        foreach ($fields as $key => $value) {
-            $search = RM::get($key);
-            if (!$search) continue;
-            $searching[$key] = $search;
+        $searchData = $this->_searchQuery($fields, $adIds, $pIds);
+        $query = $searchData['query']; $searching = $searchData['searching'];
 
-             // Only allow full object ID's and rest regex searching
-            if (in_array($key, ['pid', 'adid', '_id'])) {
-                $query[$key] = RM::get($key);
-            } else {
-                $query[$key] = Utils::mongoRegex($search);
-            }
-        }
+        $adIds = Db::convertType($adIds); $pIds = Db::convertType($pIds);
+        $query['adid'] = ['$in' => $adIds];
+        $query['pid'] = ['$in' => $pIds];
         $query['created'] = Db::dateQuery($start, $end);
 
-        $records = \Click::all($query, [], $orderBy, $sort, $limit, $page);
+        $records = \Click::all($query, [], 'created', 'desc', $limit, $page);
         $count = \Click::count($query);
 
         $view->set([
             'clicks' => $records, 'fields' => $fields,
             'limit' => $limit, 'page' => $page,
-            'property' => $prop, 'value' => $val,
-            'sign' => $sign, 'sort' => $sort,
             'order' => $orderBy, 'count' => $count,
             'start' => $start, 'end' => $end, 
             'query' => $searching, 'affs' => $affs
