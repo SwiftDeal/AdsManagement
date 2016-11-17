@@ -9,7 +9,7 @@ use Shared\Utils as Utils;
 use Shared\Services\Db as Db;
 use Framework\Registry as Registry;
 use Framework\ArrayMethods as ArrayMethods;
-use Framework\RequestMethods as RequestMethods;
+use Framework\RequestMethods as RM;
 
 class Publisher extends Auth {
 
@@ -49,10 +49,10 @@ class Publisher extends Auth {
     public function campaigns() {
     	$this->seo(array("title" => "Campaigns"));$view = $this->getActionView();
 
-        $limit = RequestMethods::get("limit", 20);
-        $page = RequestMethods::get("page", 1);
-        $category = RequestMethods::get("category", []);
-        $keyword = RequestMethods::get("keyword", '');
+        $limit = RM::get("limit", 20);
+        $page = RM::get("page", 1);
+        $category = RM::get("category", []);
+        $keyword = RM::get("keyword", '');
         $query = ["live = ?" => true, "org_id = ?" => $this->org->_id];
         $query["meta.private"] = ['$ne' => true]; $today = date('Y-m-d');
 
@@ -63,7 +63,7 @@ class Publisher extends Auth {
         if ($keyword) {
             $query["title"] = Utils::mongoRegex($keyword);
         }
-        $orderBy = RequestMethods::get("orderBy", 'desc'); $order = 'desc';
+        $orderBy = RM::get("orderBy", 'desc'); $order = 'desc';
 
         if (in_array($orderBy, ['asc', 'desc'])) {
             $count = \Ad::count($query); $cats = [];
@@ -124,9 +124,9 @@ class Publisher extends Auth {
         $this->seo(array("title" => $ad->title));
         $view = $this->getActionView();
 
-        $start = RequestMethods::get("start", date('Y-m-d', strtotime("-7 day")));
-        $end = RequestMethods::get("end", date('Y-m-d'));
-        $limit = RequestMethods::get("limit", 10); $page = RequestMethods::get("page", 1);
+        $start = RM::get("start", date('Y-m-d', strtotime("-7 day")));
+        $end = RM::get("end", date('Y-m-d'));
+        $limit = RM::get("limit", 10); $page = RM::get("page", 1);
         $query = [
             'adid' => Db::convertType($id),
             'created' => Db::dateQuery($start, $end)
@@ -186,11 +186,11 @@ class Publisher extends Auth {
         $this->seo(array("title" => "Campaign Reports")); $view = $this->getActionView();
         
         $query = [ "user_id" => Utils::mongoObjectId($this->user->_id) ];
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-3 day')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('-1 day')));
+        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-3 day')));
+        $end = RM::get("end", strftime("%Y-%m-%d", strtotime('-1 day')));
 
-        $limit = RequestMethods::get("limit", 20);
-        $page = RequestMethods::get("page", 1);
+        $limit = RM::get("limit", 20);
+        $page = RM::get("page", 1);
 
         $this->_reportspub($query, $start, $end, $limit, $page);
     }
@@ -236,30 +236,30 @@ class Publisher extends Auth {
         $invoices = \Invoice::all(['user_id = ?' => $this->user->_id], ['start', 'end', 'amount', 'live', 'created']);
         $payments = \Payment::all(['user_id = ?' => $this->user->_id], ['type', 'amount', 'meta', 'live', 'created']);
         $user = $this->user; $view->set("errors", []);
-        if (RequestMethods::type() == 'POST') {
-            $action = RequestMethods::post('action', '');
+        if (RM::type() == 'POST') {
+            $action = RM::post('action', '');
             switch ($action) {
                 case 'account':
                     $fields = ['name', 'phone', 'currency', 'username'];
                     foreach ($fields as $f) {
-                        $user->$f = RequestMethods::post($f);
+                        $user->$f = RM::post($f);
                     }
                     $user->save();
                     $view->set('message', 'Account Info updated!!');
                     break;
 
                 case 'password':
-                    $old = RequestMethods::post('password');
-                    $new = RequestMethods::post('npassword');
+                    $old = RM::post('password');
+                    $new = RM::post('npassword');
                     $view->set($user->updatePassword($old, $new));
                     break;
 
                 case 'bank':
                     $user->getMeta()['bank'] = [
-                        'name' => RequestMethods::post('account_bank', ''),
-                        'ifsc' => RequestMethods::post('account_code', ''),
-                        'account_no' => RequestMethods::post('account_number', ''),
-                        'account_owner' => RequestMethods::post('account_owner', '')
+                        'name' => RM::post('account_bank', ''),
+                        'ifsc' => RM::post('account_code', ''),
+                        'account_no' => RM::post('account_number', ''),
+                        'account_owner' => RM::post('account_owner', '')
                     ];
                     $user->save();
                     $view->set('message', 'Bank Info Updated!!');
@@ -267,12 +267,12 @@ class Publisher extends Auth {
 
                 case 'payout':
                     $user->getMeta()['payout'] = [
-                        'paypal' => RequestMethods::post('paypal', ''),
-                        'payquicker' => RequestMethods::post('payquicker', ''),
-                        'payoneer' => RequestMethods::post('payoneer', ''),
-                        'paytm' => RequestMethods::post('paytm', ''),
-                        'mobicash' => RequestMethods::post('mobicash', ''),
-                        'easypaisa' => RequestMethods::post('easypaisa', '')
+                        'paypal' => RM::post('paypal', ''),
+                        'payquicker' => RM::post('payquicker', ''),
+                        'payoneer' => RM::post('payoneer', ''),
+                        'paytm' => RM::post('paytm', ''),
+                        'mobicash' => RM::post('mobicash', ''),
+                        'easypaisa' => RM::post('easypaisa', '')
                     ];
                     $user->save();
                     $view->set('message', 'Payout Info Updated!!');
@@ -296,7 +296,7 @@ class Publisher extends Auth {
         $this->JSONView();
         $view = $this->getActionView();
 
-        $adid = RequestMethods::post("adid");
+        $adid = RM::post("adid");
         if (!$adid) return $view->set('message', "Invalid Request");
         $ad = \Ad::first(["_id = ?" => $adid, "live = ?" => true], ['_id', 'title']);
         if (!$ad) {
@@ -304,8 +304,8 @@ class Publisher extends Auth {
         }
 
         $tdomains = Shared\Services\User::trackingLinks($this->user, $this->org);
-        if (RequestMethods::post("domain")) {
-            $domain = RequestMethods::post("domain");
+        if (RM::post("domain")) {
+            $domain = RM::post("domain");
         } else {
             $domain = $this->array_random($tdomains);
         }
@@ -340,20 +340,20 @@ class Publisher extends Auth {
         $this->seo(array("title" => "Add Publisher"));$view = $this->getActionView();
 
         $view->set("errors", []);
-        if (RequestMethods::type() == 'POST') {
+        if (RM::type() == 'POST') {
             $user = \User::addNew('publisher', $this->org, $view);
             if (!$user) return;
-            if (RequestMethods::post('rate')) {
+            if (RM::post('rate')) {
                 $user->meta = [
                     'campaign' => [
-                        'model' => RequestMethods::post('model'),
-                        'rate' => $this->currency(RequestMethods::post('rate')),
+                        'model' => RM::post('model'),
+                        'rate' => $this->currency(RM::post('rate')),
                         'coverage' => ['ALL']
                     ]
                 ];
             }
             $user->save();
-            if (RequestMethods::post("notify") == "yes") {
+            if (RM::post("notify") == "yes") {
                 Mail::send([
                     'user' => $user,
                     'template' => 'pubRegister',
@@ -376,19 +376,52 @@ class Publisher extends Auth {
     public function manage() {
         $this->seo(array("title" => "List Publisher"));$view = $this->getActionView();
 
-        $page = RequestMethods::get("page", 1);
-        $limit = RequestMethods::get("limit", 10);
-        $query = ["type = ?" => "publisher", "org_id = ?" => $this->org->_id];
-        $property = RequestMethods::get("property", "live");
-        $value = RequestMethods::get("value", 0);
-        if (in_array($property, ["live", "id"])) {
-            $query["{$property} = ?"] = $value;
-        } else if (in_array($property, ["email", "name", "phone"])) {
-            $query["{$property} = ?"] = Utils::mongoRegex($value);
+        $page = RM::get("page", 1);$limit = RM::get("limit", 10); $publishers = [];
+
+        switch (RM::get("sort")) {
+            case 'trending':
+                $start = RM::get("start", date('Y-m-d')); $end = RM::get("end", date('Y-m-d'));
+                $view->set(['start' => $start, 'end' => $end]);
+                $match = [
+                    'pid' => ['$in' => $this->org->users('publisher')],
+                    'is_bot' => false,
+                    'created' => Db::dateQuery($start, $end)
+                ];
+
+                $clickCol = Db::collection('Click');
+                $records = $clickCol->aggregate([
+                    ['$match' => $match],
+                    ['$project' => ['pid' => 1, '_id' => 0]],
+                    ['$group' => [
+                        '_id' => '$pid',
+                        'count' => ['$sum' => 1]
+                    ]],
+                    ['$sort' => ['count' => -1]],
+                    ['$limit' => (int) $limit]
+                ]);
+                foreach ($records as $r) {
+                    $arr = Utils::toArray($r);
+                    $id = Utils::getMongoID($arr['_id']);
+                    $publishers[] = User::first(["id = ?" => $id]);
+                }
+                $count = $limit;
+                break;
+            
+            default:
+                $query = ["type = ?" => "publisher", "org_id = ?" => $this->org->_id];
+                $property = RM::get("property");
+                $value = RM::get("value");
+                if (in_array($property, ["live", "id"])) {
+                    $query["{$property} = ?"] = $value;
+                } else if (in_array($property, ["email", "name", "phone"])) {
+                    $query["{$property} = ?"] = Utils::mongoRegex($value);
+                }
+
+                $publishers = \User::all($query, [], 'created', 'desc', $limit, $page);
+                $count = \User::count($query);
+                break;
         }
 
-        $publishers = \User::all($query, [], 'created', 'desc', $limit, $page);
-        $count = \User::count($query);
         $active = \User::count(["type = ?" => "publisher", "org_id = ?" => $this->org->_id, "live = ?" => 1]);
         $inactive = \User::count(["type = ?" => "publisher", "org_id = ?" => $this->org->_id, "live = ?" => 0]);
 
@@ -408,7 +441,7 @@ class Publisher extends Auth {
     public function update($id) {
         $this->JSONView(); $view = $this->getActionView();
         $p = \User::first(["_id = ?" => $id, "org_id = ?" => $this->org->_id]);
-        if (!$p || RequestMethods::type() !== 'POST') {
+        if (!$p || RM::type() !== 'POST') {
             return $view->set('message', 'Invalid Request!!');
         }
 
@@ -442,8 +475,8 @@ class Publisher extends Auth {
         $view->set('nativeCode', $nativeCode);
         $view->set('bannerCode', $bannerCode);
 
-        if (RequestMethods::type() === 'POST') {
-            $pid = RequestMethods::post('pid');
+        if (RM::type() === 'POST') {
+            $pid = RM::post('pid');
             try {
                 if ($pid) {
                     $p = \Platform::first(['_id = ?' => $pid]);
@@ -452,10 +485,10 @@ class Publisher extends Auth {
                         'user_id' => $this->user->_id
                     ]);
                 }
-                $p->url = RequestMethods::post('url');
+                $p->url = RM::post('url');
                 $meta = $p->meta;
-                $meta['category'] = RequestMethods::post('category', ['386']);
-                $meta['type'] = RequestMethods::post('type', '');
+                $meta['category'] = RM::post('category', ['386']);
+                $meta['type'] = RM::post('type', '');
                 $p->meta = $meta;
                 $p->save();
 
@@ -483,35 +516,35 @@ class Publisher extends Auth {
         $view->set("platforms", $platforms);
         
         $view->set("errors", []);
-        if (RequestMethods::type() == 'POST') {
-            $action = RequestMethods::post('action', '');
+        if (RM::type() == 'POST') {
+            $action = RM::post('action', '');
             switch ($action) {
                 case 'account':
                     $fields = ['name', 'email', 'phone', 'country', 'currency', 'username'];
                     foreach ($fields as $f) {
-                        $publisher->$f = RequestMethods::post($f);
+                        $publisher->$f = RM::post($f);
                     }
                     $publisher->save();
                     $view->set('message', 'Account Info updated!!');
                     break;
 
                 case 'password':
-                    $old = RequestMethods::post('password');
-                    $new = RequestMethods::post('npassword');
+                    $old = RM::post('password');
+                    $new = RM::post('npassword');
                     $view->set($publisher->updatePassword($old, $new));
                     break;
 
                 case 'campaign':
                     $publisher->getMeta()['campaign'] = [
-                        'model' => RequestMethods::post('model'),
-                        'rate' => $this->currency(RequestMethods::post('rate'))
+                        'model' => RM::post('model'),
+                        'rate' => $this->currency(RM::post('rate'))
                     ];
                     $publisher->save();
                     $view->set('message', 'Payout Info Updated!!');
                     break;
                 
                 case 'trackingDomain':
-                    $tdomain = RequestMethods::post('tdomain');
+                    $tdomain = RM::post('tdomain');
                     if ($tdomain && in_array($tdomain, $this->org->tdomains)) {
                         $publisher->getMeta()['tdomain'] = $tdomain;
                         $publisher->save();
@@ -525,8 +558,8 @@ class Publisher extends Auth {
             }
         }
 
-        if (RequestMethods::type() === 'DELETE') {
-            $action = RequestMethods::get("action");
+        if (RM::type() === 'DELETE') {
+            $action = RM::get("action");
             switch ($action) {
                 case 'payoutdel':
                     $meta = $publisher->meta;
@@ -605,8 +638,8 @@ class Publisher extends Auth {
 
         $afields = Meta::search('customField', $this->org);
         $view->set('afields', $afields ?? []);
-        $token = RequestMethods::post("token", '');
-        if (RequestMethods::post("action") == "register" && $this->verifyToken($token)) {
+        $token = RM::post("token", '');
+        if (RM::post("action") == "register" && $this->verifyToken($token)) {
             $this->_publisherRegister($this->org, $view);
         }
     }

@@ -155,10 +155,11 @@ class Report extends Admin {
         $end = RM::get("end", date('Y-m-d', strtotime('-1 day')));
         $fields = (new \Click())->getColumns();
 
-        // Only find the ads for this organizations
+        // Only find the data for this organizations
         $ads = \Ad::all(['org_id' => $this->org->_id], ['_id']);
+        $affs = \User::all(['org_id' => $this->org->_id, 'type = ?' => 'publisher'], ['_id', 'name']);
         $in = Db::convertType(array_keys($ads));
-        $query = ['adid' => ['$in' => $in]];
+        $query = ['adid' => ['$in' => Db::convertType(RM::get('adid', []))]];
 
         $searching = [];
         foreach ($fields as $key => $value) {
@@ -184,7 +185,8 @@ class Report extends Admin {
             'property' => $prop, 'value' => $val,
             'sign' => $sign, 'sort' => $sort,
             'order' => $orderBy, 'count' => $count,
-            'start' => $start, 'end' => $end, 'query' => $searching
+            'start' => $start, 'end' => $end, 
+            'query' => $searching, 'affs' => $affs
         ]);
     }
 
@@ -318,21 +320,5 @@ class Report extends Admin {
 
             $records = $convertCol->find($query, ['projection' => ['adid' => 1, 'pid' => 1]]);
         }
-    }
-
-    /**
-     * @before _secure
-     */
-    public function installs($campaign_id) {
-        $this->seo(array("title" => "Click Logs"));
-        $view = $this->getActionView();
-    }
-
-    /**
-     * @before _secure
-     */
-    public function impressions($campaign_id) {
-        $this->seo(array("title" => "Click Logs"));
-        $view = $this->getActionView();
     }
 }

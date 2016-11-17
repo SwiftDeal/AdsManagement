@@ -9,7 +9,7 @@ use \Curl\Curl;
 use Shared\Utils as Utils;
 use \Shared\Services\Db as Db;
 use Framework\ArrayMethods as ArrayMethods;
-use Framework\RequestMethods as RequestMethods;
+use Framework\RequestMethods as RM;
 use YTDownloader\Service\Download as Downloader;
 
 class Campaign extends Admin {
@@ -24,14 +24,14 @@ class Campaign extends Admin {
         $this->seo(array("title" => $ad->title));
         $view = $this->getActionView();
 
-        $start = RequestMethods::get("start", date('Y-m-d', strtotime("-1 day")));
-        $end = RequestMethods::get("end", date('Y-m-d'));
+        $start = RM::get("start", date('Y-m-d', strtotime("-1 day")));
+        $end = RM::get("end", date('Y-m-d'));
 
-        if (RequestMethods::type() === 'DELETE') {
-            $action = RequestMethods::get('action');
+        if (RM::type() === 'DELETE') {
+            $action = RM::get('action');
             switch ($action) {
             case 'commDel':
-                $commId = RequestMethods::get('comm_id');
+                $commId = RM::get('comm_id');
                 $commCount = Commission::count(['ad_id' => $ad->_id]);
                 if ($commCount < 2) {
                     return $view->set('message', 'Atleast 1 commission is required!!');
@@ -78,12 +78,12 @@ class Campaign extends Admin {
         $this->seo(['title' => 'Contest', 'description' => 'campaign contest']);
         $view = $this->getActionView();
 
-        if (RequestMethods::type() === 'POST') {
+        if (RM::type() === 'POST') {
             $msg = \Contest::updateContests($this);
             $view->set($msg);
         }
 
-        if (RequestMethods::type() === 'DELETE') {
+        if (RM::type() === 'DELETE') {
             $contest = \Contest::deleteAll(['_id' => $id]);
             $view->set('message', 'Contest removed!!');
         }
@@ -107,7 +107,7 @@ class Campaign extends Admin {
         ]);
         $view->set('categories', $categories);
 
-        $link = RequestMethods::get("link");
+        $link = RM::get("link");
         if (!$link) {
             $session->set('$flashMessage', 'Please give any link!!');
             $this->redirect('/campaign/manage.html');
@@ -121,7 +121,7 @@ class Campaign extends Admin {
             $meta = $session->get('Campaign\Create:$meta');
         }
         $view->set("meta", $meta)
-            ->set("type", RequestMethods::get("type"))
+            ->set("type", RM::get("type"))
             ->set("errors", []);
     }
 
@@ -131,33 +131,33 @@ class Campaign extends Admin {
     public function create() {
     	$this->_create(); $view = $this->getActionView();
 
-    	if (RequestMethods::type() == 'POST') {
+    	if (RM::type() == 'POST') {
             $img = null;
             // give preference to uploaded image
             $img = $this->_upload('image', 'images', ['extension' => 'jpe?g|gif|bmp|png|tif']);
     		if (!$img) {
-                $img_url = RequestMethods::post("image_url");
+                $img_url = RM::post("image_url");
     			$img = Shared\Utils::downloadImage($img_url);
     		}
 
     		if (!$img) {
     			return $view->set('message', 'Failed to upload the image');
     		}
-            $expiry = RequestMethods::post('expiry');
+            $expiry = RM::post('expiry');
     		$campaign = new \Ad([
-                'user_id' => RequestMethods::post('advert_id'),
-    			'title' => RequestMethods::post('title'),
-    			'description' => RequestMethods::post('description'),
+                'user_id' => RM::post('advert_id'),
+    			'title' => RM::post('title'),
+    			'description' => RM::post('description'),
                 'org_id' => $this->org->_id,
-    			'url' => RequestMethods::post('url'),
-    			'category' => \Ad::setCategories(RequestMethods::post('category')),
+    			'url' => RM::post('url'),
+    			'category' => \Ad::setCategories(RM::post('category')),
     			'image' => $img,
-                'type' => RequestMethods::post('type', 'article'),
-                'device' => RequestMethods::post('device', ['all']),
+                'type' => RM::post('type', 'article'),
+                'device' => RM::post('device', ['all']),
     			'live' => false
     		]);
 
-            $visibility = RequestMethods::post('visibility', 'public');
+            $visibility = RM::post('visibility', 'public');
             if ($visibility === "private") {
                 $campaign->meta = ['private' => true];
             }
@@ -167,7 +167,7 @@ class Campaign extends Admin {
             }
             try {
                 if ($campaign->type === "video") {
-                    $url = RequestMethods::post('videoUrl');
+                    $url = RM::post('videoUrl');
                     $ytdl = new Downloader($url);
                     $campaign->getMeta()['processing'] = true;
                     $campaign->getMeta()['videoUrl'] = $ytdl->getUrl();
@@ -181,11 +181,11 @@ class Campaign extends Admin {
     			return $view->set("errors", $campaign->errors);
     		}
     		$campaign->save();
-            $models = RequestMethods::post('model');
-            $comm_desc = RequestMethods::post('comm_desc');
-            $revenue = RequestMethods::post('revenue');
-            $rate = RequestMethods::post('rate');
-            $coverage = RequestMethods::post('coverage');
+            $models = RM::post('model');
+            $comm_desc = RM::post('comm_desc');
+            $revenue = RM::post('revenue');
+            $rate = RM::post('rate');
+            $coverage = RM::post('coverage');
             foreach ($models as $key => $value) {
                 $commission = new \Commission([
                     'ad_id' => $campaign->_id,
@@ -208,21 +208,57 @@ class Campaign extends Admin {
      */
     public function manage() {
     	$this->seo(['title' => 'Campaign Manage', 'description' => 'Manage campaigns']);
-    	$view = $this->getActionView();
+    	$view = $this->getActionView();$campaigns = [];
 
-        $page = RequestMethods::get("page", 1);
-        $limit = RequestMethods::get("limit", 10);
-        $property = RequestMethods::get("property", "live");
-        $value = RequestMethods::get("value", 0);
+        $page = RM::get("page", 1);
+        $limit = RM::get("limit", 10);
+        $property = RM::get("property");
+        $value = RM::get("value");
 
-        $query = ["org_id = ?" => $this->org->id];
-        if (in_array($property, ["user_id", "live", "id"])) {
-            $query[$property] = $value;
-        } else if (in_array($property, ["url", "title"])) {
-            $query[$property] = Utils::mongoRegex(preg_quote($value));
+        switch (RM::get("sort")) {
+            case 'trending':
+                $start = RM::get("start", date("Y-m-d", strtotime('now')));
+                $end = RM::get("end", date("Y-m-d", strtotime('now')));
+                $q = ['start' => $start, 'end' => $end]; $view->set($q);
+                // Only find the ads for this organizations
+                $allAds = \Ad::all(['org_id' => $this->org->_id], ['_id']);
+                $in = Db::convertType(array_keys($allAds));
+                $clickCol = Db::collection('Click');
+                $match = [
+                    'created' => Db::dateQuery($start, $end),
+                    'is_bot' => false,
+                    'adid' => ['$in' => $in]
+                ];
+                $records = $clickCol->aggregate([
+                    ['$match' => $match],
+                    ['$project' => ['adid' => 1, '_id' => 0]],
+                    ['$group' => [
+                        '_id' => '$adid',
+                        'count' => ['$sum' => 1]
+                    ]],
+                    ['$sort' => ['count' => -1]],
+                    ['$limit' => (int) $limit]
+                ]);
+                foreach ($records as $r) {
+                    $arr = Utils::toArray($r);
+                    $id = Utils::getMongoID($arr['_id']);
+                    $campaigns[] = Ad::first(["id = ?" => $id]);
+                }
+                $count = $limit;
+                break;
+            
+            default:
+                $query = ["org_id = ?" => $this->org->id];
+                if (in_array($property, ["user_id", "live", "id"])) {
+                    $query[$property] = $value;
+                } else if (in_array($property, ["url", "title"])) {
+                    $query[$property] = Utils::mongoRegex(preg_quote($value));
+                }
+                $campaigns = \Ad::all($query, [], 'created', 'desc', $limit, $page);
+                $count = \Ad::count($query);
+                break;
         }
-    	$campaigns = \Ad::all($query, [], 'created', 'desc', $limit, $page);
-        $count = \Ad::count($query);
+
         $categories = \Category::all(['org_id' => $this->org->_id], ['_id', 'name']);
         $active = \Ad::count(["org_id = ?" => $this->org->id, "live = ?" => 1]);
         $inactive = \Ad::count(["org_id = ?" => $this->org->id, "live = ?" => 0]);
@@ -249,16 +285,16 @@ class Campaign extends Admin {
         $view = $this->getActionView();
 
         $categories = \Category::all(['org_id' => $this->org->id], ['_id', 'name']);
-        if (RequestMethods::get("action") == "commdel") {
-            $comm = \Commission::first(["id = ?" => RequestMethods::get('id')]);
+        if (RM::get("action") == "commdel") {
+            $comm = \Commission::first(["id = ?" => RM::get('id')]);
             if ($comm) {
                 $comm->delete();
                 $view->set("message", "Commission deleted!!");
             }
         }
 
-        if (RequestMethods::type() === 'POST') {
-            $action = RequestMethods::post("action");
+        if (RM::type() === 'POST') {
+            $action = RM::post("action");
             switch ($action) {
                 case 'adedit':
                     $img = $c->image;
@@ -267,12 +303,12 @@ class Campaign extends Admin {
                         @unlink(APP_PATH . '/public/assets/uploads/images/' . $c->image);
                     }
                     $c->image = $img;
-                    $c->category = \Ad::setCategories(RequestMethods::post('category'));
-                    $c->title = RequestMethods::post('title');
-                    $c->description = RequestMethods::post('description');
-                    $c->device = RequestMethods::post('device', ['all']);
+                    $c->category = \Ad::setCategories(RM::post('category'));
+                    $c->title = RM::post('title');
+                    $c->description = RM::post('description');
+                    $c->device = RM::post('device', ['all']);
                     
-                    $expiry = RequestMethods::post('expiry');
+                    $expiry = RM::post('expiry');
                     if ($expiry) {
                         $c->expiry = $expiry;
                     }
@@ -287,12 +323,12 @@ class Campaign extends Admin {
                     break;
                 
                 case 'commedit':
-                    $comm = \Commission::first(["id = ?" => RequestMethods::post('cid')]);
-                    $comm->model = RequestMethods::post('model');
-                    $comm->description = RequestMethods::post('description');
-                    $comm->rate = $this->currency(RequestMethods::post('rate'));
-                    $comm->revenue = $this->currency(RequestMethods::post('revenue'));
-                    $comm->coverage = RequestMethods::post('coverage', ['ALL']);
+                    $comm = \Commission::first(["id = ?" => RM::post('cid')]);
+                    $comm->model = RM::post('model');
+                    $comm->description = RM::post('description');
+                    $comm->rate = $this->currency(RM::post('rate'));
+                    $comm->revenue = $this->currency(RM::post('revenue'));
+                    $comm->coverage = RM::post('coverage', ['ALL']);
 
                     $comm->save();
                     $view->set("message", "Commission updated!!");
@@ -301,11 +337,11 @@ class Campaign extends Admin {
                 case 'commadd':
                     $commission = new \Commission([
                         'ad_id' => $c->_id,
-                        'description' => RequestMethods::post('description'),
-                        'model' => RequestMethods::post('model'),
-                        'rate' => $this->currency(RequestMethods::post('rate')),
-                        'revenue' => $this->currency(RequestMethods::post('revenue')),
-                        'coverage' => RequestMethods::post('coverage', ['ALL'])
+                        'description' => RM::post('description'),
+                        'model' => RM::post('model'),
+                        'rate' => $this->currency(RM::post('rate')),
+                        'revenue' => $this->currency(RM::post('revenue')),
+                        'coverage' => RM::post('coverage', ['ALL'])
                     ]);
                     $commission->save();
                     $view->set("message", "Commission added!!");
@@ -328,14 +364,14 @@ class Campaign extends Admin {
         $this->JSONView();
         $view = $this->getActionView();
         $c = \Ad::first(["_id = ?" => $cid, "org_id = ?" => $this->org->_id]);
-        if (!$c || RequestMethods::type() !== 'POST') {
+        if (!$c || RM::type() !== 'POST') {
             return $view->set('message', 'Invalid Request!!');
         }
         $view->set('message', 'Updated successfully!!');
 
         $allowedFields = ['title', 'description', 'live', 'expiry', 'type'];
         foreach ($allowedFields as $f) {
-            $c->$f = RequestMethods::post($f, $c->$f);
+            $c->$f = RM::post($f, $c->$f);
         }
         $processing = $c->meta['processing'] ?? false;
         if ($processing) {
@@ -371,17 +407,17 @@ class Campaign extends Admin {
         } $platforms = \Platform::rssFeeds($this->org);
         $view->set('advertiser', $advertisers);
 
-        $action = RequestMethods::post('action', '');
+        $action = RM::post('action', '');
         switch ($action) {
             case 'campImport':
                 $this->_import($org, $advertisers, $view);
                 break;
             
             case 'platform':
-                $pid = RequestMethods::post('pid');
+                $pid = RM::post('pid');
                 $p = $platforms[$pid]; $meta = $p->meta;
-                $meta['rss']['url'] = RequestMethods::post('url');
-                $parsing = (boolean) ((int) RequestMethods::post('parsing', "1"));
+                $meta['rss']['url'] = RM::post('url');
+                $parsing = (boolean) ((int) RM::post('parsing', "1"));
                 $meta['rss']['parsing'] = $parsing;
                 
                 $p->meta = $meta;
@@ -391,9 +427,9 @@ class Campaign extends Admin {
                 break;
 
             case 'newRss':
-                $url = RequestMethods::post('rss_link');
+                $url = RM::post('rss_link');
                 $a = array_values($advertisers)[0];
-                $advert_id = RequestMethods::post('advert_id', $a->getMongoID());
+                $advert_id = RM::post('advert_id', $a->getMongoID());
                 $advert = \User::first(['_id = ?' => $advert_id, 'type = ?' => 'advertiser']);
                 if (!$advert) return $view->set('message', 'Invalid Request!!');
 
@@ -405,12 +441,12 @@ class Campaign extends Admin {
                 try {
                     // Now schedule importing of campaigns
                     $result = \Shared\Rss::getFeed($url);
-                    $rate = RequestMethods::post('rate', 0.20);
-                    $revenue = RequestMethods::post('revenue', 0.25);
+                    $rate = RM::post('rate', 0.20);
+                    $revenue = RM::post('revenue', 0.25);
                     $rss = [
                         'url' => $url, 'parsing' => true, 'lastCrawled' => $result['lastCrawled'],
                         'campaign' => [
-                            'model' => RequestMethods::post('model', 'cpc'),
+                            'model' => RM::post('model', 'cpc'),
                             'rate' => $this->currency($rate),
                             'revenue' => $this->currency($rate)
                         ]
@@ -442,7 +478,7 @@ class Campaign extends Admin {
             return $view->set('message', 'Please update <a href="/admin/settings">Commission Settings</a>');
         }
         $a = array_values($advertisers)[0];
-        $advert_id = RequestMethods::post('advert_id', $a->getMongoID());
+        $advert_id = RM::post('advert_id', $a->getMongoID());
         $advert = \User::first(['_id = ?' => $advert_id, 'type = ?' => 'advertiser']);
         if (!$advert) return $view->set('message', 'Invalid Request!!');
         if (!isset($advert->meta['campaign'])) {

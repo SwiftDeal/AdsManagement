@@ -71,6 +71,8 @@
             </div>
         </div>
     </div>
+    {script $totalRevenue = ($total["revenue"] ?? 0) + $yestPerf->revenue + $performance->revenue}
+    {script $payout = Payment::done($user)}
     <div class="col-lg-3">
         <div class="panel panel-border panel-inverse">
             <div class="panel-heading">
@@ -87,8 +89,8 @@
                         <td>{echo $user->convert($yestPerf->revenue ?? 0, true, 2)}</td>
                     </tr>
                     <tr>
-                        <th>Overall</th>
-                        <td>{echo $user->convert(($total["revenue"] ?? 0) + $yestPerf->revenue + $performance->revenue, true, 2)}</td>
+                        <th>Payout/Overall</th>
+                        <td>{echo $user->convert($totalRevenue - $payout["amount"], true, 2)}/{echo $user->convert($totalRevenue, true, 2)}</td>
                     </tr>
                 </table>
             </div>

@@ -6,72 +6,169 @@
                 <div class="col-md-12">
                     <div class="page-title-box">
                         <a href="/report/clicks.csv" download="clicks.csv" class="btn btn-inverse pull-right"><i class="fa fa-download"></i> Export to CSV</a>
-                        <form class="form-inline pull-right" role="form" id="range" action="{echo URL}">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <label class="sr-only">From</label>
-                                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> From</span>
-                                    <input type="date" style="width: 180px" name="start" class="form-control" value="{$start}" />
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <label class="sr-only">To</label>
-                                    <span class="add-on input-group-addon"><i class="fa fa-calendar fa-fw"></i> To</span>
-                                    <input type="date" style="width: 180px" name="end" class="form-control" value="{$end}" />
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Change</button>
-                        </form>
                         <h4 class="page-title">Click Logs (Total - {echo $count})</h4>
                     </div>
-                    <div class="card-box">
-                        <div class="table-responsive">
-                            <table class="table m-0">
-                                <thead>
+                    <div class="col-md-12">
+                        <div class="panel panel-border panel-success">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Click Server Logs</h3>
+                                <p class="text-muted m-b-30 font-13">
+                                    Select any Option and their values to search pass query
+                                </p>
+                            </div>
+                            <form class="table-responsive">
+                                <table class="table">
                                     <tr>
-                                        {foreach $f in $fields}
-                                        {if in_array($f['name'], ['_id', 'modified', 'live'])} {script continue} {/if}
-                                        <th>{$f['name']}</th>
-                                        {/foreach}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tbody>
-                                        <tr>
-                                            <form>
-                                            {foreach $f in $fields}
-                                            {if in_array($f['name'], ['_id', 'modified', 'live', 'created'])} {script continue} {/if}
-                                            <th>
-                                                <div class="input-group">
-                                                    <input type="text" {if isset($query[$f['name']])}value="{echo $query[$f['name']]}"{/if} name="{$f['name']}" class="form-control">
-                                                    <span class="input-group-btn">
-                                                        <button class="btn btn-default btn-sm" type="submit"><i class="fa fa-search"></i>
-                                                        </button>
-                                                    </span>
-                                                </div>
-                                            </th>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="query[]" type="checkbox" checked="" value="pid">
+                                                <label>
+                                                    Affiliate
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select class="form-control selectpicker" data-live-search=true name="pid" multiple="" title="Choose one or many Affilaites">
+                                            {foreach $aff in $affs}
+                                                <option value="{$aff->id}">{echo $aff->name}</option>
                                             {/foreach}
-                                            </form>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="query[]" type="checkbox" checked="" value="country">
+                                                <label>
+                                                    Country
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select name="country" class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose Countries">
+                                                {include auth/country.html}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="query[]" type="checkbox" checked="" value="os">
+                                                <label>
+                                                    OS
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select name="os" class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose an Operating System">
+                                                <option>Android</option>
+                                                <option>Windows</option>
+                                                <option>Mac</option>
+                                                <option>Linux</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="query[]" type="checkbox" checked="" value="device">
+                                                <label>
+                                                    Device
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select name="device" class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose Device Type">
+                                                <option>Mobile</option>
+                                                <option>Tablet</option>
+                                                <option>Desktop</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="query[]" type="checkbox" checked="" value="ip">
+                                                <label>
+                                                    IP
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="ip" class="form-control" placeholder="IP Address separated by commas">
+                                        </td>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="query[]" type="checkbox" checked="" value="referer">
+                                                <label>
+                                                    Traffic Source
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="referer" class="form-control" placeholder="Referer from traffic eg. facebook.com">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="query[]" type="checkbox" checked="" value="start">
+                                                <label>
+                                                    Start
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input type="date" name="start" class="form-control">
+                                        </td>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="query[]" type="checkbox" checked="" value="end">
+                                                <label>
+                                                    End
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input type="date" name="end" class="form-control">
+                                        </td>
+                                    </tr>
+                                </table>
+                                <p class="text-center">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="panel panel-border panel-success">
+                            <div class="table-responsive">
+                                <table class="table m-0">
+                                    <thead>
+                                        <tr>
+                                            {foreach $f in $fields}
+                                            {if in_array($f['name'], ['_id', 'modified', 'live'])} {script continue} {/if}
+                                            <th>{$f['name']}</th>
+                                            {/foreach}
                                         </tr>
-                                        {foreach $object in $clicks}
-                                            <tr>
-                                                <td>{echo $object->adid}</td>
-                                                <td>{echo $object->ipaddr}</td>
-                                                <td>{echo $object->referer}</td>
-                                                <td>{echo $object->country}</td>
-                                                <td>{echo $object->cookie}</td>
-                                                <td>{echo $object->pid}</td>
-                                                <td>{echo substr($object->browser, 0, 50)}</td>
-                                                <td>{echo $object->os}</td>
-                                                <td>{echo $object->is_bot}</td>
-                                                <td>{echo $object->device}</td>
-                                                <td>{echo Framework\StringMethods::datetime_to_text($object->created)}</td>
-                                            </tr>
-                                        {/foreach}
+                                    </thead>
+                                    <tbody>
+                                        <tbody>
+                                            {foreach $object in $clicks}
+                                                <tr>
+                                                    <td>{echo $object->adid}</td>
+                                                    <td>{echo $object->ipaddr}</td>
+                                                    <td>{echo $object->referer}</td>
+                                                    <td>{echo $object->country}</td>
+                                                    <td>{echo $object->cookie}</td>
+                                                    <td>{echo $object->pid}</td>
+                                                    <td>{echo substr($object->browser, 0, 50)}</td>
+                                                    <td>{echo $object->os}</td>
+                                                    <td>{echo $object->is_bot}</td>
+                                                    <td>{echo $object->device}</td>
+                                                    <td>{echo Framework\StringMethods::datetime_to_text($object->created)}</td>
+                                                </tr>
+                                            {/foreach}
+                                        </tbody>
                                     </tbody>
-                                </tbody>
-                            </table>
+                                </table>
+                            </div>
                         </div>
                     </div>
                     <div class="text-center">

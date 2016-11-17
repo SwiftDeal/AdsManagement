@@ -40,7 +40,7 @@
                                         <label class="sr-only">Account: </label>
                                         {if($affiliates)}
                                         <span class="add-on input-group-addon"><i class="fa fa-user fa-fw"></i> Account: </span>
-                                        <select name="user_id" class="form-control" style="max-width: 300px;" value="{echo $user_id}">
+                                        <select name="user_id" class="form-control selectpicker" data-live-search=true style="max-width: 300px;" value="{echo $user_id}">
                                         {foreach $a in $affiliates}
                                         <option value="{echo $a->id}">{echo $a->name}</option>
                                         {/foreach}
