@@ -41,6 +41,7 @@ class Publisher extends Auth {
             ->set("notifications", $notifications)
             ->set("total", $total)
             ->set("performance", $perf)
+            ->set("tdomains", \Shared\Services\User::trackingLinks($this->user, $this->org))
             ->set("yestPerf", $yestPerf);
     }
     /**

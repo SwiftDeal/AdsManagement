@@ -10,33 +10,48 @@
                             <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addCommisson"><i class="fa fa-plus"></i> New Commission</button> 
                             <a href="/campaign/details/{echo $c->id}.html" class="btn btn-inverse waves-effect waves-light" data-toggle="tooltip" data-placement="top" data-original-title="Campaign Stats and Details"><i class="fa fa-info-circle"></i> Details</a>
                         </span>
-                        <h4 class="page-title">{echo $c->title}</h4>
+                        <h4 class="page-title">Campaign Edit : {echo $c->title}</h4>
                     </div>
                 </div>
             </div>
+            {if isset($message)}
+            <div class="alert alert-info alert-dismissible fade in" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                {echo $message}
+            </div>
+            {/if}
             <div class="row">
-                {if isset($message)}
-                <div class="alert alert-info alert-dismissible fade in" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-                    {echo $message}
-                </div>
-                {/if}
-                <form method="post" action="" enctype="multipart/form-data">
-                    <div class="card">
-                        <div class="card-body no-padding">
-                            <div class="panel panel-default panel-body">
+                <div class="col-md-12">
+                    <ul class="nav nav-tabs navtab-custom">
+                        <li class="active">
+                            <a href="#basics" data-toggle="tab" aria-expanded="false">
+                                <span class="visible-xs"><i class="fa fa-info"></i></span>
+                                <span class="hidden-xs">Basics</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#target" data-toggle="tab" aria-expanded="true">
+                                <span class="visible-xs"><i class="fa fa-globe"></i></span>
+                                <span class="hidden-xs">Targeting &amp; Restriction</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#creative" data-toggle="tab" aria-expanded="false">
+                                <span class="visible-xs"><i class="fa fa-picture"></i></span>
+                                <span class="hidden-xs">Creatives</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#commission" data-toggle="tab" aria-expanded="false">
+                                <span class="visible-xs"><i class="fa fa-money"></i></span>
+                                <span class="hidden-xs">Revenue &amp; Payout</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="basics">
+                            <div class="row">
                                 <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Device</label>
-                                        {script $device = is_array($c->device) ? $c->device : ['all']}
-                                        <select name="device[]" required="" class="selectVal form-control selectpicker" data-value='{echo json_encode($device)}' multiple="" data-live-search=true title="Choose a device target">
-                                            {script $devices = Shared\Markup::devices()}
-                                            {foreach $d in $devices}
-                                            <option value="{echo $d_i}">{echo $d}</option>
-                                            {/foreach}
-                                        </select>
-                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "device")}</span>
-                                    </div>
                                     <div class="form-group">
                                         <label>Title</label>
                                         <input type="text" class="form-control" value="{echo $c->title}" name="title">
@@ -52,86 +67,184 @@
                                         <input type="date" name="expiry" class="form-control" value="{echo $c->expiry}">
                                         <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "expiry")}</span>
                                     </div>
+                                    {if (isset($type) && $type == "video")}
+                                    <div class="form-group">
+                                        <label>Youtube Video URL</label>
+                                        <input type="hidden" name="type" value="{echo $type}">
+                                        <input type="url" class="form-control" name="videoUrl" required="" value="{echo $meta['url']}">
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "videoUrl")}</span>
+                                    </div>
+                                    {/if}
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Category</label>
+                                        <label>Category <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="A customized category you choose for the offer, usually the vertical of the product or service, such as “Utility”, “Games”, and “Entertainment” etc. You can also create a new Category."></i></label>
+                                        <small class="pull-right"><u><a href="/admin/settings.html" target="_blank">Add more categoryies</a></u></small>
                                         <select name="category[]" data-value='{echo json_encode($c->getCategories())}' class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
                                         {foreach $cat in $categories}
                                             <option value="{echo $cat->_id}">{echo $cat->name}</option>
                                         {/foreach}
                                         </select>
                                         <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "category")}</span>
-                                        <small class="pull-right"><u><a href="/admin/settings.html" target="_blank">Add more categoryies</a></u></small>
                                     </div>
                                     <div class="form-group">
-                                        <label>Image</label>
-                                        <img src="{echo Ad::displayImg($c->image)}" class="img-thumbnail">
-                                        <input type="file" class="form-control" name="image" {if !$c->image}required=""{/if}>
-                                        <span class="help-block text-info">Image should be 650px X 315px for good reach on Social Media<br>{echo Shared\Markup::errors($errors, "image")}</span>
+                                        <label for="Advertiser">Advertiser</label>
+                                        <small class="pull-right"><u><a href="/advertiser/add.html" target="_blank">Add new advertiser</a></u></small>
+                                        <select name="advert_id" class="form-control" required="">
+                                            {foreach $a in $advertisers}
+                                            <option value="{echo $a->_id}">{echo $a->name}</option>
+                                            {/foreach}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Landing Page URL</label>
+                                        <input type="url" class="form-control" name="url" required="" value="{echo $c->url}">
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "url")}</span>
                                     </div>
                                 </div>
-                                <input type="hidden" name="action" value="adedit">
-                                <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check-circle"></i> Save</button>
                             </div>
                         </div>
-                    </div>
-                </form>
-            </div>
-            {foreach $comm in $comms}
-            <div class="row">
-                <div class="card">
-                    <div class="card-body no-padding">
-                        <form method="post" action="" class="panel panel-default panel-body">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Model</label>
-                                    <select name="model" required="" value="{echo $comm->model}" class="form-control">
-                                        {include auth/model.html}
-                                    </select>
-                                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "model")}</span>
-                                </div>
-                                <div class="form-group">
-                                    <label>Revenue (Charged from Advertiser)</label>
-                                    <div class="input-group">
-                                        <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                        <input type="text" name="revenue" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" value="{echo $user->convert($comm->revenue, false)}" class="form-control" placeholder="Rate Charged from advertiser. Eg: 0.3" required="">
+                        <div class="tab-pane" id="target">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Device</label>
+                                        {script $device = is_array($c->device) ? $c->device : ['all']}
+                                        <select name="device[]" required="" class="selectVal form-control selectpicker" data-value='{echo json_encode($device)}' multiple="" data-live-search=true title="Choose a device target">
+                                            {script $devices = Shared\Markup::devices()}
+                                            {foreach $d in $devices}
+                                            <option value="{echo $d_i}">{echo $d}</option>
+                                            {/foreach}
+                                        </select>
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "device")}</span>
                                     </div>
-                                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "revenue")}</span>
-                                </div>
-                                <div class="form-group">
-                                    <label>Payout Rate</label>
-                                    <div class="input-group">
-                                        <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                        <input type="text" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" value="{echo $user->convert($comm->rate, false)}" class="form-control" placeholder="Rate for revenue model. Eg: 0.3" required="">
+                                    <div class="form-group">
+                                        <label>Allowed Promotion Method</label>
+                                        <select name="promotion[]" required="" class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose allowed Traffic">
+                                            <option value="">Text Link</option>
+                                            <option value="">Banner</option>
+                                            <option value="">Deals</option>
+                                            <option value="">Coupons</option>
+                                            <option value="">Cashback</option>
+                                            <option value="">Email (Text)</option>
+                                            <option value="">Custom Email (Text)</option>
+                                            <option value="">Email (HTML)</option>
+                                            <option value="">Custom Email (HTML)</option>
+                                            <option value="">POP Traffic</option>
+                                            <option value="">Native Ads</option>
+                                            <option value="">Social Media</option>
+                                            <option value="">Facebook Ads</option>
+                                            <option value="">SEM - Brand Keyword(s)</option>
+                                            <option value="">SEM - Generic Keyword(s)</option>
+                                            <option value="">SEM - Brand + Generic Keyword(s)</option>
+                                        </select>
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "promotion")}</span>
                                     </div>
-                                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "rate")}</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Visibility</label>
+                                        <div class="form-control">
+                                            <label class="radio-inline" data-toggle="tooltip" data-placement="top" data-original-title="Private : Visible to selected affiliates">
+                                                <input type="radio" name="visibility" value="private"> Private
+                                            </label>
+                                            <label class="radio-inline" data-toggle="tooltip" data-placement="top" data-original-title="Public: Visible to all affiliates">
+                                                <input type="radio" name="visibility" id="vpublic" value="public" checked=""> Public
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Requires Permission to Run</label>
+                                        <div class="form-control">
+                                            <label class="radio-inline">
+                                                <input type="radio" name="permission" value="true"> Yes
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="permission" value="false" checked=""> No
+                                            </label>
+                                        </div>
+                                        <small class="help-block">Affiliate will request access to run this campaign</small>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                        </div>
+                        <div class="tab-pane" id="creative">
+                            <form method="post" action="" enctype="multipart/form-data">
                                 <div class="form-group">
-                                    <label>Coverage</label>
-                                    <select name="coverage[]" data-value='{echo json_encode($comm->coverage)}' class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
-                                        {include auth/country.html}
-                                    </select>
-                                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "coverage")}</span>
+                                    <label>Image</label>
+                                    <input type="file" class="form-control" name="image" required="">
                                 </div>
-                                <div class="form-group">
-                                    <label>Description (Optional)</label>
-                                    <textarea class="form-control" name="description" rows="3"></textarea>
+                            </form>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <td><img src="{echo Ad::displayImg($c->image)}" class="img-thumbnail"></td>
+                                        <td>{echo $c->image}</td>
+                                        <td></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="commission">
+                            {foreach $comm in $comms}
+                            <div class="row">
+                                <div class="card">
+                                    <div class="card-body no-padding">
+                                        <form method="post" action="" class="panel panel-default panel-body">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Model</label>
+                                                    <select name="model" required="" value="{echo $comm->model}" class="form-control">
+                                                        {include auth/model.html}
+                                                    </select>
+                                                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "model")}</span>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Revenue (Charged from Advertiser)</label>
+                                                    <div class="input-group">
+                                                        <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                                        <input type="text" name="revenue" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" value="{echo $user->convert($comm->revenue, false)}" class="form-control" placeholder="Rate Charged from advertiser. Eg: 0.3" required="">
+                                                    </div>
+                                                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "revenue")}</span>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Payout Rate</label>
+                                                    <div class="input-group">
+                                                        <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                                        <input type="text" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" value="{echo $user->convert($comm->rate, false)}" class="form-control" placeholder="Rate for revenue model. Eg: 0.3" required="">
+                                                    </div>
+                                                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "rate")}</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Coverage</label>
+                                                    <select name="coverage[]" data-value='{echo json_encode($comm->coverage)}' class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
+                                                        {include auth/country.html}
+                                                    </select>
+                                                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "coverage")}</span>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Description (Optional)</label>
+                                                    <textarea class="form-control" name="description" rows="3"></textarea>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="action" value="commedit">
+                                            <input type="hidden" name="cid" value="{echo $comm->id}">
+                                            <span class="pull-right">
+                                                <a href="/campaign/edit/{echo $c->id}.html?action=commdel&id={echo $comm->id}" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</a> 
+                                                <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-check-circle"></i> Save</button>
+                                            </span>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                            <input type="hidden" name="action" value="commedit">
-                            <input type="hidden" name="cid" value="{echo $comm->id}">
-                            <span class="pull-right">
-                                <a href="/campaign/edit/{echo $c->id}.html?action=commdel&id={echo $comm->id}" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</a> 
-                                <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-check-circle"></i> Save</button>
-                            </span>
-                        </form>
+                            {/foreach}
+                        </div>
                     </div>
                 </div>
             </div>
-            {/foreach}
+            
         </div>
     </div>
 </div>

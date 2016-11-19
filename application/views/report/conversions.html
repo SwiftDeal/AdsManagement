@@ -1,0 +1,170 @@
+<div class="content-page">
+    <div class="content">
+        <div class="container">
+            <!-- Page-Title -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-title-box">
+                        <a href="/report/clicks.csv" download="clicks.csv" class="btn btn-inverse pull-right"><i class="fa fa-download"></i> Export to CSV</a>
+                        <h4 class="page-title">Click Logs (Total - {echo $count})</h4>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="panel panel-border panel-success">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Click Server Logs</h3>
+                                <p class="text-muted m-b-30 font-13">
+                                    Select any Option and their values to search pass query
+                                </p>
+                            </div>
+                            <form class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="query[]" type="checkbox" {if array_key_exists("pid", $query)} checked="" {/if} value="pid">
+                                                <label>Affiliate</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select class="selectVal form-control selectpicker" data-value='{echo json_encode($query["pid"] ?? [])}' data-live-search=true name="pid[]" multiple="" title="Choose one or many Affilaites">
+                                            {foreach $aff in $affs}
+                                                <option value="{$aff->id}">{echo $aff->name}</option>
+                                            {/foreach}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="query[]" type="checkbox" {if array_key_exists("country", $query)} checked="" {/if} value="country">
+                                                <label>Country</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select name="country[]" data-value='{echo json_encode($query["country"] ?? [])}' class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose Countries">
+                                                {include auth/country.html}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="query[]" type="checkbox" {if array_key_exists("os", $query)} checked="" {/if} value="os">
+                                                <label>OS</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select name="os[]" data-value='{echo json_encode($query["os"] ?? [])}' class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose an Operating System">
+                                                <option value="android">Android</option>
+                                                <option value="ios">iOS</option>
+                                                <option value="windows">Windows</option>
+                                                <option value="mac">Mac</option>
+                                                <option value="linux">Linux</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="query[]" type="checkbox" {if array_key_exists("device", $query)} checked="" {/if} value="device">
+                                                <label>Device</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select name="device[]" data-value='{echo json_encode($query["device"] ?? [])}' class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose Device Type">
+                                                <option value="mobile">Mobile</option>
+                                                <option value="desktop">Desktop</option>
+                                                <option value="tablet">Tablet</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="query[]" type="checkbox" {if array_key_exists("ip", $query)} checked="" {/if} value="ip">
+                                                <label>IP</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="ip" class="form-control" placeholder="IP Address separated by commas">
+                                        </td>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="query[]" type="checkbox" {if array_key_exists("referer", $query)} checked="" {/if} value="referer">
+                                                <label>Traffic Source</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="referer" class="form-control" placeholder="Referer from traffic eg. facebook.com">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="query[]" type="checkbox" checked="" value="start">
+                                                <label>Start</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input type="date" value="{echo $start}" name="start" class="form-control">
+                                        </td>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="query[]" type="checkbox" checked="" value="end">
+                                                <label>End</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input type="date" name="end" value="{echo $end}" class="form-control">
+                                        </td>
+                                    </tr>
+                                </table>
+                                <p class="text-center">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="panel panel-border panel-success">
+                            <div class="table-responsive">
+                                <table class="table m-0">
+                                    <thead>
+                                        <tr>
+                                            {foreach $f in $fields}
+                                            {if in_array($f, ['_id', 'meta', 'modified', 'live', 'adid', 'pid'])} {script continue} {/if}
+                                            <th>{echo $f}</th>
+                                            {/foreach}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tbody>
+                                            {foreach $object in $clicks}
+                                                <tr>
+                                                    <td>{echo $object->ipaddr}</td>
+                                                    <td>{echo $object->referer}</td>
+                                                    <td>{echo $object->country}</td>
+                                                    <td>{echo $object->cookie}</td>
+                                                    <td>{echo substr($object->browser, 0, 50)}</td>
+                                                    <td>{echo $object->os}</td>
+                                                    <td>{echo $object->is_bot}</td>
+                                                    <td>{echo $object->device}</td>
+                                                    <td>{echo Framework\StringMethods::datetime_to_text($object->created)}</td>
+                                                </tr>
+                                            {/foreach}
+                                        </tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <ul class="pager">
+                            {if ($page != 1)}
+                            <li><a href="{echo Shared\Markup::pagination($page - 1)}">Previous</a></li>
+                            {/if} {if ($page < $count/$limit)}
+                            <li><a href="{echo Shared\Markup::pagination($page + 1)}">Next</a></li>
+                            {/if}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -39,7 +39,7 @@ a:hover {
     <article>
         <h1>Error 404 !</h1>
         <div>
-            <p>Something went wrong. If you need to you can always <a href="mailto:info@vnative.com">contact us</a>! or <a href="/index.html">Home</a></p>
+            <p>The Page you are looking for cannot be found. If you need to you can always <a href="mailto:info@vnative.com">contact us</a>! or <a href="/index.html">Home</a></p>
             <p>&mdash; Dev Team</p>
         </div>
     </article>

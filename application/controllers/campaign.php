@@ -281,7 +281,7 @@ class Campaign extends Admin {
     public function edit($id) {
         $c = \Ad::first(["_id = ?" => $id, "org_id = ?" => $this->org->_id]);
         if (!$c) $this->redirect("/campaign/manage.html");
-        $this->seo(['title' => 'Edit '.$c->title, 'description' => 'Edit the campaign']);
+        $this->seo(['title' => 'Edit: '.$c->title, 'description' => 'Edit the campaign']);
         $view = $this->getActionView();
 
         $categories = \Category::all(['org_id' => $this->org->id], ['_id', 'name']);
@@ -353,6 +353,7 @@ class Campaign extends Admin {
 
         $view->set("c", $c)
             ->set('categories', $categories)
+            ->set('advertisers', User::all(["org_id = ?" => $this->org->id, "type = ?" => "advertiser"], ["id", "name"]))
             ->set("comms", $comms);
 
     }
