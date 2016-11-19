@@ -14,13 +14,14 @@ File: Admin Controller
             performance: function () {
                 var $this = this;
                 request.get({ url: $this.url, data: $('#indexrange').serialize()}, function(err, data) {
-                    var x = [], clicks = [], conversions = [], impressions = [], revenue = [];
+                    var x = [], clicks = [], conversions = [], impressions = [], revenue = [], payout = [];
                     $.each(data.stats, function(i, val) {
                         x.push(i);
                         clicks.push(val.clicks);
                         conversions.push(val.conversions);
                         impressions.push(val.impressions);
                         revenue.push($.Components.convertTo(val.revenue, data.user._currency));
+                        payout.push($.Components.convertTo(val.payout, data.user._currency));
                     });
                     var lineChart = {
                         labels: x,

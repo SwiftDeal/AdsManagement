@@ -64,37 +64,38 @@ class Publisher extends Auth {
         if ($keyword) {
             $query["title"] = Utils::mongoRegex($keyword);
         }
-        $orderBy = RM::get("orderBy", 'desc'); $order = 'desc';
+        switch (RM::get("action")) {
+            case 'trending':
+                $ads = \Ad::all($query, [], 'modified', 'desc');
+                $fields = Shared\Services\User::fields('Ad');
+                $ids = array_keys($ads); $ads = Ad::objectArr($ads, $fields);
+                $limit = $count = 30;
 
-        if (in_array($orderBy, ['asc', 'desc'])) {
-            $count = \Ad::count($query); $cats = [];
-            $order = $orderBy;
-            $ads = \Ad::all($query, [], 'modified', $order, $limit, $page);
-        } else if ($orderBy == "viral") {
-            $ads = \Ad::all($query, [], 'modified', $order);
-            $fields = Shared\Services\User::fields('Ad');
-            $ids = array_keys($ads); $ads = Ad::objectArr($ads, $fields);
-            $limit = $count = 30;
+                $clickCol = Registry::get("MongoDB")->clicks;
+                $results = $clickCol->aggregate([
+                    ['$match' => [
+                        'adid' => ['$in' => Db::convertType($ids, 'id')],
+                        'is_bot' => false,
+                        'created' => Db::dateQuery(RM::get("start", $today), RM::get("end", $today)),
+                    ]],
+                    ['$project' => ['adid' => 1, '_id' => 1]],
+                    ['$group' => ['_id' => '$adid', 'count' => ['$sum' => 1]]],
+                    ['$sort' => ['count' => -1]],
+                    ['$limit' => $limit]
+                ]);
 
-            $clickCol = Registry::get("MongoDB")->clicks;
-            $results = $clickCol->aggregate([
-                ['$match' => [
-                    'adid' => ['$in' => Db::convertType($ids, 'id')],
-                    'is_bot' => false,
-                    'created' => Db::dateQuery($today, $today),
-                ]],
-                ['$project' => ['adid' => 1, '_id' => 1]],
-                ['$group' => ['_id' => '$adid', 'count' => ['$sum' => 1]]],
-                ['$sort' => ['count' => -1]],
-                ['$limit' => $limit]
-            ]);
-
-            $ans = []; 
-            foreach ($results as $r) {
-                $a = (object) $r; $key = Utils::getMongoID($a->_id);
-                $ans[$key] = $ads[$key];
-            }
-            $ads = $ans;
+                $ans = []; 
+                foreach ($results as $r) {
+                    $a = (object) $r; $key = Utils::getMongoID($a->_id);
+                    $ans[$key] = $ads[$key];
+                }
+                $ads = $ans;
+                break;
+            
+            default:
+                $count = \Ad::count($query);
+                $ads = \Ad::all($query, [], 'modified', 'desc', $limit, $page);
+                break;
         }
     	
         $categories = \Category::all(["org_id = ?" => $this->org->_id], ['name', '_id']);
@@ -111,7 +112,7 @@ class Publisher extends Auth {
             'model' => $model, 'rate' => $rate,
             'categories' => $categories, 'coverage' => $category,
             'tdomains' => \Shared\Services\User::trackingLinks($this->user, $this->org),
-            'keyword' => $keyword, 'orderBy' => $orderBy
+            'keyword' => $keyword
         ]);
     }
 
@@ -592,6 +593,7 @@ class Publisher extends Auth {
         }
 
         $view->set("publisher", $publisher);
+        $view->set("d", Performance::total(['start' => ($start ?? $publisher->created->format('Y-m-d')), 'end' => ($end ?? date('Y-m-d'))], $publisher));
         $afields = Meta::search('customField', $this->org);
         $view->set('afields', $afields)
             ->set("start", strftime("%Y-%m-%d", strtotime('-7 day')))

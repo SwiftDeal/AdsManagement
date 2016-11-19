@@ -1,3 +1,6 @@
+<!-- include summernote css/js-->
+<link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css" rel="stylesheet">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.js"></script>
 <script type="text/javascript">
     var def = JSON.parse('{echo json_encode(["_id" => "all", "name" => "All"])}');
 </script>
@@ -11,7 +14,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label for="url">Message</label>
-                    <textarea class="form-control" name="message" placeholder="Enter your message" required="" rows="3"></textarea>
+                    <textarea class="form-control summernote" name="message" placeholder="Enter your message" required="" rows="5"></textarea>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
@@ -45,7 +48,9 @@
     </div>
 </div>
 <script type="text/javascript">
+var snote = {height: 300};
 jQuery(document).ready(function($) {
     admin.notification();
+    $('.summernote').summernote(snote);
 });
 </script>

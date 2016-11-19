@@ -25,7 +25,7 @@ namespace Framework {
                 if (is_array($value)) {
                     $result[] = self::_clean($value);
                 } else {
-                    $result[] = htmlentities($value);
+                    $result[] = htmlspecialchars($value);
                 }
             }
             return $result;
@@ -36,7 +36,7 @@ namespace Framework {
                 if (is_array($_GET[$key])) {
                     return self::_clean($_GET[$key]);
                 }
-                return htmlentities($_GET[$key]);
+                return htmlspecialchars($_GET[$key]);
             }
             return $default;
         }
@@ -46,13 +46,13 @@ namespace Framework {
                 if (is_array($_POST[$key])) {
                     return self::_clean($_POST[$key]);
                 }
-                return htmlentities($_POST[$key]);
+                return htmlspecialchars($_POST[$key]);
             } return $default;
         }
 
         public static function server($key, $default = "") {
             if (!empty($_SERVER[$key])) {
-                return htmlentities($_SERVER[$key]);
+                return htmlspecialchars($_SERVER[$key]);
             } return $default;
         }
 

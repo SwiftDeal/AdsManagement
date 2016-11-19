@@ -34,7 +34,7 @@
                                         {foreach $n in $notifications}
                                         <tr>
                                             <td>{echo Framework\StringMethods::only_date($n->created)}</td>
-                                            <td>{echo $n->message}</td>
+                                            <td>{echo htmlspecialchars_decode($n->message)}</td>
                                             <td>{echo $n->target}</td>
                                             <td>{echo implode($n->meta)}</td>
                                             <td>
