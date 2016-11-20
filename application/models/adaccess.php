@@ -4,7 +4,7 @@
  * Users List who are allowed to work on a private ad
  * @author Faizan Ayubi
  */
-class Adaccess extends Shared\Model {
+class AdAccess extends Shared\Model {
 
     /**
      * @column

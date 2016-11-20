@@ -5,7 +5,20 @@
             {if($ad->live)}
             <span class="pull-right">
                 <div class="text-center">
+                    {if(array_key_exists("permission", $ad->meta))}
+                        {script $access = AdAccess::first(["ad_id = ?" => $ad->id, "user_id = ?" => $user->id])}
+                        {if(isset($access->live))}
+                        <button type="button" data-adid="{echo $ad->_id}" class="createLink btn btn-purple waves-effect waves-light"><i class="fa fa-link"></i> Generate Link</button>
+                        {/if}
+                        {if($access->live == "0")}
+                        <label class="label label-default">Request Pending Approval</label>
+                        {/if}
+                        {if(!$access)}
+                        <a href="/publisher/campaign/{$ad->_id}.html?action=permission" class="btn btn-default">Request Approval to Run</a>
+                        {/if}
+                    {/if}{else}
                     <button type="button" data-adid="{echo $ad->_id}" class="createLink btn btn-purple waves-effect waves-light"><i class="fa fa-link"></i> Generate Link</button>
+                    {/else}
                 </div>
             </span>
             {/if}

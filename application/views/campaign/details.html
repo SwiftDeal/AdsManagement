@@ -270,13 +270,20 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {foreach $aff in $affs}
+                                    {foreach $access in $adaccess}
+                                        {script $aff = User::first(["id = ?" => $access->user_id], ["id", "name"])}
                                         <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
+                                            <td>{echo $aff->name}</td>
+                                            <td>{echo Framework\StringMethods::datetime_to_text($access->created)}</td>
+                                            <td>
+                                                {if($access->live)}
+                                                <a href="/campaign/details/{echo $ad->_id}.html?action=updateAccess&live=0&access_id={echo $access->id}" class="update btn btn-warning" data-toggle="tooltip" data-placement="top" data-original-title="Disapprove to Run this Campaign"><i class="fa fa-times"></i> Disable</a>
+                                                {/if} {else}
+                                                <a href="/campaign/details/{echo $ad->_id}.html?action=updateAccess&live=1&access_id={echo $access->id}" class="update btn btn-success" data-toggle="tooltip" data-placement="top" data-original-title="Approve to Run this Campaign"><i class="fa fa-check"></i> Enable</a>
+                                                {/else}
+                                            </td>
                                         </tr>
-                                        {/foreach}
+                                    {/foreach}
                                     </tbody>
                                 </table>
                             </div>

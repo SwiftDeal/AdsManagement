@@ -75,7 +75,16 @@
                                         <div class="media">
                                             <div class="media-left">
                                                 <img class="media-object izoom" src="{echo Ad::displayImg($a->image)}" alt="{echo $a->title}" width="150">
+                                                {if(array_key_exists("permission", $a->meta))}
+                                                    {script $access = AdAccess::first(["ad_id = ?" => $a->id, "user_id = ?" => $user->id])}
+                                                    {if($access)}
+                                                    <button type="button" data-adid="{echo $a->_id}" class="createLink btn btn-purple btn-xs waves-effect waves-light text-center">Generate Link</button>
+                                                    {/if}{else}
+                                                    <a href="/publisher/campaign/{$a->_id}.html" class="btn btn-default btn-xs">Request Approval</a>
+                                                    {/else}
+                                                {/if}{else}
                                                 <button type="button" data-adid="{echo $a->_id}" class="createLink btn btn-purple btn-xs waves-effect waves-light text-center">Generate Link</button>
+                                                {/else}
                                             </div>
                                           <div class="media-body">
                                             <h5 class="media-heading"><a href="/publisher/campaign/{$a->_id}.html">{echo $a->title}</a></h5>

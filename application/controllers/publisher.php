@@ -128,6 +128,16 @@ class Publisher extends Auth {
         $this->seo(array("title" => $ad->title));
         $view = $this->getActionView();
 
+        if (RM::get("action") == "permission" && array_key_exists("permission", $ad->meta)) {
+            $access = new AdAccess([
+                "org_id" => $this->org->id,
+                "ad_id" => $id,
+                "user_id" => $this->user->id,
+                "live" => 0
+            ]);
+            $access->save();
+        }
+
         $start = RM::get("start", date('Y-m-d', strtotime("-7 day")));
         $end = RM::get("end", date('Y-m-d'));
         $limit = RM::get("limit", 10); $page = RM::get("page", 1);

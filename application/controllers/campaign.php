@@ -52,11 +52,24 @@ class Campaign extends Admin {
                 break;
         }
 
+        switch (RM::get("action")) {
+            case 'updateAccess':
+                $access = Access::first(["id = ?" => RM::get("access_id")]);
+                if ($access) {
+                    $access->live = RM::get("live", 0);
+                    $access->save();
+                    $this->redirect("/campaign/details/".$ad->id.".html#permission");
+                    $session->set('$flashMessage', 'Access Updated');
+                }
+                break;
+        }
+
         $comms = Commission::all(["ad_id = ?" => $id]);
         $models = ArrayMethods::arrayKeys($comms, 'model');
         $advertiser = User::first(["id = ?" => $ad->user_id], ['name']);
         $categories = \Category::all(["org_id = ?" => $this->org->_id], ['name', '_id']);
         $publishers = \User::all(['type' => 'publisher', 'org_id' => $this->org->_id, "live = ?" => true], ["id", "name"]);
+        $adaccess = \AdAccess::all(['org_id' => $this->org->_id, "ad_id = ?" => $ad->id]);
 
         $view->set("ad", $ad)
             ->set("comms", $comms)
@@ -64,6 +77,7 @@ class Campaign extends Admin {
             ->set("advertiser", $advertiser)
             ->set('publishers', \User::objectArr($publishers, ['_id', 'name']))
             ->set('models', $models)
+            ->set('adaccess', $adaccess)
             ->set("start", $start)
             ->set("end", $end);
     }
