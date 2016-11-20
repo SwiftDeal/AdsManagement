@@ -11,6 +11,8 @@ File: Admin Controller
         }
 
         Admin.prototype = {
+            var $this = this;
+            $this.resetGraph();
             performance: function () {
                 var $this = this;
                 request.get({ url: $this.url, data: $('#indexrange').serialize()}, function(err, data) {
@@ -96,7 +98,6 @@ File: Admin Controller
                 $('#indexrange').submit(function(e) {
                     e.preventDefault();
                     $('#indexrange button').addClass('disabled');
-                    $this.resetGraph();
                     $this.performance();
                     $('#indexrange button').removeClass('disabled');
                 });

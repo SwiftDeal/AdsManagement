@@ -87,6 +87,9 @@
                                                         {if(array_key_exists("private", $a->meta))}&nbsp;
                                                         <i class="fa fa-lock" data-toggle="tooltip" data-placement="top" data-original-title='Private Campaign'></i>
                                                         {/if}
+                                                        {if(array_key_exists("permission", $a->meta))}&nbsp;
+                                                        <i class="fa fa-unlock-alt" data-toggle="tooltip" data-placement="top" data-original-title='Requires Permission to Run'></i>
+                                                        {/if}
                                                     </div>
                                                 </div>
                                             </td>

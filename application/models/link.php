@@ -38,5 +38,4 @@ class Link extends Shared\Model {
         }
         return $link;
     }
-
 }

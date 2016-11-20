@@ -49,7 +49,9 @@
                                         <tr>
                                             <th>AFFILIATE</th>
                                             <th>ACCOUNT</th>
+                                            <th>CAMPAIGNS</th>
                                             <th>PERFORMANCE</th>
+                                            <th>REVENUE</th>
                                             <th>PAID</th>
                                         </tr>
                                     </thead>
@@ -88,12 +90,13 @@
                                                 <i class="fa fa-globe" data-toggle="tooltip" data-placement="top" data-original-title='Tracking Domain: {echo $p->meta["tdomain"]}'></i>
                                                 {/if}
                                             </td>
+                                            <td>{echo Link::count(["user_id = ?" => $p->id])}</td>
                                             <td>
                                                 {if($perf["clicks"])}Clicks <span class="badge">{echo $perf["clicks"] ?? 0}</span>{/if}
                                                 {if($perf["conversions"])}<br>Conversions <span class="badge">{echo $perf["conversions"] ?? 0}</span>{/if}
                                                 {if($perf["impressions"])}<br>Impressions <span class="badge">{echo $perf["impressions"] ?? 0}</span>{/if}
-                                                {if($perf["revenue"])}<br>Revenue <span class="badge">{echo $user->convert($perf["revenue"] ?? 0, true, 2)}</span>{/if}
                                             </td>
+                                            <td>{echo $user->convert($perf["revenue"] ?? 0, true, 2)}</td>
                                             <td>{echo $user->convert($pays["amount"], true, 2)}</td>
                                         </tr>
                                     {/foreach}

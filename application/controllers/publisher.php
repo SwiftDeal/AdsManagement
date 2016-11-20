@@ -50,10 +50,8 @@ class Publisher extends Auth {
     public function campaigns() {
     	$this->seo(array("title" => "Campaigns"));$view = $this->getActionView();
 
-        $limit = RM::get("limit", 20);
-        $page = RM::get("page", 1);
-        $category = RM::get("category", []);
-        $keyword = RM::get("keyword", '');
+        $limit = RM::get("limit", 20); $page = RM::get("page", 1);
+        $category = RM::get("category", []); $keyword = RM::get("keyword", '');
         $query = ["live = ?" => true, "org_id = ?" => $this->org->_id];
         $query["meta.private"] = ['$ne' => true]; $today = date('Y-m-d');
 
@@ -98,6 +96,10 @@ class Publisher extends Auth {
                 break;
         }
     	
+        //private campaigns
+        $query["meta.private"] = true;
+        $query["meta.access"] = ['$in' => [$this->user->id]];
+        $pads = \Ad::all($query, [], 'modified', 'desc');
         $categories = \Category::all(["org_id = ?" => $this->org->_id], ['name', '_id']);
         $user = $this->user; $model = null; $rate = null;
 
@@ -112,7 +114,7 @@ class Publisher extends Auth {
             'model' => $model, 'rate' => $rate,
             'categories' => $categories, 'coverage' => $category,
             'tdomains' => \Shared\Services\User::trackingLinks($this->user, $this->org),
-            'keyword' => $keyword
+            'keyword' => $keyword, 'pads' => $pads
         ]);
     }
 

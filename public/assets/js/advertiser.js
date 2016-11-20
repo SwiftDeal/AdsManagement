@@ -9,6 +9,8 @@
         }
 
         Advertiser.prototype = {
+            var $this = this;
+            $this.resetGraph();
             performance: function () {
                 var $this = this;
                 request.get({ url: $this.url, data: $('#indexrange').serialize()}, function(err, data) {
@@ -124,14 +126,25 @@
                     );
                 });
             },
+            resetGraph: function () {
+                //removing divs to update graphs
+                $('#country').remove();
+                $('#c-stat').append('<canvas id="perfstat" height="300"></canvas>');
+                
+                $('#perfstat').remove();
+                $('#perf-stat').append('<div id="country" style="height: 300px"></div>');
+
+                $('#devicestat').remove();
+                $('#device-stat').append('<canvas id="devicestat" height="300"></canvas>');
+
+                $('#topreferer').html('');
+                $('#topos').html('');
+            },
             index: function () {
                 var $this = this;
                 $('#indexrange').submit(function(e) {
                     e.preventDefault();
-                    $('#perfstats').remove();
-                    $('#graph-container').append('<canvas id="perfstats" height="300"></canvas>');
                     $('#indexrange button').addClass('disabled');
-                    $('#topreferer').html('');
                     $this.performance();
                     $('#indexrange button').removeClass('disabled');
                 });

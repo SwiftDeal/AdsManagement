@@ -240,18 +240,24 @@
                             </form>
                         </div>
                         <div class="tab-pane" id="access">
+                            {script $access = $ad->meta["access"] ?? []}
+                            <form class="form-inline text-center" method="post">
+                                <div class="form-group">
+                                    <select name="access[]" data-value='{echo json_encode($access)}' class="form-control selectpicker selectVal" data-live-search=true multiple="true" title="Choose one or many affiliates">
+                                        {foreach $pub in $publishers}
+                                        <option value="{echo $pub->_id}">{echo $pub->name}</option>
+                                        {/foreach}
+                                    </select>
+                                </div>
+                                <input type="hidden" name="action" value="caccess">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </form>
+                            <hr>
                             <p>Note: </p>
                             <ol type="1">
                                 <li>Select Affiliates to Give them access to run this campaign</li>
                                 <li>UnSelect Affiliates to revoke access to run this campaign</li>
                             </ol><br>
-                            <form action="">
-                                <select name="access[]" class="form-control selectpicker" data-live-search=true multiple="true" title="Choose one or many affiliates">
-                                    {foreach $pub in $publishers}
-                                    <option value="{echo $pub->_id}">{echo $pub->name}</option>
-                                    {/foreach}
-                                </select>
-                            </form>
                         </div>
                         <div class="tab-pane" id="permission">
                             <div class="table-responsive">
@@ -289,11 +295,11 @@
 var id = '{echo $ad->id}';
 jQuery(document).ready(function($) {
     admin.campaignDetails(advertisers, link, reqData);
-});
-$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    admin.url = "insight/campaign/"+id;
-    var target = $(e.target).attr("href");
-    if ((target == '#performance'))
-        admin.performance();
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        admin.url = "insight/campaign/"+id;
+        var target = $(e.target).attr("href");
+        if ((target == '#performance'))
+            admin.performance();
+    });
 });
 </script>

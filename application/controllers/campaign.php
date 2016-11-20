@@ -43,6 +43,15 @@ class Campaign extends Admin {
             }
         }
 
+        switch (RM::post("action")) {
+            case 'caccess':
+                $meta = $ad->meta;
+                $meta["access"] = RM::post("access");
+                $ad->meta = $meta;
+                $ad->save();
+                break;
+        }
+
         $comms = Commission::all(["ad_id = ?" => $id]);
         $models = ArrayMethods::arrayKeys($comms, 'model');
         $advertiser = User::first(["id = ?" => $ad->user_id], ['name']);

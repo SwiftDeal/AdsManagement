@@ -24,7 +24,7 @@
     <div class="col-md-12">
         <ul class="nav nav-tabs tabs">
             <li class="tab">
-                <a href="#newadded" data-toggle="tab" aria-expanded="false">
+                <a href="/publisher/campaigns.html" aria-expanded="false">
                     <span class="visible-xs"><i class="fa fa-bullhorn"></i></span>
                     <span class="hidden-xs">Recently Added</span>
                 </a>
@@ -47,6 +47,14 @@
                     <span class="hidden-xs">Trending This Week</span>
                 </a>
             </li>
+            {if($pads)}
+            <li class="tab">
+                <a href="#private" data-toggle="tab" aria-expanded="false">
+                    <span class="visible-xs"><i class="fa fa-line-chart"></i></span>
+                    <span class="hidden-xs">Private Campaigns</span>
+                </a>
+            </li>
+            {/if}
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="newadded">
@@ -86,6 +94,45 @@
                     </table>
                 </div>
             </div>
+            {if($pads)}
+            <div class="tab-pane active" id="private">
+                <div class="table-responsive">
+                    <table class="table m-0">
+                        <thead>
+                            <tr>
+                                <th>CAMPAIGN</th>
+                                <th>PAYOUT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tbody>
+                            {foreach $a in $pads}
+                                {script $c = Commission::allRate($a->_id, $user)}
+                                <tr>
+                                    <td>
+                                        <div class="media">
+                                            <div class="media-left">
+                                                <img class="media-object izoom" src="{echo Ad::displayImg($a->image)}" alt="{echo $a->title}" width="150">
+                                                <button type="button" data-adid="{echo $a->_id}" class="createLink btn btn-purple btn-xs waves-effect waves-light text-center">Generate Link</button>
+                                            </div>
+                                          <div class="media-body">
+                                            <h5 class="media-heading"><a href="/publisher/campaign/{$a->_id}.html">{echo $a->title}</a></h5>
+                                            {foreach $cat in $a->category}
+                                                {script $key = Shared\Utils::getMongoID($cat)}
+                                                <label class="label label-info">{echo $categories[$key]->name}</label>
+                                            {/foreach}
+                                          </div>
+                                        </div>
+                                    </td>
+                                    <td><small>{echo $c}</small></td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {/if}
         </div>
 
         <div class="text-center">
