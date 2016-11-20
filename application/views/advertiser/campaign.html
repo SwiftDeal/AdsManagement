@@ -271,11 +271,11 @@
 var id = '{echo $ad->id}';
 jQuery(document).ready(function($) {
     advertiser.campaignDetails(adv, link, reqData);
-    advertiser.url = "insight/campaign/"+id;
-    advertiser.performance();
 });
 $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    advertiser.url = "insight/campaign/"+id;
     var target = $(e.target).attr("href");
-    //if ((target == '#performance'))
+    if ((target == '#performance'))
+        advertiser.performance();
 });
 </script>

@@ -96,18 +96,7 @@ File: Admin Controller
                 $('#indexrange').submit(function(e) {
                     e.preventDefault();
                     $('#indexrange button').addClass('disabled');
-                    //removing divs to update graphs
-                    $('#country').remove();
-                    $('#c-stat').append('<canvas id="perfstat" height="300"></canvas>');
-                    
-                    $('#perfstat').remove();
-                    $('#perf-stat').append('<div id="country" style="height: 300px"></div>');
-
-                    $('#devicestat').remove();
-                    $('#device-stat').append('<canvas id="devicestat" height="300"></canvas>');
-
-                    $('#topreferer').html('');
-                    $('#topos').html('');
+                    $this.resetGraph();
                     $this.performance();
                     $('#indexrange button').removeClass('disabled');
                 });
@@ -116,6 +105,20 @@ File: Admin Controller
                     $('#ibody').html('<img src="'+ $(this).attr('src') +'" class="img-responsive">');
                     $('#zoomImage').modal('show');
                 });
+            },
+            resetGraph: function () {
+                //removing divs to update graphs
+                $('#country').remove();
+                $('#c-stat').append('<canvas id="perfstat" height="300"></canvas>');
+                
+                $('#perfstat').remove();
+                $('#perf-stat').append('<div id="country" style="height: 300px"></div>');
+
+                $('#devicestat').remove();
+                $('#device-stat').append('<canvas id="devicestat" height="300"></canvas>');
+
+                $('#topreferer').html('');
+                $('#topos').html('');
             },
             update: function () {
                 $('.update').on('click', function (e) {

@@ -1,6 +1,6 @@
 <script>
     var advertisers = JSON.parse('{echo json_encode($advertisers)}');
-    var link = 'http://track.' + '{echo $domain}' + '/pixel?adid={echo $ad->_id}';
+    var link = 'http://track.vnative.com/pixel?adid={echo $ad->_id}';
     var reqData = JSON.parse('{echo json_encode(["property" => live, "value" => 1])}');
 </script>
 <div class="content-page">
@@ -50,8 +50,16 @@
                         {if(array_key_exists("private", $ad->meta))}
                         <li class="">
                             <a href="#access" data-toggle="tab" aria-expanded="false">
+                                <span class="visible-xs"><i class="fa fa-lock"></i></span>
+                                <span class="hidden-xs">Private Campaign Access</span>
+                            </a>
+                        </li>
+                        {/if}
+                        {if(array_key_exists("permission", $ad->meta))}
+                        <li class="">
+                            <a href="#permission" data-toggle="tab" aria-expanded="false">
                                 <span class="visible-xs"><i class="fa fa-graph"></i></span>
-                                <span class="hidden-xs">Campaign Access</span>
+                                <span class="hidden-xs">Permission Requested</span>
                             </a>
                         </li>
                         {/if}
@@ -93,7 +101,7 @@
                                                 <th>Postback URL</th>
                                                 <td><code>http://track.vnative.com/acquisition?click_id={click_id}</code></td>
                                                 <th>CPA Conversion Pixel</th>
-                                                <td><code>&lt;img src='{echo "http://track." . $domain}/pixel?adid={echo $ad->_id}'&gt;</code></td>
+                                                <td><code>&lt;img src='http://track.vnative.com/pixel?adid={echo $ad->_id}'&gt;</code></td>
                                             </tr>
                                             {/if}
                                             {if(in_array("cpi", $models))}
@@ -142,7 +150,7 @@
                         </div>
                         <div class="tab-pane" id="performance">
                             <div class="row">
-                                <form class="form-inline text-center" role="form" id="range">
+                                <form class="form-inline text-center" role="form" id="indexrange">
                                     <div class="form-group">
                                         <div class="input-group">
                                             <label class="sr-only">From</label>
@@ -159,11 +167,55 @@
                                     </div>
                                     <button type="submit" class="btn btn-primary">Show</button>
                                 </form>
-                                <div>
-                                    <p>Clicks: {echo $advertPerf->clicks}</p>
-                                    <p>Conversions: {echo $advertPerf->conversions}</p>
-                                    <p>Impressinos: {echo $advertPerf->impressions}</p>
-                                    <p>Revenue: {echo $advertPerf->revenue}</p>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card-box">
+                                        <h4 class="text-dark  header-title m-t-0">Volume Report</h4>
+                                        <div id="perf-stat">
+                                            <canvas id="perfstat" height="300"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card-box">
+                                        <h4 class="text-dark  header-title m-t-0">Country</h4>
+                                        <div id="c-stat">
+                                            <div id="country" style="height: 300px"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card-box">
+                                        <h4 class="text-dark  header-title m-t-0">Top Referers</h4>
+                                        <div class="table-responsive nicescroll" style="height: 300px">
+                                            <table class="table">
+                                                <tbody id="topreferer"></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card-box">
+                                        <h4 class="text-dark  header-title m-t-0">Device</h4>
+                                        <div id="device-stat">
+                                            <canvas id="devicestat" height="300"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card-box">
+                                        <h4 class="text-dark  header-title m-t-0">OS</h4>
+                                        <div class="table-responsive nicescroll" style="height: 300px">
+                                            <table class="table">
+                                                <tbody id="topos"></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -188,20 +240,38 @@
                             </form>
                         </div>
                         <div class="tab-pane" id="access">
+                            <p>Note: </p>
+                            <ol type="1">
+                                <li>Select Affiliates to Give them access to run this campaign</li>
+                                <li>UnSelect Affiliates to revoke access to run this campaign</li>
+                            </ol><br>
+                            <form action="">
+                                <select name="access[]" class="form-control selectpicker" data-live-search=true multiple="true" title="Choose one or many affiliates">
+                                    {foreach $pub in $publishers}
+                                    <option value="{echo $pub->_id}">{echo $pub->name}</option>
+                                    {/foreach}
+                                </select>
+                            </form>
+                        </div>
+                        <div class="tab-pane" id="permission">
                             <div class="table-responsive">
                                 <table class="table">
-                                    <tr>
-                                        <th>Affiliate</th>
-                                        <th>Added On</th>
-                                        <th>Action</th>
-                                    </tr>
-                                    {foreach $aff in $affs}
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    {/foreach}
+                                    <thead>
+                                        <tr>
+                                            <th>Affiliate</th>
+                                            <th>Added On</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {foreach $aff in $affs}
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        {/foreach}
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -211,8 +281,19 @@
         </div>
     </div>
 </div>
+<link rel="stylesheet" type="text/css" href="{echo CDN}plugins/jvectormap/jquery-jvectormap-2.0.3.css">
+<script src="{echo CDN}plugins/jvectormap/jquery-jvectormap-2.0.3.min.js"></script>
+<script src="{echo CDN}plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+<script src="{echo CDN}js/lib/jvectormap.js"></script>
 <script type="text/javascript">
+var id = '{echo $ad->id}';
 jQuery(document).ready(function($) {
     admin.campaignDetails(advertisers, link, reqData);
+});
+$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    admin.url = "insight/campaign/"+id;
+    var target = $(e.target).attr("href");
+    if ((target == '#performance'))
+        admin.performance();
 });
 </script>

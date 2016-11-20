@@ -43,28 +43,17 @@ class Campaign extends Admin {
             }
         }
 
-        $clicks = Db::query('Click', [
-            'adid' => $ad->_id, 'is_bot' => false,
-            'created' => Db::dateQuery($start, $end)
-        ], ['adid', 'country']);
-
-        $advertisers = \User::all(['type' => 'advertiser', 'org_id' => $this->org->_id]);
-        $advertPerf = $this->perf($clicks, ['type' => 'advertiser'], ['start' => $start, 'end' => $end]);
-        $view->set('advertPerf', $advertPerf)
-            ->set('advertisers', \User::objectArr($advertisers, ['_id', 'name']));
-
-        $cf = Utils::getConfig("cf", 'cloudflare');
-        $view->set("domain", $cf->api->domain);
-
         $comms = Commission::all(["ad_id = ?" => $id]);
         $models = ArrayMethods::arrayKeys($comms, 'model');
         $advertiser = User::first(["id = ?" => $ad->user_id], ['name']);
         $categories = \Category::all(["org_id = ?" => $this->org->_id], ['name', '_id']);
+        $publishers = \User::all(['type' => 'publisher', 'org_id' => $this->org->_id, "live = ?" => true], ["id", "name"]);
 
         $view->set("ad", $ad)
             ->set("comms", $comms)
             ->set("categories", $categories)
             ->set("advertiser", $advertiser)
+            ->set('publishers', \User::objectArr($publishers, ['_id', 'name']))
             ->set('models', $models)
             ->set("start", $start)
             ->set("end", $end);
@@ -160,6 +149,11 @@ class Campaign extends Admin {
             $visibility = RM::post('visibility', 'public');
             if ($visibility === "private") {
                 $campaign->meta = ['private' => true];
+            }
+
+            $permission = RM::post('permission', false);
+            if ($permission) {
+                $campaign->meta = ['permission' => true];
             }
 
             if ($expiry) {
