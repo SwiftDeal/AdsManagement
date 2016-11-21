@@ -9,10 +9,9 @@
         }
 
         Advertiser.prototype = {
-            var $this = this;
-            $this.resetGraph();
             performance: function () {
                 var $this = this;
+                $this.resetGraph();
                 request.get({ url: $this.url, data: $('#indexrange').serialize()}, function(err, data) {
                     var x = [], clicks = [], conversions = [], impressions = [], revenue = [];
                     console.log(data);
@@ -128,11 +127,10 @@
             },
             resetGraph: function () {
                 //removing divs to update graphs
-                $('#country').remove();
-                $('#c-stat').append('<canvas id="perfstat" height="300"></canvas>');
-                
                 $('#perfstat').remove();
-                $('#perf-stat').append('<div id="country" style="height: 300px"></div>');
+                $('#perf-stat').append('<canvas id="perfstat" height="300"></canvas>');
+                
+                $('#country').html('');
 
                 $('#devicestat').remove();
                 $('#device-stat').append('<canvas id="devicestat" height="300"></canvas>');

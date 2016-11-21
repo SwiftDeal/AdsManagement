@@ -1,8 +1,7 @@
 /**
-Author: vNative Dev Team
-Email: info@vnative.com
-File: Admin Controller
-*/
+ * Author: vNative Dev Team
+ * Includes detectmobilebrowser.js, chart.js, component.js, admin-theme.js, request.js, admin.js
+ */
 (function (window, $) {
     "use strict";
     var Admin = (function () {
@@ -11,10 +10,9 @@ File: Admin Controller
         }
 
         Admin.prototype = {
-            var $this = this;
-            $this.resetGraph();
             performance: function () {
                 var $this = this;
+                $this.resetGraph();
                 request.get({ url: $this.url, data: $('#indexrange').serialize()}, function(err, data) {
                     var x = [], clicks = [], conversions = [], impressions = [], revenue = [], payout = [];
                     $.each(data.stats, function(i, val) {
@@ -109,11 +107,10 @@ File: Admin Controller
             },
             resetGraph: function () {
                 //removing divs to update graphs
-                $('#country').remove();
-                $('#c-stat').append('<canvas id="perfstat" height="300"></canvas>');
-                
                 $('#perfstat').remove();
-                $('#perf-stat').append('<div id="country" style="height: 300px"></div>');
+                $('#perf-stat').append('<canvas id="perfstat" height="300"></canvas>');
+                
+                $('#country').html('');
 
                 $('#devicestat').remove();
                 $('#device-stat').append('<canvas id="devicestat" height="300"></canvas>');

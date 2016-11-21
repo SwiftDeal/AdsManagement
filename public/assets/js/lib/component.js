@@ -96,11 +96,7 @@
 
         // Change hash for page-reload
         $('.nav-tabs a').on('shown.bs.tab', function (e) {
-            var el = document.getElementById(e.target.hash);
-            var id = el.id;
-            el.removeAttribute('id');
             window.location.hash = e.target.hash;
-            el.setAttribute('id',id);
         });
     },
 

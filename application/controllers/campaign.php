@@ -54,7 +54,7 @@ class Campaign extends Admin {
 
         switch (RM::get("action")) {
             case 'updateAccess':
-                $access = Access::first(["id = ?" => RM::get("access_id")]);
+                $access = AdAccess::first(["id = ?" => RM::get("access_id")]);
                 if ($access) {
                     $access->live = RM::get("live", 0);
                     $access->save();
@@ -175,7 +175,7 @@ class Campaign extends Admin {
             }
 
             $permission = RM::post('permission', false);
-            if ($permission) {
+            if ($permission == "yes") {
                 $campaign->meta = ['permission' => true];
             }
 
