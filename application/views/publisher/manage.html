@@ -52,7 +52,7 @@
                                             <th>CAMPAIGNS</th>
                                             <th>PERFORMANCE</th>
                                             <th>REVENUE</th>
-                                            <th>PAID</th>
+                                            <th>PAYOUT</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -97,7 +97,7 @@
                                                 {if($perf["impressions"])}<br>Impressions <span class="badge">{echo $perf["impressions"] ?? 0}</span>{/if}
                                             </td>
                                             <td>{echo $user->convert($perf["revenue"] ?? 0, true, 2)}</td>
-                                            <td>{echo $user->convert($pays["amount"], true, 2)}</td>
+                                            <td>{echo $user->convert(($perf["revenue"] ?? 0) - ($pays["amount"] ?? 0), true, 2)}</td>
                                         </tr>
                                     {/foreach}
                                     </tbody>

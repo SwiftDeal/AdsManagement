@@ -52,16 +52,18 @@ class Campaign {
 		$records = [];
 		foreach ($stats as $date => $r) {
             $commissions = [];
-        	foreach ($r['meta']['country'] as $country => $clicks) {
-                $extra = [ 'type' => 'both', 'start' => $date, 'end' => $date ];
-                if ($user_id) {
-                    $extra['publisher'] = \User::first(['_id' => $user_id]);
-                }
+            if (array_key_exists("country", $r['meta'])) {
+            	foreach ($r['meta']['country'] as $country => $clicks) {
+	                $extra = [ 'type' => 'both', 'start' => $date, 'end' => $date ];
+	                if ($user_id) {
+	                    $extra['publisher'] = \User::first(['_id' => $user_id]);
+	                }
 
-        		$comm = \Commission::campaignRate($adid, $commissions, $country, $extra);
-        		$earning = \Ad::earning($comm, $clicks);
-        		ArrayMethods::add($earning, $r);
-        	}
+	        		$comm = \Commission::campaignRate($adid, $commissions, $country, $extra);
+	        		$earning = \Ad::earning($comm, $clicks);
+	        		ArrayMethods::add($earning, $r);
+	        	}
+            }
             $records[$date] = $r;
         }
         return $records;

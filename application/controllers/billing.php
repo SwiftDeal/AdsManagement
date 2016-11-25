@@ -9,7 +9,7 @@ use Shared\Utils as Utils;
 use Shared\Services\Db as Db;
 use Framework\Registry as Registry;
 use Framework\ArrayMethods as ArrayMethods;
-use Framework\RequestMethods as RequestMethods;
+use Framework\RequestMethods as RM;
 
 class Billing extends Admin {
 
@@ -18,13 +18,18 @@ class Billing extends Admin {
      */
     public function affiliates() {
         $this->seo(array("title" => "Billing")); $view = $this->getActionView();
-        $start = RequestMethods::get("start", date("Y-m-d", strtotime('-60 day')));
-        $end = RequestMethods::get("end", date("Y-m-d", strtotime('now')));
+        $start = RM::get("start", date("Y-m-d", strtotime('-60 day')));
+        $end = RM::get("end", date("Y-m-d", strtotime('now')));
 
         $query = ['utype' => 'publisher', 'org_id' => $this->org->_id];
         $query['created'] = Db::dateQuery($start, $end);
-        if (RequestMethods::get("user_id")) {
-            $query['user_id'] = RequestMethods::get("user_id");
+        $page = RM::get("page", 1);$limit = RM::get("limit", 10);
+        $property = RM::get("property"); $value = RM::get("value");
+        if ($property) {
+            $query["{$property} = ?"] = $value;
+        }
+        if (RM::get("user_id")) {
+            $query['user_id'] = RM::get("user_id");
         }
 
         $invoices = \Invoice::all($query);
@@ -43,9 +48,9 @@ class Billing extends Admin {
         $this->seo(array("title" => "Create Invoice"));
         $view = $this->getActionView(); $perfs = [];
 
-        $start = RequestMethods::get("start");
-        $end = RequestMethods::get("end");
-        $user_id = RequestMethods::get("user_id", null);
+        $start = RM::get("start");
+        $end = RM::get("end");
+        $user_id = RM::get("user_id", null);
 
         $view->set('user_id', $user_id)
             ->set('start', $start)
@@ -73,14 +78,14 @@ class Billing extends Admin {
             $view->set('affiliates', $affiliates);
         }
 
-        if (RequestMethods::post("action") == "cinvoice" && RequestMethods::post("amount") > 0) {
+        if (RM::post("action") == "cinvoice" && RM::post("amount") > 0) {
             $invoice = new Invoice([
                 "org_id" => $this->org->id,
                 "user_id" => $user->id,
                 "utype" => $user->type,
                 "start" => end($perfs)->created,
                 "end" => $perfs[0]->created,
-                "amount" => RequestMethods::post("amount"),
+                "amount" => RM::post("amount"),
                 "live" => false
             ]);
             $invoice->save();
@@ -95,7 +100,7 @@ class Billing extends Admin {
      */
     public function createpayment() {
         $this->seo(array("title" => "Create Payment")); $view = $this->getActionView();
-        $user_id = RequestMethods::get("user_id", null);
+        $user_id = RM::get("user_id", null);
         $invs = []; $total = 0; $meta = [];
 
         if($user_id) {
@@ -111,10 +116,10 @@ class Billing extends Admin {
             $view->set('affiliates', $affiliates);
         }
 
-        if (RequestMethods::post("action") == "cpayment") {
-            $items = RequestMethods::post("item");
+        if (RM::post("action") == "cpayment") {
+            $items = RM::post("item");
             if ($items) {
-                $amounts = RequestMethods::post("amount");
+                $amounts = RM::post("amount");
                 foreach ($items as $key => $item) {
                     $meta["items"][] = ['name' => $item, 'amount' => $amounts[$key]];
                     $total += $this->currency($amounts[$key]);
@@ -122,21 +127,21 @@ class Billing extends Admin {
             }
             if ($invoices) {
                 foreach ($invs as $ia) {
-                    if (in_array($ia->id, RequestMethods::post("invoice"))) {
+                    if (in_array($ia->id, RM::post("invoice"))) {
                         $total += $ia->amount;
                         $ia->live = true;
                         $ia->save();
                     }
                 }
             }
-            $meta["invoices"] = RequestMethods::post("invoice");
-            $meta["note"] = RequestMethods::post("note");
-            $meta["refer_id"] = RequestMethods::post("refer_id");
+            $meta["invoices"] = RM::post("invoice");
+            $meta["note"] = RM::post("note");
+            $meta["refer_id"] = RM::post("refer_id");
             $payment = new Payment([
                 "org_id" => $this->org->id,
                 "user_id" => $user->id,
                 "utype" => $user->type,
-                "type" => RequestMethods::post("type"),
+                "type" => RM::post("type"),
                 "amount" => $total,
                 "meta" => $meta
             ]);
@@ -156,8 +161,8 @@ class Billing extends Admin {
     public function advertisers() {
         $this->seo(array("title" => "Billing"));
         $view = $this->getActionView();
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
+        $end = RM::get("end", strftime("%Y-%m-%d", strtotime('now')));
 
         $invoices = \Invoice::all(['utype = ?' => 'advertiser', 'org_id' => $this->org->_id]);
 
@@ -173,9 +178,9 @@ class Billing extends Admin {
         $this->seo(array("title" => "Create Invoice"));
         $view = $this->getActionView(); $perfs = [];
 
-        $start = RequestMethods::get("start");
-        $end = RequestMethods::get("end");
-        $user_id = RequestMethods::get("user_id", null);
+        $start = RM::get("start");
+        $end = RM::get("end");
+        $user_id = RM::get("user_id", null);
 
         $view->set('user_id', $user_id)
             ->set('start', $start)
@@ -204,14 +209,14 @@ class Billing extends Admin {
             $view->set('advertisers', $advertisers);
         }
 
-        if (RequestMethods::post("action") == "cinvoice" && RequestMethods::post("amount") > 0) {
+        if (RM::post("action") == "cinvoice" && RM::post("amount") > 0) {
             $invoice = new Invoice([
                 "org_id" => $this->org->id,
                 "user_id" => $user->id,
                 "utype" => $user->type,
                 "start" => end($perfs)->created,
                 "end" => $perfs[0]->created,
-                "amount" => RequestMethods::post("amount"),
+                "amount" => RM::post("amount"),
                 "live" => false
             ]);
             $invoice->save();
@@ -228,7 +233,7 @@ class Billing extends Admin {
         $this->seo(array("title" => "Create Invoice"));
         $view = $this->getActionView();
         $invoice = Invoice::first(["live = ?" => false, "org_id = ?" => $this->org->id, "id = ?" => $id]);
-        if (RequestMethods::get("action") == "delinv") {
+        if (RM::get("action") == "delinv") {
             if ($invoice) {
                 $invoice->delete();
             }

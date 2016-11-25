@@ -90,7 +90,7 @@
                                             </td>
                                             <td><small>{echo Framework\StringMethods::only_date($i->start)}</small></td>
                                             <td><small>{echo Framework\StringMethods::only_date($i->end)}</small></td>
-                                            <td>{echo $user->convert($i->amount)}</td>
+                                            <td>{echo $user->convert($i->amount, true, 2, false)}</td>
                                         </tr>
                                         {/foreach}
                                     </tbody>
@@ -123,7 +123,7 @@
                                             <td><small>{echo Framework\StringMethods::only_date($p->created)}</small></td>
                                             <td><a href="/publisher/info/{echo $p->user_id}.html" target="_blank">{echo $u->name}</a></td>
                                             <td>{echo strtoupper($p->type)}</td>
-                                            <td>{echo $user->convert($p->amount)}</td>
+                                            <td>{echo $user->convert($p->amount, true, 2, false)}</td>
                                             <td>{echo $p->meta["refer_id"]}</td>
                                         </tr>
                                         {/foreach}

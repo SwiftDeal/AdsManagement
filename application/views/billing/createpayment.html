@@ -34,7 +34,7 @@
                                         <label class="sr-only">Account: </label>
                                         {if($affiliates)}
                                         <span class="add-on input-group-addon"><i class="fa fa-user fa-fw"></i> Account: </span>
-                                        <select name="user_id" class="form-control" style="max-width: 300px;" value="{echo $user_id}" required="">
+                                        <select name="user_id" class="form-control selectpicker" style="max-width: 300px;" data-live-search=true value="{echo $user_id}" required="" title="Select an Affiliate to Continue">
                                         {foreach $a in $affiliates}
                                         <option value="{echo $a->id}">{echo $a->name}</option>
                                         {/foreach}
@@ -48,6 +48,81 @@
                                 </div>
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </form>
+                            {if($affiliate)}<hr>
+                            <div class="row">
+                                <div class="col-md-6">
+                                {if(isset($org->billing["aff"]))}
+                                    <form role="form" method="post">
+                                        {script $payout = isset($affiliate->meta['payout']) ? $affiliate->meta['payout'] : []}
+                                        {if(in_array("paypal", $org->billing["aff"]["ptypes"]))}
+                                        <div class="form-group">
+                                            <label>Paypal</label>
+                                            <input type="email" class="form-control" value="{echo isset($payout['paypal']) ? $payout['paypal'] : null }" name="paypal" placeholder="Paypal email">
+                                        </div>
+                                        {/if}
+                                        {if(in_array("payquicker", $org->billing["aff"]["ptypes"]))}
+                                        <div class="form-group">
+                                            <label>Payquicker</label>
+                                            <input type="text" value="{echo isset($payout['payquicker']) ? $payout['payquicker'] : null }" class="form-control" name="payquicker" placeholder="Payquicker account">
+                                        </div>
+                                        {/if}
+                                        {if(in_array("payoneer", $org->billing["aff"]["ptypes"]))}
+                                        <div class="form-group">
+                                            <label>Payoneer</label>
+                                            <input type="text" value="{echo isset($payout['payoneer']) ? $payout['payoneer'] : null }" class="form-control" name="payoneer" placeholder="Payoneer account">
+                                        </div>
+                                        {/if}
+                                        {if(in_array("paytm", $org->billing["aff"]["ptypes"]))}
+                                        <div class="form-group">
+                                            <label>Paytm</label>
+                                            <input type="text" value="{echo isset($payout['paytm']) ? $payout['paytm'] : null }" class="form-control" name="paytm" placeholder="Paytm Number">
+                                        </div>
+                                        {/if}
+                                        {if(in_array("mobicash", $org->billing["aff"]["ptypes"]))}
+                                        <div class="form-group">
+                                            <label>Mobicash</label>
+                                            <input type="text" value="{echo isset($payout['mobicash']) ? $payout['mobicash'] : null }" class="form-control" name="mobicash" placeholder="Mobicash account">
+                                        </div>
+                                        {/if}
+                                        {if(in_array("easypaisa", $org->billing["aff"]["ptypes"]))}
+                                        <div class="form-group">
+                                            <label>Easypaisa</label>
+                                            <input type="text" value="{echo isset($payout['easypaisa']) ? $payout['easypaisa'] : null }" class="form-control" name="easypaisa" placeholder="Easypaisa account">
+                                        </div>
+                                        {/if}
+                                        <input type="hidden" name="action" value="payout">
+                                        <button type="submit" class="btn btn-info waves-effect waves-light">Change</button>
+                                    </form>
+                                {/if}
+                                </div>
+                                <div class="col-md-6">
+                                    {if(isset($org->billing["aff"]) && in_array("wire", $org->billing["aff"]["ptypes"]))}
+                                    <form role="form" method="post">
+                                        {script $bank = isset($affiliate->meta['bank']) ? $affiliate->meta['bank'] : []}
+                                        <div class="form-group">
+                                            <label>Bank Account Number</label>
+                                            <input type="text" value="{echo isset($bank['account_no']) ? $bank['account_no'] : null }" class="form-control" name="account_number" placeholder="Bank Account Number">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Account Owner Name</label>
+                                            <input type="text" value="{echo isset($bank['account_owner']) ? $bank['account_owner'] : null }" class="form-control" name="account_owner" placeholder="Account Owner Name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Bank Name</label>
+                                            <input type="text" value="{echo isset($bank['name']) ? $bank['name'] : null }" class="form-control" name="account_bank" placeholder="Bank Name">
+                                            <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "password")}</span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>IFSC/Swift Code</label>
+                                            <input type="text" value="{echo isset($bank['ifsc']) ? $bank['ifsc'] : null }" class="form-control" name="account_code" placeholder="IFSC/Swift Code">
+                                        </div>
+                                        <input type="hidden" name="action" value="bank">
+                                        <button type="submit" class="btn btn-purple waves-effect waves-light">Save</button>
+                                    </form>
+                                    {/if}
+                                </div>
+                            </div>
+                            {/if}
                         </div>
                     </div>
                 </div>
