@@ -201,7 +201,7 @@ class Publisher extends Auth {
         
         $query = [ "user_id" => Utils::mongoObjectId($this->user->_id) ];
         $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-3 day')));
-        $end = RM::get("end", strftime("%Y-%m-%d", strtotime('-1 day')));
+        $end = RM::get("end", strftime("%Y-%m-%d", strtotime('now')));
 
         $limit = RM::get("limit", 20);
         $page = RM::get("page", 1);

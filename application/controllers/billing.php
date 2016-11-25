@@ -22,21 +22,21 @@ class Billing extends Admin {
         $end = RM::get("end", date("Y-m-d", strtotime('now')));
 
         $query = ['utype' => 'publisher', 'org_id' => $this->org->_id];
-        $query['created'] = Db::dateQuery($start, $end);
+        $payments = \Payment::all($query);
+
         $page = RM::get("page", 1);$limit = RM::get("limit", 10);
         $property = RM::get("property"); $value = RM::get("value");
         if ($property) {
             $query["{$property} = ?"] = $value;
+        } else {
+            $query['created'] = Db::dateQuery($start, $end);
         }
-        if (RM::get("user_id")) {
-            $query['user_id'] = RM::get("user_id");
-        }
-
         $invoices = \Invoice::all($query);
-        $payments = \Payment::all($query);
 
         $view->set('invoices', $invoices)
             ->set('payments', $payments)
+            ->set('active', Invoice::count(['utype' => 'publisher', 'org_id' => $this->org->_id, "live = ?" => 1]))
+            ->set('inactive', Invoice::count(['utype' => 'publisher', 'org_id' => $this->org->_id, "live = ?" => 0]))
             ->set('start', $start)
             ->set('end', $end);
     }

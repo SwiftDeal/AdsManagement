@@ -135,7 +135,7 @@
                             {foreach $n in $notifications}
                             <tr>
                                 <td>{echo Framework\StringMethods::only_date($n->created)}</td>
-                                <td>{echo $n->message}</td>
+                                <td>{echo htmlspecialchars_decode($n->message)}</td>
                             </tr>
                             {/foreach}
                         </tbody>

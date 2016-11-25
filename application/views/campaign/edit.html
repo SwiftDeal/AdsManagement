@@ -50,6 +50,7 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="basics">
+                            <form method="post">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -103,8 +104,13 @@
                                     </div>
                                 </div>
                             </div>
+                            <p class="text-center">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </p>
+                            </form>
                         </div>
                         <div class="tab-pane" id="target">
+                            <form action="/campaign/edit/583592801d41c819781d95de#target" method="post">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -167,6 +173,10 @@
                                     </div>
                                 </div>
                             </div>
+                            <p class="text-center">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </p>
+                            </form>
                         </div>
                         <div class="tab-pane" id="creative">
                             <form method="post" action="" enctype="multipart/form-data">
@@ -178,9 +188,19 @@
                             <div class="table-responsive">
                                 <table class="table">
                                     <tr>
-                                        <td><img src="{echo Ad::displayImg($c->image)}" class="img-thumbnail"></td>
-                                        <td>{echo $c->image}</td>
-                                        <td></td>
+                                        <td>
+                                            <div class="media">
+                                                <div class="media-left">
+                                                    <img class="media-object" src="{echo Ad::displayImg($c->image)}" alt="..." width="150">
+                                                </div>
+                                                <div class="media-body">
+                                                    <h4 class="media-heading">{echo $c->image}</h4>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="#" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</a>
+                                        </td>
                                     </tr>
                                 </table>
                             </div>
