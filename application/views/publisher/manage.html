@@ -87,7 +87,7 @@
                                                 <i class="fa fa-money" data-toggle="tooltip" data-placement="top" data-original-title='Model: {echo $p->meta["campaign"]["model"]} with Payout: {echo $user->convert($p->meta["campaign"]["rate"], false)}'></i>
                                                 {/if}
                                                 {if(array_key_exists("tdomain", $p->meta))}&nbsp;
-                                                <i class="fa fa-globe" data-toggle="tooltip" data-placement="top" data-original-title='Tracking Domain: {echo $p->meta["tdomain"]}'></i>
+                                                <i class="fa fa-globe" data-toggle="tooltip" data-placement="top" data-original-title='Tracking Domain: {echo implode(", ", (array) $p->meta["tdomain"])}'></i>
                                                 {/if}
                                             </td>
                                             <td>{echo Link::count(["user_id = ?" => $p->id])}</td>

@@ -78,17 +78,23 @@ class User {
 		switch ($user->type) {
 			case 'publisher':
 				// check if anything set in meta
-				$def = $user->meta['tdomain'] ?? $default;
+				$def = $user->meta['tdomain'] ?? null;
 				$ans = [];
 				if (is_string($def)) {
 					$ans[] = $def;
+				} else if (is_array($def)) {
+					$ans = $def;
 				} else {
 					$users = \User::all(['org_id' => $org->_id, 'type' => $user->type], ['_id', 'meta']);
 					$ans = $default;
 					foreach ($users as $u) {
 						if (isset($u->meta['tdomain'])) {
-							$index = array_search($u->meta['tdomain'], $ans);
-							unset($ans[$index]);
+							$toBeRemoved = (array) $u->meta['tdomain'];
+
+							foreach ($toBeRemoved as $t) {
+								$index = array_search($t, $ans);
+								unset($ans[$index]);	
+							}
 						}
 					}
 				}

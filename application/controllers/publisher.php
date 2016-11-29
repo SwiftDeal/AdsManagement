@@ -558,8 +558,8 @@ class Publisher extends Auth {
                     break;
                 
                 case 'trackingDomain':
-                    $tdomain = RM::post('tdomain');
-                    if ($tdomain && in_array($tdomain, $this->org->tdomains)) {
+                    $tdomain = (array) RM::post('tdomain', '');
+                    if ($tdomain && ArrayMethods::inArray($this->org->tdomains, $tdomain)) {
                         $publisher->getMeta()['tdomain'] = $tdomain;
                         $publisher->save();
 
