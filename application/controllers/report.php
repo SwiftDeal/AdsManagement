@@ -343,19 +343,13 @@ class Report extends Admin {
      * @before _secure
      */
     public function conversions() {
-        $this->seo(array("title" => "Conversions"));
-        $view = $this->getActionView();
+        $this->seo(array("title" => "Conversions")); $view = $this->getActionView();
+    }
 
-        if (RequestMethods::get("action") == "conversions") {
-            $convertCol = Registry::get("MongoDB")->clicks;
-            $start = RM::get("start", date('Y-m-d', strtotime('-7 day')));
-            $end = RM::get("end", date('Y-m-d', strtotime('-1 day')));
-
-            $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
-            $query['is_bot'] = false;
-            $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
-
-            $records = $convertCol->find($query, ['projection' => ['adid' => 1, 'pid' => 1]]);
-        }
+    /**
+     * @before _secure
+     */
+    public function impressions() {
+        $this->seo(array("title" => "Impressions")); $view = $this->getActionView();
     }
 }

@@ -5,13 +5,13 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-title-box">
-                        <a href="/report/clicks.csv" download="clicks.csv" class="btn btn-inverse pull-right"><i class="fa fa-download"></i> Export to CSV</a>
-                        <h4 class="page-title">Click Logs (Total - {echo $count})</h4>
+                        <a href="{echo URL}" download="conversions.csv" class="btn btn-inverse pull-right"><i class="fa fa-download"></i> Export to CSV</a>
+                        <h4 class="page-title">Conversions Logs (Total - {echo $count})</h4>
                     </div>
                     <div class="col-md-12">
                         <div class="panel panel-border panel-success">
                             <div class="panel-heading">
-                                <h3 class="panel-title">Click Server Logs</h3>
+                                <h3 class="panel-title">Conversions Server Logs</h3>
                                 <p class="text-muted m-b-30 font-13">
                                     Select any Option and their values to search pass query
                                 </p>
@@ -19,6 +19,19 @@
                             <form class="table-responsive">
                                 <table class="table">
                                     <tr>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="ad[]" type="checkbox" {if array_key_exists("adid", $query)} checked="" {/if} value="adid">
+                                                <label>Campaign</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select class="selectVal form-control selectpicker" data-value='{echo json_encode($query["adid"] ?? [])}' data-live-search=true name="adid[]" multiple="" title="Choose one or many Campaign">
+                                            {foreach $a in $ads}
+                                                <option value="{$a->id}">{echo $a->name}</option>
+                                            {/foreach}
+                                            </select>
+                                        </td>
                                         <td>
                                             <div class="checkbox checkbox-primary">
                                                 <input name="query[]" type="checkbox" {if array_key_exists("pid", $query)} checked="" {/if} value="pid">
@@ -32,66 +45,25 @@
                                             {/foreach}
                                             </select>
                                         </td>
-                                        <td>
-                                            <div class="checkbox checkbox-primary">
-                                                <input name="query[]" type="checkbox" {if array_key_exists("country", $query)} checked="" {/if} value="country">
-                                                <label>Country</label>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <select name="country[]" data-value='{echo json_encode($query["country"] ?? [])}' class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose Countries">
-                                                {include auth/country.html}
-                                            </select>
-                                        </td>
                                     </tr>
                                     <tr>
                                         <td>
                                             <div class="checkbox checkbox-primary">
-                                                <input name="query[]" type="checkbox" {if array_key_exists("os", $query)} checked="" {/if} value="os">
-                                                <label>OS</label>
+                                                <input name="cid" type="checkbox" {if array_key_exists("cid", $query)} checked="" {/if} value="cid">
+                                                <label>Click ID</label>
                                             </div>
                                         </td>
                                         <td>
-                                            <select name="os[]" data-value='{echo json_encode($query["os"] ?? [])}' class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose an Operating System">
-                                                <option value="android">Android</option>
-                                                <option value="ios">iOS</option>
-                                                <option value="windows">Windows</option>
-                                                <option value="mac">Mac</option>
-                                                <option value="linux">Linux</option>
-                                            </select>
+                                            <input type="text" name="cid" class="form-control" placeholder="Click ID">
                                         </td>
                                         <td>
                                             <div class="checkbox checkbox-primary">
-                                                <input name="query[]" type="checkbox" {if array_key_exists("device", $query)} checked="" {/if} value="device">
-                                                <label>Device</label>
+                                                <input name="id" type="checkbox" {if array_key_exists("id", $query)} checked="" {/if} value="id">
+                                                <label>Conversion ID</label>
                                             </div>
                                         </td>
                                         <td>
-                                            <select name="device[]" data-value='{echo json_encode($query["device"] ?? [])}' class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose Device Type">
-                                                <option value="mobile">Mobile</option>
-                                                <option value="desktop">Desktop</option>
-                                                <option value="tablet">Tablet</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="checkbox checkbox-primary">
-                                                <input name="query[]" type="checkbox" {if array_key_exists("ip", $query)} checked="" {/if} value="ip">
-                                                <label>IP</label>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <input type="text" name="ip" class="form-control" placeholder="IP Address separated by commas">
-                                        </td>
-                                        <td>
-                                            <div class="checkbox checkbox-primary">
-                                                <input name="query[]" type="checkbox" {if array_key_exists("referer", $query)} checked="" {/if} value="referer">
-                                                <label>Traffic Source</label>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <input type="text" name="referer" class="form-control" placeholder="Referer from traffic eg. facebook.com">
+                                            <input type="text" name="id" class="form-control" placeholder="Conversion ID">
                                         </td>
                                     </tr>
                                     <tr>

@@ -5,13 +5,13 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-title-box">
-                        <a href="{echo URL}" download="clicks.csv" class="btn btn-inverse pull-right"><i class="fa fa-download"></i> Export to CSV</a>
-                        <h4 class="page-title">Click Logs (Total - {echo $count})</h4>
+                        <a href="{echo URL}" download="impressions.csv" class="btn btn-inverse pull-right"><i class="fa fa-download"></i> Export to CSV</a>
+                        <h4 class="page-title">Impressions Logs (Total - {echo $count})</h4>
                     </div>
                     <div class="col-md-12">
                         <div class="panel panel-border panel-success">
                             <div class="panel-heading">
-                                <h3 class="panel-title">Click Server Logs</h3>
+                                <h3 class="panel-title">Impressions Server Logs</h3>
                                 <p class="text-muted m-b-30 font-13">
                                     Select any Option and their values to search pass query
                                 </p>
@@ -34,20 +34,6 @@
                                         </td>
                                         <td>
                                             <div class="checkbox checkbox-primary">
-                                                <input name="is_bot" type="checkbox" {if array_key_exists("is_bot", $query)} checked="" {/if} value="is_bot">
-                                                <label>Is Bot</label>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <select name="is_bot" class="form-control selectpicker" data-live-search=true title="Choose Bot and verified Clicks" value="{echo $query['is_bot']}">
-                                                <option value="1">Yes</option>
-                                                <option value="0">No</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="checkbox checkbox-primary">
                                                 <input name="query[]" type="checkbox" {if array_key_exists("pid", $query)} checked="" {/if} value="pid">
                                                 <label>Affiliate</label>
                                             </div>
@@ -58,6 +44,17 @@
                                                 <option value="{$aff->id}">{echo $aff->name}</option>
                                             {/foreach}
                                             </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="checkbox checkbox-primary">
+                                                <input name="domain" type="checkbox" {if array_key_exists("domain", $query)} checked="" {/if} value="domain">
+                                                <label>Domain</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="domain" class="form-control" placeholder="Referer from traffic eg. facebook.com">
                                         </td>
                                         <td>
                                             <div class="checkbox checkbox-primary">
@@ -99,66 +96,6 @@
                                                 <option value="desktop">Desktop</option>
                                                 <option value="tablet">Tablet</option>
                                             </select>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="checkbox checkbox-primary">
-                                                <input name="query[]" type="checkbox" {if array_key_exists("ip", $query)} checked="" {/if} value="ip">
-                                                <label>IP</label>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <input type="text" name="ip" class="form-control" placeholder="IP Address separated by commas">
-                                        </td>
-                                        <td>
-                                            <div class="checkbox checkbox-primary">
-                                                <input name="query[]" type="checkbox" {if array_key_exists("referer", $query)} checked="" {/if} value="referer">
-                                                <label>Traffic Source</label>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <input type="text" name="referer" class="form-control" placeholder="Referer from traffic eg. facebook.com">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="checkbox checkbox-primary">
-                                                <input name="p1" type="checkbox" {if array_key_exists("p1", $query)} checked="" {/if} value="p1">
-                                                <label>p1</label>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <input type="text" name="p1" class="form-control" placeholder="Extra Parameter 1 or Sub ID 1">
-                                        </td>
-                                        <td>
-                                            <div class="checkbox checkbox-primary">
-                                                <input name="p2" type="checkbox" {if array_key_exists("p2", $query)} checked="" {/if} value="p2">
-                                                <label>p2</label>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <input type="text" name="p2" class="form-control" placeholder="Extra Parameter 2 or Sub ID 2">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="checkbox checkbox-primary">
-                                                <input name="id" type="checkbox" {if array_key_exists("id", $query)} checked="" {/if} value="id">
-                                                <label>Click ID</label>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <input type="text" name="id" class="form-control" placeholder="Click ID">
-                                        </td>
-                                        <td>
-                                            <div class="checkbox checkbox-primary">
-                                                <input name="cookie" type="checkbox" {if array_key_exists("cookie", $query)} checked="" {/if} value="cookie">
-                                                <label>Cookie ID</label>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <input type="text" name="cookie" class="form-control" placeholder="Cookie ID">
                                         </td>
                                     </tr>
                                     <tr>

@@ -72,6 +72,10 @@
                     return self.entityMap[s];
                 });
             };
+
+            $.ajaxSetup({
+                headers: {'X-JSON-Api': 'SwiftMVC'}
+            }); 
         }
 
         Request.prototype = {

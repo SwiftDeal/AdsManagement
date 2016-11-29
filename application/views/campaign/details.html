@@ -147,6 +147,36 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h3>Tracking Link</h3>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <tr>
+                                                <td>
+                                                    <select name="aff_id" class="form-control" data-live-search=true title="Choose any affiliate">
+                                                        {foreach $pub in $publishers}
+                                                        <option value="{echo $pub->_id}">{echo $pub->name}</option>
+                                                        {/foreach}
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <textarea class="form-control" rows="2"></textarea>
+                                                </td>
+                                                <td>
+                                                    Impression Pixel<br>
+                                                    Share
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Sub ID 1 <input type="text" class="form-control" name="sub1"></td>
+                                                <td>Sub ID 1 <input type="text" class="form-control" name="sub1"></td>
+                                                <td>Sub ID 1 <input type="text" class="form-control" name="sub1"></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="tab-pane" id="performance">
                             <div class="row">

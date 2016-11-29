@@ -90,6 +90,22 @@ class Click extends Shared\Model {
      */
     protected $_device;
 
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * @length 255
+     */
+    protected $_p1 = null;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * @length 255
+     */
+    protected $_p2 = null;
+
     public static function hourly() {
         self::deleteAll(['is_bot' => true]);
     }
