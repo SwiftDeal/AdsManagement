@@ -51,9 +51,10 @@ class Campaign {
 	public static function earning($stats = [], $adid, $user_id = null) {
 		$records = [];
 		foreach ($stats as $date => $r) {
-            $commissions = [];
-            if (array_key_exists("country", $r['meta'])) {
-            	foreach ($r['meta']['country'] as $country => $clicks) {
+            $commissions = []; $meta = $r['meta'] ?? [];
+            if (array_key_exists("country", $meta)) {
+            	$countryWise = $meta["country"] ?? [];
+            	foreach ($countryWise as $country => $clicks) {
 	                $extra = [ 'type' => 'both', 'start' => $date, 'end' => $date ];
 	                if ($user_id) {
 	                    $extra['publisher'] = \User::first(['_id' => $user_id]);

@@ -388,14 +388,15 @@ class Publisher extends Auth {
      * @before _admin
      */
     public function manage() {
-        $this->seo(array("title" => "List Publisher"));$view = $this->getActionView();
+        $this->seo(["title" => "List Publisher"]); $view = $this->getActionView();
+        $page = RM::get("page", 1); $limit = RM::get("limit", 10);
+        $publishers = [];
 
-        $page = RM::get("page", 1);$limit = RM::get("limit", 10); $publishers = [];
+        $start = RM::get("start", date('Y-m-d')); $end = RM::get("end", date('Y-m-d'));
+        $view->set(['start' => $start, 'end' => $end]);
 
         switch (RM::get("sort")) {
             case 'trending':
-                $start = RM::get("start", date('Y-m-d')); $end = RM::get("end", date('Y-m-d'));
-                $view->set(['start' => $start, 'end' => $end]);
                 $match = [
                     'pid' => ['$in' => $this->org->users('publisher')],
                     'is_bot' => false,
@@ -428,7 +429,7 @@ class Publisher extends Auth {
                 if (in_array($property, ["live", "id"])) {
                     $query["{$property} = ?"] = $value;
                 } else if (in_array($property, ["email", "name", "phone"])) {
-                    $query["{$property} = ?"] = Utils::mongoRegex($value);
+                    $query["{$property} = ?"] = Db::convertType($value, 'regex');
                 }
 
                 $publishers = \User::all($query, [], 'created', 'desc', $limit, $page);

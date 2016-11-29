@@ -72,6 +72,14 @@ class User {
 		return $usr;
 	}
 
+	/**
+	 * Finds the tracking links which are to be displayed for a given User
+	 * because the tracking domain alloted to one user should not be displayed
+	 * to the other user unless alloted to him
+	 * @param  object $user \User
+	 * @param  object $org  \Organization
+	 * @return array       Array of Tracking Links
+	 */
 	public static function trackingLinks($user, $org) {
 		$default = $org->tdomains;
 		$cf = \Framework\Registry::get("configuration")->parse("configuration/cf")->cloudflare;

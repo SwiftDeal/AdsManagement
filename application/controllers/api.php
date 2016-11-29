@@ -52,6 +52,7 @@ class Api extends \Shared\Controller {
 		}
 
 		$this->_org = Organization::first(['_id' => $apiKey->org_id]);
+		if ($this->_org->live !== true) $this->redirect('/api/failure/42');
 	}
 
 	/**

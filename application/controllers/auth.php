@@ -57,12 +57,14 @@ class Auth extends Controller {
         if (!is_object($this->org) || !property_exists($this->org, '__id')) {
             $org = \Organization::first($q);
 
-            if (!$org) {
+            if (!$org || $org->live !== true) {
                 $this->_404();
             } else {
                 $this->org = $org;
             }
         }
+        // Organization account banned
+        if ($this->org->live !== true) $this->_404();
     }
     
     /**

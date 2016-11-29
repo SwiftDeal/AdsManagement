@@ -204,6 +204,14 @@ namespace Framework {
             return $result;
         }
 
+        public static function dateTimeDiff($start, $end) {
+            $day_1 = date_create($start);
+            $day_2 = date_create($end);
+
+            $interval = date_diff($day_1, $day_2);
+            return $interval->format('%a');
+        }
+
         public static function datetime_to_text($datetime = "") {
             if (is_object($datetime) && is_a($datetime, 'DateTime')) {
                 $datetime = date('Y-m-d H:i:s', $datetime->getTimestamp());

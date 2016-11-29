@@ -20,6 +20,14 @@ class Performance extends Shared\Model {
     /**
      * @column
      * @readwrite
+     * @type mongoid
+     * @index
+     */
+    protected $_adid = null;
+
+    /**
+     * @column
+     * @readwrite
      * @type integer
      */
     protected $_impressions = 0;
