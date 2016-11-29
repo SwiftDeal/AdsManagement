@@ -26,14 +26,14 @@ class Impression extends Shared\Model {
      * @readwrite
      * @type text
      */
-    protected $_domain;
+    protected $_referer;
 
     /**
      * @column
      * @readwrite
      * @type text
      */
-    protected $_ua;
+    protected $_browser;
 
     /**
      * @column

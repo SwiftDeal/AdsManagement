@@ -21,14 +21,14 @@
                                     <tr>
                                         <td>
                                             <div class="checkbox checkbox-primary">
-                                                <input name="ad[]" type="checkbox" {if array_key_exists("adid", $query)} checked="" {/if} value="adid">
+                                                <input name="query[]" type="checkbox" {if array_key_exists("adid", $query)} checked="" {/if} value="adid">
                                                 <label>Campaign</label>
                                             </div>
                                         </td>
                                         <td>
                                             <select class="selectVal form-control selectpicker" data-value='{echo json_encode($query["adid"] ?? [])}' data-live-search=true name="adid[]" multiple="" title="Choose one or many Campaign">
                                             {foreach $a in $ads}
-                                                <option value="{$a->id}">{echo $a->name}</option>
+                                                <option value="{$a->_id}">{echo $a->title}</option>
                                             {/foreach}
                                             </select>
                                         </td>
@@ -49,7 +49,7 @@
                                     <tr>
                                         <td>
                                             <div class="checkbox checkbox-primary">
-                                                <input name="domain" type="checkbox" {if array_key_exists("domain", $query)} checked="" {/if} value="domain">
+                                                <input name="query[]" type="checkbox" {if array_key_exists("domain", $query)} checked="" {/if} value="domain">
                                                 <label>Domain</label>
                                             </div>
                                         </td>
@@ -141,14 +141,11 @@
                                         <tbody>
                                             {foreach $object in $clicks}
                                                 <tr>
-                                                    <td>{echo $object->ipaddr}</td>
                                                     <td>{echo $object->referer}</td>
-                                                    <td>{echo $object->country}</td>
-                                                    <td>{echo $object->cookie}</td>
-                                                    <td>{echo substr($object->browser, 0, 50)}</td>
-                                                    <td>{echo $object->os}</td>
-                                                    <td>{echo $object->is_bot}</td>
+                                                    <td>{echo $object->browser}</td>
                                                     <td>{echo $object->device}</td>
+                                                    <td>{echo $object->country}</td>
+                                                    <td>{echo $object->hits}</td>
                                                     <td>{echo Framework\StringMethods::datetime_to_text($object->created)}</td>
                                                 </tr>
                                             {/foreach}

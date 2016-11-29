@@ -21,25 +21,26 @@
                                     <tr>
                                         <td>
                                             <div class="checkbox checkbox-primary">
-                                                <input name="ad[]" type="checkbox" {if array_key_exists("adid", $query)} checked="" {/if} value="adid">
+                                                <input name="query[]" type="checkbox" {if array_key_exists("adid", $query)} checked="" {/if} value="adid">
                                                 <label>Campaign</label>
                                             </div>
                                         </td>
                                         <td>
                                             <select class="selectVal form-control selectpicker" data-value='{echo json_encode($query["adid"] ?? [])}' data-live-search=true name="adid[]" multiple="" title="Choose one or many Campaign">
                                             {foreach $a in $ads}
-                                                <option value="{$a->id}">{echo $a->name}</option>
+                                                <option value="{$a->_id}">{echo $a->title}</option>
                                             {/foreach}
                                             </select>
                                         </td>
                                         <td>
                                             <div class="checkbox checkbox-primary">
-                                                <input name="is_bot" type="checkbox" {if array_key_exists("is_bot", $query)} checked="" {/if} value="is_bot">
+                                                <input name="query[]" type="checkbox" {if array_key_exists("is_bot", $query)} checked="" {/if} value="is_bot">
                                                 <label>Is Bot</label>
                                             </div>
                                         </td>
                                         <td>
-                                            <select name="is_bot" class="form-control selectpicker" data-live-search=true title="Choose Bot and verified Clicks" value="{echo $query['is_bot']}">
+                                            {script $is_bot = $query["is_bot"] ?? ''}
+                                            <select name="is_bot" class="selectVal form-control selectpicker" data-live-search=true title="Choose Bot and verified Clicks" data-value='{echo json_encode(["$is_bot"])}'>
                                                 <option value="1">Yes</option>
                                                 <option value="0">No</option>
                                             </select>
@@ -124,7 +125,7 @@
                                     <tr>
                                         <td>
                                             <div class="checkbox checkbox-primary">
-                                                <input name="p1" type="checkbox" {if array_key_exists("p1", $query)} checked="" {/if} value="p1">
+                                                <input name="query[]" type="checkbox" {if array_key_exists("p1", $query)} checked="" {/if} value="p1">
                                                 <label>p1</label>
                                             </div>
                                         </td>
@@ -133,7 +134,7 @@
                                         </td>
                                         <td>
                                             <div class="checkbox checkbox-primary">
-                                                <input name="p2" type="checkbox" {if array_key_exists("p2", $query)} checked="" {/if} value="p2">
+                                                <input name="query[]" type="checkbox" {if array_key_exists("p2", $query)} checked="" {/if} value="p2">
                                                 <label>p2</label>
                                             </div>
                                         </td>
@@ -144,21 +145,21 @@
                                     <tr>
                                         <td>
                                             <div class="checkbox checkbox-primary">
-                                                <input name="id" type="checkbox" {if array_key_exists("id", $query)} checked="" {/if} value="id">
+                                                <input name="query[]" type="checkbox" {if array_key_exists("_id", $query)} checked="" {/if} value="_id">
                                                 <label>Click ID</label>
                                             </div>
                                         </td>
                                         <td>
-                                            <input type="text" name="id" class="form-control" placeholder="Click ID">
+                                            <input type="text" name="_id" {if array_key_exists("_id", $query)} value="{echo $query['_id']}" {/if} class="form-control" placeholder="Click ID">
                                         </td>
                                         <td>
                                             <div class="checkbox checkbox-primary">
-                                                <input name="cookie" type="checkbox" {if array_key_exists("cookie", $query)} checked="" {/if} value="cookie">
+                                                <input name="query[]" type="checkbox" {if array_key_exists("cookie", $query)} checked="" {/if} value="cookie">
                                                 <label>Cookie ID</label>
                                             </div>
                                         </td>
                                         <td>
-                                            <input type="text" name="cookie" class="form-control" placeholder="Cookie ID">
+                                            <input type="text" name="cookie" {if array_key_exists("cookie", $query)} value="{echo $query['cookie']}" {/if} class="form-control" placeholder="Cookie ID">
                                         </td>
                                     </tr>
                                     <tr>
@@ -212,6 +213,8 @@
                                                     <td>{echo $object->os}</td>
                                                     <td>{echo $object->is_bot}</td>
                                                     <td>{echo $object->device}</td>
+                                                    <td>{echo $object->p1}</td>
+                                                    <td>{echo $object->p2}</td>
                                                     <td>{echo Framework\StringMethods::datetime_to_text($object->created)}</td>
                                                 </tr>
                                             {/foreach}

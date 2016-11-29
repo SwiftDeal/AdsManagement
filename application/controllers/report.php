@@ -10,30 +10,61 @@ use Shared\Utils as Utils;
 use Shared\Services\Db as Db;
 
 class Report extends Admin {
+    /**
+     * @readwrite
+     * @var string
+     */
+    protected $_start = null;
+    
+    /**
+     * @readwrite
+     * @var string
+     */
+    protected $_end = null;
+
+    /**
+     * @readwrite
+     * @var string
+     */
+    protected $_limit = null;
+    
+    /**
+     * @readwrite
+     * @var string
+     */
+    protected $_page = null;
+
+    public function __construct($opts = []) {
+        parent::__construct($opts);
+        $this->limit = (int) RM::get("limit", 10);
+        $this->page = RM::get("page", 1);
+        $this->start = RM::get("start", date('Y-m-d'));
+        $this->end = RM::get("end", date('Y-m-d', strtotime('now')));
+    }
+
+    public function _displayData() {
+        $q = ['start' => $this->start, 'end' => $this->end, 'limit' => $this->limit, 'page' => $this->page];
+        $this->actionView->set($q);
+    }
     
     /**
      * @before _secure
+     * @after _displayData
      */
     public function campaigns() {
         $this->seo(array("title" => "Campaigns Effectiveness"));
         $view = $this->getActionView();
 
-        $start = RM::get("start", date("Y-m-d", strtotime('now')));
-        $end = RM::get("end", date("Y-m-d", strtotime('now')));
-        $limit = RM::get("limit", 20);
-        $q = ['start' => $start, 'end' => $end]; $view->set($q);
-
         // Only find the ads for this organizations
         $allAds = \Ad::all(['org_id' => $this->org->_id], ['_id']);
         $in = Db::convertType(array_keys($allAds));
-        $clickCol = Db::collection('Click');
 
         $match = [
-            'created' => Db::dateQuery($start, $end),
+            'created' => Db::dateQuery($this->start, $this->end),
             'is_bot' => false,
             'adid' => ['$in' => $in]
         ];
-        $records = $clickCol->aggregate([
+        $records = Db::collection('Click')->aggregate([
             ['$match' => $match],
             ['$project' => ['adid' => 1, '_id' => 0]],
             ['$group' => [
@@ -41,7 +72,7 @@ class Report extends Admin {
                 'count' => ['$sum' => 1]
             ]],
             ['$sort' => ['count' => -1]],
-            ['$limit' => (int) $limit]
+            ['$limit' => (int) $this->limit]
         ]);
         $stats = [];
         foreach ($records as $r) {
@@ -50,24 +81,20 @@ class Report extends Admin {
             $stats[$id] = $arr['count'];
         }
 
-        $view->set('stats', $stats)
-            ->set('limit', $limit);
+        $view->set('stats', $stats);
     }
 
     /**
      * @before _secure
+     * @after _displayData
      */
     public function ad($id) {
         $this->seo(array("title" => "AD Report"));
         $view = $this->getActionView();
-
-        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-5 day')));
-        $end = RM::get("end", strftime("%Y-%m-%d", strtotime('now')));
-        $q = ['start' => $start, 'end' => $end]; $view->set($q);
         $ad = \Ad::first(['org_id = ?' => $this->org->_id, 'id = ?' => $id]);
 
         $count = Db::count([
-            'created' => Db::dateQuery($start, $end),
+            'created' => Db::dateQuery($this->start, $this->end),
             'adid' => $ad->_id,
             'is_bot' => false
         ]);
@@ -78,24 +105,20 @@ class Report extends Admin {
 
     /**
      * @before _secure
+     * @after _displayData
      * @todo fetch realtime data for today (if start == end) But if start != today then fetch data from 
      * performance table and add it with realtime
      */
     public function publishers() {
         $this->seo(["title" => "Publisher Rankings"]); $view = $this->getActionView();
 
-        $start = RM::get("start", date('Y-m-d')); $end = RM::get("end", date('Y-m-d'));
-        $limit = RM::get("limit", 40);
-        $view->set(['start' => $start, 'end' => $end]);
-
         $match = [
             'pid' => ['$in' => $this->org->users('publisher')],
             'is_bot' => false,
-            'created' => Db::dateQuery($start, $end)
+            'created' => Db::dateQuery($this->start, $this->end)
         ];
 
-        $clickCol = Db::collection('Click');
-        $records = $clickCol->aggregate([
+        $records = Db::collection('Click')->aggregate([
             ['$match' => $match],
             ['$project' => ['pid' => 1, 'device' => 1, '_id' => 0]],
             ['$group' => [
@@ -103,7 +126,7 @@ class Report extends Admin {
                 'count' => ['$sum' => 1]
             ]],
             ['$sort' => ['count' => -1]],
-            ['$limit' => (int) $limit]
+            ['$limit' => (int) $this->limit]
         ]);
 
         $stats = $deviceStats = [];
@@ -155,6 +178,21 @@ class Report extends Admin {
                     }
                     break;
 
+                case '_id':
+                case 'cid':
+                    $id = RM::get($q, null);
+                    if ($id) {
+                        $query[$q] = Db::convertType($id);
+                    }
+                    break;
+
+                case 'is_bot':
+                    $is_bot = RM::get($q, null);
+                    if (!is_null($is_bot)) {
+                        $query[$q] = (boolean) ((int) $is_bot);
+                    }
+                    break;
+
                 case 'pid':
                     $pIdsGet = RM::get($q, []);
                     if (ArrayMethods::inArray($pIds, $pIdsGet)) {
@@ -173,8 +211,13 @@ class Report extends Admin {
                     break;
 
                 case 'referer':
-                    $data = RM::get($q, 'facebook');
-                    $query[$q] = Db::convertType($data, 'regex');
+                case 'p1':
+                case 'p2':
+                case 'cookie':
+                    $data = RM::get($q);
+                    if ($data) {
+                        $query[$q] = Db::convertType($data, 'regex');   
+                    }
                     break;
 
                 case 'ip':
@@ -192,16 +235,10 @@ class Report extends Admin {
         ];
     }
 
-    /**
-     * @before _secure
-     */
-    public function clicks() {
-        $this->seo(["title" => "Click Logs"]); $view = $this->getActionView();
-
-        $limit = RM::get("limit", 10); $page = RM::get("page", 1);
-        $start = RM::get("start", date('Y-m-d', strtotime('-1 day')));
-        $end = RM::get("end", date('Y-m-d', strtotime('now')));
-        $fields = Shared\Services\User::fields('Click');
+    protected function _reports($table) {
+        $view = $this->getActionView();
+        $fields = Shared\Services\User::fields($table);
+        $table = "\\{$table}";
 
         $ads = \Ad::all(['org_id' => $this->org->_id], ['_id', 'title'], 'created', 'desc');
         $affs = \User::all(['org_id' => $this->org->_id, 'type = ?' => 'publisher'], ['_id', 'name']);
@@ -213,33 +250,56 @@ class Report extends Admin {
         $adIds = Db::convertType($adIds); $pIds = Db::convertType($pIds);
         $query['adid'] = ['$in' => $adIds];
         $query['pid'] = ['$in' => $pIds];
-        $query['created'] = Db::dateQuery($start, $end);
+        $query['created'] = Db::dateQuery($this->start, $this->end);
 
-        $records = \Click::all($query, [], 'created', 'desc', $limit, $page);
-        $count = \Click::count($query);
+        $records = $table::all($query, [], 'created', 'desc', $this->limit, $this->page);
+        $count = $table::count($query);
 
         $view->set([
             'clicks' => $records, 'fields' => $fields,
-            'limit' => $limit, 'page' => $page,
-            'order' => $orderBy, 'count' => $count,
-            'start' => $start, 'end' => $end, 
+            'count' => $count, 'ads' => $ads,
             'query' => $searching, 'affs' => $affs
         ]);
     }
 
     /**
      * @before _secure
+     * @after _displayData
+     */
+    public function clicks() {
+        $this->seo(["title" => "Click Logs"]);
+        $this->_reports("Click");
+    }
+
+    /**
+     * @before _secure
+     * @after _displayData
+     */
+    public function conversions() {
+        $this->seo(["title" => "Conversions"]);
+        $this->_reports("Conversion");
+    }
+
+    /**
+     * @before _secure
+     * @after _displayData
+     */
+    public function impressions() {
+        $this->seo(["title" => "Impressions"]);
+        $this->_reports("Impression");
+    }
+
+    /**
+     * @before _secure
+     * @after _displayData
      */
     public function links() {
         $this->seo(array("title" => "Link Logs"));
         $view = $this->getActionView();
 
-        $limit = RM::get("limit", 10); $page = RM::get("page", 1);
         $prop = RM::get("property"); $val = RM::get("value");
         $sort = RM::get("sort", "desc"); $sign = RM::get("sign", "equal");
         $orderBy = RM::get("order", 'created');
-        $start = RM::get("start", date('Y-m-d', strtotime('-7 day')));
-        $end = RM::get("end", date('Y-m-d', strtotime('-1 day')));
         $fields = (new \Link())->getColumns();
 
         $searching = $query = [];
@@ -256,33 +316,30 @@ class Report extends Admin {
                 $query[$key] = Utils::mongoRegex($search);
             }
         }
-        $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
+        $dateQuery = Utils::dateQuery(['start' => $this->start, 'end' => $this->end]);
         $query['created'] = ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']];
 
-        $records = \Link::all($query, [], $orderBy, $sort, $limit, $page);
+        $records = \Link::all($query, [], $orderBy, $sort, $this->limit, $this->page);
         $count = \Link::count($query);
 
         $view->set([
             'links' => $records, 'fields' => $fields,
-            'limit' => $limit, 'page' => $page,
             'property' => $prop, 'value' => $val,
             'sign' => $sign, 'sort' => $sort,
             'order' => $orderBy, 'count' => $count,
-            'start' => $start, 'end' => $end, 'query' => $searching
+            'query' => $searching
         ]);
     }
 
     /**
      * @before _secure
+     * @after _displayData
      */
     public function platforms($id = null) {
         $this->seo(["title" => "Platform wise click stats"]);
         $view = $this->getActionView(); $org = $this->org;
 
         $clickCol = Registry::get("MongoDB")->clicks;
-        $start = RM::get("start", date('Y-m-d', strtotime('-1 day')));
-        $end = RM::get("end", date('Y-m-d', strtotime('-1 day')));
-        $view->set(['start' => $start, 'end' => $end]);
 
         // find the platforms
         $platforms = \Platform::all([
@@ -312,7 +369,7 @@ class Report extends Admin {
         }
 
         $query['is_bot'] = false;
-        $query['created'] = Db::dateQuery($start, $end);
+        $query['created'] = Db::dateQuery($this->start, $this->end);
 
         $records = $clickCol->aggregate([
             ['$match' => $query],
@@ -337,19 +394,5 @@ class Report extends Admin {
             'platforms' => $platforms, 'link' => $url,
             'publishers' => $result
         ]);
-    }
-
-    /**
-     * @before _secure
-     */
-    public function conversions() {
-        $this->seo(array("title" => "Conversions")); $view = $this->getActionView();
-    }
-
-    /**
-     * @before _secure
-     */
-    public function impressions() {
-        $this->seo(array("title" => "Impressions")); $view = $this->getActionView();
     }
 }

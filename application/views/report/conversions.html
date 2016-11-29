@@ -28,7 +28,7 @@
                                         <td>
                                             <select class="selectVal form-control selectpicker" data-value='{echo json_encode($query["adid"] ?? [])}' data-live-search=true name="adid[]" multiple="" title="Choose one or many Campaign">
                                             {foreach $a in $ads}
-                                                <option value="{$a->id}">{echo $a->name}</option>
+                                                <option value="{$a->id}">{echo $a->title}</option>
                                             {/foreach}
                                             </select>
                                         </td>
@@ -49,7 +49,7 @@
                                     <tr>
                                         <td>
                                             <div class="checkbox checkbox-primary">
-                                                <input name="cid" type="checkbox" {if array_key_exists("cid", $query)} checked="" {/if} value="cid">
+                                                <input name="query[]" type="checkbox" {if array_key_exists("cid", $query)} checked="" {/if} value="cid">
                                                 <label>Click ID</label>
                                             </div>
                                         </td>
@@ -100,7 +100,7 @@
                                     <thead>
                                         <tr>
                                             {foreach $f in $fields}
-                                            {if in_array($f, ['_id', 'meta', 'modified', 'live', 'adid', 'pid'])} {script continue} {/if}
+                                            {if in_array($f, ['_id', 'meta', 'modified', 'live'])} {script continue} {/if}
                                             <th>{echo $f}</th>
                                             {/foreach}
                                         </tr>
@@ -109,14 +109,9 @@
                                         <tbody>
                                             {foreach $object in $clicks}
                                                 <tr>
-                                                    <td>{echo $object->ipaddr}</td>
-                                                    <td>{echo $object->referer}</td>
-                                                    <td>{echo $object->country}</td>
-                                                    <td>{echo $object->cookie}</td>
-                                                    <td>{echo substr($object->browser, 0, 50)}</td>
-                                                    <td>{echo $object->os}</td>
-                                                    <td>{echo $object->is_bot}</td>
-                                                    <td>{echo $object->device}</td>
+                                                    <td>{echo $object->cid}</td>
+                                                    <td>{echo $ads[$object->adid]->title}</td>
+                                                    <td>{echo $affs[$object->pid]->name}</td>
                                                     <td>{echo Framework\StringMethods::datetime_to_text($object->created)}</td>
                                                 </tr>
                                             {/foreach}

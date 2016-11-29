@@ -32,7 +32,7 @@ namespace Framework {
         }
         
         public static function get($key, $default = "") {
-            if (!empty($_GET[$key])) {
+            if (isset($_GET[$key])) {
                 if (is_array($_GET[$key])) {
                     return self::_clean($_GET[$key]);
                 }
@@ -51,7 +51,7 @@ namespace Framework {
         }
 
         public static function server($key, $default = "") {
-            if (!empty($_SERVER[$key])) {
+            if (isset($_SERVER[$key])) {
                 return htmlspecialchars($_SERVER[$key]);
             } return $default;
         }
