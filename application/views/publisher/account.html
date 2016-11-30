@@ -72,6 +72,13 @@
                                 </select>
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "currency")}</span>
                             </div>
+                            <div class="form-group">
+                                <label>TimeZone</label>
+                                {script $tz = $user->region["zone"] ?? "Asia/Kolkata"}
+                                <select name="timezone" class="form-control selectpicker" value="{$tz}" data-live-search=true>
+                                    {include auth/timezone.html}
+                                </select>
+                            </div>
                             {if($afields)}
                             <div class="table-responsive">
                                 <table class="table">

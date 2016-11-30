@@ -123,6 +123,13 @@
                                             </select>
                                             <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "currency")}</span>
                                         </div>
+                                        <div class="form-group">
+                                            <label>TimeZone</label>
+                                            {script $tz = $user->region["zone"] ?? "Asia/Kolkata"}
+                                            <select name="timezone" class="form-control selectpicker" value="{$tz}" data-live-search=true>
+                                                {include auth/timezone.html}
+                                            </select>
+                                        </div>
                                         <input type="hidden" name="action" value="account">
                                         <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
                                     </form>

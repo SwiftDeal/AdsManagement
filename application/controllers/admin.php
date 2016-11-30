@@ -3,7 +3,7 @@
 /**
  * @author Faizan Ayubi
  */
-use Framework\RequestMethods as RequestMethods;
+use Framework\RequestMethods as RM;
 use Framework\Registry as Registry;
 use Shared\Utils as Utils;
 use Framework\ArrayMethods as ArrayMethods;
@@ -23,8 +23,8 @@ class Admin extends Auth {
         ], ["_id"]);
         $in = array_keys($publishers);
         
-        $start = RequestMethods::get("start", date('Y-m-d', strtotime('-4 day')));
-        $end = RequestMethods::get("end", date('Y-m-d', strtotime('now')));
+        $start = RM::get("start", date('Y-m-d', strtotime('-4 day')));
+        $end = RM::get("end", date('Y-m-d', strtotime('now')));
         
         $dq = [
             'start' => date('Y-m-d', strtotime("-365 day")), 'end' => $end
@@ -59,31 +59,35 @@ class Admin extends Auth {
         $view->set('fields', $meta->value ?? []);
 
         $view->set("errors", []);
-        if (RequestMethods::type() == 'POST') {
-            $action = RequestMethods::post('action', '');
+        if (RM::type() == 'POST') {
+            $action = RM::post('action', '');
             switch ($action) {
                 case 'account':
-                    $user->name = RequestMethods::post('name');
-                    $user->currency = RequestMethods::post('currency', 'INR');
-                    $user->phone = RequestMethods::post('phone');
+                    $user->name = RM::post('name');
+                    $user->currency = RM::post('currency', 'INR');
+                    $user->region = [
+                        "currency" => RM::post('currency', 'INR'),
+                        "zone" => RM::post('timezone', 'Asia/Kolkata')
+                    ];
+                    $user->phone = RM::post('phone');
 
                     $user->save();
                     $view->set('message', 'Account Updated!!');
                     break;
 
                 case 'password':
-                    $old = RequestMethods::post('password');
-                    $new = RequestMethods::post('npassword');
+                    $old = RM::post('password');
+                    $new = RM::post('npassword');
                     $view->set($user->updatePassword($old, $new));
                     break;
 
                 case 'billing':
                     $billing = $org->billing;
-                    $billing["aff"]["auto"] = RequestMethods::post("autoinvoice", 0);
-                    $billing["aff"]["freq"] = RequestMethods::post("freq", 15);
-                    $billing["aff"]["minpay"] = $this->currency(RequestMethods::post('minpay', 100));
-                    $billing["aff"]["ptypes"] = RequestMethods::post("ptypes");
-                    $billing["adv"]["paypal"] = RequestMethods::post("paypal");
+                    $billing["aff"]["auto"] = RM::post("autoinvoice", 0);
+                    $billing["aff"]["freq"] = RM::post("freq", 15);
+                    $billing["aff"]["minpay"] = $this->currency(RM::post('minpay', 100));
+                    $billing["aff"]["ptypes"] = RM::post("ptypes");
+                    $billing["adv"]["paypal"] = RM::post("paypal");
                     $org->billing = $billing;
                     $org->save(); $this->setOrg($org);
                     $view->set('message', 'Organization Billing Updated!!');
@@ -91,28 +95,28 @@ class Admin extends Auth {
 
                 case 'org':
                     $meta = $org->meta;
-                    if (RequestMethods::post("widgets")) {    
-                        $meta["widgets"] = RequestMethods::post("widgets");
+                    if (RM::post("widgets")) {    
+                        $meta["widgets"] = RM::post("widgets");
                         $org->meta = $meta;
                     }
-                    $zopim = RequestMethods::post("zopim");
+                    $zopim = RM::post("zopim");
                     $meta["zopim"] = $zopim;
                     if (strlen($zopim) == 0) {
                         unset($meta["zopim"]);
                     }
-                    $org->name = RequestMethods::post('name');
+                    $org->name = RM::post('name');
                     $org->meta = $meta;
                     $org->logo = $this->_upload('logo');
-                    $org->url = RequestMethods::post('url');
-                    $org->email = RequestMethods::post('email');
+                    $org->url = RM::post('url');
+                    $org->email = RM::post('email');
                     $org->save(); $this->setOrg($org);
                     $view->set('message', 'Network Settings updated!!');
                     break;
                 
                 case 'customField':
-                    $label = RequestMethods::post("fname");
-                    $type = RequestMethods::post("ftype", "text");
-                    $required = RequestMethods::post("frequired", 1);
+                    $label = RM::post("fname");
+                    $type = RM::post("ftype", "text");
+                    $required = RM::post("frequired", 1);
                     $name = strtolower(str_replace(" ", "_", $label));
 
                     $field = [
@@ -134,15 +138,15 @@ class Admin extends Auth {
             $this->setUser($user);
         }
 
-        if (RequestMethods::type() === 'DELETE') {
+        if (RM::type() === 'DELETE') {
             if (is_a($meta, 'Meta')) {
                 $meta->delete();
             }
             $view->set('message', 'Extra Fields removed!!');
         }
         
-        $img = RequestMethods::get("img");
-        if (RequestMethods::get("action") == "removelogo" && $img === $org->logo) {
+        $img = RM::get("img");
+        if (RM::get("action") == "removelogo" && $img === $org->logo) {
             Utils::media($org->logo, 'remove');
             $org->logo = ' '; $this->setOrg($org);
             $org->save();
@@ -163,8 +167,8 @@ class Admin extends Auth {
         $view->set('mailConf', $mailConf->value ?? [])
             ->set("errors", []);
         
-        if (RequestMethods::type() == 'POST') {
-            $action = RequestMethods::post('action', '');
+        if (RM::type() == 'POST') {
+            $action = RM::post('action', '');
             switch ($action) {
                 case 'commission':
                     $view->set('message', 'Commission updated!!');
@@ -220,17 +224,17 @@ class Admin extends Auth {
         if (array_key_exists('commission', $meta)) {
             $arr = $meta["commission"];
             array_push($arr, [
-                'coverage' => RequestMethods::post('coverage', ['ALL']),
-                'model' => RequestMethods::post('model'),
-                'rate' => $this->currency(RequestMethods::post('rate'))
+                'coverage' => RM::post('coverage', ['ALL']),
+                'model' => RM::post('model'),
+                'rate' => $this->currency(RM::post('rate'))
             ]);
             $meta["commission"] = $arr;
         } else {
             $arr = [];
             $arr[] = [
-                'coverage' => RequestMethods::post('coverage', ['ALL']),
-                'model' => RequestMethods::post('model'),
-                'rate' => $this->currency(RequestMethods::post('rate'))
+                'coverage' => RM::post('coverage', ['ALL']),
+                'model' => RM::post('model'),
+                'rate' => $this->currency(RM::post('rate'))
             ];
             $meta["commission"] = $arr;
         }
@@ -246,8 +250,8 @@ class Admin extends Auth {
     public function performance() {
         $this->JSONview();$view = $this->getActionView();
         
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
+        $end = RM::get("end", strftime("%Y-%m-%d", strtotime('now')));
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
         
         $find = Performance::overall($dateQuery, User::all(["type" => "publisher", "org_id = ?" => $this->org->id], ["_id"]));
@@ -269,10 +273,10 @@ class Admin extends Auth {
         $view->set('publishers', $publishers)
             ->set('advertisers', $advertisers);
 
-        switch (RequestMethods::post("action")) {
+        switch (RM::post("action")) {
             case 'save':
-                $meta = RequestMethods::post("meta", "all");
-                $message = RequestMethods::post("message");
+                $meta = RM::post("meta", "all");
+                $message = RM::post("message");
                 $success = "Saved Successfully";
 
                 if ($meta !== "all" && (
@@ -296,7 +300,7 @@ class Admin extends Auth {
                 $n = new Notification([
                     "org_id" => $this->org->id,
                     "message" => $message,
-                    "target" => RequestMethods::post("target"),
+                    "target" => RM::post("target"),
                     "meta" => $meta
                 ]);
                 $n->save();
@@ -304,8 +308,8 @@ class Admin extends Auth {
                 break;
         }
 
-        if (RequestMethods::type() === 'DELETE') {
-            $id = RequestMethods::get("id");
+        if (RM::type() === 'DELETE') {
+            $id = RM::get("id");
             $n = Notification::first(["org_id = ?" => $this->org->id, "id = ?" => $id]);
             if ($n) {
                 $n->delete();
@@ -325,12 +329,12 @@ class Admin extends Auth {
     public function billing() {
         $this->seo(array("title" => "Billing")); $view = $this->getActionView();
         $bills = Bill::all(["org_id = ?" => $this->org->id], ['id', 'created'], "created", "desc");
-        $invoice = RequestMethods::get("invoice", "current");
+        $invoice = RM::get("invoice", "current");
         $imp_cost = 0; $click_cost = 0;
         switch ($invoice) {
             case 'current':
-                $start = RequestMethods::get('start', date('Y-m-01'));
-                $end = RequestMethods::get('end', date('Y-m-d'));
+                $start = RM::get('start', date('Y-m-01'));
+                $end = RM::get('end', date('Y-m-d'));
                 $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
 
                 // find advertiser performances to get clicks and impressions
@@ -370,10 +374,10 @@ class Admin extends Auth {
         $this->seo(array("title" => "Platforms")); $view = $this->getActionView();
 
         $query['user_id'] = ['$in' => $this->org->users('publisher')];
-        $limit = RequestMethods::get("limit", 20);
-        $page = RequestMethods::get("page", 1);
-        $property = RequestMethods::get("property", '');
-        $value = RequestMethods::get("value");
+        $limit = RM::get("limit", 20);
+        $page = RM::get("page", 1);
+        $property = RM::get("property", '');
+        $value = RM::get("value");
         
         if (in_array($property, ["live", "user_id"])) {
             $query["{$property} = ?"] = $value;
@@ -381,7 +385,7 @@ class Admin extends Auth {
             $query[$property] = Utils::mongoRegex($value);
         }
 
-        if (RequestMethods::type() === 'POST') {
+        if (RM::type() === 'POST') {
             $p = \Platform::first(['_id' => $id, 'user_id' => $query['user_id']]);
             if (!$p) {
                 return $view->set('message', "Invalid Request!!");
@@ -402,7 +406,7 @@ class Admin extends Auth {
             }
         }
 
-        if (RequestMethods::type() === 'DELETE') {
+        if (RM::type() === 'DELETE') {
             $p = \Platform::first(['_id' => $id, 'user_id' => $query['user_id']]);
             if (!$p) {
                 return $view->set('message', "Invalid Request!!");
