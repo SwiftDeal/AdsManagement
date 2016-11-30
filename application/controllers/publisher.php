@@ -317,16 +317,17 @@ class Publisher extends Auth {
             return $view->set('message', "Invalid Request");
         }
 
-        $tdomains = Shared\Services\User::trackingLinks($this->user, $this->org);
+        $user = User::first(["id = ?" => RM::post("aff_id")]) ?? $this->user;
+        $tdomains = Shared\Services\User::trackingLinks($user, $this->org);
         if (RM::post("domain")) {
             $domain = RM::post("domain");
         } else {
             $domain = $this->array_random($tdomains);
         }
-        $link = Link::first(["ad_id = ?" => $ad->_id, "user_id = ?" => $this->user->_id], ['domain', '_id']);
+        $link = Link::first(["ad_id = ?" => $ad->_id, "user_id = ?" => $user->_id], ['domain', '_id']);
         if (!$link) {
             $link = new Link([
-                'user_id' => $this->user->_id, 'ad_id' => $ad->_id,
+                'user_id' => $user->_id, 'ad_id' => $ad->_id,
                 'domain' => $domain, 'live' => true
             ]);
             $link->save();

@@ -226,10 +226,8 @@ class Campaign extends Admin {
     	$this->seo(['title' => 'Campaign Manage', 'description' => 'Manage campaigns']);
     	$view = $this->getActionView();$campaigns = [];
 
-        $page = RM::get("page", 1);
-        $limit = RM::get("limit", 10);
-        $property = RM::get("property");
-        $value = RM::get("value");
+        $page = RM::get("page", 1); $limit = RM::get("limit", 10);
+        $property = RM::get("property"); $value = RM::get("value");
 
         switch (RM::get("sort")) {
             case 'trending':

@@ -280,6 +280,15 @@
                     }
                     );
                 });
+
+                $('select[name=aff_id]').on('change', function (e) {
+                    request.post({ url: "/publisher/createLink", data: $('#linkgen').serialize() }, function (err, d) {
+                        if (err) {
+                            return bootbox.alert('Internal Server Error');
+                        }
+                        $('#showLinkUrl').val(d.link);
+                    });
+                });
             },
             contest: function () {
                 $('#contestType').on('change', function () {
