@@ -13,6 +13,17 @@ use Framework\RequestMethods as RM;
 use YTDownloader\Service\Download as Downloader;
 
 class Campaign extends Admin {
+    protected function _commissionDel($ad, &$view) {
+        if (RM::get('action') !== 'commDel') return $view->set('message', 'Invalid Request!!');
+        $commId = RM::get('comm_id');
+        $commCount = Commission::count(['ad_id' => $ad->_id]);
+        if ($commCount < 2) {
+            return $view->set('message', 'Atleast 1 commission is required!!');
+        }
+        $comm = Commission::first(['_id' => $commId, 'ad_id' => $ad->_id]);
+        if ($comm) $comm->delete();
+        $view->set('message', 'Commission deleted!!');
+    }
 
     /**
      * @before _secure
@@ -28,19 +39,7 @@ class Campaign extends Admin {
         $end = RM::get("end", date('Y-m-d'));
 
         if (RM::type() === 'DELETE') {
-            $action = RM::get('action');
-            switch ($action) {
-            case 'commDel':
-                $commId = RM::get('comm_id');
-                $commCount = Commission::count(['ad_id' => $ad->_id]);
-                if ($commCount < 2) {
-                    return $view->set('message', 'Atleast 1 commission is required!!');
-                }
-                $comm = Commission::first(['_id' => $commId, 'ad_id' => $ad->_id]);
-                if ($comm) $comm->delete();
-                $view->set('message', 'Commission deleted!!');
-                break;
-            }
+            $this->_commissionDel($ad, $view);
         }
 
         switch (RM::post("action")) {
@@ -298,30 +297,41 @@ class Campaign extends Admin {
     public function edit($id) {
         $c = \Ad::first(["_id = ?" => $id, "org_id = ?" => $this->org->_id]);
         if (!$c) $this->redirect("/campaign/manage.html");
-        $this->seo(['title' => 'Edit: '.$c->title, 'description' => 'Edit the campaign']);
+        $this->seo(['title' => sprintf("Edit: %s", $c->title), 'description' => 'Edit the campaign']);
         $view = $this->getActionView();
 
         $categories = \Category::all(['org_id' => $this->org->id], ['_id', 'name']);
-        if (RM::get("action") == "commdel") {
-            $comm = \Commission::first(["id = ?" => RM::get('id')]);
-            if ($comm) {
-                $comm->delete();
-                $view->set("message", "Commission deleted!!");
-            }
+        if (RM::type() === 'DELETE') {
+            $this->_commissionDel($c, $view);
         }
 
         if (RM::type() === 'POST') {
             $action = RM::post("action");
             switch ($action) {
-                case 'adedit':
-                    $img = $c->image;
-                    if ($_FILES['image']['name']) {
-                        $img = $this->_upload('image', 'images', ['extension' => 'jpe?g|gif|bmp|png|tif']);
-                        @unlink(APP_PATH . '/public/assets/uploads/images/' . $c->image);
+                case 'targeting':
+                    $campaign = $c;
+                    $campaign->device = RM::post('device', $campaign->device);
+                    $visibility = RM::post('visibility', 'public');
+                    if ($visibility === "private") {
+                        $campaign->getMeta()['private'] = true;
+                    } else {
+                        unset($campaign->getMeta()['private']);
                     }
-                    $c->image = $img;
+
+                    $permission = RM::post('permission', false);
+                    if ($permission == "yes") {
+                        $campaign->getMeta()['permission'] = true;
+                    } else {
+                        unset($campaign->getMeta()['permission']);
+                    }
+                    $campaign->save();
+                    $view->set("message", "Campaign updated!!");
+                    break;
+
+                case 'adedit':
                     $c->category = \Ad::setCategories(RM::post('category'));
                     $c->title = RM::post('title');
+                    $c->url = RM::post("url");
                     $c->description = RM::post('description');
                     $c->device = RM::post('device', ['all']);
                     
@@ -338,6 +348,26 @@ class Campaign extends Admin {
                         $view->set("message", "Campaign updated!!");
                     }
                     break;
+
+                case 'imageUpload':
+                    $message = "Image Updated Successfully!!";
+                    $img = ' '; $imgUrl = RM::post("imageUrl");
+                    if ($_FILES['image']['name']) {
+                        $img = Utils::media('image', 'upload');
+                    } else if ($imgUrl) {
+                        $img = Utils::media($imgUrl, 'download');
+                    }
+
+                    if (strlen($img) > 4) { // to check if media was uploaded successfully
+                        Utils::media($c->image, 'remove');
+                    } else {
+                        $img = $c->image;
+                        $message = "Please Upload a valid Image!!";
+                    }
+
+                    $c->image = $img; $c->save();
+                    $view->set("message", $message);
+                    break;
                 
                 case 'commedit':
                     $comm = \Commission::first(["id = ?" => RM::post('cid')]);
@@ -347,8 +377,13 @@ class Campaign extends Admin {
                     $comm->revenue = $this->currency(RM::post('revenue'));
                     $comm->coverage = RM::post('coverage', ['ALL']);
 
-                    $comm->save();
-                    $view->set("message", "Commission updated!!");
+                    if ($comm->validate()) {
+                        $comm->save();
+                        $view->set("message", "Commission updated!!");   
+                    } else {
+                        $view->set("errors", $comm->errors);
+                        $view->set("message", "Validation Failed");
+                    }
                     break;
 
                 case 'commadd':
@@ -360,8 +395,13 @@ class Campaign extends Admin {
                         'revenue' => $this->currency(RM::post('revenue')),
                         'coverage' => RM::post('coverage', ['ALL'])
                     ]);
-                    $commission->save();
-                    $view->set("message", "Commission added!!");
+                    if ($commission->validate()) {
+                        $commission->save();
+                        $view->set("message", "Commission added!!");   
+                    } else {
+                        $view->set("errors", $commission->errors);
+                        $view->set("message", "Validation Failed");
+                    }
                     break;
             }
         }
@@ -379,8 +419,7 @@ class Campaign extends Admin {
      * @before _secure
      */
     public function update($cid) {
-        $this->JSONView();
-        $view = $this->getActionView();
+        $this->JSONView(); $view = $this->getActionView();
         $c = \Ad::first(["_id = ?" => $cid, "org_id = ?" => $this->org->_id]);
         if (!$c || RM::type() !== 'POST') {
             return $view->set('message', 'Invalid Request!!');

@@ -178,8 +178,12 @@ class Utils {
         return $data;
 	}
 
-	public static function randomPass() {
+	public static function randomPass($numbers = true) {
 		$alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+
+		if (!$numbers) {
+			$alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		}
         $pass = array(); //remember to declare $pass as an array
         $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
         for ($i = 0; $i < 8; $i++) {
@@ -265,13 +269,8 @@ class Utils {
 			$ip = explode(",", $ipaddr);
 
 			$ip = $ip[0];
-		} else if (isset($headers['X-Forwarded-For'])) {
-			$ipaddr = $headers['X-Forwarded-For'];
-			$ip = explode(",", $ipaddr);
-
-			$ip = array_pop($ip);
 		} else {
-			$ip = RequestMethods::server('HTTP_CLIENT_IP') ?? RequestMethods::server('REMOTE_ADDR');
+			$ip = RequestMethods::server('REMOTE_ADDR') ?? RequestMethods::server('HTTP_CLIENT_IP');
 		}
 		return $ip;
 	}
@@ -313,12 +312,9 @@ class Utils {
 	        $path = APP_PATH . "/public/assets/uploads/{$type}/";
 	        $extension = pathinfo($file["name"], PATHINFO_EXTENSION);
 
-	        if (isset($opts['extension'])) {
-	            $ex = $opts['extension'];
-
-	            if (!preg_match("/^".$ex."$/", $extension)) {
-	                return false;
-	            }
+	        $extensionRegex = $opts['extension'] ?? 'jpe?g|gif|bmp|png|tif';
+	        if (!preg_match("/^".$extensionRegex."$/", $extension)) {
+	            return false;
 	        }
 
 	        if (isset($opts['name'])) {

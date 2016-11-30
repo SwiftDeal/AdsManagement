@@ -105,6 +105,7 @@
                                 </div>
                             </div>
                             <p class="text-center">
+                                <input type="hidden" name="action" value="adedit">
                                 <button type="submit" class="btn btn-primary">Save</button>
                             </p>
                             </form>
@@ -126,7 +127,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Allowed Promotion Method</label>
-                                        <select name="promotion[]" required="" class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose allowed Traffic">
+                                        <select name="promotion[]" class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose allowed Traffic">
                                             <option value="">Text Link</option>
                                             <option value="">Banner</option>
                                             <option value="">Deals</option>
@@ -151,22 +152,24 @@
                                     <div class="form-group">
                                         <label>Visibility</label>
                                         <div class="form-control">
+                                            {script $private = $c->meta['private'] ?? false}
                                             <label class="radio-inline" data-toggle="tooltip" data-placement="top" data-original-title="Private : Visible to selected affiliates">
-                                                <input type="radio" name="visibility" value="private"> Private
+                                                <input type="radio" name="visibility" value="private" {if $private} checked="" {/if}> Private
                                             </label>
                                             <label class="radio-inline" data-toggle="tooltip" data-placement="top" data-original-title="Public: Visible to all affiliates">
-                                                <input type="radio" name="visibility" id="vpublic" value="public" checked=""> Public
+                                                <input type="radio" name="visibility" id="vpublic" value="public" {if !$private} checked="" {/if}> Public
                                             </label>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label>Requires Permission to Run</label>
+                                        {script $permission = $c->meta['permission'] ?? false}
                                         <div class="form-control">
                                             <label class="radio-inline">
-                                                <input type="radio" name="permission" value="true"> Yes
+                                                <input type="radio" name="permission" {if $permission} checked="" {/if} value="yes"> Yes
                                             </label>
                                             <label class="radio-inline">
-                                                <input type="radio" name="permission" value="false" checked=""> No
+                                                <input type="radio" name="permission" {if !$permission} checked="" {/if} value="no"> No
                                             </label>
                                         </div>
                                         <small class="help-block">Affiliate will request access to run this campaign</small>
@@ -174,6 +177,7 @@
                                 </div>
                             </div>
                             <p class="text-center">
+                                <input type="hidden" name="action" value="targeting">
                                 <button type="submit" class="btn btn-primary">Save</button>
                             </p>
                             </form>
@@ -182,8 +186,14 @@
                             <form method="post" action="" enctype="multipart/form-data">
                                 <div class="form-group">
                                     <label>Image</label>
-                                    <input type="file" class="form-control" name="image" required="">
+                                    <input type="file" class="form-control" name="image">
                                 </div>
+                                <div class="form-group">
+                                    <label for="Image URL">Image URL</label>
+                                    <input type="url" class="form-control" name="imageUrl" placeholder="Either upload an Image or Image URL">
+                                </div>
+                                <input type="hidden" name="action" value="imageUpload">
+                                <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-send"></i> Go</button>
                             </form>
                             <div class="table-responsive">
                                 <table class="table">
@@ -197,9 +207,6 @@
                                                     <h4 class="media-heading">{echo $c->image}</h4>
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td>
-                                            <a href="#" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</a>
                                         </td>
                                     </tr>
                                 </table>
@@ -252,7 +259,7 @@
                                             <input type="hidden" name="action" value="commedit">
                                             <input type="hidden" name="cid" value="{echo $comm->id}">
                                             <span class="pull-right">
-                                                <a href="/campaign/edit/{echo $c->id}.html?action=commdel&id={echo $comm->id}" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</a> 
+                                                <a href="/campaign/edit/{echo $c->id}.html?action=commDel&comm_id={echo $comm->id}" class="delete btn btn-danger btn-sm" data-message="Are You sure you want to delete this commission??"><i class="fa fa-trash"></i> Delete</a> 
                                                 <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-check-circle"></i> Save</button>
                                             </span>
                                         </form>

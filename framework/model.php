@@ -381,6 +381,11 @@ namespace Framework {
             } return $this->_primary;
         }
 
+        /**
+         * If Validation fails this should return false else true (i.e. validation passes)
+         * @param  mixed $value The value which is to be checked
+         * @return boolean        true|false
+         */
         protected function _validateRequired($value) {
             switch (gettype($value)) {
                 case 'array':
@@ -403,7 +408,7 @@ namespace Framework {
                 
                 default:
                     $value = (string) $value;
-                    $value = strlen($value);
+                    $value = (strlen($value) > 0);
                     break;
             }
             return (boolean) $value;

@@ -7,6 +7,7 @@ use Framework\RequestMethods as RequestMethods;
 use Framework\Registry as Registry;
 use Framework\ArrayMethods as ArrayMethods;
 use Shared\Utils as Utils;
+use Shared\Services\Db;
 
 class Account extends Admin {
     
@@ -17,9 +18,8 @@ class Account extends Admin {
         $this->seo(array("title" => "Manage Account"));
         $view = $this->getActionView();
 
-        $in = ["admin", "adm", "afm"];
         $users = User::all([
-            'type' => ['$in' => $in],
+            'type' => Db::convertType('admin|adm|afm', 'regex'),
             "org_id" => $this->org->_id
         ]);
         
