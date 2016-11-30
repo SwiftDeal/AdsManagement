@@ -212,11 +212,13 @@ namespace Framework {
             return $interval->format('%a');
         }
 
-        public static function datetime_to_text($datetime = "") {
+        public static function datetime_to_text($datetime = "", $user = null) {
             if (is_object($datetime) && is_a($datetime, 'DateTime')) {
-                $datetime = date('Y-m-d H:i:s', $datetime->getTimestamp());
-            }
-            if ($datetime == '0000-00-00 00:00:00') {
+                if (is_object($user)) {
+                    $datetime = $user->timeZone($datetime);
+                }
+                return $datetime->format('F j\, o \a\t g\:i a');
+            } else if ($datetime == '0000-00-00 00:00:00') {
                 return "Not Specified";
             } else {
                 $unixdatetme = strtotime($datetime);

@@ -4,7 +4,6 @@ define("DEBUG", FALSE);
 define("APP_PATH", str_replace(DIRECTORY_SEPARATOR, "/", dirname(dirname(__FILE__))));
 define("URL", "http://". $_SERVER['HTTP_HOST']. $_SERVER['REQUEST_URI']);
 define("CDN", "//". $_SERVER['HTTP_HOST'] . "/assets/");
-date_default_timezone_set('Asia/Kolkata');
 
 try {
 

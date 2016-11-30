@@ -14,7 +14,7 @@ namespace Shared {
         /**
          * @read
          */
-        protected $_types = array("autonumber", "text", "integer", "decimal", "boolean", "datetime", "date", "time", "mongoid", "array");
+        protected $_types = ["autonumber", "text", "integer", "decimal", "boolean", "datetime", "date", "time", "mongoid", "array"];
 
         /**
          * @column
@@ -366,14 +366,14 @@ namespace Shared {
          * @param int $limit
          * @return array
          */
-        public static function all($where = array(), $fields = array(), $order = null, $direction = null, $limit = null, $page = null) {
+        public static function all($where = [], $fields = [], $order = null, $direction = null, $limit = null, $page = null) {
             $model = new static();
             $where = $model->_updateQuery($where);
             $fields = $model->_updateFields($fields);
             return $model->_all($where, $fields, $order, $direction, $limit, $page);
         }
 
-        protected function _all($where = array(), $fields = array(), $order = null, $direction = null, $limit = null, $page = null) {
+        protected function _all($where = [], $fields = [], $order = null, $direction = null, $limit = null, $page = null) {
             $collection = $this->getTable();
 
             $opts = Db::opts($fields, $order, $direction, $limit, $page);
@@ -400,14 +400,14 @@ namespace Shared {
          * @param int $limit
          * @return \Shared\Model object | null
          */
-        public static function first($where = array(), $fields = array(), $order = null, $direction = null) {
+        public static function first($where = [], $fields = [], $order = null, $direction = null) {
             $model = new static();
             $where = $model->_updateQuery($where);
             $fields = $model->_updateFields($fields);
             return $model->_first($where, $fields, $order, $direction);
         }
 
-        protected function _first($where = array(), $fields = array(), $order = null, $direction = null) {
+        protected function _first($where = [], $fields = [], $order = null, $direction = null) {
             $collection = $this->getTable();
             $record = null;
 

@@ -115,6 +115,13 @@ class User extends Shared\Model {
      */
     protected $_login = null;
 
+    /**
+     * @column
+     * @readwrite
+     * @type array
+     */
+    protected $_region = [];
+
     public static function hourly() {
         $users = self::all(['meta.pixel' => "working"]);
         foreach ($users as $u) {
@@ -123,6 +130,24 @@ class User extends Shared\Model {
             $u->meta = $meta;
             $u->save();
         }
+    }
+
+    public function timeZone($dateTimeObj) {
+        $defaultZone = "Asia/Kolkata";
+        // error checking
+        if (!is_object($dateTimeObj) || !is_a($dateTimeObj, 'DateTime')) {
+            return $dateTimeObj;
+        }
+
+        $changeZone = $this->region['zone'] ?? false;
+        if ($changeZone) {
+            $defaultZone = $changeZone;
+        }
+
+        $tz = new \DateTimeZone($defaultZone);
+        // var_dump($tz);
+        $dateTimeObj->settimezone($tz);
+        return $dateTimeObj;
     }
 
     public function setEmail($email) {
