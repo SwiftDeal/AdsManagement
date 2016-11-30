@@ -1,3 +1,4 @@
+{include campaign/modals/trackingParam.html}
 <script>
     window.advertisers = JSON.parse('{echo json_encode($advertisers)}');
     window.currency = '{echo strtolower($user->currency)}';
@@ -49,9 +50,15 @@
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "device")}</span>
                             </div>
                             <div class="form-group">
-                                <label>Landing Page URL</label>
+                                <label>Destination URL <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The URL that shows a preview of the offer or the landing page; no tracking parameter is needed on the URL."></i></label>
+                                <small class="pull-right"><u><button class="btn btn-xs" data-toggle="modal" data-target="#trackingParam">Tracking Parameter</button></u></small>
                                 <input type="url" class="form-control" name="url" required="" value="{echo $meta['url']}">
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "url")}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Preview URL <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The target URL where your affiliate traffic will be sent to. You can also add other tracking parameters from the list below."></i></label>
+                                <input type="url" class="form-control" name="preview_url" required="" value="{echo $meta['url']}">
+                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "preview_url")}</span>
                             </div>
                             {if (isset($type) && $type == "video")}
                             <div class="form-group">

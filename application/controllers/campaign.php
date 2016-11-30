@@ -161,6 +161,7 @@ class Campaign extends Admin {
     			'description' => RM::post('description'),
                 'org_id' => $this->org->_id,
     			'url' => RM::post('url'),
+                'preview_url' => RM::post('preview_url'),
     			'category' => \Ad::setCategories(RM::post('category')),
     			'image' => $img,
                 'type' => RM::post('type', 'article'),

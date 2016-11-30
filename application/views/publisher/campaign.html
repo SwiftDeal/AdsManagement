@@ -49,13 +49,17 @@
                         <img src="{echo Ad::displayImg($ad->image)}" alt="" width="300" class="img-responsive">
                     </div>
                     <div class="col-md-8">
+                        <p>
+                            <b>Landing Page: </b> <a href="{echo $ad->url}" target="_blank">{echo $ad->preview_url}</a>
+                        </p>
+                        <p>{echo $ad->description}</p>
                         <div class="table-responsive">
                             <table class="table">
                                 <tr>
                                     <th>Status</th>
                                     <td>{if($ad->live)}<span class="label label-success">Active</span>{/if}{else}<span class="label label-warning">Inactive</span>{/else}</td>
                                     <th>Expiry</th>
-                                    <td>{echo $ad->expiry}</td>
+                                    <td>{echo $ad->expiry ?? NONE}</td>
                                 </tr>
                                 <tr>
                                     <th>Category</th>
@@ -71,25 +75,9 @@
                                 <tr>
                                     <th>Device Targeted</th>
                                     <td>{echo strtoupper(implode(",", $ad->device))}</td>
-                                    <th>Landing Page</th>
-                                    <td><a href="{echo $ad->url}" target="_blank">{echo $ad->url}</a></td>
+                                    <th>Type</th>
+                                    <td>{echo ucfirst($ad->type)}</td>
                                 </tr>
-                                {script $link = Link::first(["ad_id = ?" => $ad->_id, "user_id = ?" => $user->id])}
-                                {if ($link)}
-                                <tr>
-                                    <th>Tracking Link</th>
-                                    <td id="trackingURL">{echo $link->getUrl()}</td>
-                                    <th>Tracking Params</th>
-                                    <td class="input-group">
-                                        <input type="text" placeholder="Extra Param1" class="form-control" id="param1">
-                                        <span class="input-group-addon">,</span>
-                                        <input type="text" placeholder="Extra Param2" class="form-control" id="param2">
-                                        <span class="input-group-btn">
-                                            <button type="button" id="extraParam" class="btn btn-primary">GO</button>
-                                        </span>
-                                    </td>
-                                </tr>
-                                {/if}
                             </table>
                         </div>
                     </div>
@@ -140,6 +128,75 @@
                     </form>
                     <p></p>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="panel panel-border panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Sub-IDs &amp; Callbacks</h3>
+            </div>
+            <div class="panel-body">
+            {script $link = Link::first(["ad_id = ?" => $ad->_id, "user_id = ?" => $user->id])}
+            {if ($link)}
+            <p>
+                <b>Tracking Link: </b>
+                <span id="trackingURL">{echo $link->getUrl()}</span>
+            </p>
+            <p>Tracking Params</p>
+            <div class="input-group">
+                <input type="text" placeholder="Extra Param1" class="form-control" id="param1">
+                <span class="input-group-addon">,</span>
+                <input type="text" placeholder="Extra Param2" class="form-control" id="param2">
+                <span class="input-group-btn">
+                    <button type="button" id="extraParam" class="btn btn-primary">GO</button>
+                </span>
+            </div>
+            {/if} {else}
+            <div class="text-center">
+                {if(array_key_exists("permission", $ad->meta))}
+                    {script $access = AdAccess::first(["ad_id = ?" => $ad->id, "user_id = ?" => $user->id])}
+                    {if(isset($access->live))}
+                    <button type="button" data-adid="{echo $ad->_id}" class="createLink btn btn-purple btn-xs"><i class="fa fa-link"></i> Generate Link</button>
+                    {/if}
+                    {if($access->live == "0")}
+                    <label class="label label-default">Request Pending Approval</label>
+                    {/if}
+                    {if(!$access)}
+                    <a href="/publisher/campaign/{$ad->_id}.html?action=permission" class="btn btn-default">Request Approval to Run</a>
+                    {/if}
+                {/if}{else}
+                <button type="button" data-adid="{echo $ad->_id}" class="createLink btn btn-purple btn-xs"><i class="fa fa-link"></i> Generate Link</button>
+                {/else}
+            </div>
+            {/else}
+
+            <hr><br>
+            <p>If you would like to set a callback for this campaign, enter the details below.</p><br>
+            <form class="form-inline" role="form" id="range">
+                <div class="form-group">
+                    <div class="input-group">
+                        <select class="form-control selectpicker" name="callback" title="Select Callback type" style="width: 180px">
+                            <option value="url">URL(Any Campaign Tracking type)</option>
+                            <option value="html">HTML(iframe Campaign Tracking Only)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <textarea name="code" class="form-control" placeholder="Callback Code" rows="3" style="width: 300px"></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Pixel</button>
+            </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="panel panel-border panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Creatives</h3>
+            </div>
+            <div class="panel-body">
+                <p>No Creatives Found</p>
             </div>
         </div>
     </div>
