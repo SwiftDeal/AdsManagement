@@ -4,18 +4,7 @@
 <div class="row">
     <div class="col-sm-12">
         <span class="pull-right">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createPlatform"><i class="fa fa-plus"></i> Add New</button>
-            <!-- Single button -->
-            <div class="btn-group">
-                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Native AD <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li data-toggle="modal" data-target="#nativeCode"><a href="#">Get Code</a></li>
-                    <li><a href="https://wordpress.org/plugins/vnative/" target="_blank">Wordpress Plugin</a></li>
-                </ul>
-            </div>
-            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#bannerCode">Banner AD Code</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createPlatform"><i class="fa fa-plus"></i> Add Property</button>
         </span>
         <h4 class="page-title">Platforms</h4>
     </div>
@@ -27,42 +16,26 @@
         {echo $message}
     </div>
     {/if}
-    {foreach $p in $platforms}
-    <div class="col-md-6">
-        <div class="card-box">
-            <h4 class="m-t-0 header-title"><b>Platform</b></h4>
-            <form role="form" method="post">
-                <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" name="url" value="{echo $p->url}" class="form-control" placeholder="Full Name">
-                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "url")}</span>
-                </div>
-                <div class="form-group">
-                    <label>Category</label><br>
-                    {script $category = (isset($p->meta['category'])) ? $p->meta['category'] : []}
-                    <select name="category[]" required="" data-value='{echo json_encode($category)}' class="selectpicker form-control selectVal" multiple="" data-live-search=true title="Choose a campaign category" style="max-width: 280px;">
-                        {foreach $cat in $categories}
-                        <option value="{$cat->id}">{$cat->name}</option>
-                        {/foreach}
-                    </select>
-                    <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "meta")}</span>
-                </div>
-                <div class="form-group">
-                    <label for="Type">Type</label>
-                    {script $type = (isset($p->meta['type'])) ? [$p->meta['type']] : []}
-                    <select name="type" class="form-control selectVal" data-value='{echo json_encode($type)}' required="">
-                        <option value="facebook">Facebook</option>
-                        <option value="twitter">Twitter</option>
-                        <option value="website">Website</option>
-                        <option value="androidapp">AndroidApp</option>
-                        <option value="iosapp">iOS app</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <input type="hidden" name="pid" value="{echo $p->_id}">
-                <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
-            </form>
+    <div class="panel panel-default panel-border">
+        <div class="table-responsive">
+            <table class="table table-stripped">
+                <tr>
+                    <th>PROPERTY</th>
+                    <th>TYPE</th>
+                    <th>ACTION</th>
+                </tr>
+            {foreach $p in $platforms}
+                <tr>
+                    <td>{echo $p->url}</td>
+                    <td>{echo $p->meta['type'] ?? NONE}</td>
+                    <td>
+                        <button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#nativeCode">Native AD Code</button>
+                        <a href="https://wordpress.org/plugins/vnative/" class="btn btn-info btn-xs" target="_blank">Wordpress Plugin</a>
+                        <button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#bannerCode">Banner AD Code</button>
+                    </td>
+                </tr>
+            {/foreach}
+            </table>
         </div>
     </div>
-    {/foreach}
 </div>

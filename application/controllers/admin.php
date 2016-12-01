@@ -49,16 +49,19 @@ class Admin extends Auth {
      * @before _secure
      * @after _csrfToken
      */
-    public function customization() {
-        $this->seo(array("title" => "Account Settings"));
-        $view = $this->getActionView();
-
+    public function settings() {
+        $this->seo(array("title" => "Settings")); $view = $this->getActionView();
         $user = $this->user; $org = $this->org;
+
         $search = ['prop' => 'customField', 'propid' => $org->_id];
         $meta = Meta::first($search) ?? (object) [];
         $view->set('fields', $meta->value ?? []);
 
-        $view->set("errors", []);
+        $apikey = ApiKey::first(["org_id = ?" => $org->id]);
+        $mailConf = Meta::first(['prop' => 'orgSmtp', 'propid' => $this->org->_id]) ?? (object) [];
+        $view->set('mailConf', $mailConf->value ?? [])
+            ->set("errors", []);
+        
         if (RM::type() == 'POST') {
             $action = RM::post('action', '');
             switch ($action) {
@@ -134,65 +137,6 @@ class Admin extends Auth {
                     $view->set('fields', $meta->value ?? []);
                     $view->set('message', 'Extra Field Added!!');
                     break;
-            }
-            $this->setUser($user);
-        }
-
-        if (RM::type() === 'DELETE') {
-            if (is_a($meta, 'Meta')) {
-                $meta->delete();
-            }
-            $view->set('message', 'Extra Fields removed!!');
-        }
-        
-        $img = RM::get("img");
-        if (RM::get("action") == "removelogo" && $img === $org->logo) {
-            Utils::media($org->logo, 'remove');
-            $org->logo = ' '; $this->setOrg($org);
-            $org->save();
-            $this->redirect("/admin/customization.html");
-        }
-    }
-
-    /**
-     * @before _secure
-     */
-    public function settings() {
-        $this->seo(array("title" => "Settings"));
-        $view = $this->getActionView();
-
-        $user = $this->user; $org = $this->org;
-        $apikey = ApiKey::first(["org_id = ?" => $org->id]);
-        $mailConf = Meta::first(['prop' => 'orgSmtp', 'propid' => $this->org->_id]) ?? (object) [];
-        $view->set('mailConf', $mailConf->value ?? [])
-            ->set("errors", []);
-        
-        if (RM::type() == 'POST') {
-            $action = RM::post('action', '');
-            switch ($action) {
-                case 'commission':
-                    $view->set('message', 'Commission updated!!');
-                    break;
-
-                case 'commadd':
-                    $this->addCommisson($org);
-                    break;
-
-                case 'domains':
-                    $message = $org->updateDomains();
-                    $this->setOrg($org);
-                    $view->set('message', $message);
-                    break;
-
-                case 'categories':
-                    $success = Category::updateNow($this->org);
-                    if ($success) {
-                        $msg = 'Categories updated Successfully!!';
-                    } else {
-                        $msg = 'Failed to delete some categories because in use by campaigns!!';
-                    }
-                    $view->set('message', $msg);
-                    break;
 
                 case 'smtp':
                     $msg = \Shared\Services\Smtp::create($this->org);
@@ -214,33 +158,22 @@ class Admin extends Auth {
             }
             $this->setUser($user);
         }
-        $categories = \Category::all(['org_id' => $this->org->_id]);
-        $view->set('categories', $categories)
-            ->set("apiKey", $apikey);
-    }
+        $view->set("apiKey", $apikey);
 
-    protected function addCommisson($org) {
-        $meta = $org->meta;
-        if (array_key_exists('commission', $meta)) {
-            $arr = $meta["commission"];
-            array_push($arr, [
-                'coverage' => RM::post('coverage', ['ALL']),
-                'model' => RM::post('model'),
-                'rate' => $this->currency(RM::post('rate'))
-            ]);
-            $meta["commission"] = $arr;
-        } else {
-            $arr = [];
-            $arr[] = [
-                'coverage' => RM::post('coverage', ['ALL']),
-                'model' => RM::post('model'),
-                'rate' => $this->currency(RM::post('rate'))
-            ];
-            $meta["commission"] = $arr;
+        if (RM::type() === 'DELETE') {
+            if (is_a($meta, 'Meta')) {
+                $meta->delete();
+            }
+            $view->set('message', 'Extra Fields removed!!');
         }
         
-        $org->meta = $meta;
-        $org->save();
+        $img = RM::get("img");
+        if (RM::get("action") == "removelogo" && $img === $org->logo) {
+            Utils::media($org->logo, 'remove');
+            $org->logo = ' '; $this->setOrg($org);
+            $org->save();
+            $this->redirect("/admin/settings.html");
+        }
     }
 
     /**

@@ -584,4 +584,68 @@ class Campaign extends Admin {
             $this->redirect("{$cdn}img/logo.png");
         }
     }
+
+    /**
+     * @before _secure
+     */
+    public function settings() {
+        $this->seo(array("title" => "Campaign: Settings")); $view = $this->getActionView();
+        $user = $this->user; $org = $this->org;
+        
+        if (RM::type() == 'POST') {
+            $action = RM::post('action', '');
+            switch ($action) {
+                case 'commission':
+                    $view->set('message', 'Commission updated!!');
+                    break;
+
+                case 'commadd':
+                    $this->addCommisson($org);
+                    break;
+
+                case 'domains':
+                    $message = $org->updateDomains();
+                    $this->setOrg($org);
+                    $view->set('message', $message);
+                    break;
+
+                case 'categories':
+                    $success = Category::updateNow($this->org);
+                    if ($success) {
+                        $msg = 'Categories updated Successfully!!';
+                    } else {
+                        $msg = 'Failed to delete some categories because in use by campaigns!!';
+                    }
+                    $view->set('message', $msg);
+                    break;
+            }
+            $this->setUser($user);
+        }
+        $categories = \Category::all(['org_id' => $this->org->_id]);
+        $view->set('categories', $categories);
+    }
+
+    protected function addCommisson($org) {
+        $meta = $org->meta;
+        if (array_key_exists('commission', $meta)) {
+            $arr = $meta["commission"];
+            array_push($arr, [
+                'coverage' => RM::post('coverage', ['ALL']),
+                'model' => RM::post('model'),
+                'rate' => $this->currency(RM::post('rate'))
+            ]);
+            $meta["commission"] = $arr;
+        } else {
+            $arr = [];
+            $arr[] = [
+                'coverage' => RM::post('coverage', ['ALL']),
+                'model' => RM::post('model'),
+                'rate' => $this->currency(RM::post('rate'))
+            ];
+            $meta["commission"] = $arr;
+        }
+        
+        $org->meta = $meta;
+        $org->save();
+    }
 }

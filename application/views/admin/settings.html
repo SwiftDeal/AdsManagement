@@ -22,21 +22,27 @@
             <div class="row">
                 <ul class="nav nav-tabs navtab-custom">
                     <li class="active">
-                        <a href="#payout" data-toggle="tab" aria-expanded="false">
+                        <a href="#appearance" data-toggle="tab" aria-expanded="false">
                             <span class="visible-xs"><i class="fa fa-home"></i></span>
-                            <span class="hidden-xs">Commission</span>
+                            <span class="hidden-xs">Appearance</span>
                         </a>
                     </li>
                     <li class="">
-                        <a href="#category" data-toggle="tab" aria-expanded="true">
+                        <a href="#profile" data-toggle="tab" aria-expanded="true">
                             <span class="visible-xs"><i class="fa fa-user"></i></span>
-                            <span class="hidden-xs">Category</span>
+                            <span class="hidden-xs">Profile</span>
                         </a>
                     </li>
                     <li class="">
-                        <a href="#domain" data-toggle="tab" aria-expanded="false">
-                            <span class="visible-xs"><i class="fa fa-globe"></i></span>
-                            <span class="hidden-xs">Domains</span>
+                        <a href="#billing" data-toggle="tab" aria-expanded="false">
+                            <span class="visible-xs"><i class="fa fa-money"></i></span>
+                            <span class="hidden-xs">Network Billing</span>
+                        </a>
+                    </li>
+                    <li class="">
+                        <a href="#affiliate" data-toggle="tab" aria-expanded="false">
+                            <span class="visible-xs"><i class="fa fa-users"></i></span>
+                            <span class="hidden-xs">Affiliate</span>
                         </a>
                     </li>
                     <li class="">
@@ -53,110 +59,241 @@
                     </li>
                 </ul>
                 <div class="tab-content">
-                    <div class="tab-pane active" id="payout">
-                        <h4 class="m-t-0 header-title text-center">Default Commission Payout Settings</h4>
-                        {if(!empty($org->meta["commission"]))}
-                        <form action="" method="post">
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <tr>
-                                        <th><label>Coverage</label></th>
-                                        <th><label>Model</label></th>
-                                        <th><label>Rate</label></th>
-                                    </tr>
-                                    {foreach $c in $org->meta["commission"]}
-                                    <tr>
-                                        <td>
-                                            <div class="form-group">
-                                                <select name="coverage[]" data-value='{echo json_encode($c["coverage"])}' class="form-control selectVal selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
-                                                    {include auth/country.html}
-                                                </select>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="form-group">
-                                                {script $model = $c['model']}
-                                                <select name="model" required="" data-value='{echo json_encode(["$model"])}' class="selectVal form-control selectpicker">
-                                                    {include auth/model.html}
-                                                </select>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="form-group">
-                                                <div class="input-group">
-                                                    <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                                    <input type="text" value="{echo $user->convert($c['rate'], false, 4)}" name="rate" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" required="">
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {/foreach}
-                                </table>
-                            </div>
-                            <input type="hidden" name="action" value="commission">
-                            <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Save</button>
-                            <span class="pull-right">
-                                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addCommisson"><i class="fa fa-plus"></i> New Commission</button> 
-                                <a href="/account/commdel.html" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</a>
-                            </span>
-                        </form>
-                        {/if} {else}
-                        <p class="text-center">
-                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addCommisson"><i class="fa fa-plus"></i> New Commission</button> 
-                        </p>
-                        {/else}
-                    </div>
-                    <div class="tab-pane" id="category">
-                        <h4 class="m-t-0 header-title text-center"><b>Campaign Category</b></h4>
-                        <form action="" method="post">
-                            <div class="form-group">
-                                {if count($categories) == 0}
-                                <div class="input-group">
-                                   <input type="text" name="category[]" class="form-control" placeholder="Enter Category Name" id="categoryBox">
-                                   <span class="input-group-btn">
-                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
-                                   </span>
+                    <div class="tab-pane active" id="appearance">
+                        <form role="form" method="post" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" name="name" value="{echo $org->name}" class="form-control" placeholder="Network Name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Network Link</label>
+                                        <input type="text" name="url" value="{echo $org->url}" class="form-control" placeholder="Whitelist url of network">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Support Email</label>
+                                        <input type="email" name="email" value="{echo $org->email}" class="form-control" placeholder="Support email for affilliates">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Terms and Conditions URL(Optional)</label>
+                                        <input type="text" name="termsurl" value="{echo $org->meta['termsurl']}" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Widgets</label>
+                                        <select name="widgets[]" class="form-control selectpicker" multiple="">
+                                            <option value="top10pubs" {if(in_array("top10pubs", $org->meta["widgets"]))}selected=""{/if}>Top10 Publishers</option>
+                                            <option value="top10ads" {if(in_array("top10ads", $org->meta["widgets"]))}selected=""{/if}>Top10 Ads</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                {/if} {script $i = 1}
-                                {foreach $c in $categories}
-                                <div class="input-group">
-                                   <input type="text" name="category[]" value="{echo $c->name}" class="form-control" placeholder="Enter Category Name" {if $i++ == 1} id="categoryBox" {/if}>
-                                   <span class="input-group-btn">
-                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
-                                   </span>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Zopim ID(Optional)</label>
+                                        <input type="text" name="zopim" value="{echo $org->meta['zopim'] ?? ''}" class="form-control" placeholder="Zopim Chat Integration ID">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Network Image (Optional)<i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Allows you to add logo of your network"></i></label>
+                                        {if(strlen($org->logo) > 3)}
+                                        <img src="{echo User::displayImg($org->logo)}" class="img-thumbnail">
+                                        <a href="/admin/settings.html?action=removelogo&img={echo $org->logo}" class="btn btn-danger pull-right btn-xs">Remove Image</a>
+                                        {/if} {else}
+                                        <input type="file" class="form-control" name="logo">
+                                        <span class="help-block text-info">Image should be 450px X 150px</span>
+                                        {/else}
+                                    </div>
                                 </div>
-                                {/foreach}
                             </div>
-                            <input type="hidden" name="action" value="categories">
-                            <button type="button" id="addCategory" class="btn btn-primary"><i class="fa fa-plus"></i> Add More</button>
-                            <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
+                            <input type="hidden" name="action" value="org">
+                            <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
                         </form>
                     </div>
-                    <div class="tab-pane" id="domain">
-                        <h4 class="m-t-0 header-title text-center"><b>Tracking Domains</b></h4>
-                        <form action="" method="post">
-                            <div class="form-group">
-                                {if count($org->tdomains) == 0}
-                                <div class="input-group">
-                                   <input type="text" name="tdomains[]" class="form-control" placeholder="Enter Tracking Domain" id="trackingDomain">
-                                   <span class="input-group-btn">
-                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
-                                   </span>
-                                </div>
-                                {/if} {script $i = 1}
-                                {foreach $t in $org->tdomains}
-                                <div class="input-group">
-                                   <input type="text" name="tdomains[]" value="{echo $t}" class="form-control" placeholder="Enter Tracking Domain" {if $i == 1} id="trackingDomain" {/if}>
-                                   <span class="input-group-btn">
-                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
-                                   </span>
-                                </div>
-                                {script ++$i} {/foreach}
+                    <div class="tab-pane" id="profile">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <form role="form" method="post" action="/admin/settings.html#profile">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" name="name" value="{echo $user->name}" class="form-control" placeholder="Full Name" required="">
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "name")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Phone</label>
+                                        <input type="tel" name="phone" value="{echo $user->phone}" class="form-control" required="">
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "phone")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Currency</label>
+                                        <select name="currency" class="form-control" value="{echo $user->currency}">
+                                            <option value="INR">INR</option>
+                                            <option value="USD">USD</option>
+                                            <option value="PKR">PKR</option>
+                                            <option value="AUD">AUD</option>
+                                            <option value="EUR">EUR</option>
+                                            <option value="GBP">GBP</option>
+                                        </select>
+                                        <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "currency")}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>TimeZone</label>
+                                        {script $tz = $user->region["zone"] ?? "Asia/Kolkata"}
+                                        <select name="timezone" class="form-control selectpicker" value="{$tz}" data-live-search=true>
+                                            {include auth/timezone.html}
+                                        </select>
+                                    </div>
+                                    <input type="hidden" name="action" value="account">
+                                    <button type="submit" class="btn btn-purple waves-effect waves-light">Submit</button>
+                                </form>
                             </div>
-                            <input type="hidden" name="action" value="domains">
-                            <button type="button" id="addDomain" class="btn btn-primary"><i class="fa fa-plus"></i> Add More</button>
-                            <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
+                            <div class="col-md-6">
+                                <h4 class="m-t-0 header-title text-center"><b>Change Password</b></h4>
+                                <form class="form-horizontal" role="form" method="post">
+                                    <div class="form-group">
+                                        <label for="inputPassword3" class="col-sm-3 control-label">Old Password</label>
+                                        <div class="col-sm-9">
+                                            <input type="password" class="form-control" name="password" placeholder="Old Password">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputPassword4" class="col-sm-3 control-label">New Password</label>
+                                        <div class="col-sm-9">
+                                            <input type="password" class="form-control" name="npassword" placeholder="New Password">
+                                            <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "password")}</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group m-b-0">
+                                        <div class="col-sm-offset-3 col-sm-9">
+                                            <input type="hidden" name="action" value="password">
+                                            <button type="submit" class="btn btn-info waves-effect waves-light">Change</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="billing">
+                        <form role="form" method="post">
+                            <div class="row">
+                                <div class="col-md-6 form-horizontal">
+                                    <h4 class="m-t-0 header-title text-center"><b>Affiliate</b></h4>
+                                    {script $affbilling = $org->billing['aff'] ?? []}
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label"></label>
+                                        <div class="col-sm-8">
+                                            <div class="checkbox checkbox-primary">
+                                                <input id="affoption" type="checkbox" name="autoinvoice" value="1" {if($affbilling["auto"])}checked{/if}>
+                                                <label for="affoption">
+                                                    Auto Generate Invoices
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label">Invoice Frequency</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" name="freq" class="form-control" placeholder="Enter number of Days e.g 30" value="{echo $affbilling['freq']}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label">Minimum Invoice Payments</label>
+                                        <div class="col-sm-8">
+                                            <div class="input-group">
+                                                <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                                <input type="text" name="minpay" class="form-control" placeholder="eg. 50" value="{echo $user->convert($affbilling['minpay'], false, 4, false)}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label">Payment Types</label>
+                                        <div class="col-sm-8">
+                                            <select name="ptypes[]" class="form-control selectpicker selectVal" multiple="" data-value='{echo json_encode($affbilling["ptypes"])}'>
+                                                <option value="wire">Wire Transfer</option>
+                                                <option value="paypal">PayPal</option>
+                                                <option value="payquicker">PayQuicker</option>
+                                                <option value="payoneer">Payoneer</option>
+                                                <option value="paytm">Paytm</option>
+                                                <option value="mobicash">Mobicash</option>
+                                                <option value="easypaisa">EasyPaisa</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 form-horizontal">
+                                    {script $advbilling = isset($org->billing['adv']) ? $org->billing['adv'] : []}
+                                    <h4 class="m-t-0 header-title text-center"><b>Advertiser</b></h4>
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label">Company PayPal</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" name="paypal" class="form-control" placeholder="Your company paypal email address" value="{echo $advbilling['paypal']}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="action" value="billing">
+                            <p class="text-center">
+                                <button type="submit" class="btn btn-purple waves-effect waves-light">Save</button>
+                            </p>
                         </form>
+                    </div>
+                    <div class="tab-pane" id="affiliate">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <form role="form" method="post" class="form-horizontal">
+                                    <h4 class="m-t-0 header-title text-center"><b>Create Additional Fields</b></h4>
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label">Name</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" name="fname" class="form-control" placeholder="Eg: Skype Id" value="">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label">Type</label>
+                                        <div class="col-sm-8">
+                                            <select name="ftype" class="form-control selectpicker">
+                                                <option value="text">Text</option>
+                                                <option value="file">File / Image</option>
+                                                <option value="date">Date</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label">Required Field</label>
+                                        <div class="col-sm-8">
+                                            <label class="radio-inline">
+                                                <input type="radio" name="frequired" checked="" value="1"> Yes
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="frequired" value="0"> No
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="action" value="customField">
+                                    <p class="text-center">
+                                        <button type="submit" class="btn btn-purple waves-effect waves-light">Save</button>
+                                    </p>
+                                </form>
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="m-t-0 header-title text-center"><b>Saved Additional Fields</b></h4>
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <tr>
+                                            <th>S. No</th>
+                                            <th>Field Name</th>
+                                            <th>Field Type</th>
+                                        </tr>
+                                        {script $i = 1} {foreach $f in $fields}
+                                        <tr>
+                                            <td>{echo $i++}</td>
+                                            <td>{echo $f['label']}</td>
+                                            <td>{echo $f['type']}</td>
+                                        </tr>
+                                        {/foreach}
+                                    </table>
+                                    <a href="admin/settings" data-message="Are you sure you want to remove the fields??" class="delete btn btn-danger waves-effect waves-light">Remove Fields</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="tab-pane" id="smtp">
                         <h4 class="m-t-0 header-title text-center"><b>SMTP Settings</b></h4>

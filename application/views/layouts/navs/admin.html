@@ -25,8 +25,8 @@
                             <img src="{echo Shared\Markup::get_gravatar($user->email, 30)}"> {echo $user->name} <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/admin/customization.html">Customization</a></li>
-                            <li><a href="/account/manage.html">Team</a></li>
+                            <li><a href="/admin/settings.html">Settings</a></li>
+                            <li><a href="/account/manage.html">Team Members</a></li>
                             <li><a href="/logout.html">Logout</a></li>
                         </ul>
                     </li>
@@ -55,6 +55,7 @@
                         <li><a href="/campaign/manage.html">Manage</a></li>
                         <li><a href="/campaign/import.html">Auto Import</a></li>
                         <li><a href="/campaign/contest.html">Contest</a></li>
+                        <li><a href="/campaign/settings.html">Settings</a></li>
                     </ul>
                 </li>
                 <li class="has_sub">
@@ -88,7 +89,6 @@
                 <li class="has_sub">
                     <a href="javascript:void(0);" class="waves-effect waves-primary"><i class="fa fa-suitcase"></i><span> Network </span> <span class="menu-arrow"></span> </a>
                     <ul class="list-unstyled">
-                        <li><a href="/admin/customization.html">Customization</a></li>
                         <li><a href="/admin/settings.html">Settings</a></li>
                         <li><a href="/account/manage.html">Team</a></li>
                         <li><a href="/admin/billing.html">Billing</a></li>

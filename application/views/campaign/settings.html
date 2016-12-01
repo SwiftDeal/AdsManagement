@@ -1,0 +1,154 @@
+{include admin/modals/commission.html}
+<div class="content-page">
+    <div class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="page-title-box">
+                        <ol class="breadcrumb pull-right">
+                            <li><a href="/admin/index.html">Dashboard</a></li>
+                            <li><a href="/campaign/manage.html">Campaigns</a></li>
+                            <li class="active">Settings</li>
+                        </ol>
+                        <h4 class="page-title">Campaign: Settings</h4>
+                    </div>
+                </div>
+            </div>
+            {if isset($message)}
+            <div class="alert alert-info alert-dismissible fade in" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                {echo $message}
+            </div>
+            {/if}
+            <div class="row">
+                <ul class="nav nav-tabs navtab-custom">
+                    <li class="active">
+                        <a href="#payout" data-toggle="tab" aria-expanded="false">
+                            <span class="visible-xs"><i class="fa fa-home"></i></span>
+                            <span class="hidden-xs">Default Commission</span>
+                        </a>
+                    </li>
+                    <li class="">
+                        <a href="#category" data-toggle="tab" aria-expanded="true">
+                            <span class="visible-xs"><i class="fa fa-user"></i></span>
+                            <span class="hidden-xs">Category</span>
+                        </a>
+                    </li>
+                    <li class="">
+                        <a href="#domain" data-toggle="tab" aria-expanded="false">
+                            <span class="visible-xs"><i class="fa fa-globe"></i></span>
+                            <span class="hidden-xs">Domains</span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="payout">
+                        <h4 class="m-t-0 header-title text-center">Default Commission Payout Settings</h4>
+                        {if(!empty($org->meta["commission"]))}
+                        <form action="" method="post">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <th><label>Coverage</label></th>
+                                        <th><label>Model</label></th>
+                                        <th><label>Rate</label></th>
+                                    </tr>
+                                    {foreach $c in $org->meta["commission"]}
+                                    <tr>
+                                        <td>
+                                            <div class="form-group">
+                                                <select name="coverage[]" data-value='{echo json_encode($c["coverage"])}' class="form-control selectVal selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
+                                                    {include auth/country.html}
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                {script $model = $c['model']}
+                                                <select name="model" required="" data-value='{echo json_encode(["$model"])}' class="selectVal form-control selectpicker">
+                                                    {include auth/model.html}
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                                    <input type="text" value="{echo $user->convert($c['rate'], false, 4)}" name="rate" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" required="">
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {/foreach}
+                                </table>
+                            </div>
+                            <input type="hidden" name="action" value="commission">
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Save</button>
+                            <span class="pull-right">
+                                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addCommisson"><i class="fa fa-plus"></i> New Commission</button> 
+                                <a href="/account/commdel.html" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</a>
+                            </span>
+                        </form>
+                        {/if} {else}
+                        <p class="text-center">
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addCommisson"><i class="fa fa-plus"></i> New Commission</button> 
+                        </p>
+                        {/else}
+                    </div>
+                    <div class="tab-pane" id="category">
+                        <h4 class="m-t-0 header-title text-center"><b>Campaign Category</b></h4>
+                        <form action="" method="post">
+                            <div class="form-group">
+                                {if count($categories) == 0}
+                                <div class="input-group">
+                                   <input type="text" name="category[]" class="form-control" placeholder="Enter Category Name" id="categoryBox">
+                                   <span class="input-group-btn">
+                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
+                                   </span>
+                                </div>
+                                {/if} {script $i = 1}
+                                {foreach $c in $categories}
+                                <div class="input-group">
+                                   <input type="text" name="category[]" value="{echo $c->name}" class="form-control" placeholder="Enter Category Name" {if $i++ == 1} id="categoryBox" {/if}>
+                                   <span class="input-group-btn">
+                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
+                                   </span>
+                                </div>
+                                {/foreach}
+                            </div>
+                            <input type="hidden" name="action" value="categories">
+                            <button type="button" id="addCategory" class="btn btn-primary"><i class="fa fa-plus"></i> Add More</button>
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
+                        </form>
+                    </div>
+                    <div class="tab-pane" id="domain">
+                        <h4 class="m-t-0 header-title text-center"><b>Tracking Domains</b></h4>
+                        <form action="" method="post">
+                            <div class="form-group">
+                                {if count($org->tdomains) == 0}
+                                <div class="input-group">
+                                   <input type="text" name="tdomains[]" class="form-control" placeholder="Enter Tracking Domain" id="trackingDomain">
+                                   <span class="input-group-btn">
+                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
+                                   </span>
+                                </div>
+                                {/if} {script $i = 1}
+                                {foreach $t in $org->tdomains}
+                                <div class="input-group">
+                                   <input type="text" name="tdomains[]" value="{echo $t}" class="form-control" placeholder="Enter Tracking Domain" {if $i == 1} id="trackingDomain" {/if}>
+                                   <span class="input-group-btn">
+                                        <button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button>
+                                   </span>
+                                </div>
+                                {script ++$i} {/foreach}
+                            </div>
+                            <input type="hidden" name="action" value="domains">
+                            <button type="button" id="addDomain" class="btn btn-primary"><i class="fa fa-plus"></i> Add More</button>
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
