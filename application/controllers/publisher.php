@@ -147,7 +147,7 @@ class Publisher extends Auth {
         ];
         $clicks = \Click::all($query, [], 'created', 'desc', $limit, $page);
         $count = \Click::count($query);
-        $cf = Registry::get("configuration")->parse("configuration/cf")->cloudflare;
+        $cf = Utils::getConfig('cf', 'cloudflare');
         $view->set("domain", $cf->api->domain)
             ->set("clicks", $clicks)
             ->set("count", $count)

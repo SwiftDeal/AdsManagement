@@ -193,13 +193,19 @@ namespace Framework {
                     $view = $this->actionView;
                     $data = $view->data;
                     
-                    // $headers = getallheaders(); $api = isset($headers['X-JSON-Api']) && $headers['X-JSON-Api'] == 'SwiftMVC';
-                    // if ($this->defaultExtension == "json" && $api) {
-                    if ($this->defaultExtension == "json") {
+                    $headers = getallheaders();
+                    // $api = isset($headers['X-JSON-Api']) && $headers['X-JSON-Api'] == 'SwiftMVC';
+                    $api = isset($headers['X-Requested-With']) && strtolower($headers['X-Requested-With']) == 'xmlhttprequest';
+                    if ($this->defaultExtension == "json" && $api) {
                         if ($data) {
                             $obj = $this->renderJSONFields($data);
                         }
                         echo json_encode($obj);
+                    } else if ($this->defaultExtension == "json") {
+                        $parsed = parse_url(URL);
+                        $path = explode(".", $parsed['path'] ?? '/')[0];
+                        header("Location: $path");
+                        exit();
                     } else if ($this->defaultExtension == "csv") {
                         // parse the data
                         $csv = new \Shared\Services\Csv($data);

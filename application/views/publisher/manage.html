@@ -57,7 +57,12 @@
                                     </thead>
                                     <tbody>
                                     {foreach $p in $publishers}
-                                        {script $perf = Performance::total(['start' => ($start ?? $p->created->format('Y-m-d')), 'end' => ($end ?? date('Y-m-d'))], $p)}
+                                        {if Framework\RequestMethods::get("sort")}
+                                        {script $query = ['start' => $start, 'end' => $end]}
+                                        {/if} {else}
+                                        {script $query = ['start' => $p->created->format('Y-m-d'), 'end' => date('Y-m-d')]}
+                                        {/else}
+                                        {script $perf = Performance::total($query, $p)}
                                         {script $pays = Payment::done($p)}
                                         <tr>
                                             <td>
