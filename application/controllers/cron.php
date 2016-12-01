@@ -595,7 +595,7 @@ class Cron extends Shared\Controller {
                 "end" => $end,
                 "amount" => $total,
                 "live" => false,
-                "created" => Db::time('-7 day')
+                "created" => Db::time('-1 day')
             ]);
             if ($total > 1) {
                 $bill->save();

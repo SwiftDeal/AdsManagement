@@ -701,5 +701,34 @@ class Publisher extends Auth {
             return $code;
         }
     }
+
+    /**
+     * @before _admin
+     */
+    public function postbacks() {
+        $this->seo(array("title" => "Affiliates: PostBacks"));
+        $view = $this->getActionView();
+
+        switch (RM::post("action")) {
+            case 'addCallback':
+                $link = Link::first(["id = ?" => RM::post("link_id")]);
+                $meta = $link->meta;
+                $callback = [
+                    "type" => RM::post("type"),
+                    "data" => RM::post("data"),
+                    "event" => RM::post("event"),
+                    "live" => false
+                ];
+                array_push($meta["callback"], $callback);
+                $view->set('message', 'Saved Successfully');
+                break;
+        }
+
+        $links = \Link::all(['meta.callback' => ['$exists' => true]]);
+        $affiliates = \User::all(['meta.callback' => ['$exists' => true]]);
+
+        $view->set('links', $links)
+            ->set('affiliates', $affiliates);
+    }
     
 }
