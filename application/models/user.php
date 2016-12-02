@@ -16,7 +16,7 @@ use Framework\RequestMethods as RequestMethods;
  *                               - payout (object) Types of payout info
  */
 class User extends Shared\Model {
-    const ROLES = ['afm' => 'Affiliate Manager', 'adm' => 'Advertiser Manager', 'admin' => 'Admin', 'publisher' => 'Publisher', 'advertiser' => 'Advertiser'];
+    const ROLES = ['afm' => 'Affiliate Manager', 'adm' => 'Advertiser Manager', 'admin' => 'Admin', 'publisher' => 'Affiliate', 'advertiser' => 'Advertiser'];
 
     /**
      * @column

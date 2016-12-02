@@ -21,8 +21,11 @@
                                     <th>TYPE</th>
                                     <th>CODE</th>
                                     <th>EVENT</th>
+                                    <th>AUTHORITY</th>
+                                    <th>USER</th>
                                     <th>ACTION</th>
                                 </tr>
+                                {script $users = []}
                                 {foreach $p in $postbacks}
                                 <tr>
                                     <td>
@@ -35,6 +38,25 @@
                                     <td>{echo strtoupper($p->type)}</td>
                                     <td>{echo $p->data}</td>
                                     <td>{echo strtoupper($p->event)}</td>
+                                    <td>
+                                        {if $p->ad_id && $p->user_id}
+                                        <span class="label label-primary">User Campaign Only</span>
+                                        {/if} {elseif $p->user_id && !$p->ad_id}
+                                        <span class="label label-primary">User Global</span>
+                                        {/elseif} {elseif $p->ad_id}
+                                        <span class="label label-primary">Campaign</span>
+                                        {/elseif}
+                                    </td>
+                                    <td>
+                                        
+                                        {if $p->user_id}
+                                        {script $usr = Shared\Services\User::find($users, $p->user_id, ['name', 'type', '_id'])}
+                                        <a href="/{echo $usr->type}/info/{echo $usr->_id}.html">{echo $usr->name} - {echo User::ROLES[$usr->type]}</a>
+                                        {/if} {else}
+                                        <span class="label label-purple">Not Set
+                                        {/else}
+                                        </span>
+                                    </td>
                                     <td>
                                         {if !$p->live}
                                         <a href="/account/postback.html?action=update&id={echo $p->_id}&property=live&value=1" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Activates this Callback and START Sending Hits in Real-Time"><i class="fa fa-check"></i> Activate</a>

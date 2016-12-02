@@ -593,13 +593,7 @@ class Publisher extends Auth {
             $action = RM::get("action");
             switch ($action) {
                 case 'payoutdel':
-                    $meta = $publisher->meta;
-                    unset($meta['campaign']);
-                    if (empty($meta)) {
-                        $publisher->meta = "";
-                    } else {
-                        $publisher->meta = $meta;
-                    }
+                    unset($publisher->getMeta()['campaign']);
                     $publisher->save();
                     $view->set('message', 'Payout Deleted!!');
                     break;

@@ -363,11 +363,10 @@ class Admin extends Auth {
      * @before _secure
      */
     public function postbacks() {
-        $this->seo(array("title" => "Network: PostBacks"));
+        $this->seo(["title" => "Network: PostBacks"]);
         $view = $this->getActionView();
 
         $postbacks = \PostBack::all(['org_id = ?' => $this->org->id]);
-
         $view->set('postbacks', $postbacks);
     }
 
