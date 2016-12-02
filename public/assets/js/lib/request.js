@@ -75,7 +75,7 @@
 
             $.ajaxSetup({
                 headers: {'X-JSON-Api': 'SwiftMVC'}
-            }); 
+            });
         }
 
         Request.prototype = {

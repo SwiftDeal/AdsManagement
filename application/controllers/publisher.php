@@ -621,12 +621,13 @@ class Publisher extends Auth {
             }
         }
 
-        $view->set("publisher", $publisher);
-        $view->set("d", Performance::total(['start' => ($start ?? $publisher->created->format('Y-m-d')), 'end' => ($end ?? date('Y-m-d'))], $publisher));
         $afields = Meta::search('customField', $this->org);
         $view->set('afields', $afields)
+            ->set("publisher", $publisher)
+            ->set("commissions", Commission::all(["user_id = ?" => $this->user->id]))
             ->set("start", strftime("%Y-%m-%d", strtotime('-7 day')))
-            ->set("end", strftime("%Y-%m-%d", strtotime('now')));
+            ->set("end", strftime("%Y-%m-%d", strtotime('now')))
+            ->set("d", Performance::total(['start' => ($start ?? $publisher->created->format('Y-m-d')), 'end' => ($end ?? date('Y-m-d'))], $publisher));
     }
 
     /**

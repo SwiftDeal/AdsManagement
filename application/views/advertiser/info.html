@@ -11,7 +11,7 @@
                             <a href="advertiser/update/{echo $advertiser->_id}" data-send='{echo json_encode(["live" => 0])}' class="update btn btn-warning"><i class="fa fa-times"></i> Deactivate</a>
                             {/else}
                             <a href="advertiser/delete/{echo $advertiser->_id}" data-message="Are you sure you want to delete this advertiser??" class="delete btn btn-danger"><i class="fa fa-trash"> Delete</i></a>
-                            <a href="/auth/loginas/{echo $advertiser->_id}" class="btn btn-default"><i class="fa fa-sign-in"></i> Signin</a>
+                            <a href="/auth/loginas/{echo $advertiser->_id}" class="btn btn-default"><i class="fa fa-sign-in"></i> Login as</a>
                         </span>
                         <h4 class="page-title"><img src="{echo Shared\Markup::get_gravatar($advertiser->email, 30)}"> {echo $advertiser->name}'s account</h4>
                     </div>
