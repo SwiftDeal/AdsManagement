@@ -129,32 +129,24 @@ class Publisher extends Auth {
         $view = $this->getActionView();
 
         if (RM::get("action") == "permission" && array_key_exists("permission", $ad->meta)) {
-            $access = new AdAccess([
-                "org_id" => $this->org->id,
-                "ad_id" => $id,
-                "user_id" => $this->user->id,
-                "live" => 0
-            ]);
-            $access->save();
+            $search = [ "org_id" => $this->org->id, "ad_id" => $id, "user_id" => $this->user->id ];
+            $access = AdAccess::first($search);
+            // Check before saving to prevent duplication of records
+            if (!$access) {
+                $access = new AdAccess($search);
+                $access->save();   
+            }
         }
 
-        switch (RM::post("action")) {
-            case 'addCallback':
-                $postback = new PostBack([
-                    "org_id" => $this->org->id,
-                    "user_id" => $this->user->id,
-                    "ad_id" => $ad->id,
-                    "type" => RM::post("type"),
-                    "data" => RM::post("data"),
-                    "event" => RM::post("event"),
-                    "live" => false
-                ]);
-                $postback->save();
-                $view->set('message', 'PostBack Saved Successfully');
-                break;
+        if (RM::post("action")) { // action value already checked in _postback func
+            $this->_postback('add', ['ad' => $ad]);
         }
 
-        $postbacks = PostBack::all(["user_id = ?" => $this->user->id, "ad_id = ?" => $ad->id]);
+        if (RM::type() === 'DELETE') {
+            $this->_postback('delete');
+        }
+
+        $this->_postback('show', ['ad' => $ad]);
         $start = RM::get("start", date('Y-m-d', strtotime("-7 day")));
         $end = RM::get("end", date('Y-m-d'));
         $limit = RM::get("limit", 10); $page = RM::get("page", 1);
@@ -184,7 +176,6 @@ class Publisher extends Auth {
             ->set('models', $models)
             ->set("start", $start)
             ->set("end", $end)
-            ->set("postbacks", $postbacks)
             ->set('tdomains', \Shared\Services\User::trackingLinks($this->user, $this->org));
     }
 
@@ -310,29 +301,19 @@ class Publisher extends Auth {
                     $view->set('message', 'Payout Info Updated!!');
                     break;
 
-                case 'addCallback':
-                    $postback = new PostBack([
-                        "org_id" => $this->org->id,
-                        "user_id" => $this->user->id,
-                        "ad_id" => $ad->id,
-                        "type" => RM::post("type"),
-                        "data" => RM::post("data"),
-                        "event" => RM::post("event"),
-                        "live" => false
-                    ]);
-                    $postback->save();
-                    $view->set('message', 'PostBack Saved Successfully');
-                    break;
-                
                 default:
+                    $this->_postback('add');
                     break;
             }
             $this->setUser($user);
         }
-        $postbacks = PostBack::all(["user_id = ?" => $this->user->id, "org_id = ?" => $this->org->id]);
+
+        if (RM::type() === 'DELETE') {
+            $this->_postback('delete');
+        }
+        $this->_postback('show');
         $afields = Meta::search('customField', $this->org);
         $view->set('afields', $afields)
-            ->set("postbacks", $postbacks)
             ->set("invoices", $invoices)
             ->set("payments", $payments);
     }
@@ -735,5 +716,4 @@ class Publisher extends Auth {
             return $code;
         }
     }
-    
 }

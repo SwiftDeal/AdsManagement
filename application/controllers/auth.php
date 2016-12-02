@@ -7,7 +7,7 @@ use Shared\Utils as Utils;
 use Shared\Mail as Mail;
 use Framework\Registry as Registry;
 use Shared\Controller as Controller;
-use Framework\RequestMethods as RequestMethods;
+use Framework\RequestMethods as RM;
 
 class Auth extends Controller {
     /**
@@ -36,14 +36,14 @@ class Auth extends Controller {
     public function __construct($options = []) {
         parent::__construct($options);
 
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
+        $end = RM::get("end", strftime("%Y-%m-%d", strtotime('now')));
 
         if ($this->actionView) {
             $this->actionView->set(['start' => $start, 'end' => $end]);
         }
 
-        $host = RequestMethods::server('HTTP_HOST');
+        $host = RM::server('HTTP_HOST');
         if (strpos($host, "vnative.com")) {
             $domain = explode(".", $host);
             $domain = array_shift($domain);
@@ -75,15 +75,15 @@ class Auth extends Controller {
         $this->seo(array("title" => "Login", "view" => $this->getLayoutView()));
         $view = $this->getActionView();
 
-        $token = RequestMethods::post("token", '');
-        if (RequestMethods::post("action") == "login" && $this->verifyToken($token)) {
+        $token = RM::post("token", '');
+        if (RM::post("action") == "login" && $this->verifyToken($token)) {
             $this->_login($this->org, $view);
         }
     }
 
     protected function _login($org, $view) {
         $session = Registry::get("session");
-        $email = strtolower(trim(RequestMethods::post("email"))); $pass = RequestMethods::post("password");
+        $email = strtolower(trim(RM::post("email"))); $pass = RM::post("password");
         $user = \User::first(["org_id = ?" => $org->_id, "email = ?" => $email]);
 
         if (!$user) {
@@ -125,7 +125,7 @@ class Auth extends Controller {
         $view->set('organization', $this->org);
 
         // @todo install reCaptcha
-        if (RequestMethods::post("action") == "forgot") {
+        if (RM::post("action") == "forgot") {
             $message = $this->_forgotPassword($this->org);
             $view->set("message", $message);
         }
@@ -144,10 +144,10 @@ class Auth extends Controller {
         }
 
         // @todo install reCaptcha
-        if (RequestMethods::post("action") == "change") {
-            $pass = RequestMethods::post("password");
+        if (RM::post("action") == "change") {
+            $pass = RM::post("password");
             $user = User::first(array("id = ?" => $meta->propid));
-            if ($pass == RequestMethods::post("npassword")) {
+            if ($pass == RM::post("npassword")) {
                 $user->password = sha1($pass); $user->save();
                 $meta->delete();
                 $view->set("message", 'Password changed successfully now <a href="/login.html">Login</a>');
@@ -158,7 +158,7 @@ class Auth extends Controller {
     }
 
     protected function _forgotPassword($org) {
-        $exist = User::first(array("email = ?" => RequestMethods::post("email")), array("id", "email", "name"));
+        $exist = User::first(array("email = ?" => RM::post("email")), array("id", "email", "name"));
         if ($exist) {
             $meta = new Meta(array(
                 "propid" => $exist->id,
@@ -177,7 +177,7 @@ class Auth extends Controller {
     }
 
     protected function _publisherRegister($org, $view) {
-        $platformUrl = RequestMethods::post("platform", '');
+        $platformUrl = RM::post("platform", '');
 
         try {
             $platform = new \Platform([
@@ -208,7 +208,7 @@ class Auth extends Controller {
     }
 
     protected function _advertiserRegister($org, $view) {
-        $platformUrl = RequestMethods::post("platform", '');
+        $platformUrl = RM::post("platform", '');
 
         try {
             $platform = new \Platform([
@@ -265,13 +265,65 @@ class Auth extends Controller {
         }
     }
 
+        protected function _postback($case, $extra = []) {
+        $view = $this->getActionView();
+        switch ($case) {
+            case 'add':
+                $search = ["org_id" => $this->org->_id, "user_id" => $this->user->_id, "event" => RM::post("event")];
+                if (isset($extra['ad'])) {
+                    $search["ad_id"] = $extra['ad']->_id;
+                }
+                $foundPostback = PostBack::first($search);
+
+                if (RM::post('action') === 'addCallback' && !$foundPostback) {
+                    $postback = new PostBack(array_merge($search, [
+                        "data" => RM::post("data"),
+                        "type" => RM::post("type")
+                    ]));
+                    $postback->save();
+                    $view->set('message', 'Postback Saved Successfully');
+                } else {
+                    $view->set('message', 'Postback already added');
+                }
+                break;
+            
+            case 'delete':
+                $postback = PostBack::first(["_id" => RM::get("postback_id"), "user_id" => $this->user->_id, "org_id" => $this->org->_id]);
+                // check for valid request as a fallback
+                if (RM::type() === 'DELETE' && RM::get('removeCallback') && $postback) {
+                    $postback->delete();
+                    $view->set('message', "Postback removed!!");
+                } else {
+                    $view->set('message', "Invalid Request!!");
+                }
+                break;
+
+            case 'show':
+                $query = ['user_id' => $this->user->_id, 'org_id' => $this->org->_id];
+                if (isset($extra['ad'])) {
+                    $query["ad_id"] = $extra['ad']->_id;
+                    $postbacks = PostBack::all($query);
+                } else {
+                    $postbacks = PostBack::all($query); $ans = [];
+                    foreach ($postbacks as $p) {
+                        if (!$p->ad_id) {
+                            $ans[$p->_id] = $p;
+                        }
+                    }
+                    $postbacks = $ans;
+                }
+                $view->set('postbacks', $postbacks);
+                break;
+        }
+    }
+
     /**
      * @before _admin
      */
     public function delete($record_id) {
         $this->JSONview();
 
-        if (RequestMethods::type() !== 'DELETE') {
+        if (RM::type() !== 'DELETE') {
             $this->_404();
         }
     }

@@ -194,8 +194,7 @@ namespace Framework {
                     $data = $view->data;
                     
                     $headers = getallheaders();
-                    // $api = isset($headers['X-JSON-Api']) && $headers['X-JSON-Api'] == 'SwiftMVC';
-                    $api = isset($headers['X-Requested-With']) && strtolower($headers['X-Requested-With']) == 'xmlhttprequest';
+                    $api = isset($headers['X-Json-Api']) && strtolower($headers['X-Json-Api']) == 'swiftmvc';
                     if ($this->defaultExtension == "json" && $api) {
                         if ($data) {
                             $obj = $this->renderJSONFields($data);

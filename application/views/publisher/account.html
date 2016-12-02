@@ -274,6 +274,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <h4 class="m-t-0 header-title text-center"><b>Create Callbacks</b></h4>
+                        <p class="text-center">(Only 1 callback can be added per event)</p>
                         <form method="post">
                             <div class="form-group">
                                 <label>Event</label>
@@ -300,7 +301,8 @@
                     </div>
                     <div class="col-md-6">
                         <h4 class="m-t-0 header-title text-center"><b>Saved Callbacks</b></h4>
-                        {if($postbacks)}
+                        <p class="text-center">Callbacks will work when approved by Admin</p>
+                        {if count($postbacks) > 0}
                         <div class="table-responsive">
                             <table class="table">
                                 <tr>
@@ -308,19 +310,23 @@
                                     <th>TYPE</th>
                                     <th>CODE</th>
                                     <th>STATUS</th>
+                                    <th>ACTION</th>
                                 </tr>
                                 {foreach $p in $postbacks}
                                 <tr>
+                                    <td>{echo $p->event}</td>
                                     <td>{echo $p->type}</td>
                                     <td>{echo $p->data}</td>
-                                    <td>{echo $p->event}</td>
-                                    <td>{echo $p->live}</td>
+                                    <td>
+                                        {echo Shared\Markup::isActiveHtml($p)}
+                                    </td>
+                                    <td><button type="button" data-href="{echo Shared\Markup::parse_url()['path']}?action=removeCallback&postback_id={echo $p->_id}" class="btn-danger btn-xs delete" data-message="Are You sure you want to delete this postback. This is irreversible!!"><i class="fa fa-trash"></i></button></td>
                                 </tr>
                                 {/foreach}
                             </table>
                         </div>
                         {/if} {else}
-                        <p class="text-center">No Campaign-Only PostBacks Found.</p>
+                        <p class="text-center">No Global PostBacks Found.</p>
                         {/else}
                     </div>
                 </div>

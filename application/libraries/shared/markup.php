@@ -150,6 +150,24 @@ namespace Shared {
             return $devices;
         }
 
+        public static function isActiveHtml($obj) {
+            $html = "<span ";
+            if ($obj->live) {
+                $html .= 'class = "label label-success">Active';
+            } else {
+                $html .= 'class = "label label-warning">Inactive';
+            }
+            $html .= "</span>";
+            return $html;
+        }
+
+        public static function parse_url($url = null) {
+            if (is_null($url)) {
+                $url = URL; // constant defined in "public/index.php"
+            }
+            return parse_url($url);
+        }
+
         public static function countries() {
             $countries = array(
                 'ALL' => 'ALL',

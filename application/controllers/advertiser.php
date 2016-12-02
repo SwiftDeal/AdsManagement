@@ -2,7 +2,7 @@
 /**
  * @author Faizan Ayubi
  */
-use Framework\RequestMethods as RequestMethods;
+use Framework\RequestMethods as RM;
 use Framework\ArrayMethods as ArrayMethods;
 use Framework\Registry as Registry;
 use Shared\Mail as Mail;
@@ -18,8 +18,8 @@ class Advertiser extends Auth {
         $this->seo(array("title" => "Dashboard", "description" => "Stats for your Data"));
         $view = $this->getActionView();$commissions = [];
 
-        $start = RequestMethods::get("start", date("Y-m-d", strtotime('now')));
-        $end = RequestMethods::get("end", date("Y-m-d", strtotime('now')));
+        $start = RM::get("start", date("Y-m-d", strtotime('now')));
+        $end = RM::get("end", date("Y-m-d", strtotime('now')));
         
         $today = date('Y-m-d');
         $yesterday = date('Y-m-d', strtotime("-1 day"));
@@ -52,11 +52,11 @@ class Advertiser extends Auth {
      */
     public function campaigns() {
         $this->seo(array("title" => "Campaigns"));$view = $this->getActionView();
-        $start = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
-        $end = RequestMethods::get("end", strftime("%Y-%m-%d", strtotime('now')));
+        $start = RM::get("start", strftime("%Y-%m-%d", strtotime('-7 day')));
+        $end = RM::get("end", strftime("%Y-%m-%d", strtotime('now')));
 
-        $limit = RequestMethods::get("limit", 20);
-        $page = RequestMethods::get("page", 1);
+        $limit = RM::get("limit", 20);
+        $page = RM::get("page", 1);
 
         $query = [ "user_id" => $this->user->id ];
         $ads = \Ad::all($query, ['title', 'image', 'category', '_id', 'live', 'created'], 'created', 'desc', $limit, $page);
@@ -88,11 +88,19 @@ class Advertiser extends Auth {
         $ad = \Ad::first(['_id' => $id, 'org_id' => $this->org->_id]);
         if (!$ad) $this->_404();
 
-        $this->seo(array("title" => $ad->title)); $view = $this->getActionView();
+        $this->seo(["title" => $ad->title]); $view = $this->getActionView();
 
-        $start = RequestMethods::get("start", date('Y-m-d', strtotime("-7 day")));
-        $end = RequestMethods::get("end", date('Y-m-d'));
-        $limit = RequestMethods::get("limit", 10); $page = RequestMethods::get("page", 1);
+        if (RM::post("action")) { // action value already checked in _postback func
+            $this->_postback('add', ['ad' => $ad]);
+        }
+
+        if (RM::type() === 'DELETE') {
+            $this->_postback('delete');
+        }
+
+        $start = RM::get("start", date('Y-m-d', strtotime("-7 day")));
+        $end = RM::get("end", date('Y-m-d'));
+        $limit = RM::get("limit", 10); $page = RM::get("page", 1);
         $query = [
             'adid' => Db::convertType($id),
             'created' => Db::dateQuery($start, $end)
@@ -111,6 +119,7 @@ class Advertiser extends Auth {
         $advertiser = User::first(["id = ?" => $ad->user_id], ['name']);
         $categories = \Category::all(["org_id = ?" => $this->org->_id], ['name', '_id']);
 
+        $this->_postback('show', ['ad' => $ad]);
         $view->set("ad", $ad)
             ->set("comms", $comms)
             ->set("categories", $categories)
@@ -128,41 +137,34 @@ class Advertiser extends Auth {
         $view = $this->getActionView();
 
         $user = $this->user;
-        if (RequestMethods::type() === 'POST') {
-            $action = RequestMethods::post('action');
+        if (RM::type() === 'POST') {
+            $action = RM::post('action');
             switch ($action) {
                 case 'account':
                     $fields = ['name', 'phone', 'currency'];
                     foreach ($fields as $f) {
-                        $user->$f = RequestMethods::post($f);
+                        $user->$f = RM::post($f);
                     }
                     $user->save();
                     $view->set('message', 'Account Info updated!!');
                     break;
 
                 case 'password':
-                    $old = RequestMethods::post('password');
-                    $new = RequestMethods::post('npassword');
+                    $old = RM::post('password');
+                    $new = RM::post('npassword');
                     $view->set($user->updatePassword($old, $new));
                     break;
 
-                case 'addCallback':
-                    $postback = new PostBack([
-                        "org_id" => $this->org->id,
-                        "user_id" => $this->user->id,
-                        "ad_id" => $ad->id,
-                        "type" => RM::post("type"),
-                        "data" => RM::post("data"),
-                        "event" => RM::post("event"),
-                        "live" => false
-                    ]);
-                    $postback->save();
-                    $view->set('message', 'PostBack Saved Successfully');
+                default:
+                    $this->_postback('add');
                     break;
             }
         }
-        $postbacks = PostBack::all(["user_id = ?" => $this->user->id, "org_id = ?" => $this->org->id]);
-        $view->set('postbacks', $postbacks);
+
+        if (RM::type() === 'DELETE') {
+            $this->_postback('delete');
+        }
+        $this->_postback('show');
     }
 
     /**
@@ -171,8 +173,8 @@ class Advertiser extends Auth {
     public function bills() {
         $this->seo(array("title" => "Bills")); $view = $this->getActionView();
 
-        $start = RequestMethods::get("start", date("Y-m-d", strtotime('-7 day')));
-        $end = RequestMethods::get("end", date("Y-m-d", strtotime('now')));
+        $start = RM::get("start", date("Y-m-d", strtotime('-7 day')));
+        $end = RM::get("end", date("Y-m-d", strtotime('now')));
 
         $query = [
             'user_id = ?' => $this->user->_id,
@@ -196,19 +198,19 @@ class Advertiser extends Auth {
         $pass = Shared\Utils::randomPass();
         $view->set("pass", $pass)->set("errors", []);
         
-        if (RequestMethods::type() == 'POST') {
+        if (RM::type() == 'POST') {
             $user = \User::addNew('advertiser', $this->org, $view);
             if (!$user) return;
             $user->meta = [
                 'campaign' => [
-                    'model' => RequestMethods::post('model'),
-                    'rate' => $this->currency(RequestMethods::post('rate')),
+                    'model' => RM::post('model'),
+                    'rate' => $this->currency(RM::post('rate')),
                     'coverage' => ['ALL']
                 ]
             ];
             $user->save();
 
-            if (RequestMethods::post("notify") == "yes") {
+            if (RM::post("notify") == "yes") {
                 Mail::send([
                     'user' => $user,
                     'template' => 'advertReg',
@@ -230,11 +232,11 @@ class Advertiser extends Auth {
     public function manage() {
         $this->seo(array("title" => "Manage")); $view = $this->getActionView();
 
-        $page = RequestMethods::get("page", 1);
-        $limit = RequestMethods::get("limit", 30);
+        $page = RM::get("page", 1);
+        $limit = RM::get("limit", 30);
         $query = ["type = ?" => "advertiser", "org_id = ?" => $this->org->_id];
-        $property = RequestMethods::get("property", "live");
-        $value = RequestMethods::get("value", 0);
+        $property = RM::get("property", "live");
+        $value = RM::get("value", 0);
         if (in_array($property, ["live", "id"])) {
             $query["{$property} = ?"] = $value;
         } else if (in_array($property, ["email", "name", "phone"])) {
@@ -266,28 +268,28 @@ class Advertiser extends Auth {
         if (!$advertiser) $this->_404();
 
         $view->set("errors", []);
-        if (RequestMethods::type() == 'POST') {
-            $action = RequestMethods::post('action', '');
+        if (RM::type() == 'POST') {
+            $action = RM::post('action', '');
             switch ($action) {
                 case 'account':
                     $fields = ['name', 'phone', 'country', 'currency'];
                     foreach ($fields as $f) {
-                        $advertiser->$f = RequestMethods::post($f, $advertiser->$f);
+                        $advertiser->$f = RM::post($f, $advertiser->$f);
                     }
                     $advertiser->save();
                     $view->set('message', 'Account Info updated!!');
                     break;
 
                 case 'password':
-                    $old = RequestMethods::post('password');
-                    $new = RequestMethods::post('npassword');
+                    $old = RM::post('password');
+                    $new = RM::post('npassword');
                     $view->set($advertiser->updatePassword($old, $new));
                     break;
 
                 case 'campaign':
                     $advertiser->getMeta()['campaign'] = [
-                        'model' => RequestMethods::post('model'),
-                        'rate' => $this->currency(RequestMethods::post('rate'))
+                        'model' => RM::post('model'),
+                        'rate' => $this->currency(RM::post('rate'))
                     ];
                     $advertiser->save();
                     $view->set('message', 'Payout Info Updated!!');
@@ -306,7 +308,7 @@ class Advertiser extends Auth {
     public function update($id) {
         $this->JSONView(); $view = $this->getActionView();
         $a = \User::first(["_id = ?" => $id, "org_id = ?" => $this->org->_id]);
-        if (!$a || RequestMethods::type() !== 'POST') {
+        if (!$a || RM::type() !== 'POST') {
             return $view->set('message', 'Invalid Request!!');
         }
 
@@ -338,8 +340,8 @@ class Advertiser extends Auth {
     public function performance() {
         $this->JSONview(); $view = $this->getActionView();
         
-        $start = RequestMethods::get("start", date("Y-m-d", strtotime('-7 day')));
-        $end = RequestMethods::get("end", date("Y-m-d", strtotime('now')));
+        $start = RM::get("start", date("Y-m-d", strtotime('-7 day')));
+        $end = RM::get("end", date("Y-m-d", strtotime('now')));
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
         
         $find = Performance::overall($dateQuery, $this->user);
@@ -377,8 +379,8 @@ class Advertiser extends Auth {
     public function platforms() {
         $this->seo(array("title" => "List of Platforms")); $view = $this->getActionView();
 
-        if (RequestMethods::type() === 'POST') {
-            $pid = RequestMethods::post('pid');
+        if (RM::type() === 'POST') {
+            $pid = RM::post('pid');
             try {
                 if ($pid) {
                     $p = \Platform::first(['_id = ?' => $pid]);
@@ -388,7 +390,7 @@ class Advertiser extends Auth {
                         'live' => true
                     ]);
                 }
-                $p->url = RequestMethods::post('url');
+                $p->url = RM::post('url');
                 $p->save();
                 $view->set('message', 'Platform saved successfully!!');
             } catch (\Exception $e) {
@@ -399,8 +401,8 @@ class Advertiser extends Auth {
         $platforms = \Platform::all(["user_id = ?" => $this->user->_id], ['_id', 'url']);
         $results = [];
 
-        $start = RequestMethods::get("start", date('Y-m-d', strtotime('-7 day')));
-        $end = RequestMethods::get("end", date('Y-m-d', strtotime('-1 day')));
+        $start = RM::get("start", date('Y-m-d', strtotime('-7 day')));
+        $end = RM::get("end", date('Y-m-d', strtotime('-1 day')));
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
         foreach ($platforms as $p) {
             $key = Utils::getMongoID($p->_id);
@@ -455,8 +457,8 @@ class Advertiser extends Auth {
         $view = $this->getActionView();
 
         $view->set('errors', []);
-        $token = RequestMethods::post("token", '');
-        if (RequestMethods::post("action") == "register" && $this->verifyToken($token)) {
+        $token = RM::post("token", '');
+        if (RM::post("action") == "register" && $this->verifyToken($token)) {
             $this->_advertiserRegister($this->org, $view);
         }
     }
