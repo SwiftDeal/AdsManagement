@@ -3,7 +3,7 @@
 /**
  * @author Faizan Ayubi
  */
-use Framework\RequestMethods as RequestMethods;
+use Framework\RequestMethods as RM;
 use Framework\Registry as Registry;
 use Framework\ArrayMethods as ArrayMethods;
 use Shared\Utils as Utils;
@@ -35,9 +35,9 @@ class Account extends Admin {
 
         $usr = \User::first(['_id' => $id, 'org_id' => $this->org->_id]);
         $updateAble = ['live', 'name', 'type'];
-        if (RequestMethods::type() === 'POST') {
+        if (RM::type() === 'POST') {
             foreach ($updateAble as $f) {
-                $usr->$f = RequestMethods::post($f);
+                $usr->$f = RM::post($f);
             }
             $usr->save();
 
@@ -54,13 +54,13 @@ class Account extends Admin {
         $this->seo(array("title" => "Add Account"));
         $view = $this->getActionView();
 
-        if (RequestMethods::type() === 'POST') {
-            $role = RequestMethods::post('model');
+        if (RM::type() === 'POST') {
+            $role = RM::post('model');
             $usr = \User::addNew($role, $this->org, $view);
             if (!$usr) return;
 
             $usr->password = sha1($usr->password);
-            $usr->meta = ['skype' => RequestMethods::post('skype')];
+            $usr->meta = ['skype' => RM::post('skype')];
             $usr->save();
 
             $view->set('message', 'Member Added!!');   
@@ -79,12 +79,12 @@ class Account extends Admin {
             $this->_404();
         }
 
-        if (RequestMethods::type() === 'POST') {
+        if (RM::type() === 'POST') {
             $updateAble = ['name', 'type', 'phone', 'password'];
             foreach ($updateAble as $f) {
-                $usr->$f = RequestMethods::post($f, $usr->$f);
+                $usr->$f = RM::post($f, $usr->$f);
             }
-            $password = RequestMethods::post('password');
+            $password = RM::post('password');
             if ($password) {
                 $usr->$f = sha1($password);
             }
@@ -123,5 +123,31 @@ class Account extends Admin {
         $org->meta = $meta;
         $org->save();
         $this->redirect("/admin/settings.html");
+    }
+
+    /**
+     * @before _secure
+     */
+    public function postback() {
+        $this->noview(); $session = Registry::get('session');
+        $postback = PostBack::first(["id = ?" => RM::get("id")]);
+        if ($postback) {
+            switch (RM::get("action")) {
+                case 'delete':
+                    $postback->delete();
+                    $session->set('$flashMessage', 'PostBack Deleted Successfully');
+                    break;
+                
+                case 'update':
+                    $property = RM::get("property");
+                    $postback->$property = RM::get("value");
+                    $postback->save();
+                    $session->set('$flashMessage', 'PostBack Updated Successfully');
+                    break;
+            }
+        } else {
+            $session->set('$flashMessage', 'PostBack doesnot exist');
+        }
+        $this->redirect($_SERVER['HTTP_REFERER']);
     }
 }

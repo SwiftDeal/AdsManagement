@@ -69,16 +69,18 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Network Link</label>
-                                        <input type="text" name="url" value="{echo $org->url}" class="form-control" placeholder="Whitelist url of network">
+                                        <input type="url" name="url" value="{echo $org->url}" class="form-control" placeholder="Whitelist url of network">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Global Fallback Link</label>
+                                        <input type="url" name="fallback" value="{echo $org->meta['fallback']}" class="form-control" placeholder="URL where redirect traffic to during fallback">
                                     </div>
                                     <div class="form-group">
                                         <label>Support Email</label>
                                         <input type="email" name="email" value="{echo $org->email}" class="form-control" placeholder="Support email for affilliates">
                                     </div>
-                                    <div class="form-group">
-                                        <label>Terms and Conditions URL(Optional)</label>
-                                        <input type="text" name="termsurl" value="{echo $org->meta['termsurl']}" class="form-control">
-                                    </div>
+                                </div>
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Widgets</label>
                                         <select name="widgets[]" class="form-control selectpicker" multiple="">
@@ -86,14 +88,12 @@
                                             <option value="top10ads" {if(in_array("top10ads", $org->meta["widgets"]))}selected=""{/if}>Top10 Ads</option>
                                         </select>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Zopim ID(Optional)</label>
-                                        <input type="text" name="zopim" value="{echo $org->meta['zopim'] ?? ''}" class="form-control" placeholder="Zopim Chat Integration ID">
+                                        <label>Terms and Conditions URL(Optional)</label>
+                                        <input type="text" name="termsurl" value="{echo $org->meta['termsurl']}" class="form-control">
                                     </div>
                                     <div class="form-group">
-                                        <label>Network Image (Optional)<i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Allows you to add logo of your network"></i></label>
+                                        <label>Login Logo (Optional)<i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="Logo shown on your network login page"></i></label>
                                         {if(strlen($org->logo) > 3)}
                                         <img src="{echo User::displayImg($org->logo)}" class="img-thumbnail">
                                         <a href="/admin/settings.html?action=removelogo&img={echo $org->logo}" class="btn btn-danger pull-right btn-xs">Remove Image</a>

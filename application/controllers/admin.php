@@ -360,7 +360,7 @@ class Admin extends Auth {
     }
 
     /**
-     * @before _admin
+     * @before _secure
      */
     public function postbacks() {
         $this->seo(array("title" => "Network: PostBacks"));

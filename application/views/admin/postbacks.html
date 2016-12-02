@@ -7,34 +7,50 @@
                     <div class="page-title-box">
                         <ol class="breadcrumb pull-right">
                             <li><a href="/admin/index.html">Dashboard</a></li>
-                            <li><a href="/publishers/manage.html">Affiliates</a></li>
+                            <li><a href="/admin/settings.html">Settings</a></li>
                             <li class="active">PostBacks</li>
                         </ol>
-                        <h4 class="page-title">Affiliates: PostBacks</h4>
+                        <h4 class="page-title">Network: PostBacks</h4>
                     </div>
-
-                    {if($postbacks)}
-                    <div class="table-responsive">
-                        <table class="table">
-                            <tr>
-                                <th>TYPE</th>
-                                <th>CODE</th>
-                                <th>STATUS</th>
-                                <th>ACTION</th>
-                            </tr>
-                            {foreach $p in $postbacks}
-                            <tr>
-                                <td>{echo $p->type}</td>
-                                <td>{echo $p->data}</td>
-                                <td>{echo $p->event}</td>
-                                <td>{echo $p->live}</td>
-                            </tr>
-                            {/foreach}
-                        </table>
+                    <div class="panel panel-default panel-border">
+                        {if($postbacks)}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <th>STATUS</th>
+                                    <th>TYPE</th>
+                                    <th>CODE</th>
+                                    <th>EVENT</th>
+                                    <th>ACTION</th>
+                                </tr>
+                                {foreach $p in $postbacks}
+                                <tr>
+                                    <td>
+                                        {if $p->live}
+                                        <span class="label label-success">Active</span>
+                                        {/if} {else}
+                                        <span class="label label-warning">Inactive</span>
+                                        {/else}
+                                    </td>
+                                    <td>{echo strtoupper($p->type)}</td>
+                                    <td>{echo $p->data}</td>
+                                    <td>{echo strtoupper($p->event)}</td>
+                                    <td>
+                                        {if !$p->live}
+                                        <a href="/account/postback.html?action=update&id={echo $p->_id}&property=live&value=1" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Activates this Callback and START Sending Hits in Real-Time"><i class="fa fa-check"></i> Activate</a>
+                                        {/if} {else}
+                                        <a href="/account/postback.html?action=update&id={echo $p->_id}&property=live&value=0" class="btn btn-warning btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Disables this Callback and STOP Sending Hits"><i class="fa fa-times"></i> Disable</a>
+                                        {/else}
+                                        <a href="/account/postback.html?action=delete&id={echo $p->_id}" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Deletes Permanently"><i class="fa fa-trash"></i> Delete</a>
+                                    </td>
+                                </tr>
+                                {/foreach}
+                            </table>
+                        </div>
+                        {/if} {else}
+                        <p class="text-center">No Campaign-Only PostBacks Found.</p>
+                        {/else}
                     </div>
-                    {/if} {else}
-                    <p class="text-center">No Campaign-Only PostBacks Found.</p>
-                    {/else}
                 </div>
             </div>
         </div>

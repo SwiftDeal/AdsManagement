@@ -89,6 +89,15 @@ class Organization extends \Shared\Model {
      * 
      * @validate required
      */
+    protected $_creatives = [];
+
+    /**
+     * @column
+     * @readwrite
+     * @type array
+     * 
+     * @validate required
+     */
     protected $_billing = [];
 
     public function updateDomains() {
