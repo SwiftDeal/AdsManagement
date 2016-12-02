@@ -145,8 +145,24 @@ class Advertiser extends Auth {
                     $new = RequestMethods::post('npassword');
                     $view->set($user->updatePassword($old, $new));
                     break;
+
+                case 'addCallback':
+                    $postback = new PostBack([
+                        "org_id" => $this->org->id,
+                        "user_id" => $this->user->id,
+                        "ad_id" => $ad->id,
+                        "type" => RM::post("type"),
+                        "data" => RM::post("data"),
+                        "event" => RM::post("event"),
+                        "live" => false
+                    ]);
+                    $postback->save();
+                    $view->set('message', 'PostBack Saved Successfully');
+                    break;
             }
         }
+        $postbacks = PostBack::all(["user_id = ?" => $this->user->id, "org_id = ?" => $this->org->id]);
+        $view->set('postbacks', $postbacks);
     }
 
     /**

@@ -149,7 +149,8 @@ class Publisher extends Auth {
                     "event" => RM::post("event"),
                     "live" => false
                 ]);
-                $view->set('message', 'Saved Successfully');
+                $postback->save();
+                $view->set('message', 'PostBack Saved Successfully');
                 break;
         }
 
@@ -308,14 +309,30 @@ class Publisher extends Auth {
                     $user->save();
                     $view->set('message', 'Payout Info Updated!!');
                     break;
+
+                case 'addCallback':
+                    $postback = new PostBack([
+                        "org_id" => $this->org->id,
+                        "user_id" => $this->user->id,
+                        "ad_id" => $ad->id,
+                        "type" => RM::post("type"),
+                        "data" => RM::post("data"),
+                        "event" => RM::post("event"),
+                        "live" => false
+                    ]);
+                    $postback->save();
+                    $view->set('message', 'PostBack Saved Successfully');
+                    break;
                 
                 default:
                     break;
             }
             $this->setUser($user);
         }
+        $postbacks = PostBack::all(["user_id = ?" => $this->user->id, "org_id = ?" => $this->org->id]);
         $afields = Meta::search('customField', $this->org);
         $view->set('afields', $afields)
+            ->set("postbacks", $postbacks)
             ->set("invoices", $invoices)
             ->set("payments", $payments);
     }
@@ -717,18 +734,6 @@ class Publisher extends Auth {
         } else {
             return $code;
         }
-    }
-
-    /**
-     * @before _admin
-     */
-    public function postbacks() {
-        $this->seo(array("title" => "Affiliates: PostBacks"));
-        $view = $this->getActionView();
-
-        $postbacks = \PostBack::all(['org_id = ?' => $this->org->id]);
-
-        $view->set('postbacks', $postbacks);
     }
     
 }

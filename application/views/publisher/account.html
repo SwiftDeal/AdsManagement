@@ -39,6 +39,12 @@
                     <span class="hidden-xs">Payments</span>
                 </a>
             </li>
+            <li class="">
+                <a href="#callback" data-toggle="tab" aria-expanded="false">
+                    <span class="visible-xs"><i class="fa fa-link"></i></span>
+                    <span class="hidden-xs">CallBack</span>
+                </a>
+            </li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="profile">
@@ -263,6 +269,61 @@
                 {/if}{else}
                 <p class="text-center">No payments has been created till now.</p>
                 {/else}
+            </div>
+            <div class="tab-pane" id="callback">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4 class="m-t-0 header-title text-center"><b>Create Callbacks</b></h4>
+                        <form method="post">
+                            <div class="form-group">
+                                <label>Event</label>
+                                <select class="form-control selectpicker" name="event" title="Select Callback Event">
+                                    <option value="click">Click</option>
+                                    <option value="conversion">Conversion</option>
+                                    <option value="impression">Impression</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Type</label>
+                                <select class="form-control selectpicker" name="type" title="Select Callback type">
+                                    <option value="url">URL(Any Campaign Tracking type)</option>
+                                    <option value="html">HTML(iframe Campaign Tracking Only)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Type</label>
+                                <textarea name="data" class="form-control" placeholder="Callback Code"></textarea>
+                            </div>
+                            <input type="hidden" name="action" value="addCallback">
+                            <button type="submit" class="btn btn-primary">Save Callback</button>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <h4 class="m-t-0 header-title text-center"><b>Saved Callbacks</b></h4>
+                        {if($postbacks)}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <th>EVENT</th>
+                                    <th>TYPE</th>
+                                    <th>CODE</th>
+                                    <th>STATUS</th>
+                                </tr>
+                                {foreach $p in $postbacks}
+                                <tr>
+                                    <td>{echo $p->type}</td>
+                                    <td>{echo $p->data}</td>
+                                    <td>{echo $p->event}</td>
+                                    <td>{echo $p->live}</td>
+                                </tr>
+                                {/foreach}
+                            </table>
+                        </div>
+                        {/if} {else}
+                        <p class="text-center">No Campaign-Only PostBacks Found.</p>
+                        {/else}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

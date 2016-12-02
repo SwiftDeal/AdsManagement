@@ -360,6 +360,18 @@ class Admin extends Auth {
     }
 
     /**
+     * @before _admin
+     */
+    public function postbacks() {
+        $this->seo(array("title" => "Network: PostBacks"));
+        $view = $this->getActionView();
+
+        $postbacks = \PostBack::all(['org_id = ?' => $this->org->id]);
+
+        $view->set('postbacks', $postbacks);
+    }
+
+    /**
      * @protected
      * @Over ride
      */
