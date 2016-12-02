@@ -138,14 +138,15 @@ class Organization extends \Shared\Model {
     }
 
     public function fullurl() {
-        if (!$this->_url) {
-            $fullurl = 'http://'.$this->_domain .'.vnative.com';
-        } else {
+        if (isset($this->_url) && strlen($this->_url) > 3) {
             $fullurl = $this->_url;
             if (!strpos($fullurl, 'http')) {
                 $fullurl = 'http://'.$this->_url;
             }
+        } else {
+            $fullurl = 'http://'.$this->_domain .'.vnative.com';
         }
+        return $fullurl;
     }
 
     public function users($type = "publisher", $object = true) {

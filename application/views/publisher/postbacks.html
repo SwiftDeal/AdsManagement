@@ -13,70 +13,28 @@
                         <h4 class="page-title">Affiliates: PostBacks</h4>
                     </div>
 
-                    <ul class="nav nav-tabs navtab-custom">
-                        <li class="active">
-                            <a href="#campaign" data-toggle="tab" aria-expanded="false">
-                                <span class="visible-xs"><i class="fa fa-bullhorn"></i></span>
-                                <span class="hidden-xs">Campaign Only</span>
-                            </a>
-                        </li>
-                        <li class="">
-                            <a href="#global" data-toggle="tab" aria-expanded="true">
-                                <span class="visible-xs"><i class="fa fa-globe"></i></span>
-                                <span class="hidden-xs">Global</span>
-                            </a>
-                        </li>
-                    </ul>
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="campaign">
-                            {if($links)}
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <tr>
-                                        <th>TYPE</th>
-                                        <th>CODE</th>
-                                        <th>STATUS</th>
-                                        <th>ACTION</th>
-                                    </tr>
-                                    {foreach $l in $links}
-                                    <tr>
-                                        <td>{echo strtoupper($l->meta["callback"]["type"])}</td>
-                                        <td>{echo htmlspecialchars_decode($l->meta["callback"]["data"])}</td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    {/foreach}
-                                </table>
-                            </div>
-                            {/if} {else}
-                            <p class="text-center">No Campaign-Only PostBacks Found.</p>
-                            {/else}
-                        </div>
-                        <div class="tab-pane" id="global">
-                            {if($affiliates)}
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <tr>
-                                        <th>TYPE</th>
-                                        <th>CODE</th>
-                                        <th>STATUS</th>
-                                        <th>ACTION</th>
-                                    </tr>
-                                    {foreach $a in $affiliates}
-                                    <tr>
-                                        <td>{echo ucfirst($a->meta["callback"]["type"])}</td>
-                                        <td>{echo htmlspecialchars_decode($a->meta["callback"]["data"])}</td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    {/foreach}
-                                </table>
-                            </div>
-                            {/if} {else}
-                            <p class="text-center">No Global PostBacks Found.</p>
-                            {/else}
-                        </div>
+                    {if($postbacks)}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr>
+                                <th>TYPE</th>
+                                <th>CODE</th>
+                                <th>STATUS</th>
+                                <th>ACTION</th>
+                            </tr>
+                            {foreach $p in $postbacks}
+                            <tr>
+                                <td>{echo $p->type}</td>
+                                <td>{echo $p->data}</td>
+                                <td>{echo $p->event}</td>
+                                <td>{echo $p->live}</td>
+                            </tr>
+                            {/foreach}
+                        </table>
                     </div>
+                    {/if} {else}
+                    <p class="text-center">No Campaign-Only PostBacks Found.</p>
+                    {/else}
                 </div>
             </div>
         </div>

@@ -138,6 +138,22 @@ class Publisher extends Auth {
             $access->save();
         }
 
+        switch (RM::post("action")) {
+            case 'addCallback':
+                $postback = new PostBack([
+                    "org_id" => $this->org->id,
+                    "user_id" => $this->user->id,
+                    "ad_id" => $ad->id,
+                    "type" => RM::post("type"),
+                    "data" => RM::post("data"),
+                    "event" => RM::post("event"),
+                    "live" => false
+                ]);
+                $view->set('message', 'Saved Successfully');
+                break;
+        }
+
+        $postbacks = PostBack::all(["user_id = ?" => $this->user->id, "ad_id = ?" => $ad->id]);
         $start = RM::get("start", date('Y-m-d', strtotime("-7 day")));
         $end = RM::get("end", date('Y-m-d'));
         $limit = RM::get("limit", 10); $page = RM::get("page", 1);
@@ -167,6 +183,7 @@ class Publisher extends Auth {
             ->set('models', $models)
             ->set("start", $start)
             ->set("end", $end)
+            ->set("postbacks", $postbacks)
             ->set('tdomains', \Shared\Services\User::trackingLinks($this->user, $this->org));
     }
 
@@ -709,26 +726,9 @@ class Publisher extends Auth {
         $this->seo(array("title" => "Affiliates: PostBacks"));
         $view = $this->getActionView();
 
-        switch (RM::post("action")) {
-            case 'addCallback':
-                $link = Link::first(["id = ?" => RM::post("link_id")]);
-                $meta = $link->meta;
-                $callback = [
-                    "type" => RM::post("type"),
-                    "data" => RM::post("data"),
-                    "event" => RM::post("event"),
-                    "live" => false
-                ];
-                array_push($meta["callback"], $callback);
-                $view->set('message', 'Saved Successfully');
-                break;
-        }
+        $postbacks = \PostBack::all(['org_id = ?' => $this->org->id]);
 
-        $links = \Link::all(['meta.callback' => ['$exists' => true]]);
-        $affiliates = \User::all(['meta.callback' => ['$exists' => true]]);
-
-        $view->set('links', $links)
-            ->set('affiliates', $affiliates);
+        $view->set('postbacks', $postbacks);
     }
     
 }
