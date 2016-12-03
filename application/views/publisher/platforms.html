@@ -22,16 +22,22 @@
                 <tr>
                     <th>PROPERTY</th>
                     <th>TYPE</th>
+                    <th>PERFORMANCE</th>
+                    <th>PAYOUT</th>
                     <th>ACTION</th>
                 </tr>
             {foreach $p in $platforms}
                 <tr>
                     <td>{echo $p->url}</td>
-                    <td>{echo $p->meta['type'] ?? NONE}</td>
+                    <td>{echo $p->type ?? NONE}</td>
+                    <td></td>
+                    <td></td>
                     <td>
+                    {if($p->type == "webiste")}
                         <button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#nativeCode">Native AD Code</button>
                         <a href="https://wordpress.org/plugins/vnative/" class="btn btn-info btn-xs" target="_blank">Wordpress Plugin</a>
                         <button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#bannerCode">Banner AD Code</button>
+                    {/if}
                     </td>
                 </tr>
             {/foreach}

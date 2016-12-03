@@ -513,14 +513,14 @@ class Publisher extends Auth {
                     $p = \Platform::first(['_id = ?' => $pid]);
                 } else {
                     $p = new \Platform([
+                        'org_id' => $this->org->id,
                         'user_id' => $this->user->_id
                     ]);
                 }
                 $p->url = RM::post('url');
-                $meta = $p->meta;
-                $meta['category'] = RM::post('category', ['386']);
-                $meta['type'] = RM::post('type', '');
-                $p->meta = $meta;
+                $p->category = RM::post('category');
+                $p->type = RM::post('type');
+                $p->verified = false;
                 $p->save();
 
                 $view->set('message', 'Platform saved successfully!!');

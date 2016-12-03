@@ -34,9 +34,27 @@ class Platform extends Shared\Model {
     /**
      * @column
      * @readwrite
+     * @type array
+     *
+     * @validate required
+     * @label Category
+     * @value Will Contain ObjectId's of Categories
+     */
+    protected $_category = [];
+
+    /**
+     * @column
+     * @readwrite
      * @type text
      */
     protected $_type;
+
+    /**
+     * @column
+     * @readwrite
+     * @type boolean
+     */
+    protected $_verified = null;
 
     public function setUrl($url) {
         if (!preg_match('/^https?:\/\//', $url)) {
