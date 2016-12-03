@@ -129,26 +129,25 @@ class Account extends Admin {
      * @before _secure
      * @todo @Faizan_Ayubi Remove UNSAFE Actions from GET Request
      */
-    public function postback() {
-        $this->noview(); $session = Registry::get('session');
-        $postback = PostBack::first(["id = ?" => RM::get("id")]);
+    public function postback($id) {
+        $this->JSONView(); $view = $this->getActionView();
+        $postback = PostBack::first(["id" => $id, "org_id" => $this->org->_id]);
+
         if ($postback) {
-            switch (RM::get("action")) {
+            switch (strtolower(RM::type())) {
                 case 'delete':
                     $postback->delete();
-                    $session->set('$flashMessage', 'PostBack Deleted Successfully');
+                    $view->set('message', 'PostBack Deleted Successfully');
                     break;
                 
-                case 'update':
-                    $property = RM::get("property");
-                    $postback->$property = RM::get("value");
+                case 'post':
+                    $postback->live = (int) RM::post("live");
                     $postback->save();
-                    $session->set('$flashMessage', 'PostBack Updated Successfully');
+                    $view->set('message', 'PostBack Updated Successfully');
                     break;
             }
         } else {
-            $session->set('$flashMessage', 'PostBack doesnot exist');
+            $view->set('message', "Invalid Request!!");
         }
-        $this->redirect($_SERVER['HTTP_REFERER']);
     }
 }

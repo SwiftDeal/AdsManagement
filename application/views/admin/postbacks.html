@@ -59,11 +59,11 @@
                                     </td>
                                     <td>
                                         {if !$p->live}
-                                        <a href="/account/postback.html?action=update&id={echo $p->_id}&property=live&value=1" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Activates this Callback and START Sending Hits in Real-Time"><i class="fa fa-check"></i> Activate</a>
+                                        <a href="/account/postback/{echo $p->_id}" class="update btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" data-send='{echo json_encode(["live" => 1])}' data-original-title="Activates this Callback and START Sending Hits in Real-Time"><i class="fa fa-check"></i> Activate</a>
                                         {/if} {else}
-                                        <a href="/account/postback.html?action=update&id={echo $p->_id}&property=live&value=0" class="btn btn-warning btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Disables this Callback and STOP Sending Hits"><i class="fa fa-times"></i> Disable</a>
+                                        <a href="/account/postback/{echo $p->_id}" class="update btn btn-warning btn-xs" data-toggle="tooltip" data-send='{echo json_encode(["live" => 0])}' data-placement="top" data-original-title="Disables this Callback and STOP Sending Hits"><i class="fa fa-times"></i> Disable</a>
                                         {/else}
-                                        <a href="/account/postback.html?action=delete&id={echo $p->_id}" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Deletes Permanently"><i class="fa fa-trash"></i> Delete</a>
+                                        <a href="/account/postback/{echo $p->_id}" class="delete btn btn-danger btn-xs" data-toggle="tooltip" data-message="Are you sure you want to remove this postback??" data-placement="top" data-original-title="Deletes Permanently"><i class="fa fa-trash"></i> Delete</a>
                                     </td>
                                 </tr>
                                 {/foreach}

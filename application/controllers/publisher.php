@@ -584,7 +584,22 @@ class Publisher extends Auth {
                     } else {
                         $view->set('message', 'Invalid Request!!');
                     }
-                default:
+                case 'commadd':
+                case 'commedit':
+                    $comm_id = RM::post('cid');
+                    if ($comm_id) {
+                        $comm = Commission::first(['_id' => $comm_id, 'user_id' => $publisher->_id]);
+                    } else {
+                        $comm = new Commission([
+                            'user_id' => $publisher->_id
+                        ]);
+                    }
+                    $comm->model = RM::post('model');
+                    $comm->description = RM::post('description');
+                    $comm->rate = $this->currency(RM::post('rate'));
+                    $comm->coverage = RM::post('coverage', ['ALL']);
+                    $comm->save();
+                    $view->set('message', "Multi Country Payout Saved!!");
                     break;
             }
         }
@@ -596,6 +611,16 @@ class Publisher extends Auth {
                     unset($publisher->getMeta()['campaign']);
                     $publisher->save();
                     $view->set('message', 'Payout Deleted!!');
+                    break;
+
+                case 'commDel':
+                    $comm = Commission::first(['_id' => RM::get("comm_id"), 'user_id' => $publisher->_id]);
+                    if ($comm) {
+                        $comm->delete();
+                        $view->set('message', 'Payout Deleted!!');
+                    } else {
+                        $view->set('message', 'Invalid Request!!');
+                    }
                     break;
                 
                 case 'afields':
@@ -618,7 +643,8 @@ class Publisher extends Auth {
         $afields = Meta::search('customField', $this->org);
         $view->set('afields', $afields)
             ->set("publisher", $publisher)
-            ->set("commissions", Commission::all(["user_id = ?" => $this->user->id]))
+            ->set('hideRevenue', true)
+            ->set("commissions", Commission::all(["user_id = ?" => $publisher->id]))
             ->set("start", strftime("%Y-%m-%d", strtotime('-7 day')))
             ->set("end", strftime("%Y-%m-%d", strtotime('now')))
             ->set("d", Performance::total(['start' => ($start ?? $publisher->created->format('Y-m-d')), 'end' => ($end ?? date('Y-m-d'))], $publisher));
