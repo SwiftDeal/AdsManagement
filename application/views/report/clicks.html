@@ -215,7 +215,7 @@
                                                     <td>{echo $object->device}</td>
                                                     <td>{echo $object->p1}</td>
                                                     <td>{echo $object->p2}</td>
-                                                    <td>{echo Framework\StringMethods::datetime_to_text($object->created)}</td>
+                                                    <td>{echo Framework\StringMethods::datetime_to_text($object->created, $user)}</td>
                                                 </tr>
                                             {/foreach}
                                         </tbody>

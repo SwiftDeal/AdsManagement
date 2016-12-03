@@ -319,7 +319,7 @@ class Publisher extends Auth {
     }
 
     /**
-     * @before _secure
+     * @before _verified
      */
     public function createLink() {
         $this->JSONView();

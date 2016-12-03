@@ -134,6 +134,17 @@ namespace Shared {
         /**
          * @protected
          */
+        public function _verified() {
+            $user = $this->getUser();
+            if (!$user) {
+                Registry::get("session")->set('$beforeLogin', RequestMethods::server('REQUEST_URI', '/'));
+                $this->redirect("/login.html");
+            }
+        }
+
+        /**
+         * @protected
+         */
         public function _session() {
             $user = $this->getUser();
             if ($user) {

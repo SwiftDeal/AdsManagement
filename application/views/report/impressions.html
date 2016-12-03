@@ -146,7 +146,7 @@
                                                     <td>{echo $object->device}</td>
                                                     <td>{echo $object->country}</td>
                                                     <td>{echo $object->hits}</td>
-                                                    <td>{echo Framework\StringMethods::datetime_to_text($object->created)}</td>
+                                                    <td>{echo Framework\StringMethods::datetime_to_text($object->created, $user)}</td>
                                                 </tr>
                                             {/foreach}
                                         </tbody>

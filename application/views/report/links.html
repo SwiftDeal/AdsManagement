@@ -59,7 +59,7 @@
                                                 {if in_array($f['name'], ['modified', 'live'])} {script continue} {/if}
 
                                                 {if $f["type"] == "date" || $f["type"] == "datetime"}
-                                                    {script $object->$f["name"] = Framework\StringMethods::datetime_to_text($object->$f["name"])}
+                                                    {script $object->$f["name"] = Framework\StringMethods::datetime_to_text($object->$f["name"], $user)}
                                                 {/if} {elseif $f["type"] == "array"}
                                                     {script $object->$f["name"] = implode(",", $object->$f["name"])}
                                                 {/elseif} {else}

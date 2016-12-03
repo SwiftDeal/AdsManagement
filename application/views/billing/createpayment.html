@@ -156,8 +156,8 @@
                                                         </label>
                                                     </div>
                                                 </td>
-                                                <td>{echo Framework\StringMethods::datetime_to_text($i->start)}</td>
-                                                <td>{echo Framework\StringMethods::datetime_to_text($i->end)}</td>
+                                                <td>{echo Framework\StringMethods::datetime_to_text($i->start, $user)}</td>
+                                                <td>{echo Framework\StringMethods::datetime_to_text($i->end, $user)}</td>
                                                 <td>{echo $user->convert($i->amount, true, 2, false)}</td>
                                             </tr>
                                         {/foreach}

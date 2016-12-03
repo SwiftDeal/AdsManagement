@@ -112,7 +112,7 @@
                                                     <td>{echo $object->cid}</td>
                                                     <td>{echo $ads[$object->adid]->title}</td>
                                                     <td>{echo $affs[$object->pid]->name}</td>
-                                                    <td>{echo Framework\StringMethods::datetime_to_text($object->created)}</td>
+                                                    <td>{echo Framework\StringMethods::datetime_to_text($object->created, $user)}</td>
                                                 </tr>
                                             {/foreach}
                                         </tbody>

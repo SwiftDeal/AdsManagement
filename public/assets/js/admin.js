@@ -158,7 +158,7 @@
                             }
 
                             bootbox.alert(data.message, function () {
-                                window.location.href = window.location.href;
+                                window.location.href = self.data('fallback') || window.location.href;
                             });
                         });
                     }); 

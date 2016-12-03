@@ -235,7 +235,7 @@
                         <tbody>
                             {foreach $c in $clicks}
                             <tr>
-                                <td><small>{echo Framework\StringMethods::datetime_to_text($c->created)}</small></td>
+                                <td><small>{echo Framework\StringMethods::datetime_to_text($c->created, $user)}</small></td>
                                 <td>{echo $c->ipaddr}</td>
                                 <td>{echo $c->referer}</td>
                                 <td>{echo $c->browser}</td>
