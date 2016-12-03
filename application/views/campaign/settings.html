@@ -44,28 +44,28 @@
                 <div class="tab-content">
                     <div class="tab-pane active" id="payout">
                         <h4 class="m-t-0 header-title text-center">Default Commission Payout Settings</h4>
-                        {if(!empty($org->meta["commission"]))}
-                        <form action="" method="post">
+                        {if count($commissions) > 0}
                             <div class="table-responsive">
                                 <table class="table">
                                     <tr>
                                         <th><label>Coverage</label></th>
                                         <th><label>Model</label></th>
-                                        <th><label>Rate</label></th>
+                                        <th><label>Payout</label></th>
                                     </tr>
-                                    {foreach $c in $org->meta["commission"]}
+                                    {foreach $c in $commissions}
+                                    <form action="" method="post">
                                     <tr>
                                         <td>
                                             <div class="form-group">
-                                                <select name="coverage[]" data-value='{echo json_encode($c["coverage"])}' class="form-control selectVal selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
+                                                <select name="coverage[]" data-value='{echo json_encode($c->coverage)}' class="form-control selectVal selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
                                                     {include auth/country.html}
                                                 </select>
                                             </div>
                                         </td>
                                         <td>
                                             <div class="form-group">
-                                                {script $model = $c['model']}
-                                                <select name="model" required="" data-value='{echo json_encode(["$model"])}' class="selectVal form-control selectpicker">
+                                                {script $model = (array) $c->model}
+                                                <select name="model" required="" data-value='{echo json_encode($model)}' class="selectVal form-control">
                                                     {include auth/model.html}
                                                 </select>
                                             </div>
@@ -74,21 +74,27 @@
                                             <div class="form-group">
                                                 <div class="input-group">
                                                     <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                                    <input type="text" value="{echo $user->convert($c['rate'], false, 4)}" name="rate" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" required="">
+                                                    <input type="text" value="{echo $user->convert($c->rate, false, 4)}" name="rate" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" required="">
                                                 </div>
                                             </div>
                                         </td>
+                                        <td>
+                                            <input type="hidden" name="action" value="commedit">
+                                            <input type="hidden" name="comm_id" value="{echo $c->_id}">
+                                            <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Save</button>
+                                            <a href="{echo Shared\Markup::parse_url()['path']}?action=commDel&comm_id={echo $c->_id}" class="delete btn btn-danger btn-sm" data-message="Are you sure you want to delete this commission??"><i class="fa fa-trash"></i> Delete</a>
+                                            <span class="pull-right">
+                                                
+                                            </span>
+                                        </td>
                                     </tr>
+                                    </form>
                                     {/foreach}
                                 </table>
                             </div>
-                            <input type="hidden" name="action" value="commission">
-                            <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Save</button>
                             <span class="pull-right">
-                                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addCommisson"><i class="fa fa-plus"></i> New Commission</button> 
-                                <a href="/account/commdel.html" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</a>
+                                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addCommisson"><i class="fa fa-plus"></i> New Commission</button>
                             </span>
-                        </form>
                         {/if} {else}
                         <p class="text-center">
                             <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addCommisson"><i class="fa fa-plus"></i> New Commission</button> 

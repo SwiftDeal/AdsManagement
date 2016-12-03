@@ -591,6 +591,20 @@ class Campaign extends Admin {
     public function settings() {
         $this->seo(array("title" => "Campaign: Settings")); $view = $this->getActionView();
         $user = $this->user; $org = $this->org;
+
+        if (RM::type() === 'DELETE') {
+            switch (RM::get("action")) {
+                case 'commDel':
+                    $comm = Commission::first(['_id' => RM::get("comm_id"), "org_id" => $this->org->_id]);
+                    if ($comm) {
+                        $comm->delete();
+                        $view->set('message', 'Commission removed!!');
+                    } else {
+                        $view->set('message', 'Invalid request!!');
+                    }
+                    return;
+            }
+        }
         
         if (RM::type() == 'POST') {
             $action = RM::post('action', '');
@@ -600,7 +614,28 @@ class Campaign extends Admin {
                     break;
 
                 case 'commadd':
-                    $this->addCommisson($org);
+                case 'commedit':
+                    $fields = [
+                        'model' => RM::post('model'),
+                        'rate' => RM::post('rate'),
+                        'coverage' => RM::post('coverage') ?? ['ALL']
+                    ];
+
+                    $comm_id = RM::post('comm_id');
+                    if ($comm_id) {
+                        $comm = Commission::first(['_id' => $comm_id, 'org_id' => $this->org->_id]);
+                        if (!$comm) {
+                            $view->set('Invalid Request!!'); break;
+                        }
+                    } else {
+                        $comm = new Commission(['org_id' => $this->org->_id]);
+                    }
+                    foreach ($fields as $key => $value) {
+                        var_dump($value);
+                        $comm->$key = $value;
+                    }
+                    $comm->save();
+                    $view->set('message', 'Commission saved successfully!!');
                     break;
 
                 case 'domains':
@@ -621,8 +656,12 @@ class Campaign extends Admin {
             }
             $this->setUser($user);
         }
+
+        $commissions = Commission::all(['org_id' => $this->org->_id]);
         $categories = \Category::all(['org_id' => $this->org->_id]);
-        $view->set('categories', $categories);
+        $view->set('categories', $categories)
+            ->set('hideRevenue', true)
+            ->set('commissions', $commissions);
     }
 
     protected function addCommisson($org) {

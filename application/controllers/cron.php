@@ -77,7 +77,6 @@ class Cron extends Shared\Controller {
         $this->_performance();
         $this->log('Peak Memory at: ' . memory_get_peak_usage());
         $this->_invoice();
-        $this->_webPerf();
         $this->_rssFeed();
 
         // $this->_test();
@@ -227,89 +226,6 @@ class Cron extends Shared\Controller {
             $msg = 'Saving performance for advertiser: ' . $key . ' with clicks: ' . $perf->clicks . ' earning: '. $perf->revenue .' impressions: ' . $perf->impressions;
             $this->log($msg);
             $perf->save();
-        }
-    }
-
-    protected function _webPerf($date = null) {
-        if (!$date) $date = date('Y-m-d', strtotime('-1 day'));
-
-        $clickCol = Registry::get("MongoDB")->clicks;
-        $users = \User::all(['type' => 'advertiser', 'live' => true], ['_id', 'email', 'org_id']);
-
-        $adsInfo = []; $orgs = [];
-        foreach ($users as $u) {
-            $org_id = Utils::getMongoID($u->org_id);
-            if (!array_key_exists($org_id, $orgs)) {
-                $org = \Organization::first(['_id' => $org_id], ['url']);
-                $orgs[$org_id] = $org;
-            } else {
-                $org = $orgs[$org_id];
-            }
-
-            // find all the ads
-            $ads = \Ad::all(['user_id' => $u->_id], ['_id', 'url']);
-            // find all the platforms
-            $platforms = \Platform::all(['user_id' => $u->_id], ['_id', 'url']);
-
-            foreach ($platforms as $p) {
-                $in = [];   // populate ad ids
-                foreach ($ads as $a) {
-                    $regex = preg_quote($p->url, '.');
-                    if (!preg_match('#^'.$regex.'#', $a->url)) {
-                        continue;
-                    }
-                    $in[] = Utils::mongoObjectId($a->_id);
-                }
-
-                // new stats
-                $stat = \Stat::exists($u, $date);
-                $clicks = 0; $revenue = 0.00; $avgCpc = 0.00;
-
-                $dateQuery = Utils::dateQuery(['start' => $date, 'end' => $date]);
-                $start = $dateQuery['start']; $end = $dateQuery['end'];
-
-                // find all the clicks for the date range
-                $records = $clickCol->find([
-                    'adid' => ['$in' => $in],
-                    'is_bot' => false,
-                    'created' => ['$gte' => $start, '$lte' => $end]
-                ], ['projection' => ['adid' => 1]]);
-
-                // Now classify the clicks according to the AD
-                $classify = \Click::classify($records);
-
-                // foreach ad remove fraud clicks
-                foreach ($classify as $key => $value) {
-                    if (!array_key_exists($key, $adsInfo)) {
-                        $comm = \Commission::first(['ad_id' => $key], ['revenue']);
-                        $adsInfo[$key] = $comm;
-                    } else {
-                        $comm = $adsInfo[$key];
-                    }
-
-                    if (is_null($comm->revenue) || !$comm->revenue) {
-                        $orate = isset($org->meta['rate']) ? $org->meta['rate'] : 0;
-                    } else {
-                        $orate = $comm->revenue;
-                    }
-
-                    // $uniqClicks = Click::checkFraud($value, $org);
-                    // can parse uniqClicks to find traffic from individual devices
-                    $adClicks = count($value);
-                    
-                    $clicks += $adClicks; $revenue += $adClicks * $orate;
-                }
-
-                if ($clicks == 0) continue;
-
-                $avgCpc = round($revenue / $clicks, 6);
-                $stat->clicks = $clicks; $stat->revenue = round($revenue, 6);
-                $stat->cpc = $avgCpc;
-
-                $msg = 'Stats for platform: ' .$p->url . ' Clicks: ' . $stat->clicks;
-                $this->log($msg);
-                $stat->save();
-            }
         }
     }
 

@@ -406,29 +406,6 @@ class Advertiser extends Auth {
         $dateQuery = Utils::dateQuery(['start' => $start, 'end' => $end]);
         foreach ($platforms as $p) {
             $key = Utils::getMongoID($p->_id);
-
-            $stats = \Stat::all([
-                'pid' => $key,
-                'created' => ['$gte' => $dateQuery['start'], '$lte' => $dateQuery['end']]
-            ], ['clicks', 'revenue', 'cpc']);
-            $clicks = 0; $revenue = 0.00; $cpc = 0.00;
-            foreach ($stats as $s) {
-                $clicks += $s->clicks;
-                $revenue += $s->revenue;
-            }
-
-            if ($clicks !== 0) {
-                $cpc = round($revenue / $clicks, 4);
-            }
-            $results[$key] = ArrayMethods::toObject([
-                '_id' => $p->_id,
-                'url' => $p->url,
-                'stats' => [
-                    'clicks' => $clicks,
-                    'revenue' => $revenue,
-                    'cpc' => $cpc
-                ]
-            ]);
         }
 
         $view->set("platforms", $results)
