@@ -643,7 +643,6 @@ class Publisher extends Auth {
         $afields = Meta::search('customField', $this->org);
         $view->set('afields', $afields)
             ->set("publisher", $publisher)
-            ->set('hideRevenue', true)
             ->set("commissions", Commission::all(["user_id = ?" => $publisher->id]))
             ->set("start", strftime("%Y-%m-%d", strtotime('-7 day')))
             ->set("end", strftime("%Y-%m-%d", strtotime('now')))

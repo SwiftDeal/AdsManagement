@@ -1,5 +1,5 @@
 {script $parsed = parse_url(URL)}
-{include campaign/modals/commission.html}
+{include admin/modals/commission.html}
 <div class="content-page">
     <div class="content">
         <div class="container">
@@ -8,11 +8,11 @@
                     <div class="page-title-box">
                         <div class="pull-right">
                             {if !$publisher->live}
-                            <a href="/publisher/update/{echo $publisher->_id}" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-success" data-toggle="tooltip" data-placement="top" data-original-title="Activate"><i class="fa fa-check"></i> Activate</a>
+                            <a href="/publisher/update/{echo $publisher->_id}" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-default" data-toggle="tooltip" data-placement="top" data-original-title="Activate"><i class="fa fa-check"></i> Activate</a>
                             {/if} {else}
-                            <a href="/publisher/update/{echo $publisher->_id}" data-send='{echo json_encode(["live" => 0])}' class="update btn btn-warning" data-toggle="tooltip" data-placement="top" data-original-title="Disable"><i class="fa fa-times"></i> Disable</a>
+                            <a href="/publisher/update/{echo $publisher->_id}" data-send='{echo json_encode(["live" => 0])}' class="update btn btn-default" data-toggle="tooltip" data-placement="top" data-original-title="Disable"><i class="fa fa-times"></i> Disable</a>
                             {/else}
-                            <a href="/publisher/delete/{echo $publisher->_id}" data-message="Are you sure you want to delete this publisher??" class="delete btn btn-danger" data-toggle="tooltip" data-placement="top" data-original-title="Delete"><i class="fa fa-trash"></i> Delete</a>
+                            <a href="/publisher/delete/{echo $publisher->_id}" data-message="Are you sure you want to delete this publisher??" class="delete btn btn-default" data-toggle="tooltip" data-placement="top" data-original-title="Delete"><i class="fa fa-trash"></i> Delete</a>
                             <a href="/auth/loginas/{echo $publisher->_id}" class="btn btn-default" data-toggle="tooltip" data-placement="top" data-original-title="Sign in to this profile"><i class="fa fa-sign-in"></i> Login as</a>
                         </div>
                         <h4 class="page-title"><img src="{echo Shared\Markup::get_gravatar($publisher->email, 30)}"> {echo $publisher->name} <small>(ID: {echo $publisher->id})</small></h4>
@@ -64,9 +64,9 @@
                         </a>
                     </li>
                     <li class="">
-                        <a href="#commission">
-                            <span class="visible-xs"><i class="fa fa-file-text-o"></i></span>
-                            <span class="hidden-xs">Multi Payout</span>
+                        <a href="#commission" data-toggle="tab" aria-expanded="false">
+                            <span class="visible-xs"><i class="fa fa-money"></i></span>
+                            <span class="hidden-xs">Commission</span>
                         </a>
                     </li>
                 </ul>
@@ -389,53 +389,58 @@
                         </div>
                     </div>
                     <div class="tab-pane" id="commission">
-                        {foreach $comm in $commissions}
-                        <div class="row">
-                            <div class="card">
-                                <div class="card-body no-padding">
-                                    <form method="post" action="" class="panel panel-default panel-body">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label>Model</label>
-                                                <select name="model" required="" value="{echo $comm->model}" class="form-control">
-                                                    {include auth/model.html}
-                                                </select>
-                                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "model")}</span>
-                                            </div>
-                                            <div class="form-group">
-                                                <label>Payout Rate</label>
-                                                <div class="input-group">
-                                                    <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                                    <input type="text" name="rate" pattern="^[0-9]{1,2}(\.[0-9]{0,6})?$" value="{echo $user->convert($comm->rate, false)}" class="form-control" placeholder="Rate for revenue model. Eg: 0.3" required="">
-                                                </div>
-                                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "rate")}</span>
-                                            </div>
+                    <p class="text-center">
+                        Commission is what you set to pay your affiliate by Default, overiding any exsisting Campaign Commission. <br><button type="button" class="btn btn-inverse btn-xs" data-toggle="modal" data-target="#addCommisson"><i class="fa fa-plus"></i> New Commission</button>
+                    </p>
+                    {if($commissions)}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <th><label>Coverage</label></th>
+                                    <th><label>Model</label></th>
+                                    <th><label>Rate</label></th>
+                                </tr>
+                                {foreach $c in $commissions}
+                                <form method="post"><tr>
+                                    <td>
+                                        <div class="form-group">
+                                            <select name="coverage[]" data-value='{echo json_encode($c->coverage)}' class="form-control selectVal selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
+                                                {include auth/country.html}
+                                            </select>
+                                            <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "coverage")}</span>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label>Coverage</label>
-                                                <select name="coverage[]" data-value='{echo json_encode($comm->coverage)}' class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
-                                                    {include auth/country.html}
-                                                </select>
-                                                <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "coverage")}</span>
-                                            </div>
-                                            <div class="form-group">
-                                                <label>Description (Optional)</label>
-                                                <textarea class="form-control" name="description" rows="3"></textarea>
-                                            </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            {script $model = $c->model}
+                                            <select name="model" required="" data-value='{echo json_encode(["$model"])}' class="selectVal form-control selectpicker">
+                                                {include auth/model.html}
+                                            </select>
+                                            <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "model")}</span>
                                         </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                                <input type="text" value="{echo $user->convert($c->rate, false, 4)}" name="rate" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" required="">
+                                            </div>
+                                            <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "rate")}</span>
+                                        </div>
+                                    </td>
+                                    <td>
                                         <input type="hidden" name="action" value="commedit">
                                         <input type="hidden" name="cid" value="{echo $comm->id}">
                                         <span class="pull-right">
-                                            <a href="{echo $parsed['path']}?action=commDel&comm_id={echo $comm->id}" class="delete btn btn-danger btn-sm" data-message="Are You sure you want to delete this commission??"><i class="fa fa-trash"></i> Delete</a> 
-                                            <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-check-circle"></i> Save</button>
+                                            <a href="{echo $parsed['path']}?action=commDel&comm_id={echo $comm->id}" class="delete btn btn-default btn-sm" data-message="Are You sure you want to delete this commission??"><i class="fa fa-trash"></i> Delete</a> 
+                                            <button type="submit" class="btn btn-default btn-sm"><i class="fa fa-check-circle"></i> Update</button>
                                         </span>
-                                    </form>
-                                </div>
-                            </div>
+                                    </td>
+                                </tr></form>
+                                {/foreach}
+                            </table>
                         </div>
-                        {/foreach}
-                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addCommisson"><i class="fa fa-plus"></i> New Commission</button>
+                    {/if}
                     </div>
                 </div>
             </div>

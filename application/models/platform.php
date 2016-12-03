@@ -12,6 +12,14 @@ class Platform extends Shared\Model {
      * @type mongoid
      * @index
      */
+    protected $_org_id;
+
+    /**
+     * @column
+     * @readwrite
+     * @type mongoid
+     * @index
+     */
     protected $_user_id;
 
     /**
@@ -22,6 +30,13 @@ class Platform extends Shared\Model {
      * @index
      */
     protected $_url;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     */
+    protected $_type;
 
     public function setUrl($url) {
         if (!preg_match('/^https?:\/\//', $url)) {
