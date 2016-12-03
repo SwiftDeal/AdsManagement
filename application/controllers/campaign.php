@@ -367,9 +367,17 @@ class Campaign extends Admin {
                     $c->image = $img; $c->save();
                     $view->set("message", $message);
                     break;
-                
+
+                case 'commadd':
                 case 'commedit':
-                    $comm = \Commission::first(["id = ?" => RM::post('cid')]);
+                    $cid = RM::post('cid');
+                    if ($cid) {
+                        $comm = Commission::first(["id" => $cid, "ad_id" => $c->_id]);
+                    } else {
+                        $comm = new \Commission([
+                            'ad_id' => $c->_id, 'live' => true
+                        ]);
+                    }
                     $comm->model = RM::post('model');
                     $comm->description = RM::post('description');
                     $comm->rate = $this->currency(RM::post('rate'));
@@ -381,24 +389,6 @@ class Campaign extends Admin {
                         $view->set("message", "Commission updated!!");   
                     } else {
                         $view->set("errors", $comm->errors);
-                        $view->set("message", "Validation Failed");
-                    }
-                    break;
-
-                case 'commadd':
-                    $commission = new \Commission([
-                        'ad_id' => $c->_id,
-                        'description' => RM::post('description'),
-                        'model' => RM::post('model'),
-                        'rate' => $this->currency(RM::post('rate')),
-                        'revenue' => $this->currency(RM::post('revenue')),
-                        'coverage' => RM::post('coverage', ['ALL'])
-                    ]);
-                    if ($commission->validate()) {
-                        $commission->save();
-                        $view->set("message", "Commission added!!");   
-                    } else {
-                        $view->set("errors", $commission->errors);
                         $view->set("message", "Validation Failed");
                     }
                     break;
@@ -609,10 +599,6 @@ class Campaign extends Admin {
         if (RM::type() == 'POST') {
             $action = RM::post('action', '');
             switch ($action) {
-                case 'commission':
-                    $view->set('message', 'Commission updated!!');
-                    break;
-
                 case 'commadd':
                 case 'commedit':
                     $fields = [
@@ -631,7 +617,6 @@ class Campaign extends Admin {
                         $comm = new Commission(['org_id' => $this->org->_id]);
                     }
                     foreach ($fields as $key => $value) {
-                        var_dump($value);
                         $comm->$key = $value;
                     }
                     $comm->save();
@@ -662,29 +647,5 @@ class Campaign extends Admin {
         $view->set('categories', $categories)
             ->set('hideRevenue', true)
             ->set('commissions', $commissions);
-    }
-
-    protected function addCommisson($org) {
-        $meta = $org->meta;
-        if (array_key_exists('commission', $meta)) {
-            $arr = $meta["commission"];
-            array_push($arr, [
-                'coverage' => RM::post('coverage', ['ALL']),
-                'model' => RM::post('model'),
-                'rate' => $this->currency(RM::post('rate'))
-            ]);
-            $meta["commission"] = $arr;
-        } else {
-            $arr = [];
-            $arr[] = [
-                'coverage' => RM::post('coverage', ['ALL']),
-                'model' => RM::post('model'),
-                'rate' => $this->currency(RM::post('rate'))
-            ];
-            $meta["commission"] = $arr;
-        }
-        
-        $org->meta = $meta;
-        $org->save();
     }
 }

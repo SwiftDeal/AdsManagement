@@ -1,4 +1,5 @@
 {include campaign/modals/trackingParam.html}
+{script $commissions = Commission::all(["org_id" => $org->_id])}
 <script>
     window.advertisers = JSON.parse('{echo json_encode($advertisers)}');
     window.currency = '{echo strtolower($user->currency)}';
@@ -178,7 +179,7 @@
                         <input type="hidden" name="action" value="save">
                     </div>
                 </div>
-                {foreach $c in $org->meta["commission"]}
+                {foreach $c in $commissions}
                 {script $i++}
                 <div class="row">
                     <div class="card-box panel panel-body">
@@ -187,7 +188,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Model <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="How advertiser pays for the offers:CPA,CPC,CPI etc. Change offer pricing type will remove revenue, offer payout, offer cap and affiliate cap,and also delete affiliate payout and volume based tiers which related to this offer."></i></label>
-                                <select name="model[$i]" required="" class="form-control model" data-live-search="false" value="{echo $c['model']}">
+                                <select name="model[$i]" required="" class="form-control model" data-live-search="false" value="{echo $c->model}">
                                     {include auth/model.html}
                                 </select>
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "model")}</span>
@@ -204,14 +205,14 @@
                                 <label for="Rate">Payout <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="The amount of cost you pay your affiliates or publishers for one promotion unit."></i></label>
                                 <div class="input-group">
                                     <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                    <input type="text" name="rate[$i]" class="form-control" required="" value="{echo $user->convert($c['rate'], false, 4)}">
+                                    <input type="text" name="rate[$i]" class="form-control" required="" value="{echo $user->convert($c->rate, false, 4)}">
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Coverage</label>
-                                <select name="coverage[$i][]" data-value='{echo json_encode($c["coverage"])}' class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
+                                <select name="coverage[$i][]" data-value='{echo json_encode($c->coverage)}' class="selectVal form-control selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
                                     {include auth/country.html}
                                 </select>
                                 <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "coverage")}</span>

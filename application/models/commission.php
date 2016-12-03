@@ -148,10 +148,18 @@ class Commission extends \Shared\Model {
 
     protected static function getPubRate($commission, $extra = []) {
         $pub = $extra['publisher'] ?? (object) ['meta' => []];
-        $comm = $pub->meta['campaign'] ?? [];
+        $comm = (object) ($pub->meta['campaign'] ?? []);
+        // find commission from table - @todo before next cron job
+        /*if (isset($pub->_id)) {
+            $comms = self::all(['user_id' => $pub->_id], ['model', 'rate', 'coverage']);   
+        } else {
+            $comms = [];
+        }
+        $countryWise = self::filter($comms);
+        $comm = $countryWise[$commission->country] ?? (object) [];*/
 
-        if (isset($comm['rate'])) {
-            $rate = (float) $comm['rate'];
+        if (isset($comm->rate) && $comm->model == $commission->model) {
+            $rate = (float) $comm->rate;
         } else {
             $rate = (float) $commission->rate;
         }
@@ -167,7 +175,8 @@ class Commission extends \Shared\Model {
                 $countryWise[$country] = (object) [
                     'model' => $c->model,
                     'rate' => $c->rate,
-                    'revenue' => $c->revenue
+                    'revenue' => $c->revenue,
+                    'country' => $country
                 ];
             }
         }
