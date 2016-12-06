@@ -4,11 +4,8 @@
  * @author Faizan Ayubi
  */
 use Shared\Utils as Utils;
-use Shared\Services\Db as Db;
-use Shared\Services\Performance as Perf;
-use Framework\Registry as Registry;
-use Framework\ArrayMethods as ArrayMethods;
-use Framework\RequestMethods as RequestMethods;
+use Shared\Services\{Db, Performance as Perf};
+use Framework\{Registry, ArrayMethods, RequestMethods};
 
 class Insight extends Auth {
 	/**

@@ -2,11 +2,8 @@
 
 use Shared\Utils as Utils;
 use Keyword\Scrape as Scraper;
-use Shared\Services\Db as Db;
-use Shared\Services\User as Usr;
-use Shared\Services\Performance as Perf;
-use Framework\ArrayMethods as ArrayMethods;
-use Framework\RequestMethods as RequestMethods;
+use Shared\Services\{Db, User as Usr, Performance as Perf};
+use Framework\{Registry, ArrayMethods, RequestMethods};
 
 class Api extends \Shared\Controller {
 	const ERROR_CODES = [

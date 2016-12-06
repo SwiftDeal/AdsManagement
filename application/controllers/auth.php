@@ -3,11 +3,8 @@
  * @author Faizan Ayubi
  */
 use \Curl\Curl;
-use Shared\Utils as Utils;
-use Shared\Mail as Mail;
-use Framework\Registry as Registry;
-use Shared\Controller as Controller;
-use Framework\RequestMethods as RM;
+use Shared\{Utils, Mail, Controller};
+use Framework\{Registry, ArrayMethods, RequestMethods as RM};
 
 class Auth extends Controller {
     /**

@@ -3,13 +3,11 @@
 /**
  * @author Faizan Ayubi
  */
-use Framework\Registry as Registry;
 use WebBot\Core\Bot as Bot;
 use \Curl\Curl;
 use Shared\Utils as Utils;
-use \Shared\Services\Db as Db;
-use Framework\ArrayMethods as ArrayMethods;
-use Framework\RequestMethods as RM;
+use Shared\Services\Db as Db;
+use Framework\{Registry, ArrayMethods, RequestMethods as RM};
 use YTDownloader\Service\Download as Downloader;
 
 class Campaign extends Admin {

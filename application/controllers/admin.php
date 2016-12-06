@@ -3,11 +3,9 @@
 /**
  * @author Faizan Ayubi
  */
-use Framework\RequestMethods as RM;
-use Framework\Registry as Registry;
 use Shared\Utils as Utils;
-use Framework\ArrayMethods as ArrayMethods;
 use Shared\Services\Db as Db;
+use Framework\{Registry, ArrayMethods, RequestMethods as RM};
 
 class Admin extends Auth {
 

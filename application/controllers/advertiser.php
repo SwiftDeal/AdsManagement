@@ -2,12 +2,9 @@
 /**
  * @author Faizan Ayubi
  */
-use Framework\RequestMethods as RM;
-use Framework\ArrayMethods as ArrayMethods;
-use Framework\Registry as Registry;
-use Shared\Mail as Mail;
-use Shared\Utils as Utils;
+use Shared\{Utils, Mail};
 use Shared\Services\Db as Db;
+use Framework\{Registry, ArrayMethods, RequestMethods as RM};
 
 class Advertiser extends Auth {
 

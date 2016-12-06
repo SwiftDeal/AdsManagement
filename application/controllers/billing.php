@@ -4,12 +4,9 @@
  *
  * @author Faizan Ayubi
  */
-use Shared\Mail as Mail;
-use Shared\Utils as Utils;
+use Shared\{Utils, Mail};
 use Shared\Services\Db as Db;
-use Framework\Registry as Registry;
-use Framework\ArrayMethods as ArrayMethods;
-use Framework\RequestMethods as RM;
+use Framework\{Registry, ArrayMethods, RequestMethods as RM};
 
 class Billing extends Admin {
 

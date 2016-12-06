@@ -5,13 +5,9 @@
  * 
  * @author Faizan Ayubi
  */
-use Shared\Utils as Utils;
-use Framework\ArrayMethods as ArrayMethods;
-use Framework\RequestMethods as RequestMethods;
-use Framework\Registry as Registry;
-use Shared\Services\Db as Db;
-use Shared\Services\User as Usr;
-use Shared\Services\Performance as Perf;
+use Shared\Utils;
+use Framework\{Registry, ArrayMethods, RequestMethods};
+use Shared\Services\{Db, User as Usr, Performance as Perf};
 
 class Cron extends Shared\Controller {
 
