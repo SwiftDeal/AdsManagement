@@ -50,12 +50,12 @@
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Date</th>
-                                            <th>Status</th>
-                                            <th>Affiliate</th>
-                                            <th>Account Status</th>
-                                            <th>Method</th>
-                                            <th>Amount</th>
+                                            <th>DATE</th>
+                                            <th>ADVERTISER</th>
+                                            <th>ACCOUNT</th>
+                                            <th>TYPE</th>
+                                            <th>AMOUNT</th>
+                                            <th>STATUS</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -63,13 +63,6 @@
                                         {script $u = User::first(["id = ?" => $i->user_id], ['name', 'live'])}
                                         <tr>
                                             <td><small>{echo Framework\StringMethods::only_date($i->created)}</small></td>
-                                            <td>
-                                                {if $i->live}
-                                                <span class="text text-success">Success</span>
-                                                {/if} {else}
-                                                <span class="text text-warning">Pending</span>
-                                                {/else}
-                                            </td>
                                             <td>{echo $u->name}</td>
                                             <td>
                                                 {if $u->live}
@@ -80,6 +73,14 @@
                                             </td>
                                             <td>{echo $i->utype}</td>
                                             <td>{echo $user->convert($i->amount, true, 2)}</td>
+                                            <td>
+                                                {if $i->live}
+                                                <span class="text text-success">Success</span>
+                                                {/if} {else}
+                                                <span class="text text-warning">Pending</span><br>
+                                                <a href="billing/update/{echo $i->_id}" data-send='{echo json_encode(["live" => 1])}' class="update btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Enable"><i class="fa fa-check"></i> Mark as Paid</a>
+                                                {/else}
+                                            </td>
                                         </tr>
                                         {/foreach}
                                     </tbody>

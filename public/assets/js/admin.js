@@ -130,7 +130,7 @@
                         }
 
                         bootbox.alert(d.message, function () {
-                            window.location.href = window.location.href;
+                            window.location.href = self.data('fallback') || window.location.href;
                         });
                     });
                 });
@@ -168,7 +168,7 @@
                 $('#addDomain').on('click', function (e) {
                     var $el = $('#trackingDomain').parent();
 
-                    var $newEl = $el.clone();
+                    var $newEl = '<div class="input-group"><input type="text" name="tdomains[]" class="form-control" placeholder="Enter Tracking Domain" id="trackingDomain"><span class="input-group-btn"><button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button></span></div>';
                     $newEl.find('input').attr('id', '');
                     $newEl.find('input').attr('value', '');
                     $newEl.insertAfter($el);
@@ -178,7 +178,7 @@
                 $('#addCategory').on('click', function (e) {
                     var $el = $('#categoryBox').parent();
 
-                    var $newEl = $el.clone();
+                    var $newEl = '<div class="input-group"><input type="text" name="category[]" class="form-control" placeholder="Enter Category Name"><span class="input-group-btn"><button type="button" class="pull-right removeThis btn btn-danger btn-xs"><i class="fa fa-times"></i></button></span></div>';
                     $newEl.find('input').attr('id', '');
                     $newEl.find('input').attr('value', '');
                     $newEl.insertAfter($el);

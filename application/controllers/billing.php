@@ -239,4 +239,23 @@ class Billing extends Admin {
         }
         $view->set('i', $invoice);
     }
+
+    /**
+     * @before _secure
+     */
+    public function update($invoice_id) {
+        $this->JSONView(); $view = $this->getActionView();
+        $i = \Invoice::first(["_id = ?" => $invoice_id, "org_id = ?" => $this->org->_id]);
+        if (!$i || RM::type() !== 'POST') {
+            return $view->set('message', 'Invalid Request!!');
+        }
+        $view->set('message', 'Updated successfully!!');
+
+        $allowedFields = ['live'];
+        foreach ($allowedFields as $f) {
+            $i->$f = RM::post($f, $i->$f);
+        }
+        $i->save();
+        $view->set('invoice', $i);
+    }
 }
