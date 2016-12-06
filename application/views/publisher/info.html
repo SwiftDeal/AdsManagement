@@ -392,54 +392,46 @@
                     <p class="text-center">
                         Commission is what you set to pay your affiliate by Default, overiding any exsisting Campaign Commission. <br><button type="button" class="btn btn-inverse btn-xs" data-toggle="modal" data-target="#addCommisson"><i class="fa fa-plus"></i> New Commission</button>
                     </p>
-                    {if($commissions)}
-                        <div class="table-responsive">
-                            <table class="table">
-                                <tr>
-                                    <th><label>Coverage</label></th>
-                                    <th><label>Model</label></th>
-                                    <th><label>Rate</label></th>
-                                </tr>
-                                {foreach $c in $commissions}
-                                <form method="post"><tr>
-                                    <td>
-                                        <div class="form-group">
-                                            <select name="coverage[]" data-value='{echo json_encode($c->coverage)}' class="form-control selectVal selectpicker" multiple="" data-live-search=true title="Choose a campaign category">
-                                                {include auth/country.html}
-                                            </select>
-                                            <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "coverage")}</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="form-group">
-                                            {script $model = $c->model}
-                                            <select name="model" required="" data-value='{echo json_encode(["$model"])}' class="selectVal form-control selectpicker">
-                                                {include auth/model.html}
-                                            </select>
-                                            <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "model")}</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="form-group">
-                                            <div class="input-group">
-                                                <span class="add-on input-group-addon">{echo $user->currency}</span>
-                                                <input type="text" value="{echo $user->convert($c->rate, false, 4)}" name="rate" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" required="">
-                                            </div>
-                                            <span class="help-block text-danger">{echo Shared\Markup::errors($errors, "rate")}</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <input type="hidden" name="action" value="commedit">
-                                        <input type="hidden" name="cid" value="{echo $comm->id}">
-                                        <span class="pull-right">
-                                            <a href="{echo $parsed['path']}?action=commDel&comm_id={echo $comm->id}" class="delete btn btn-default btn-sm" data-message="Are You sure you want to delete this commission??"><i class="fa fa-trash"></i> Delete</a> 
-                                            <button type="submit" class="btn btn-default btn-sm"><i class="fa fa-check-circle"></i> Update</button>
-                                        </span>
-                                    </td>
-                                </tr></form>
-                                {/foreach}
-                            </table>
+                    {if count($commissions) > 0}
+                        <div class="row">
+                            <div class="col-md-4"><b>COVERAGE</b></div>
+                            <div class="col-md-3"><b>MODEL</b></div>
+                            <div class="col-md-2"><b>PAYOUT</b></div>
+                            <div class="col-md-3"><b>ACTION</b></div>
                         </div>
+                        {foreach $c in $commissions}
+                        <form class="row" method="post" action="">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <select name="coverage[]" data-value='{echo json_encode($c->coverage)}' class="form-control selectVal selectpicker" multiple="" data-live-search=true title="Choose a campaign category" required="">
+                                        {include auth/country.html}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    {script $model = (array) $c->model}
+                                    <select name="model" required="" data-value='{echo json_encode($model)}' class="selectVal form-control" required="">
+                                        {include auth/model.html}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="add-on input-group-addon">{echo $user->currency}</span>
+                                        <input type="text" value="{echo $user->convert($c->rate, false, 4)}" name="rate" class="form-control" placeholder="Rate for revenue model. Eg: 2.3" required="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="hidden" name="action" value="commedit">
+                                <input type="hidden" name="comm_id" value="{echo $c->_id}">
+                                <button type="submit" class="btn btn-primary"><i class="fa fa-send"></i> Save</button>
+                                <a href="{echo Shared\Markup::parse_url()['path']}?action=commDel&comm_id={echo $c->_id}" class="delete btn btn-danger btn-sm" data-fallback="/publisher/info/{echo $publisher->id}.html#commission" data-message="Are you sure you want to delete this commission??"><i class="fa fa-trash"></i> Delete</a>
+                            </div>
+                        </form>
+                        {/foreach}
                     {/if}
                     </div>
                 </div>

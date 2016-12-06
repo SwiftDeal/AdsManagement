@@ -620,6 +620,7 @@ class Campaign extends Admin {
                         $comm->$key = $value;
                     }
                     $comm->save();
+                    //echo "<pre>", print_r($_POST), "</pre>";die();
                     $view->set('message', 'Commission saved successfully!!');
                     break;
 

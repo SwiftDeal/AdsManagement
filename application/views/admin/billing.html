@@ -93,7 +93,37 @@
                             </div>
                         </div>
                         <div class="tab-pane" id="credits"></div>
-                        <div class="tab-pane" id="payments"></div>
+                        <div class="tab-pane" id="payments">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>DURATION</th>
+                                        <th>AMOUNT</th>
+                                        <th>STATUS</th>
+                                        <th>ACTION</th>
+                                    </tr>
+                                    {foreach $bill in $bills}
+                                    <tr>
+                                        <td><small>{echo $bill->id}</small></td>
+                                        <td><small>
+                                            FROM: {echo Framework\StringMethods::only_date($bill->start)}<br>
+                                            TO: {echo Framework\StringMethods::only_date($bill->end)}
+                                        </small></td>
+                                        <td>{echo $user->convert($bill->amount)}</td>
+                                        <td>
+                                            {if $bill->live}
+                                            <span class="text text-success">PAID</span>
+                                            {/if} {else}
+                                            <span class="text text-warning">UNPAID</span>
+                                            {/else}
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    {/foreach}
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

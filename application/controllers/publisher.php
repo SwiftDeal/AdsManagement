@@ -586,7 +586,7 @@ class Publisher extends Auth {
                     }
                 case 'commadd':
                 case 'commedit':
-                    $comm_id = RM::post('cid');
+                    $comm_id = RM::post('comm_id');
                     if ($comm_id) {
                         $comm = Commission::first(['_id' => $comm_id, 'user_id' => $publisher->_id]);
                     } else {

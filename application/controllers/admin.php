@@ -261,7 +261,7 @@ class Admin extends Auth {
      */
     public function billing() {
         $this->seo(array("title" => "Billing")); $view = $this->getActionView();
-        $bills = Bill::all(["org_id = ?" => $this->org->id], ['id', 'created'], "created", "desc");
+        $bills = Bill::all(["org_id = ?" => $this->org->id], [], "created", "desc");
         $invoice = RM::get("invoice", "current");
         $imp_cost = 0; $click_cost = 0;
         switch ($invoice) {
