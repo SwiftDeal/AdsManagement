@@ -222,7 +222,7 @@ class Campaign extends Admin {
      * @before _secure
      */
     public function manage() {
-    	$this->seo(['title' => 'Campaign Manage', 'description' => 'Manage campaigns']);
+    	$this->seo(['title' => 'Campaign: List', 'description' => 'Manage campaigns']);
     	$view = $this->getActionView();$campaigns = [];
 
         $page = RM::get("page", 1); $limit = RM::get("limit", 10);

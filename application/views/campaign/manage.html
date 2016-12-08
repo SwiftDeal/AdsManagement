@@ -7,8 +7,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
-                        <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#createCampaign"><i class="fa fa-plus"></i> New Campaign</button>
-                        <a href="/campaign/manage.csv" download="campaign.csv" class="btn btn-inverse pull-right"><i class="fa fa-download"></i> Export to CSV</a>
+                        <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#createCampaign"><i class="fa fa-plus"></i> New Campaign</button>
                         <form class="form-inline pull-right" role="form" id="range">
                             <div class="form-group">
                                 <select class="form-control" name="property" value="{$property}">
@@ -22,10 +21,10 @@
                             <div class="form-group">
                                 <input type="text" class="form-control" name="value" value="{echo $value}">
                             </div>
-                            <button type="submit" class="btn btn-primary">Search</button>
+                            <button type="submit" class="btn btn-inverse">Search</button>
                         </form>
                         <h4 class="page-title">
-                            Campaigns <small><a href="/campaign/manage.html?property=live&amp;value=1">Active <span class="badge">{echo $active}</span></a> | 
+                            Campaign: List <small><a href="/campaign/manage.html?property=live&amp;value=1">Active <span class="badge">{echo $active}</span></a> | 
                             <a href="/campaign/manage.html?property=live&amp;value=0" data-toggle="tooltip" data-placement="top" data-original-title="When campaign is 'INACTIVE/Disabled' clicks will not be counted">Inactive <span class="badge">{echo $inactive}</span></a></small>
                         </h4>
                     </div>
