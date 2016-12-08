@@ -46,12 +46,13 @@ class Cron extends Shared\Controller {
     // execute every 5 minutes
     protected function _minutely() {
         Shared\Services\Campaign::minutely();
+        Click::minutely();
     }
 
     protected function _hourly() {
+        $this->_widgets();
         $this->importCampaigns();
         $this->_contests();
-        $this->widgets();
         $this->_settings();
     }
 
@@ -99,7 +100,7 @@ class Cron extends Shared\Controller {
         \User::hourly();
     }
 
-    public function widgets() {
+    public function _widgets() {
         $this->log("Widgets Started");
         $start = $end = date('Y-m-d');
         $dateQuery = Utils::dateQuery($start, $end);
@@ -109,35 +110,36 @@ class Cron extends Shared\Controller {
             if (!array_key_exists("widgets", $org->meta)) continue;
 
             $pubs = User::all(["org_id = ?" => $org->_id, "type = ?" => "publisher"], ["_id", "username"]);
-            $in = array_keys($pubs);
-            
-            $records = Db::query('Click', [
+            $in = array_keys($pubs); $in = Db::convertType($in);
+            $match = [
                 "created" => Db::dateQuery($start, $end),
                 "is_bot" => false, "pid" => ['$in' => $in]
-            ], ['adid', 'pid']);
+            ];
+
+            $records = Db::collection('Click')->aggregate([
+                ['$match' => $match],
+                ['$project' => ['adid' => 1, '_id' => 0, 'pid' => 1]],
+                ['$group' => [
+                    '_id' => ['adid' => '$adid', 'pid' => '$pid'],
+                    'count' => ['$sum' => 1]
+                ]],
+                ['$sort' => ['count' => -1]]
+            ]);
 
             $adClicks = []; $pubClicks = [];
             foreach ($records as $r) {
-                $c = (object) $r;
+                $c = Utils::toArray($r);
 
-                $adid = Utils::getMongoID($c->adid);
-                $pid = Utils::getMongoID($c->pid);
+                $adid = Utils::getMongoID($c['_id']['adid']);
+                $pid = Utils::getMongoID($c['_id']['pid']);
 
-                if (!isset($adClicks[$adid])) {
-                    $adClicks[$adid] = 1;
-                } else {
-                    $adClicks[$adid]++;
-                }
-
-                if (!isset($pubClicks[$pid])) {
-                    $pubClicks[$pid] = 1;
-                } else {
-                    $pubClicks[$pid]++;
-                }
+                ArrayMethods::counter($adClicks, $adid, $c['count']);
+                ArrayMethods::counter($pubClicks, $pid, $c['count']);
             }
 
             $org->widgets($pubClicks, $adClicks, $pubs);
-            $this->log("Widget Saved for Org: " . $org->name);
+            $logMsg = sprintf("Widget Saved for Org: %s", $org->name);
+            $this->log($logMsg);
         }
         $this->log("Widgets Done");
     }

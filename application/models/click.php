@@ -3,9 +3,9 @@
 /**
  * @author Faizan Ayubi
  */
-use Shared\Utils as Utils;
-use Framework\Registry as Registry;
-use Framework\ArrayMethods as ArrayMethods;
+use Shared\Utils;
+use Shared\Services\Db;
+use Framework\{Registry, ArrayMethods};
 
 class Click extends Shared\Model {
 
@@ -106,8 +106,18 @@ class Click extends Shared\Model {
      */
     protected $_p2 = null;
 
+    public static function minutely() {
+        $fiveMinAgo = date('Y-m-d H:i:s', time() - 300);
+        $now = date('Y-m-d H:i:s');
+        $created = [ '$gte' => Db::time($fiveMinAgo), '$lte' => Db::time($now) ];
+        self::deleteAll(['created' => $created, 'is_bot' => true]);
+    }
+
     public static function hourly() {
-        self::deleteAll(['is_bot' => true]);
+        $halfHrAgo = date('Y-m-d H:i:s', time() - 1800);
+        $now = date('Y-m-d H:i:s');
+        $created = [ '$gte' => Db::time($halfHrAgo), '$lte' => Db::time($now) ];
+        self::deleteAll(['created' => $created, 'is_bot' => true]);
     }
 
     public static function checkFraud($clicks, $org = null) {

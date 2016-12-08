@@ -4,13 +4,9 @@
  *
  * @author Faizan Ayubi
  */
-use Framework\RequestMethods as RequestMethods;
-use Framework\Registry as Registry;
-use Shared\Mail as Mail;
-use Shared\Utils as Utils;
-use Shared\Services\Db;
-use Shared\Services\Performance as Perf;
-use Framework\ArrayMethods as ArrayMethods;
+use Shared\{Utils, Mail};
+use Shared\Services\{Db, Performance as Perf};
+use Framework\{Registry, ArrayMethods, RequestMethods as RM};
 
 class Test extends Auth {
     /**
@@ -18,7 +14,7 @@ class Test extends Auth {
      */
     public function index() {
         $this->seo(array("title" => "Manage Account")); $i = 0; $view = $this->getActionView();
-        /*$ads = Ad::all(['_id' => '57eb8aa51d41c8676b74b044']);
+        /*$ads = [];
         foreach ($ads as $a) {
             foreach ($a->category as $id) {
                 $cat = Category::first(['_id' => $id]);
@@ -48,7 +44,7 @@ class Test extends Auth {
      */
     public function sendMail() {
         $this->noview();
-        $cf = Registry::get("configuration")->parse("configuration/cf")->cloudflare;
+        $cf = Utils::getConfig("cf", "cloudflare");
 
         try {
             \Shared\Services\Smtp::sendMail($this->org, [
@@ -61,46 +57,5 @@ class Test extends Auth {
         } catch (\Exception $e) {
             var_dump($e->getMessage());
         }
-    }
-
-    /**
-     * @before _admin
-     */
-    public function publishers() {
-        $this->JSONview(); $view = $this->getActionView();
-        $date = RequestMethods::get("start", strftime("%Y-%m-%d", strtotime('-1 day')));
-
-        $users = \User::all(['type' => 'publisher', 'org_id' => $this->org->_id], ['_id', 'name']);
-        $in = Utils::mongoObjectId(array_keys($users));
-
-        $query = [
-            "pid" => ['$in' => $in],
-            "created" => Db::dateQuery($date, $date)
-        ];
-
-        $records = Db::query('Click', $query, ['adid', 'pid', 'is_bot', 'ipaddr', 'referer']);
-
-        $classify = \Click::classify($records, 'pid');
-        $pubClicks = [];
-        foreach ($classify as $pid => $pClicks) {
-            $orig = count($pClicks); $javascript_filtered = 0;
-            foreach ($pClicks as $c) {
-                if (!$c->is_bot) {
-                    $javascript_filtered++;
-                }
-            }
-
-            $uniqClicks = \Click::checkFraud($pClicks, $this->org);
-            $referer_filtered = count($uniqClicks);
-
-            $pubClicks[$pid] = ArrayMethods::toObject([
-                'name' => $users[$pid]->name,
-                'unverified' => $orig,
-                'referer_filtered' => $referer_filtered,
-                'javascript_filtered' => $javascript_filtered
-            ]);
-        }
-
-        $view->set('publishers', $pubClicks);
     }
 }
