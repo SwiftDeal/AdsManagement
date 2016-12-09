@@ -42,8 +42,15 @@ push_backup() {
 		sleep 1
 		exit
 	"
+}
+
+clean_up() {
 	rm ../${project}.tar
 	echo "Cleaning UP"
+}
+
+file_size() {
+	ls -lah ../${project}.tar | grep -o '[0-9]\+[a-zA-Z]'
 }
 
 # Log the backup process
@@ -57,10 +64,12 @@ logging() {
 	mkdir -p $log_dir
 	
 	touch "${log_dir}/${filename}"
-	echo "Backup: '$project' (Server: $server_ip, path: $server_path) Completed on $output" >> "${log_dir}/${filename}"
+	fs=$(file_size)
+	echo "Backup: '$project' size: $fs (Server: $server_ip, path: $server_path) Completed on $output" >> "${log_dir}/${filename}"
 	echo "Logging Done"
 }
 
 make_tar
 push_backup
 logging
+clean_up

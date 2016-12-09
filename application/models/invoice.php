@@ -66,7 +66,7 @@ class Invoice extends Shared\Model {
     public static function exists($uid, $start = null, $end = null) {
         $uid = Db::convertType($uid);
         $dateQuery = Utils::dateQuery($start, $end);
-        $inv_exist = Invoice::first(['$or' => [
+        $inv_exist = self::first(['$or' => [
             [   // $start, $end exists in b/w invoice start, end
                 "user_id" => $uid,
                 "start" => ['$lte' => $dateQuery['start'], '$lte' => $dateQuery['end']],

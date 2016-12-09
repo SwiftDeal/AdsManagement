@@ -3,6 +3,8 @@
 /**
  * @author Faizan Ayubi
  */
+use Shared\Services\Db as Db;
+use Shared\Utils as Utils;
 use Framework\RequestMethods as RequestMethods;
 class Contest extends Shared\Model {
 
@@ -46,6 +48,39 @@ class Contest extends Shared\Model {
      * @index
      */
     protected $_end;
+
+    public static function exists($oid, $opts = []) {
+        $oid = Db::convertType($oid);
+        $dateQuery = Utils::dateQuery($opts);
+
+        $multiple = $opts['multiple'] ?? false;
+        if ($multiple) {
+            $query = "all";
+        } else {
+            $query = "first";
+        }
+        $inv_exist = self::$query(['$or' => [
+            [   // $start, $end exists in b/w contest start, end
+                "org_id" => $oid,
+                "start" => ['$lte' => $dateQuery['start'], '$lte' => $dateQuery['end']],
+                "end" => ['$gte' => $dateQuery['start'], '$gte' => $dateQuery['end']]
+            ], [    // contest start in b/w $start, $end
+                "org_id" => $oid,
+                "start" => Db::dateQuery($start, $end),
+                "end" => ['$gte' => $dateQuery['start'], '$gte' => $dateQuery['end']]
+            ], [    // contest end exists b/w $start, $end
+                "org_id" => $oid,
+                "start" => ['$lte' => $dateQuery['start'], '$lte' => $dateQuery['end']],
+                "end" => Db::dateQuery($start, $end)
+            ], [    // contest start and end exists b/w $start, $end
+                "org_id" => $oid,
+                "start" => Db::dateQuery($start, $end),
+                "end" => Db::dateQuery($start, $end)
+            ]
+        ]]);
+
+        return $inv_exist;
+    }
 
     public static function updateContests($controller) {
         $org = $controller->org;
