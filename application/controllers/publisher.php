@@ -298,6 +298,14 @@ class Publisher extends Auth {
                     $view->set('message', 'Payout Info Updated!!');
                     break;
 
+                case 'custom':
+                    $output = Shared\Services\User::customFields($user, $this->org);
+                    if (!$output['success']) return $view->set($output);
+                    $user->save();
+                    $view->set('user', $user);
+                    $view->set('message', 'Custom field updated!!');
+                    break;
+
                 default:
                     $this->_postback('add');
                     break;

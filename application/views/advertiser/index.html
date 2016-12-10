@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-lg-3">
-        <div class="panel panel-default panel-border">
+        <div class="panel panel-inverse panel-border">
             <div class="panel-heading">
                 <h3 class="panel-title text-center">Clicks</h3>
             </div>
@@ -24,7 +24,7 @@
     </div>
     {script $totalimpr = $total["impressions"] + $performance->impressions + $yestPerf->impressions}
     <div class="col-lg-3">
-        <div class="panel panel-border panel-primary">
+        <div class="panel panel-border panel-inverse">
             <div class="panel-heading">
                 <h3 class="panel-title text-center">Ad Impressions</h3>
             </div>
@@ -48,7 +48,7 @@
     </div>
     {script $totalConv = $total["conversions"] + $performance->conversions + $yestPerf->conversions}
     <div class="col-lg-3">
-        <div class="panel panel-border panel-success">
+        <div class="panel panel-border panel-inverse">
             <div class="panel-heading">
                 <h3 class="panel-title text-center">Conversions</h3>
             </div>
@@ -116,7 +116,7 @@
                             </div>
                         </div>
                         <input type="hidden" name="user_id" value="{echo $user->_id}">
-                        <button type="submit" class="btn btn-primary">Show</button>
+                        <button type="submit" class="btn btn-inverse">Show</button>
                     </form>
                 </div>
                 <div class="clearfix"></div>
